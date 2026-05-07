@@ -1,0 +1,100 @@
+[
+  {
+    "id": "PROD-001",
+    "name": "Nước Ngọt Có Ga Coca-Cola 320ml",
+    "category": "Nước giải khát",
+    "categoryGroup": "do-uong",
+    "brand": "Coca-Cola",
+    "origin": "Việt Nam",
+    "basePrice": "200.000đ",
+    "discountPrice": "185.000đ",
+    "minQty": "Từ 5 thùng",
+    "stock": 450,
+    "unit": "thùng",
+    "sku": "CC-320-24",
+    "description": "Sản phẩm nước giải khát bán chạy, phù hợp bán lẻ tạp hóa và cửa hàng tiện lợi.",
+    "unitTypes": [
+      { "type": "thùng", "label": "Thùng (24 lon)", "wholesalePrice": "185.000đ", "retailPrice": "200.000đ", "minWholesaleQty": 5, "qtyPerUnit": 24 },
+      { "type": "lon", "label": "Lẻ từng lon", "wholesalePrice": null, "retailPrice": "9.500đ", "minWholesaleQty": null, "qtyPerUnit": 1 }
+    ],
+    "primaryImage": "https://lh3.googleusercontent.com/aida-public/AB6AXuB-5MIMJYegmXMs4WyemXVbNzwCVDSBCPEE5Q45ACmYPfLmOVzjdqQv5rGqXkwG0AeU9B_RsEXVVXOXHXmjdbx_kgLpuIf3tiqUZWrUT1ISeVW4URC4pmq7dFJf6dF9ObCBU5TfdxBu0ARsPhzJ8OG_kaEPEguZYM12n-ZLvT8nL_wQxJIztupPlWNx_yUZIAfchDxZ5oDctVMM-ipK-XabO5I-rTLUuYo-kmAsbnkXehFso2IDImjDe85FcC8KRoo0T1zbvh3Z70E",
+    "gallery": [
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuB-5MIMJYegmXMs4WyemXVbNzwCVDSBCPEE5Q45ACmYPfLmOVzjdqQv5rGqXkwG0AeU9B_RsEXVVXOXHXmjdbx_kgLpuIf3tiqUZWrUT1ISeVW4URC4pmq7dFJf6dF9ObCBU5TfdxBu0ARsPhzJ8OG_kaEPEguZYM12n-ZLvT8nL_wQxJIztupPlWNx_yUZIAfchDxZ5oDctVMM-ipK-XabO5I-rTLUuYo-kmAsbnkXehFso2IDImjDe85FcC8KRoo0T1zbvh3Z70E"
+    ],
+    "coupons": ["B2B_GOLD (Giảm thêm 5%)"]
+  },
+  {
+    "id": "PROD-002",
+    "name": "Mì Hảo Hảo Tôm Chua Cay 75g",
+    "category": "Thực phẩm khô",
+    "categoryGroup": "thuc-pham",
+    "brand": "Acecook",
+    "origin": "Việt Nam",
+    "basePrice": "130.000đ",
+    "discountPrice": "110.000đ",
+    "minQty": "Từ 10 thùng",
+    "stock": 1200,
+    "unit": "thùng",
+    "sku": "HH-TCC-30",
+    "description": "Mặt hàng tiêu thụ nhanh, lợi nhuận ổn định, phù hợp cho đại lý hàng thiết yếu.",
+    "unitTypes": [
+      { "type": "thùng", "label": "Thùng (30 gói)", "wholesalePrice": "110.000đ", "retailPrice": "130.000đ", "minWholesaleQty": 10, "qtyPerUnit": 30 },
+      { "type": "gói", "label": "Lẻ từng gói", "wholesalePrice": null, "retailPrice": "4.500đ", "minWholesaleQty": null, "qtyPerUnit": 1 }
+    ],
+    "primaryImage": "https://lh3.googleusercontent.com/aida-public/AB6AXuDyrWT2YwfoQjQ8JTUUKPO3oUThhOjabvaCaigudtT2AnT4Fl9KwMhwru5roS76Xpb9l743b81FU605aOA3ISWCL-ZWih9Sg4pIypvMlyXAgQ_RvKkoFrneEL-i3fZZl66BkSVLvdjCMZefKV2Iv5gygNggGqyJyGk71dTHmnuLfv251bdNIAUbqoikJIdk8ewGjNBsBFwdHYpJkBCoFsjlT0JHTYsYcyrxj_n9aXf1ptJFDkTlRjks3OvZydi28RNe69etc6zGIDY",
+    "gallery": [
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuDyrWT2YwfoQjQ8JTUUKPO3oUThhOjabvaCaigudtT2AnT4Fl9KwMhwru5roS76Xpb9l743b81FU605aOA3ISWCL-ZWih9Sg4pIypvMlyXAgQ_RvKkoFrneEL-i3fZZl66BkSVLvdjCMZefKV2Iv5gygNggGqyJyGk71dTHmnuLfv251bdNIAUbqoikJIdk8ewGjNBsBFwdHYpJkBCoFsjlT0JHTYsYcyrxj_n9aXf1ptJFDkTlRjks3OvZydi28RNe69etc6zGIDY"
+    ],
+    "coupons": []
+  },
+  {
+    "id": "PROD-003",
+    "name": "Sữa Tươi Tiệt Trùng Vinamilk Có Đường 180ml",
+    "category": "Sữa và chế phẩm",
+    "categoryGroup": "sua-bot",
+    "brand": "Vinamilk",
+    "origin": "Việt Nam",
+    "basePrice": "32.000đ",
+    "discountPrice": "28.500đ",
+    "minQty": "Từ 12 lốc",
+    "stock": 950,
+    "unit": "lốc",
+    "sku": "VNM-SUA-180-4",
+    "description": "Sản phẩm sữa bán lẻ phổ biến, phù hợp các cửa hàng tạp hóa khu dân cư.",
+    "unitTypes": [
+      { "type": "thùng", "label": "Thùng (48 hộp)", "wholesalePrice": "342.000đ", "retailPrice": "384.000đ", "minWholesaleQty": 3, "qtyPerUnit": 48 },
+      { "type": "lốc", "label": "Lốc (4 hộp)", "wholesalePrice": "28.500đ", "retailPrice": "32.000đ", "minWholesaleQty": 12, "qtyPerUnit": 4 },
+      { "type": "hộp", "label": "Lẻ từng hộp", "wholesalePrice": null, "retailPrice": "8.500đ", "minWholesaleQty": null, "qtyPerUnit": 1 }
+    ],
+    "primaryImage": "https://lh3.googleusercontent.com/aida-public/AB6AXuDO4v4rA6d4KabXIZqz7possiXK9y5KZ9P-3DLUMOQ9X2rZtoCBKSPuhI3nK9w03TVpgcEDAzqRUx-oAOeGWUQzcwvzWmWOj7wTgSbqT95MmbqwxqnRNTEewnwcq9qOia_4fZ3r1ZZ5opS5zM79rvMdD36lbmdYuROXv20RzDM0B9-a6hzPrGTS7GVmoFyHNOTBMHhZDBxwO7rydvxxIxBOu-a1kFvVWeGDh_W8AExEZ7jf7JSbrdFm4LAQOs03L5DmO9PyfC4fQhI",
+    "gallery": [
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuDO4v4rA6d4KabXIZqz7possiXK9y5KZ9P-3DLUMOQ9X2rZtoCBKSPuhI3nK9w03TVpgcEDAzqRUx-oAOeGWUQzcwvzWmWOj7wTgSbqT95MmbqwxqnRNTEewnwcq9qOia_4fZ3r1ZZ5opS5zM79rvMdD36lbmdYuROXv20RzDM0B9-a6hzPrGTS7GVmoFyHNOTBMHhZDBxwO7rydvxxIxBOu-a1kFvVWeGDh_W8AExEZ7jf7JSbrdFm4LAQOs03L5DmO9PyfC4fQhI"
+    ],
+    "coupons": ["FREESHIP_SUA"]
+  },
+  {
+    "id": "PROD-004",
+    "name": "Dầu ăn Tường An Cooking Oil 1 Lít",
+    "category": "Gia vị & Dầu ăn",
+    "categoryGroup": "gia-vi",
+    "brand": "Tường An",
+    "origin": "Việt Nam",
+    "basePrice": "50.000đ",
+    "discountPrice": "45.000đ",
+    "minQty": "Từ 1 thùng (12 chai)",
+    "stock": 350,
+    "unit": "chai",
+    "sku": "TA-OIL-1L",
+    "description": "Mặt hàng gia vị thiết yếu, ổn định nhu cầu và phù hợp nhập số lượng lớn.",
+    "unitTypes": [
+      { "type": "thùng", "label": "Thùng (12 chai)", "wholesalePrice": "540.000đ", "retailPrice": "600.000đ", "minWholesaleQty": 1, "qtyPerUnit": 12 },
+      { "type": "can", "label": "Can (5 lít)", "wholesalePrice": "210.000đ", "retailPrice": "230.000đ", "minWholesaleQty": 2, "qtyPerUnit": 1 },
+      { "type": "chai", "label": "Lẻ từng chai (1L)", "wholesalePrice": null, "retailPrice": "50.000đ", "minWholesaleQty": null, "qtyPerUnit": 1 }
+    ],
+    "primaryImage": "https://lh3.googleusercontent.com/aida-public/AB6AXuBkgLbfndvipRk3_pZ5TM8pADd0a20PN-oPdnHBEbIBWl38y6HA66dHyyiOuT9pKejs16kMAWN2AGmxV2o7CxReLU2ozBr1JalwbiJ1hQaZtZDNMxizt8rFiK1RtCmggUElOsIfk4XAF88jp41vhUU2QplYB-F7FCvjTWHT8Kk8eU_7jS6Ux9s5m6CxzzyMIo78Y-H8PlEeG8Ge_GW7NONcq9VHUfBoAYILXXkOYPAUT-EWWPjUTHnladjUwdrt55KIPs4oJw2x9Pk",
+    "gallery": [
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuBkgLbfndvipRk3_pZ5TM8pADd0a20PN-oPdnHBEbIBWl38y6HA66dHyyiOuT9pKejs16kMAWN2AGmxV2o7CxReLU2ozBr1JalwbiJ1hQaZtZDNMxizt8rFiK1RtCmggUElOsIfk4XAF88jp41vhUU2QplYB-F7FCvjTWHT8Kk8eU_7jS6Ux9s5m6CxzzyMIo78Y-H8PlEeG8Ge_GW7NONcq9VHUfBoAYILXXkOYPAUT-EWWPjUTHnladjUwdrt55KIPs4oJw2x9Pk"
+    ],
+    "coupons": []
+  }
+]

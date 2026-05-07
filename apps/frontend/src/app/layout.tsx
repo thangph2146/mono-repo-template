@@ -1,0 +1,49 @@
+import type { Metadata } from "next";
+import { Roboto, Roboto_Mono } from "next/font/google";
+import "./globals.css";
+import { Header } from "@/components/shared/header";
+import { Footer } from "@/components/shared/footer";
+import { ThemeProvider } from "@/components/shared/theme-provider";
+import { TextSizeProvider } from "@/components/shared/text-size-provider";
+
+const roboto = Roboto({
+  variable: "--font-roboto",
+  subsets: ["latin", "vietnamese"],
+  weight: ["400", "500", "700"],
+  display: "swap",
+});
+
+const robotoMono = Roboto_Mono({
+  variable: "--font-roboto-mono",
+  subsets: ["latin"],
+  weight: ["400"],
+  display: "swap",
+});
+
+export const metadata: Metadata = {
+  title: "StoreSync B2B | Hệ thống Quản lý Đại lý",
+  description: "Giải pháp nhập hàng sỉ và quản lý kho bãi hiện đại cho cửa hàng tiện lợi.",
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html
+      lang="en"
+      className={`${roboto.variable} ${robotoMono.variable} h-full antialiased`}
+    >
+      <body className="min-h-full flex flex-col bg-background text-foreground" suppressHydrationWarning>
+        <ThemeProvider>
+          <TextSizeProvider>
+            <Header />
+            <main className="flex-1">{children}</main>
+            <Footer />
+          </TextSizeProvider>
+        </ThemeProvider>
+      </body>
+    </html>
+  );
+}

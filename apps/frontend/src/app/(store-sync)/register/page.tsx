@@ -1,0 +1,94 @@
+"use client";
+
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Store, Phone, Lock, User, MapPin } from "lucide-react";
+import { Container, Page, PageContent } from "@/components/shared/layout";
+import { toast } from "sonner";
+
+export default function RegisterPage() {
+  return (
+    <Page>
+      <PageContent className="px-0 md:px-0 py-8 md:py-10 space-y-0">
+        <section>
+          <Container max="8xl" className="px-4 md:px-8">
+            <div className="w-full min-h-[calc(100vh-220px)] py-6 md:py-10 grid place-items-center">
+              <Card className="w-[min(100%,28rem)] min-w-[22rem] border-border shadow-level-2">
+                <CardHeader className="space-y-2 text-center pb-6">
+                  <div className="mx-auto bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mb-2">
+                    <Store className="text-primary w-8 h-8" />
+                  </div>
+                  <CardTitle className="text-3xl font-bold text-foreground">Đăng ký Đại lý</CardTitle>
+                  <CardDescription className="text-base text-muted-foreground">
+                    Tạo tài khoản để nhận báo giá sỉ và ưu đãi nhập hàng
+                  </CardDescription>
+                </CardHeader>
+
+                <CardContent className="space-y-4">
+                  <div className="space-y-3">
+                    <Label htmlFor="store-name" className="text-sm font-medium">Tên Cửa hàng / Đại lý *</Label>
+                    <div className="relative">
+                      <Store className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                      <Input id="store-name" type="text" placeholder="VD: Tạp hóa cô Ba" className="pl-10 h-12" />
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <Label htmlFor="reg-phone" className="text-sm font-medium">Số điện thoại liên hệ *</Label>
+                    <div className="relative">
+                      <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                      <Input id="reg-phone" type="tel" placeholder="0912..." className="pl-10 h-12" />
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <Label htmlFor="address" className="text-sm font-medium">Địa chỉ Cửa hàng *</Label>
+                    <div className="relative">
+                      <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                      <Input id="address" type="text" placeholder="Số nhà, Đường, Quận..." className="pl-10 h-12" />
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <Label htmlFor="reg-username" className="text-sm font-medium">Tên đăng nhập mong muốn *</Label>
+                    <div className="relative">
+                      <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                      <Input id="reg-username" type="text" placeholder="Nhập tên đăng nhập" className="pl-10 h-12" />
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <Label htmlFor="reg-password" className="text-sm font-medium">Mật khẩu *</Label>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                      <Input id="reg-password" type="password" placeholder="Tạo mật khẩu an toàn" className="pl-10 h-12" />
+                    </div>
+                  </div>
+
+                  <Button
+                    className="w-full h-12 text-base font-bold mt-2"
+                    variant="secondary"
+                    size="lg"
+                    onClick={() => toast.success("Đã gửi yêu cầu đăng ký. Bộ phận CSKH sẽ liên hệ sớm.")}
+                  >
+                    Gửi Yêu cầu Đăng ký
+                  </Button>
+
+                  <p className="text-sm text-center text-muted-foreground">
+                    Đã có tài khoản?{" "}
+                    <Link href="/login" className="text-primary font-semibold hover:underline">
+                      Đăng nhập
+                    </Link>
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+          </Container>
+        </section>
+      </PageContent>
+    </Page>
+  );
+}

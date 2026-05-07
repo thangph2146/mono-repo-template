@@ -1,0 +1,52 @@
+[
+  {
+    "id": "ACC-ADMIN-001",
+    "username": "admin",
+    "password": "admin123",
+    "role": "admin",
+    "displayName": "Quản trị hệ thống",
+    "phone": "0909000001",
+    "ownerName": "Nguyễn Thành Admin",
+    "storeName": "Văn phòng điều hành StoreSync",
+    "address": "285 Cách Mạng Tháng 8, Quận 10, TP.HCM",
+    "mapQuery": "285 Cách Mạng Tháng 8, Quận 10, TP.HCM",
+    "quickAddresses": [
+      "285 Cách Mạng Tháng 8, Quận 10, TP.HCM",
+      "12 Nguyễn Huệ, Quận 1, TP.HCM"
+    ]
+  },
+  {
+    "id": "ACC-STORE-001",
+    "username": "cuahangso1",
+    "password": "store123",
+    "role": "store",
+    "displayName": "Tạp hóa Số 1",
+    "phone": "0912000001",
+    "ownerName": "Trần Thị Mai",
+    "storeName": "Tạp hóa Số 1",
+    "address": "45 Lê Văn Sỹ, Phường 12, Quận 3, TP.HCM",
+    "mapQuery": "45 Lê Văn Sỹ, Phường 12, Quận 3, TP.HCM",
+    "quickAddresses": [
+      "45 Lê Văn Sỹ, Phường 12, Quận 3, TP.HCM",
+      "88 Trần Hưng Đạo, Quận 1, TP.HCM",
+      "102 Nguyễn Ảnh Thủ, Quận 12, TP.HCM"
+    ]
+  },
+  {
+    "id": "ACC-STORE-002",
+    "username": "minimarthoamai",
+    "password": "store123",
+    "role": "store",
+    "displayName": "Minimart Hoa Mai",
+    "phone": "0912000002",
+    "ownerName": "Lê Hoàng Anh",
+    "storeName": "Minimart Hoa Mai",
+    "address": "128 Nguyễn Thị Minh Khai, Quận 3, TP.HCM",
+    "mapQuery": "128 Nguyễn Thị Minh Khai, Quận 3, TP.HCM",
+    "quickAddresses": [
+      "128 Nguyễn Thị Minh Khai, Quận 3, TP.HCM",
+      "70 Quang Trung, Gò Vấp, TP.HCM",
+      "22 Lý Tự Trọng, Quận 1, TP.HCM"
+    ]
+  }
+]

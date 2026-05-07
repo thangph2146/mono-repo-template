@@ -1,0 +1,50 @@
+[
+  {
+    "id": "ORD-0899",
+    "date": "05/05/2026 14:30",
+    "status": "Đang giao hàng",
+    "eta": "Trong hôm nay (17:00 - 19:00)",
+    "total": "1.975.000đ",
+    "address": "Tạp hóa Số 1, Quận 1, TP.HCM",
+    "items": [
+      { "productId": "PROD-001", "qty": 5, "unitType": "thùng", "unitLabel": "Thùng (24 lon)", "purchaseType": "si", "price": "925.000đ" },
+      { "productId": "PROD-002", "qty": 10, "unitType": "thùng", "unitLabel": "Thùng (30 gói)", "purchaseType": "si", "price": "1.050.000đ" }
+    ]
+  },
+  {
+    "id": "ORD-0850",
+    "date": "01/05/2026 10:15",
+    "status": "Đã hoàn thành",
+    "eta": "Đã giao thành công",
+    "total": "5.400.000đ",
+    "address": "Minimart Hoa Mai, Quận 3, TP.HCM",
+    "items": [
+      { "productId": "PROD-003", "qty": 12, "unitType": "lốc", "unitLabel": "Lốc (4 hộp)", "purchaseType": "si", "price": "3.420.000đ" },
+      { "productId": "PROD-004", "qty": 4, "unitType": "thùng", "unitLabel": "Thùng (12 chai)", "purchaseType": "si", "price": "1.980.000đ" }
+    ]
+  },
+  {
+    "id": "ORD-0812",
+    "date": "15/04/2026 16:45",
+    "status": "Đã hoàn thành",
+    "eta": "Đã giao thành công",
+    "total": "8.200.000đ",
+    "address": "Đại lý Cấp 2 - Bình Tân, TP.HCM",
+    "items": [
+      { "productId": "PROD-002", "qty": 40, "unitType": "thùng", "unitLabel": "Thùng (30 gói)", "purchaseType": "si", "price": "4.400.000đ" },
+      { "productId": "PROD-004", "qty": 7, "unitType": "thùng", "unitLabel": "Thùng (12 chai)", "purchaseType": "si", "price": "3.800.000đ" }
+    ]
+  },
+  {
+    "id": "ORD-0798",
+    "date": "10/04/2026 09:00",
+    "status": "Đã hủy giao",
+    "eta": "Đơn đã bị hủy",
+    "total": "2.600.000đ",
+    "address": "Tạp hóa Số 1, Quận 1, TP.HCM",
+    "items": [
+      { "productId": "PROD-001", "qty": 8, "unitType": "thùng", "unitLabel": "Thùng (24 lon)", "purchaseType": "si", "price": "1.480.000đ" },
+      { "productId": "PROD-003", "qty": 4, "unitType": "lốc", "unitLabel": "Lốc (4 hộp)", "purchaseType": "si", "price": "1.120.000đ" }
+    ]
+  }
+]

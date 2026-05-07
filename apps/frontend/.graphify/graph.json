@@ -1,0 +1,2849 @@
+{
+  "nodes": [
+    {
+      "id": "dir_src",
+      "label": "src/",
+      "path": "src",
+      "color": "#ff9d00",
+      "size": 28,
+      "community": "root",
+      "type": "directory"
+    },
+    {
+      "id": "dir_src_app",
+      "label": "app/",
+      "path": "src/app",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "dir_src_app__store_sync_",
+      "label": "(store-sync)",
+      "path": "src/app/(store-sync)",
+      "color": "#888800",
+      "size": 15,
+      "community": "src/app",
+      "type": "route-group"
+    },
+    {
+      "id": "dir_src_app__store_sync__catalog",
+      "label": "catalog/",
+      "path": "src/app/(store-sync)/catalog",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app/(store-sync)",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_app__store_sync__catalog_page_tsx",
+      "label": "page.tsx",
+      "path": "src/app/(store-sync)/catalog/page.tsx",
+      "color": "#00ff41",
+      "size": 14,
+      "community": "src/app/(store-sync)/catalog",
+      "type": "page",
+      "client": true
+    },
+    {
+      "id": "dir_src_app__store_sync__catalog__productid_",
+      "label": "[productId]/",
+      "path": "src/app/(store-sync)/catalog/[productId]",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app/(store-sync)/catalog",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_app__store_sync__catalog__productid__page_tsx",
+      "label": "page.tsx",
+      "path": "src/app/(store-sync)/catalog/[productId]/page.tsx",
+      "color": "#00ff41",
+      "size": 14,
+      "community": "src/app/(store-sync)/catalog/[productId]",
+      "type": "page",
+      "client": true
+    },
+    {
+      "id": "dir_src_app__store_sync__checkout",
+      "label": "checkout/",
+      "path": "src/app/(store-sync)/checkout",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app/(store-sync)",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_app__store_sync__checkout_page_tsx",
+      "label": "page.tsx",
+      "path": "src/app/(store-sync)/checkout/page.tsx",
+      "color": "#00ff41",
+      "size": 14,
+      "community": "src/app/(store-sync)/checkout",
+      "type": "page",
+      "client": true
+    },
+    {
+      "id": "dir_src_app__store_sync__dashboard",
+      "label": "dashboard/",
+      "path": "src/app/(store-sync)/dashboard",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app/(store-sync)",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_app__store_sync__dashboard_page_tsx",
+      "label": "page.tsx",
+      "path": "src/app/(store-sync)/dashboard/page.tsx",
+      "color": "#00ff41",
+      "size": 14,
+      "community": "src/app/(store-sync)/dashboard",
+      "type": "page",
+      "client": false
+    },
+    {
+      "id": "dir_src_app__store_sync__help",
+      "label": "help/",
+      "path": "src/app/(store-sync)/help",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app/(store-sync)",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_app__store_sync__help_page_tsx",
+      "label": "page.tsx",
+      "path": "src/app/(store-sync)/help/page.tsx",
+      "color": "#00ff41",
+      "size": 14,
+      "community": "src/app/(store-sync)/help",
+      "type": "page",
+      "client": false
+    },
+    {
+      "id": "dir_src_app__store_sync__login",
+      "label": "login/",
+      "path": "src/app/(store-sync)/login",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app/(store-sync)",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_app__store_sync__login_page_tsx",
+      "label": "page.tsx",
+      "path": "src/app/(store-sync)/login/page.tsx",
+      "color": "#00ff41",
+      "size": 14,
+      "community": "src/app/(store-sync)/login",
+      "type": "page",
+      "client": true
+    },
+    {
+      "id": "dir_src_app__store_sync__orders",
+      "label": "orders/",
+      "path": "src/app/(store-sync)/orders",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app/(store-sync)",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_app__store_sync__orders_page_tsx",
+      "label": "page.tsx",
+      "path": "src/app/(store-sync)/orders/page.tsx",
+      "color": "#00ff41",
+      "size": 14,
+      "community": "src/app/(store-sync)/orders",
+      "type": "page",
+      "client": true
+    },
+    {
+      "id": "dir_src_app__store_sync__orders__orderid_",
+      "label": "[orderId]/",
+      "path": "src/app/(store-sync)/orders/[orderId]",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app/(store-sync)/orders",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_app__store_sync__orders__orderid__page_tsx",
+      "label": "page.tsx",
+      "path": "src/app/(store-sync)/orders/[orderId]/page.tsx",
+      "color": "#00ff41",
+      "size": 14,
+      "community": "src/app/(store-sync)/orders/[orderId]",
+      "type": "page",
+      "client": true
+    },
+    {
+      "id": "dir_src_app__store_sync__privacy",
+      "label": "privacy/",
+      "path": "src/app/(store-sync)/privacy",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app/(store-sync)",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_app__store_sync__privacy_page_tsx",
+      "label": "page.tsx",
+      "path": "src/app/(store-sync)/privacy/page.tsx",
+      "color": "#00ff41",
+      "size": 14,
+      "community": "src/app/(store-sync)/privacy",
+      "type": "page",
+      "client": false
+    },
+    {
+      "id": "dir_src_app__store_sync__profile",
+      "label": "profile/",
+      "path": "src/app/(store-sync)/profile",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app/(store-sync)",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_app__store_sync__profile_page_tsx",
+      "label": "page.tsx",
+      "path": "src/app/(store-sync)/profile/page.tsx",
+      "color": "#00ff41",
+      "size": 14,
+      "community": "src/app/(store-sync)/profile",
+      "type": "page",
+      "client": true
+    },
+    {
+      "id": "dir_src_app__store_sync__register",
+      "label": "register/",
+      "path": "src/app/(store-sync)/register",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app/(store-sync)",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_app__store_sync__register_page_tsx",
+      "label": "page.tsx",
+      "path": "src/app/(store-sync)/register/page.tsx",
+      "color": "#00ff41",
+      "size": 14,
+      "community": "src/app/(store-sync)/register",
+      "type": "page",
+      "client": true
+    },
+    {
+      "id": "dir_src_app__store_sync__support",
+      "label": "support/",
+      "path": "src/app/(store-sync)/support",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app/(store-sync)",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_app__store_sync__support_page_tsx",
+      "label": "page.tsx",
+      "path": "src/app/(store-sync)/support/page.tsx",
+      "color": "#00ff41",
+      "size": 14,
+      "community": "src/app/(store-sync)/support",
+      "type": "page",
+      "client": false
+    },
+    {
+      "id": "dir_src_app__store_sync__terms",
+      "label": "terms/",
+      "path": "src/app/(store-sync)/terms",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app/(store-sync)",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_app__store_sync__terms_page_tsx",
+      "label": "page.tsx",
+      "path": "src/app/(store-sync)/terms/page.tsx",
+      "color": "#00ff41",
+      "size": 14,
+      "community": "src/app/(store-sync)/terms",
+      "type": "page",
+      "client": false
+    },
+    {
+      "id": "dir_src_app_admin",
+      "label": "admin/",
+      "path": "src/app/admin",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app",
+      "type": "directory"
+    },
+    {
+      "id": "dir_src_app_admin_inventory",
+      "label": "inventory/",
+      "path": "src/app/admin/inventory",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app/admin",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_app_admin_inventory_page_tsx",
+      "label": "page.tsx",
+      "path": "src/app/admin/inventory/page.tsx",
+      "color": "#00ff41",
+      "size": 14,
+      "community": "src/app/admin/inventory",
+      "type": "page",
+      "client": true
+    },
+    {
+      "id": "file_src_app_admin_layout_tsx",
+      "label": "layout.tsx",
+      "path": "src/app/admin/layout.tsx",
+      "color": "#ff6b35",
+      "size": 20,
+      "community": "src/app/admin",
+      "type": "layout",
+      "client": false
+    },
+    {
+      "id": "dir_src_app_admin_locations",
+      "label": "locations/",
+      "path": "src/app/admin/locations",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app/admin",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_app_admin_locations_page_tsx",
+      "label": "page.tsx",
+      "path": "src/app/admin/locations/page.tsx",
+      "color": "#00ff41",
+      "size": 14,
+      "community": "src/app/admin/locations",
+      "type": "page",
+      "client": true
+    },
+    {
+      "id": "dir_src_app_admin_orders",
+      "label": "orders/",
+      "path": "src/app/admin/orders",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app/admin",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_app_admin_orders_page_tsx",
+      "label": "page.tsx",
+      "path": "src/app/admin/orders/page.tsx",
+      "color": "#00ff41",
+      "size": 14,
+      "community": "src/app/admin/orders",
+      "type": "page",
+      "client": true
+    },
+    {
+      "id": "dir_src_app_api",
+      "label": "api/",
+      "path": "src/app/api",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app",
+      "type": "directory"
+    },
+    {
+      "id": "dir_src_app_api_graphify",
+      "label": "graphify/",
+      "path": "src/app/api/graphify",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app/api",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_app_api_graphify_route_ts",
+      "label": "route.ts",
+      "path": "src/app/api/graphify/route.ts",
+      "color": "#00ccff",
+      "size": 12,
+      "community": "src/app/api/graphify",
+      "type": "api-route",
+      "client": false
+    },
+    {
+      "id": "file_src_app_globals_css",
+      "label": "globals.css",
+      "path": "src/app/globals.css",
+      "color": "#888888",
+      "size": 8,
+      "community": "src/app",
+      "type": "styles",
+      "client": false
+    },
+    {
+      "id": "dir_src_app_graph",
+      "label": "graph/",
+      "path": "src/app/graph",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_app_graph_page_tsx",
+      "label": "page.tsx",
+      "path": "src/app/graph/page.tsx",
+      "color": "#00ff41",
+      "size": 14,
+      "community": "src/app/graph",
+      "type": "page",
+      "client": true
+    },
+    {
+      "id": "file_src_app_layout_tsx",
+      "label": "layout.tsx",
+      "path": "src/app/layout.tsx",
+      "color": "#ff6b35",
+      "size": 20,
+      "community": "src/app",
+      "type": "layout",
+      "client": false
+    },
+    {
+      "id": "file_src_app_page_tsx",
+      "label": "page.tsx",
+      "path": "src/app/page.tsx",
+      "color": "#00ff41",
+      "size": 14,
+      "community": "src/app",
+      "type": "page",
+      "client": true
+    },
+    {
+      "id": "dir_src_components",
+      "label": "components/",
+      "path": "src/components",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "dir_src_components_graphify",
+      "label": "graphify/",
+      "path": "src/components/graphify",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/components",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_components_graphify_force_graph_3d_tsx",
+      "label": "force-graph-3d.tsx",
+      "path": "src/components/graphify/force-graph-3d.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/components/graphify",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "dir_src_components_shared",
+      "label": "shared/",
+      "path": "src/components/shared",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/components",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_components_shared_footer_tsx",
+      "label": "footer.tsx",
+      "path": "src/components/shared/footer.tsx",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/components/shared",
+      "type": "tsx",
+      "client": false
+    },
+    {
+      "id": "file_src_components_shared_header_tsx",
+      "label": "header.tsx",
+      "path": "src/components/shared/header.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/components/shared",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_components_shared_layout_tsx",
+      "label": "layout.tsx",
+      "path": "src/components/shared/layout.tsx",
+      "color": "#ff6b35",
+      "size": 20,
+      "community": "src/components/shared",
+      "type": "layout",
+      "client": false
+    },
+    {
+      "id": "file_src_components_shared_order_status_table_tsx",
+      "label": "order-status-table.tsx",
+      "path": "src/components/shared/order-status-table.tsx",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/components/shared",
+      "type": "tsx",
+      "client": false
+    },
+    {
+      "id": "file_src_components_shared_product_card_tsx",
+      "label": "product-card.tsx",
+      "path": "src/components/shared/product-card.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/components/shared",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_components_shared_product_detail_tsx",
+      "label": "product-detail.tsx",
+      "path": "src/components/shared/product-detail.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/components/shared",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_components_shared_product_wide_card_tsx",
+      "label": "product-wide-card.tsx",
+      "path": "src/components/shared/product-wide-card.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/components/shared",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_components_shared_shell_tsx",
+      "label": "shell.tsx",
+      "path": "src/components/shared/shell.tsx",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/components/shared",
+      "type": "tsx",
+      "client": false
+    },
+    {
+      "id": "file_src_components_shared_text_size_provider_tsx",
+      "label": "text-size-provider.tsx",
+      "path": "src/components/shared/text-size-provider.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/components/shared",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_components_shared_text_size_toggle_tsx",
+      "label": "text-size-toggle.tsx",
+      "path": "src/components/shared/text-size-toggle.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/components/shared",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_components_shared_theme_provider_tsx",
+      "label": "theme-provider.tsx",
+      "path": "src/components/shared/theme-provider.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/components/shared",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_components_shared_theme_toggle_tsx",
+      "label": "theme-toggle.tsx",
+      "path": "src/components/shared/theme-toggle.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/components/shared",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_components_shared_typography_tsx",
+      "label": "typography.tsx",
+      "path": "src/components/shared/typography.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/components/shared",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "dir_src_components_ui",
+      "label": "ui/",
+      "path": "src/components/ui",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/components",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_components_ui_accordion_tsx",
+      "label": "accordion.tsx",
+      "path": "src/components/ui/accordion.tsx",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/components/ui",
+      "type": "tsx",
+      "client": false
+    },
+    {
+      "id": "file_src_components_ui_alert_dialog_tsx",
+      "label": "alert-dialog.tsx",
+      "path": "src/components/ui/alert-dialog.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/components/ui",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_components_ui_alert_tsx",
+      "label": "alert.tsx",
+      "path": "src/components/ui/alert.tsx",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/components/ui",
+      "type": "tsx",
+      "client": false
+    },
+    {
+      "id": "file_src_components_ui_avatar_tsx",
+      "label": "avatar.tsx",
+      "path": "src/components/ui/avatar.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/components/ui",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_components_ui_badge_tsx",
+      "label": "badge.tsx",
+      "path": "src/components/ui/badge.tsx",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/components/ui",
+      "type": "tsx",
+      "client": false
+    },
+    {
+      "id": "file_src_components_ui_breadcrumb_tsx",
+      "label": "breadcrumb.tsx",
+      "path": "src/components/ui/breadcrumb.tsx",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/components/ui",
+      "type": "tsx",
+      "client": false
+    },
+    {
+      "id": "file_src_components_ui_button_tsx",
+      "label": "button.tsx",
+      "path": "src/components/ui/button.tsx",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/components/ui",
+      "type": "tsx",
+      "client": false
+    },
+    {
+      "id": "file_src_components_ui_calendar_tsx",
+      "label": "calendar.tsx",
+      "path": "src/components/ui/calendar.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/components/ui",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_components_ui_card_tsx",
+      "label": "card.tsx",
+      "path": "src/components/ui/card.tsx",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/components/ui",
+      "type": "tsx",
+      "client": false
+    },
+    {
+      "id": "file_src_components_ui_chart_tsx",
+      "label": "chart.tsx",
+      "path": "src/components/ui/chart.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/components/ui",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_components_ui_checkbox_tsx",
+      "label": "checkbox.tsx",
+      "path": "src/components/ui/checkbox.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/components/ui",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_components_ui_collapsible_tsx",
+      "label": "collapsible.tsx",
+      "path": "src/components/ui/collapsible.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/components/ui",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_components_ui_combobox_tsx",
+      "label": "combobox.tsx",
+      "path": "src/components/ui/combobox.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/components/ui",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_components_ui_command_tsx",
+      "label": "command.tsx",
+      "path": "src/components/ui/command.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/components/ui",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_components_ui_context_menu_tsx",
+      "label": "context-menu.tsx",
+      "path": "src/components/ui/context-menu.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/components/ui",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_components_ui_dialog_tsx",
+      "label": "dialog.tsx",
+      "path": "src/components/ui/dialog.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/components/ui",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_components_ui_drawer_tsx",
+      "label": "drawer.tsx",
+      "path": "src/components/ui/drawer.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/components/ui",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_components_ui_dropdown_menu_tsx",
+      "label": "dropdown-menu.tsx",
+      "path": "src/components/ui/dropdown-menu.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/components/ui",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_components_ui_empty_tsx",
+      "label": "empty.tsx",
+      "path": "src/components/ui/empty.tsx",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/components/ui",
+      "type": "tsx",
+      "client": false
+    },
+    {
+      "id": "file_src_components_ui_field_tsx",
+      "label": "field.tsx",
+      "path": "src/components/ui/field.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/components/ui",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_components_ui_hover_card_tsx",
+      "label": "hover-card.tsx",
+      "path": "src/components/ui/hover-card.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/components/ui",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_components_ui_input_group_tsx",
+      "label": "input-group.tsx",
+      "path": "src/components/ui/input-group.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/components/ui",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_components_ui_input_otp_tsx",
+      "label": "input-otp.tsx",
+      "path": "src/components/ui/input-otp.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/components/ui",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_components_ui_input_tsx",
+      "label": "input.tsx",
+      "path": "src/components/ui/input.tsx",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/components/ui",
+      "type": "tsx",
+      "client": false
+    },
+    {
+      "id": "file_src_components_ui_label_tsx",
+      "label": "label.tsx",
+      "path": "src/components/ui/label.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/components/ui",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_components_ui_menubar_tsx",
+      "label": "menubar.tsx",
+      "path": "src/components/ui/menubar.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/components/ui",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_components_ui_native_select_tsx",
+      "label": "native-select.tsx",
+      "path": "src/components/ui/native-select.tsx",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/components/ui",
+      "type": "tsx",
+      "client": false
+    },
+    {
+      "id": "file_src_components_ui_navigation_menu_tsx",
+      "label": "navigation-menu.tsx",
+      "path": "src/components/ui/navigation-menu.tsx",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/components/ui",
+      "type": "tsx",
+      "client": false
+    },
+    {
+      "id": "file_src_components_ui_pagination_tsx",
+      "label": "pagination.tsx",
+      "path": "src/components/ui/pagination.tsx",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/components/ui",
+      "type": "tsx",
+      "client": false
+    },
+    {
+      "id": "file_src_components_ui_popover_tsx",
+      "label": "popover.tsx",
+      "path": "src/components/ui/popover.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/components/ui",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_components_ui_radio_group_tsx",
+      "label": "radio-group.tsx",
+      "path": "src/components/ui/radio-group.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/components/ui",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_components_ui_resizable_tsx",
+      "label": "resizable.tsx",
+      "path": "src/components/ui/resizable.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/components/ui",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_components_ui_scroll_area_native_tsx",
+      "label": "scroll-area-native.tsx",
+      "path": "src/components/ui/scroll-area-native.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/components/ui",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_components_ui_scroll_area_tsx",
+      "label": "scroll-area.tsx",
+      "path": "src/components/ui/scroll-area.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/components/ui",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_components_ui_select_tsx",
+      "label": "select.tsx",
+      "path": "src/components/ui/select.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/components/ui",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_components_ui_separator_tsx",
+      "label": "separator.tsx",
+      "path": "src/components/ui/separator.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/components/ui",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_components_ui_sheet_tsx",
+      "label": "sheet.tsx",
+      "path": "src/components/ui/sheet.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/components/ui",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_components_ui_sidebar_tsx",
+      "label": "sidebar.tsx",
+      "path": "src/components/ui/sidebar.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/components/ui",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_components_ui_skeleton_tsx",
+      "label": "skeleton.tsx",
+      "path": "src/components/ui/skeleton.tsx",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/components/ui",
+      "type": "tsx",
+      "client": false
+    },
+    {
+      "id": "file_src_components_ui_slider_tsx",
+      "label": "slider.tsx",
+      "path": "src/components/ui/slider.tsx",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/components/ui",
+      "type": "tsx",
+      "client": false
+    },
+    {
+      "id": "file_src_components_ui_sonner_tsx",
+      "label": "sonner.tsx",
+      "path": "src/components/ui/sonner.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/components/ui",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_components_ui_switch_tsx",
+      "label": "switch.tsx",
+      "path": "src/components/ui/switch.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/components/ui",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_components_ui_table_tsx",
+      "label": "table.tsx",
+      "path": "src/components/ui/table.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/components/ui",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_components_ui_tabs_tsx",
+      "label": "tabs.tsx",
+      "path": "src/components/ui/tabs.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/components/ui",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_components_ui_textarea_tsx",
+      "label": "textarea.tsx",
+      "path": "src/components/ui/textarea.tsx",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/components/ui",
+      "type": "tsx",
+      "client": false
+    },
+    {
+      "id": "file_src_components_ui_toggle_group_tsx",
+      "label": "toggle-group.tsx",
+      "path": "src/components/ui/toggle-group.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/components/ui",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_components_ui_toggle_tsx",
+      "label": "toggle.tsx",
+      "path": "src/components/ui/toggle.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/components/ui",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_components_ui_tooltip_tsx",
+      "label": "tooltip.tsx",
+      "path": "src/components/ui/tooltip.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/components/ui",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "dir_src_data",
+      "label": "data/",
+      "path": "src/data",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_data_accounts_json",
+      "label": "accounts.json",
+      "path": "src/data/accounts.json",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/data",
+      "type": "json",
+      "client": false
+    },
+    {
+      "id": "file_src_data_order_tracking_json",
+      "label": "order-tracking.json",
+      "path": "src/data/order-tracking.json",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/data",
+      "type": "json",
+      "client": false
+    },
+    {
+      "id": "file_src_data_products_json",
+      "label": "products.json",
+      "path": "src/data/products.json",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/data",
+      "type": "json",
+      "client": false
+    },
+    {
+      "id": "dir_src_hooks",
+      "label": "hooks/",
+      "path": "src/hooks",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_hooks_use_graphify_ts",
+      "label": "use-graphify.ts",
+      "path": "src/hooks/use-graphify.ts",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/hooks",
+      "type": "ts",
+      "client": true
+    },
+    {
+      "id": "file_src_hooks_use_mobile_ts",
+      "label": "use-mobile.ts",
+      "path": "src/hooks/use-mobile.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/hooks",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_hooks_usetodos_ts",
+      "label": "useTodos.ts",
+      "path": "src/hooks/useTodos.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/hooks",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_lib",
+      "label": "lib/",
+      "path": "src/lib",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_lib_graphify_context_ts",
+      "label": "graphify-context.ts",
+      "path": "src/lib/graphify-context.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/lib",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_lib_storage_ts",
+      "label": "storage.ts",
+      "path": "src/lib/storage.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/lib",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_lib_utils_ts",
+      "label": "utils.ts",
+      "path": "src/lib/utils.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/lib",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_types",
+      "label": "types/",
+      "path": "src/types",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_types_todo_ts",
+      "label": "todo.ts",
+      "path": "src/types/todo.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/types",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_public",
+      "label": "public/",
+      "path": "public",
+      "color": "#ff9d00",
+      "size": 28,
+      "community": "root",
+      "type": "directory"
+    }
+  ],
+  "links": [
+    {
+      "source": "dir_src",
+      "target": "dir_src_app",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app",
+      "target": "dir_src_app__store_sync_",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app__store_sync_",
+      "target": "dir_src_app__store_sync__catalog",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app__store_sync__catalog",
+      "target": "file_src_app__store_sync__catalog_page_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app__store_sync__catalog",
+      "target": "dir_src_app__store_sync__catalog__productid_",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app__store_sync__catalog__productid_",
+      "target": "file_src_app__store_sync__catalog__productid__page_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app__store_sync_",
+      "target": "dir_src_app__store_sync__checkout",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app__store_sync__checkout",
+      "target": "file_src_app__store_sync__checkout_page_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app__store_sync_",
+      "target": "dir_src_app__store_sync__dashboard",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app__store_sync__dashboard",
+      "target": "file_src_app__store_sync__dashboard_page_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app__store_sync_",
+      "target": "dir_src_app__store_sync__help",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app__store_sync__help",
+      "target": "file_src_app__store_sync__help_page_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app__store_sync_",
+      "target": "dir_src_app__store_sync__login",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app__store_sync__login",
+      "target": "file_src_app__store_sync__login_page_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app__store_sync_",
+      "target": "dir_src_app__store_sync__orders",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app__store_sync__orders",
+      "target": "file_src_app__store_sync__orders_page_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app__store_sync__orders",
+      "target": "dir_src_app__store_sync__orders__orderid_",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app__store_sync__orders__orderid_",
+      "target": "file_src_app__store_sync__orders__orderid__page_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app__store_sync_",
+      "target": "dir_src_app__store_sync__privacy",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app__store_sync__privacy",
+      "target": "file_src_app__store_sync__privacy_page_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app__store_sync_",
+      "target": "dir_src_app__store_sync__profile",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app__store_sync__profile",
+      "target": "file_src_app__store_sync__profile_page_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app__store_sync_",
+      "target": "dir_src_app__store_sync__register",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app__store_sync__register",
+      "target": "file_src_app__store_sync__register_page_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app__store_sync_",
+      "target": "dir_src_app__store_sync__support",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app__store_sync__support",
+      "target": "file_src_app__store_sync__support_page_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app__store_sync_",
+      "target": "dir_src_app__store_sync__terms",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app__store_sync__terms",
+      "target": "file_src_app__store_sync__terms_page_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app",
+      "target": "dir_src_app_admin",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_admin",
+      "target": "dir_src_app_admin_inventory",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_admin_inventory",
+      "target": "file_src_app_admin_inventory_page_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_admin",
+      "target": "file_src_app_admin_layout_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_admin",
+      "target": "dir_src_app_admin_locations",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_admin_locations",
+      "target": "file_src_app_admin_locations_page_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_admin",
+      "target": "dir_src_app_admin_orders",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_admin_orders",
+      "target": "file_src_app_admin_orders_page_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app",
+      "target": "dir_src_app_api",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_api",
+      "target": "dir_src_app_api_graphify",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_api_graphify",
+      "target": "file_src_app_api_graphify_route_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app",
+      "target": "file_src_app_globals_css",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app",
+      "target": "dir_src_app_graph",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_graph",
+      "target": "file_src_app_graph_page_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app",
+      "target": "file_src_app_layout_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app",
+      "target": "file_src_app_page_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_components",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components",
+      "target": "dir_src_components_graphify",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_graphify",
+      "target": "file_src_components_graphify_force_graph_3d_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components",
+      "target": "dir_src_components_shared",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_shared",
+      "target": "file_src_components_shared_footer_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_shared",
+      "target": "file_src_components_shared_header_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_shared",
+      "target": "file_src_components_shared_layout_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_shared",
+      "target": "file_src_components_shared_order_status_table_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_shared",
+      "target": "file_src_components_shared_product_card_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_shared",
+      "target": "file_src_components_shared_product_detail_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_shared",
+      "target": "file_src_components_shared_product_wide_card_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_shared",
+      "target": "file_src_components_shared_shell_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_shared",
+      "target": "file_src_components_shared_text_size_provider_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_shared",
+      "target": "file_src_components_shared_text_size_toggle_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_shared",
+      "target": "file_src_components_shared_theme_provider_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_shared",
+      "target": "file_src_components_shared_theme_toggle_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_shared",
+      "target": "file_src_components_shared_typography_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components",
+      "target": "dir_src_components_ui",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_ui",
+      "target": "file_src_components_ui_accordion_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_ui",
+      "target": "file_src_components_ui_alert_dialog_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_ui",
+      "target": "file_src_components_ui_alert_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_ui",
+      "target": "file_src_components_ui_avatar_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_ui",
+      "target": "file_src_components_ui_badge_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_ui",
+      "target": "file_src_components_ui_breadcrumb_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_ui",
+      "target": "file_src_components_ui_button_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_ui",
+      "target": "file_src_components_ui_calendar_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_ui",
+      "target": "file_src_components_ui_card_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_ui",
+      "target": "file_src_components_ui_chart_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_ui",
+      "target": "file_src_components_ui_checkbox_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_ui",
+      "target": "file_src_components_ui_collapsible_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_ui",
+      "target": "file_src_components_ui_combobox_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_ui",
+      "target": "file_src_components_ui_command_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_ui",
+      "target": "file_src_components_ui_context_menu_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_ui",
+      "target": "file_src_components_ui_dialog_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_ui",
+      "target": "file_src_components_ui_drawer_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_ui",
+      "target": "file_src_components_ui_dropdown_menu_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_ui",
+      "target": "file_src_components_ui_empty_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_ui",
+      "target": "file_src_components_ui_field_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_ui",
+      "target": "file_src_components_ui_hover_card_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_ui",
+      "target": "file_src_components_ui_input_group_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_ui",
+      "target": "file_src_components_ui_input_otp_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_ui",
+      "target": "file_src_components_ui_input_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_ui",
+      "target": "file_src_components_ui_label_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_ui",
+      "target": "file_src_components_ui_menubar_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_ui",
+      "target": "file_src_components_ui_native_select_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_ui",
+      "target": "file_src_components_ui_navigation_menu_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_ui",
+      "target": "file_src_components_ui_pagination_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_ui",
+      "target": "file_src_components_ui_popover_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_ui",
+      "target": "file_src_components_ui_radio_group_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_ui",
+      "target": "file_src_components_ui_resizable_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_ui",
+      "target": "file_src_components_ui_scroll_area_native_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_ui",
+      "target": "file_src_components_ui_scroll_area_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_ui",
+      "target": "file_src_components_ui_select_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_ui",
+      "target": "file_src_components_ui_separator_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_ui",
+      "target": "file_src_components_ui_sheet_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_ui",
+      "target": "file_src_components_ui_sidebar_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_ui",
+      "target": "file_src_components_ui_skeleton_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_ui",
+      "target": "file_src_components_ui_slider_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_ui",
+      "target": "file_src_components_ui_sonner_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_ui",
+      "target": "file_src_components_ui_switch_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_ui",
+      "target": "file_src_components_ui_table_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_ui",
+      "target": "file_src_components_ui_tabs_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_ui",
+      "target": "file_src_components_ui_textarea_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_ui",
+      "target": "file_src_components_ui_toggle_group_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_ui",
+      "target": "file_src_components_ui_toggle_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_ui",
+      "target": "file_src_components_ui_tooltip_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_data",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_data",
+      "target": "file_src_data_accounts_json",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_data",
+      "target": "file_src_data_order_tracking_json",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_data",
+      "target": "file_src_data_products_json",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_hooks",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_hooks",
+      "target": "file_src_hooks_use_graphify_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_hooks",
+      "target": "file_src_hooks_use_mobile_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_hooks",
+      "target": "file_src_hooks_usetodos_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_lib",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_lib",
+      "target": "file_src_lib_graphify_context_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_lib",
+      "target": "file_src_lib_storage_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_lib",
+      "target": "file_src_lib_utils_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_types",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_types",
+      "target": "file_src_types_todo_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "file_src_app_layout_tsx",
+      "target": "file_src_app_page_tsx",
+      "relation": "renders"
+    },
+    {
+      "source": "file_src_app__store_sync__catalog_page_tsx",
+      "target": "file_src_components_ui_button_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__store_sync__catalog_page_tsx",
+      "target": "file_src_components_ui_input_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__store_sync__catalog_page_tsx",
+      "target": "file_src_components_ui_badge_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__store_sync__catalog_page_tsx",
+      "target": "file_src_data_products_json",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__store_sync__catalog_page_tsx",
+      "target": "file_src_components_shared_layout_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__store_sync__catalog__productid__page_tsx",
+      "target": "file_src_data_products_json",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__store_sync__catalog__productid__page_tsx",
+      "target": "file_src_components_shared_layout_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__store_sync__catalog__productid__page_tsx",
+      "target": "file_src_components_shared_product_detail_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__store_sync__checkout_page_tsx",
+      "target": "file_src_components_ui_button_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__store_sync__checkout_page_tsx",
+      "target": "file_src_components_ui_card_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__store_sync__checkout_page_tsx",
+      "target": "file_src_components_ui_input_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__store_sync__checkout_page_tsx",
+      "target": "file_src_components_ui_badge_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__store_sync__checkout_page_tsx",
+      "target": "file_src_components_shared_layout_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__store_sync__dashboard_page_tsx",
+      "target": "file_src_components_ui_card_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__store_sync__dashboard_page_tsx",
+      "target": "file_src_components_ui_button_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__store_sync__dashboard_page_tsx",
+      "target": "file_src_components_shared_layout_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__store_sync__dashboard_page_tsx",
+      "target": "file_src_components_shared_order_status_table_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__store_sync__help_page_tsx",
+      "target": "file_src_components_ui_card_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__store_sync__help_page_tsx",
+      "target": "file_src_components_ui_button_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__store_sync__help_page_tsx",
+      "target": "file_src_components_shared_layout_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__store_sync__login_page_tsx",
+      "target": "file_src_components_ui_button_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__store_sync__login_page_tsx",
+      "target": "file_src_components_ui_input_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__store_sync__login_page_tsx",
+      "target": "file_src_components_ui_label_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__store_sync__login_page_tsx",
+      "target": "file_src_components_ui_card_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__store_sync__login_page_tsx",
+      "target": "file_src_components_shared_layout_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__store_sync__login_page_tsx",
+      "target": "file_src_data_accounts_json",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__store_sync__orders_page_tsx",
+      "target": "file_src_components_ui_button_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__store_sync__orders_page_tsx",
+      "target": "file_src_components_ui_badge_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__store_sync__orders_page_tsx",
+      "target": "file_src_components_ui_input_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__store_sync__orders_page_tsx",
+      "target": "file_src_components_shared_layout_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__store_sync__orders_page_tsx",
+      "target": "file_src_components_ui_dropdown_menu_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__store_sync__orders_page_tsx",
+      "target": "file_src_data_order_tracking_json",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__store_sync__orders_page_tsx",
+      "target": "file_src_data_products_json",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__store_sync__orders__orderid__page_tsx",
+      "target": "file_src_components_ui_badge_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__store_sync__orders__orderid__page_tsx",
+      "target": "file_src_components_ui_button_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__store_sync__orders__orderid__page_tsx",
+      "target": "file_src_components_ui_card_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__store_sync__orders__orderid__page_tsx",
+      "target": "file_src_data_order_tracking_json",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__store_sync__orders__orderid__page_tsx",
+      "target": "file_src_data_products_json",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__store_sync__orders__orderid__page_tsx",
+      "target": "file_src_components_shared_layout_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__store_sync__privacy_page_tsx",
+      "target": "file_src_components_ui_card_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__store_sync__privacy_page_tsx",
+      "target": "file_src_components_ui_button_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__store_sync__privacy_page_tsx",
+      "target": "file_src_components_shared_layout_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__store_sync__profile_page_tsx",
+      "target": "file_src_components_ui_button_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__store_sync__profile_page_tsx",
+      "target": "file_src_components_ui_card_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__store_sync__profile_page_tsx",
+      "target": "file_src_components_ui_badge_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__store_sync__profile_page_tsx",
+      "target": "file_src_components_shared_layout_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__store_sync__profile_page_tsx",
+      "target": "file_src_data_accounts_json",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__store_sync__register_page_tsx",
+      "target": "file_src_components_ui_button_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__store_sync__register_page_tsx",
+      "target": "file_src_components_ui_input_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__store_sync__register_page_tsx",
+      "target": "file_src_components_ui_label_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__store_sync__register_page_tsx",
+      "target": "file_src_components_ui_card_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__store_sync__register_page_tsx",
+      "target": "file_src_components_shared_layout_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__store_sync__support_page_tsx",
+      "target": "file_src_components_ui_card_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__store_sync__support_page_tsx",
+      "target": "file_src_components_ui_button_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__store_sync__support_page_tsx",
+      "target": "file_src_components_shared_layout_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__store_sync__terms_page_tsx",
+      "target": "file_src_components_ui_card_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__store_sync__terms_page_tsx",
+      "target": "file_src_components_ui_button_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__store_sync__terms_page_tsx",
+      "target": "file_src_components_shared_layout_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_admin_inventory_page_tsx",
+      "target": "file_src_components_ui_button_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_admin_inventory_page_tsx",
+      "target": "file_src_components_ui_input_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_admin_inventory_page_tsx",
+      "target": "file_src_components_ui_badge_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_admin_inventory_page_tsx",
+      "target": "file_src_components_ui_dialog_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_admin_inventory_page_tsx",
+      "target": "file_src_components_ui_label_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_admin_inventory_page_tsx",
+      "target": "file_src_components_ui_select_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_admin_layout_tsx",
+      "target": "file_src_components_ui_button_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_admin_locations_page_tsx",
+      "target": "file_src_components_ui_card_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_admin_locations_page_tsx",
+      "target": "file_src_components_ui_badge_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_admin_locations_page_tsx",
+      "target": "file_src_components_ui_skeleton_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_admin_orders_page_tsx",
+      "target": "file_src_components_ui_button_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_admin_orders_page_tsx",
+      "target": "file_src_components_ui_input_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_admin_orders_page_tsx",
+      "target": "file_src_components_ui_badge_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_admin_orders_page_tsx",
+      "target": "file_src_data_products_json",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_api_graphify_route_ts",
+      "target": "file_src_lib_graphify_context_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_graph_page_tsx",
+      "target": "file_src_hooks_use_graphify_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_graph_page_tsx",
+      "target": "file_src_components_ui_button_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_graph_page_tsx",
+      "target": "file_src_components_ui_input_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_graph_page_tsx",
+      "target": "file_src_components_ui_badge_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_graph_page_tsx",
+      "target": "file_src_components_ui_separator_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_graph_page_tsx",
+      "target": "file_src_components_ui_skeleton_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_graph_page_tsx",
+      "target": "file_src_components_ui_scroll_area_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_graph_page_tsx",
+      "target": "file_src_components_ui_collapsible_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_graph_page_tsx",
+      "target": "file_src_lib_graphify_context_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_graph_page_tsx",
+      "target": "file_src_components_shared_typography_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_graph_page_tsx",
+      "target": "file_src_components_graphify_force_graph_3d_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_graph_page_tsx",
+      "target": "dir_public",
+      "relation": "assets"
+    },
+    {
+      "source": "file_src_app_layout_tsx",
+      "target": "file_src_components_shared_header_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_layout_tsx",
+      "target": "file_src_components_shared_footer_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_layout_tsx",
+      "target": "file_src_components_shared_theme_provider_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_layout_tsx",
+      "target": "file_src_components_shared_text_size_provider_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_page_tsx",
+      "target": "file_src_components_shared_layout_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_page_tsx",
+      "target": "file_src_components_shared_typography_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_page_tsx",
+      "target": "file_src_components_ui_button_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_page_tsx",
+      "target": "file_src_components_shared_product_card_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_page_tsx",
+      "target": "file_src_components_shared_product_wide_card_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_graphify_force_graph_3d_tsx",
+      "target": "file_src_lib_graphify_context_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_shared_footer_tsx",
+      "target": "file_src_components_shared_typography_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_shared_footer_tsx",
+      "target": "dir_public",
+      "relation": "assets"
+    },
+    {
+      "source": "file_src_components_shared_header_tsx",
+      "target": "file_src_components_shared_theme_toggle_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_shared_header_tsx",
+      "target": "file_src_components_shared_text_size_toggle_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_shared_header_tsx",
+      "target": "file_src_components_ui_separator_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_shared_header_tsx",
+      "target": "file_src_components_ui_button_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_shared_header_tsx",
+      "target": "file_src_components_shared_typography_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_shared_header_tsx",
+      "target": "file_src_components_ui_dropdown_menu_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_shared_header_tsx",
+      "target": "dir_public",
+      "relation": "assets"
+    },
+    {
+      "source": "file_src_components_shared_layout_tsx",
+      "target": "file_src_lib_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_shared_order_status_table_tsx",
+      "target": "file_src_components_ui_card_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_shared_order_status_table_tsx",
+      "target": "file_src_components_ui_button_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_shared_order_status_table_tsx",
+      "target": "file_src_components_ui_table_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_shared_product_card_tsx",
+      "target": "file_src_components_ui_card_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_shared_product_card_tsx",
+      "target": "file_src_components_ui_badge_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_shared_product_card_tsx",
+      "target": "file_src_components_ui_button_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_shared_product_card_tsx",
+      "target": "file_src_components_shared_typography_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_shared_product_detail_tsx",
+      "target": "file_src_components_ui_badge_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_shared_product_detail_tsx",
+      "target": "file_src_components_ui_button_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_shared_product_detail_tsx",
+      "target": "file_src_components_ui_card_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_shared_product_detail_tsx",
+      "target": "file_src_lib_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_shared_product_wide_card_tsx",
+      "target": "file_src_components_shared_typography_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_shared_shell_tsx",
+      "target": "file_src_lib_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_shared_text_size_toggle_tsx",
+      "target": "file_src_components_shared_text_size_provider_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_shared_text_size_toggle_tsx",
+      "target": "file_src_components_ui_button_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_shared_text_size_toggle_tsx",
+      "target": "file_src_lib_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_shared_theme_toggle_tsx",
+      "target": "file_src_components_ui_button_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_shared_theme_toggle_tsx",
+      "target": "file_src_components_shared_theme_provider_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_shared_typography_tsx",
+      "target": "file_src_lib_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_shared_typography_tsx",
+      "target": "file_src_components_shared_text_size_provider_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_accordion_tsx",
+      "target": "file_src_lib_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_alert_dialog_tsx",
+      "target": "file_src_lib_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_alert_dialog_tsx",
+      "target": "file_src_components_ui_button_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_alert_tsx",
+      "target": "file_src_lib_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_avatar_tsx",
+      "target": "file_src_lib_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_badge_tsx",
+      "target": "file_src_lib_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_breadcrumb_tsx",
+      "target": "file_src_lib_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_button_tsx",
+      "target": "file_src_lib_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_calendar_tsx",
+      "target": "file_src_lib_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_calendar_tsx",
+      "target": "file_src_components_ui_button_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_card_tsx",
+      "target": "file_src_lib_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_chart_tsx",
+      "target": "file_src_lib_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_checkbox_tsx",
+      "target": "file_src_lib_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_combobox_tsx",
+      "target": "file_src_lib_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_combobox_tsx",
+      "target": "file_src_components_ui_button_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_combobox_tsx",
+      "target": "file_src_components_ui_input_group_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_command_tsx",
+      "target": "file_src_lib_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_command_tsx",
+      "target": "file_src_components_ui_dialog_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_command_tsx",
+      "target": "file_src_components_ui_input_group_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_context_menu_tsx",
+      "target": "file_src_lib_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_dialog_tsx",
+      "target": "file_src_lib_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_dialog_tsx",
+      "target": "file_src_components_ui_button_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_drawer_tsx",
+      "target": "file_src_lib_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_dropdown_menu_tsx",
+      "target": "file_src_lib_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_empty_tsx",
+      "target": "file_src_lib_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_field_tsx",
+      "target": "file_src_lib_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_field_tsx",
+      "target": "file_src_components_ui_label_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_field_tsx",
+      "target": "file_src_components_ui_separator_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_hover_card_tsx",
+      "target": "file_src_lib_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_input_group_tsx",
+      "target": "file_src_lib_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_input_group_tsx",
+      "target": "file_src_components_ui_button_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_input_group_tsx",
+      "target": "file_src_components_ui_input_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_input_group_tsx",
+      "target": "file_src_components_ui_textarea_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_input_otp_tsx",
+      "target": "file_src_lib_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_input_tsx",
+      "target": "file_src_lib_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_label_tsx",
+      "target": "file_src_lib_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_menubar_tsx",
+      "target": "file_src_lib_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_menubar_tsx",
+      "target": "file_src_components_ui_dropdown_menu_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_native_select_tsx",
+      "target": "file_src_lib_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_navigation_menu_tsx",
+      "target": "file_src_lib_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_pagination_tsx",
+      "target": "file_src_lib_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_pagination_tsx",
+      "target": "file_src_components_ui_button_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_popover_tsx",
+      "target": "file_src_lib_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_radio_group_tsx",
+      "target": "file_src_lib_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_resizable_tsx",
+      "target": "file_src_lib_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_scroll_area_native_tsx",
+      "target": "file_src_lib_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_scroll_area_tsx",
+      "target": "file_src_lib_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_select_tsx",
+      "target": "file_src_lib_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_separator_tsx",
+      "target": "file_src_lib_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_sheet_tsx",
+      "target": "file_src_lib_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_sheet_tsx",
+      "target": "file_src_components_ui_button_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_sidebar_tsx",
+      "target": "file_src_hooks_use_mobile_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_sidebar_tsx",
+      "target": "file_src_lib_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_sidebar_tsx",
+      "target": "file_src_components_ui_button_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_sidebar_tsx",
+      "target": "file_src_components_ui_input_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_sidebar_tsx",
+      "target": "file_src_components_ui_separator_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_sidebar_tsx",
+      "target": "file_src_components_ui_sheet_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_sidebar_tsx",
+      "target": "file_src_components_ui_skeleton_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_sidebar_tsx",
+      "target": "file_src_components_ui_tooltip_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_skeleton_tsx",
+      "target": "file_src_lib_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_slider_tsx",
+      "target": "file_src_lib_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_switch_tsx",
+      "target": "file_src_lib_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_table_tsx",
+      "target": "file_src_lib_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_tabs_tsx",
+      "target": "file_src_lib_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_textarea_tsx",
+      "target": "file_src_lib_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_toggle_group_tsx",
+      "target": "file_src_lib_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_toggle_group_tsx",
+      "target": "file_src_components_ui_toggle_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_toggle_tsx",
+      "target": "file_src_lib_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_ui_tooltip_tsx",
+      "target": "file_src_lib_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_hooks_use_graphify_ts",
+      "target": "file_src_lib_graphify_context_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_hooks_usetodos_ts",
+      "target": "file_src_types_todo_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_hooks_usetodos_ts",
+      "target": "file_src_lib_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_hooks_usetodos_ts",
+      "target": "file_src_lib_storage_ts",
+      "relation": "imports"
+    }
+  ]
+}
