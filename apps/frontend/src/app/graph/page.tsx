@@ -4,16 +4,16 @@ import { useGraphify } from "@/hooks/use-graphify";
 import { useEffect, useState, useCallback, useMemo } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { Skeleton } from "@/components/ui/skeleton";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible";
+import { Button } from "@ui/components/button";
+import { Input } from "@ui/components/input";
+import { Badge } from "@ui/components/badge";
+import { Separator } from "@ui/components/separator";
+import { Skeleton } from "@ui/components/skeleton";
+import { ScrollArea } from "@ui/components/scroll-area";
+import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@ui/components/collapsible";
 import { nodeColorByCommunity } from "@/lib/graphify-context";
 import type { GraphNode } from "@/lib/graphify-context";
-import { Heading, Text } from "@/components/shared/typography";
+import { Heading, Text } from "@ui/components/typography";
 import {
   Network,
   ArrowLeft,
@@ -295,18 +295,6 @@ export default function GraphPage() {
           </div>
         </div>
       </div>
-    </div>
-  );
-}
-
-function LegendItem({ color, label }: { color: string; label: string }) {
-  return (
-    <div className="flex items-center gap-2">
-      <span
-        className="size-2 rounded-full shrink-0"
-        style={{ backgroundColor: color }}
-      />
-      <Text variant="caption">{label}</Text>
     </div>
   );
 }

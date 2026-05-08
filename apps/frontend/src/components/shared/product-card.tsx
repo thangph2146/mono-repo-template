@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import { ArrowRight, Plus, ShoppingCart, Tag } from "lucide-react";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Heading, Text } from "@/components/shared/typography";
+import { Card, CardContent, CardFooter } from "@ui/components/card";
+import { Badge } from "@ui/components/badge";
+import { Button } from "@ui/components/button";
+import { Heading, Text } from "@ui/components/typography";
 
 type ProductCardVariant = "catalog" | "flash";
 
@@ -45,7 +45,7 @@ export function ProductCard({
   onAddToCart,
 }: ProductCardProps) {
   return (
-    <Card className="border-outline-variant overflow-hidden group hover:shadow-xl transition-all duration-300 bg-background rounded-2xl">
+    <Card className="py-0 border-outline-variant overflow-hidden group hover:shadow-xl transition-all duration-300 bg-background rounded-2xl">
       <Link href={href} className={`block relative ${variant === "catalog" ? "w-full h-64 p-6" : "h-64 p-4"} bg-gradient-to-b from-white to-muted/20`}>
         <div className="w-full h-full rounded-2xl bg-white/70 border border-outline-variant/30 shadow-inner flex items-center justify-center overflow-hidden">
           <img

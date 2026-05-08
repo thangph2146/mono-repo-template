@@ -3,9 +3,9 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Package, ShoppingCart, Truck, Minus, Plus, AlertTriangle, CheckCircle2, Tag } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@ui/components/badge";
+import { Button } from "@ui/components/button";
+import { Card, CardContent } from "@ui/components/card";
 import { toast } from "sonner";
 
 type UnitType = {

@@ -1,12 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@ui/components/button";
+import { Input } from "@ui/components/input";
+import { Label } from "@ui/components/label";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@ui/components/card";
 import { Store, Phone, Lock, User, MapPin } from "lucide-react";
-import { Container, Page, PageContent } from "@/components/shared/layout";
+import { Container, Page, PageContent } from "@ui/components/layout";
 import { toast } from "sonner";
 
 export default function RegisterPage() {

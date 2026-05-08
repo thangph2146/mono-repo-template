@@ -1,14 +1,15 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "@ui/components/button";
+import { Input } from "@ui/components/input";
+import { Badge } from "@ui/components/badge";
 import Link from "next/link";
 import { toast } from "sonner";
-import products from "@/data/products.json";
+import products from "@ui/data/products.json";
 import { Search, ShoppingCart, Package2, Layers, Droplets, Milk, Soup, Tag } from "lucide-react";
-import { Container, Page, PageContent } from "@/components/shared/layout";
+import { Container, Page, PageContent } from "@ui/components/layout";
+
 
 const CATEGORY_TABS = [
   { key: "ALL", label: "Tất cả", icon: Layers },

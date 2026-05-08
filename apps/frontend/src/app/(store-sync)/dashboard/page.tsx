@@ -1,7 +1,7 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@ui/components/card";
+import { Button } from "@ui/components/button";
 import Link from "next/link";
-import { Container, Page, PageContent } from "@/components/shared/layout";
+import { Container, Page, PageContent } from "@ui/components/layout";
 import { OrderStatusTable } from "@/components/shared/order-status-table";
 import {
   Boxes,

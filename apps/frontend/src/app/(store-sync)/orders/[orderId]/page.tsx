@@ -3,13 +3,13 @@
 import Link from "next/link";
 import { notFound, useParams } from "next/navigation";
 import type { ComponentType } from "react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@ui/components/badge";
+import { Button } from "@ui/components/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@ui/components/card";
 import { ArrowLeft, CheckCircle2, CircleDot, Clock3, Package, Truck } from "lucide-react";
-import orders from "@/data/order-tracking.json";
-import products from "@/data/products.json";
-import { Container, Page, PageContent } from "@/components/shared/layout";
+import orders from "@ui/data/order-tracking.json";
+import products from "@ui/data/products.json";
+import { Container, Page, PageContent } from "@ui/components/layout";
 
 export default function OrderDetailPage() {
   const params = useParams<{ orderId: string }>();

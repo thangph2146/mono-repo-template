@@ -2,15 +2,15 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@ui/components/button";
+import { Input } from "@ui/components/input";
+import { Label } from "@ui/components/label";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@ui/components/card";
 import Link from "next/link";
 import { Store, Lock, User } from "lucide-react";
-import { Container, Page, PageContent } from "@/components/shared/layout";
+import { Container, Page, PageContent } from "@ui/components/layout";
 import { toast } from "sonner";
-import accounts from "@/data/accounts.json";
+import accounts from "@ui/data/accounts.json";
 
 export default function LoginRegisterPage() {
   const router = useRouter();

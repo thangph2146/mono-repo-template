@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from "react";
 import {
   ArrowRight,
-  ShoppingCart,
   Zap,
   TrendingUp,
   Package,
@@ -13,25 +12,18 @@ import {
   Sparkles,
   ChevronRight,
   Flame,
-  Clock,
   CheckCircle2,
-  LifeBuoy,
-  ShieldCheck,
   Network,
 } from "lucide-react";
 import Link from "next/link";
 import {
   Page,
   PageContent,
-  PageSection,
-  Hero,
-  Stack,
-  Grid,
-  Divider,
   Container,
-} from "@/components/shared/layout";
-import { Heading, Text, Badge, LiveDot } from "@/components/shared/typography";
-import { Button } from "@/components/ui/button";
+  Grid,
+} from "@ui/components/layout";
+import { Heading, Text, Badge, LiveDot } from "@ui/components/typography";
+import { Button } from "@ui/components/button";
 import { ProductCard } from "@/components/shared/product-card";
 import { ProductWideCard } from "@/components/shared/product-wide-card";
 
@@ -387,4 +379,3 @@ export default function Home() {
     </Page>
   );
 }
-

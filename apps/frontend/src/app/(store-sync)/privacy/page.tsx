@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@ui/components/card";
+import { Button } from "@ui/components/button";
 import { Database, LockKeyhole, ShieldCheck } from "lucide-react";
-import { Container, Page, PageContent } from "@/components/shared/layout";
+import { Container, Page, PageContent } from "@ui/components/layout";
 
 const privacyItems = [
   "Chỉ thu thập dữ liệu cần thiết để xử lý đơn hàng, chăm sóc đại lý và tối ưu dịch vụ.",
@@ -37,12 +37,12 @@ export default function PrivacyPage() {
             </div>
           ))}
           <div className="pt-2">
-            <Button asChild variant="outline" className="rounded-xl">
-              <Link href="/help">
+            <Link href="/help" className="block w-fit">
+              <Button variant="outline" className="rounded-xl">
                 <ShieldCheck className="w-4 h-4 mr-2" />
                 Xem hướng dẫn bảo mật tài khoản
-              </Link>
-            </Button>
+              </Button>
+            </Link>
           </div>
         </CardContent>
       </Card>

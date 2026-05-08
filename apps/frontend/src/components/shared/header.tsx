@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { 
   Store, 
   ShoppingCart, 
@@ -16,11 +16,11 @@ import {
   LogOut,
   User,
 } from "lucide-react";
-import { ThemeToggle } from "./theme-toggle";
-import { TextSizeToggle } from "./text-size-toggle";
-import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/ui/button";
-import { Heading, Text } from "./typography";
+import { ThemeToggle } from "@ui/components/theme-toggle";
+import { TextSizeToggle } from "@ui/components/text-size-toggle";
+import { Separator } from "@ui/components/separator";
+import { Button } from "@ui/components/button";
+import { Heading, Text } from "@ui/components/typography";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -29,32 +29,13 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-
-type MockSession = {
-  id: string;
-  username: string;
-  role: "admin" | "store";
-  displayName: string;
-};
+} from "@ui/components/dropdown-menu";
+import { useSession } from "@/hooks/use-session";
 
 export function Header() {
   const pathname = usePathname();
   const router = useRouter();
-  const [session, setSession] = useState<MockSession | null>(null);
-
-  useEffect(() => {
-    const raw = localStorage.getItem("storesync_session");
-    if (!raw) {
-      setSession(null);
-      return;
-    }
-    try {
-      setSession(JSON.parse(raw));
-    } catch {
-      setSession(null);
-    }
-  }, [pathname]);
+  const session = useSession();
 
   const nav = useMemo(() => {
     if (session?.role === "admin") {
@@ -77,15 +58,17 @@ export function Header() {
 
   const handleLogout = () => {
     localStorage.removeItem("storesync_session");
-    setSession(null);
+    window.dispatchEvent(
+      new StorageEvent("storage", { key: "storesync_session" }),
+    );
     router.push("/login");
   };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-outline-variant bg-surface/80 backdrop-blur shadow-sm">
-      <div className="mx-auto flex h-16 max-w-full items-center px-lg">
+      <div className="mx-auto flex h-16 max-w-full items-center px-6">
         {/* Brand */}
-        <Link href="/" className="flex items-center gap-sm group">
+        <Link href="/" className="flex items-center gap-2 group">
           <div className="bg-primary/10 p-1.5 rounded-lg transition-colors group-hover:bg-primary/20">
             <Store className="size-6 text-primary" />
           </div>
@@ -93,7 +76,7 @@ export function Header() {
         </Link>
 
         {/* Nav */}
-        <nav className="ml-auto hidden md:flex items-center gap-md text-label-md">
+        <nav className="ml-auto hidden md:flex items-center gap-4">
           {nav.map((item) => {
             const isActive = pathname === item.href;
             return (

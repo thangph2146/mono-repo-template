@@ -12,7 +12,15 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Generated/external scripts
+    ".graphify/**",
   ]),
+  {
+    rules: {
+      // Project uses external image URLs; opt out of next/image enforcement.
+      "@next/next/no-img-element": "off",
+    },
+  },
 ]);
 
 export default eslintConfig;

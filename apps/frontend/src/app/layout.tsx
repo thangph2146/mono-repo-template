@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import { Roboto, Roboto_Mono } from "next/font/google";
-import "./globals.css";
+import "@ui/globals.css";
 import { Header } from "@/components/shared/header";
 import { Footer } from "@/components/shared/footer";
-import { ThemeProvider } from "@/components/shared/theme-provider";
-import { TextSizeProvider } from "@/components/shared/text-size-provider";
+import { ThemeProvider } from "@ui/components/theme-provider";
+import { TextSizeProvider } from "@ui/components/text-size-provider";
+import NextTopLoader from "nextjs-toploader";
 
 const roboto = Roboto({
   variable: "--font-roboto",
@@ -36,6 +37,11 @@ export default function RootLayout({
       className={`${roboto.variable} ${robotoMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground" suppressHydrationWarning>
+        <NextTopLoader 
+          color="var(--primary)" 
+          showSpinner={false} 
+          shadow="0 0 10px var(--primary),0 0 5px var(--primary)" 
+        />
         <ThemeProvider>
           <TextSizeProvider>
             <Header />

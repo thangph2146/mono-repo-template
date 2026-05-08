@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, CircleCheckBig, Truck } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@ui/components/card";
+import { Button } from "@ui/components/button";
 import {
   Table,
   TableBody,
@@ -9,7 +9,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@ui/components/table";
 
 type OrderStatusRow = {
   id: string;

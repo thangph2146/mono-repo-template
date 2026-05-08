@@ -3,19 +3,13 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Container, Page, PageContent } from "@/components/shared/layout";
+import { Button } from "@ui/components/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@ui/components/card";
+import { Badge } from "@ui/components/badge";
+import { Container, Page, PageContent } from "@ui/components/layout";
 import { ExternalLink, LogOut, MapPin, Navigation, Phone, ShieldCheck, Store } from "lucide-react";
-import accounts from "@/data/accounts.json";
-
-type MockSession = {
-  id: string;
-  username: string;
-  role: "admin" | "store";
-  displayName: string;
-};
+import accounts from "@ui/data/accounts.json";
+import { useSession } from "@/hooks/use-session";
 
 type MockAccount = {
   id: string;
@@ -32,24 +26,22 @@ type MockAccount = {
 
 export default function ProfilePage() {
   const router = useRouter();
-  const [session, setSession] = useState<MockSession | null>(null);
+  const session = useSession();
   const [selectedAddress, setSelectedAddress] = useState("");
 
   useEffect(() => {
-    const raw = localStorage.getItem("storesync_session");
+    if (typeof window === "undefined") return;
+    const raw = window.localStorage.getItem("storesync_session");
     if (!raw) {
-      router.push("/login");
-      return;
-    }
-    try {
-      setSession(JSON.parse(raw));
-    } catch {
       router.push("/login");
     }
   }, [router]);
 
   const handleLogout = () => {
     localStorage.removeItem("storesync_session");
+    window.dispatchEvent(
+      new StorageEvent("storage", { key: "storesync_session" }),
+    );
     router.push("/login");
   };
 

@@ -1,8 +1,8 @@
 "use client";
 
 import { notFound, useParams } from "next/navigation";
-import products from "@/data/products.json";
-import { Container, Page, PageContent } from "@/components/shared/layout";
+import products from "@ui/data/products.json";
+import { Container, Page, PageContent } from "@ui/components/layout";
 import { ProductDetail } from "@/components/shared/product-detail";
 
 export default function ProductDetailPage() {

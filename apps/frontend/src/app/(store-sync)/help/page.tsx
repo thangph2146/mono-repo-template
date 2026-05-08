@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@ui/components/card";
+import { Button } from "@ui/components/button";
 import { CircleHelp, PackageSearch, ShoppingCart, UserRoundCheck } from "lucide-react";
-import { Container, Page, PageContent } from "@/components/shared/layout";
+import { Container, Page, PageContent } from "@ui/components/layout";
 
 const quickHelp = [
   {
@@ -55,9 +55,11 @@ export default function HelpPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-muted-foreground min-h-20">{item.desc}</p>
-              <Button asChild variant="outline" className="rounded-xl w-full">
-                <Link href={item.href}>{item.cta}</Link>
-              </Button>
+              <Link href={item.href} className="block w-full">
+                <Button variant="outline" className="rounded-xl w-full">
+                  {item.cta}
+                </Button>
+              </Link>
             </CardContent>
           </Card>
         ))}

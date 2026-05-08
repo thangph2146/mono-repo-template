@@ -2,20 +2,20 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "@ui/components/button";
+import { Badge } from "@ui/components/badge";
 import { Package, Search, RefreshCw, ChevronDown, Filter, Truck, CheckCircle2, Clock3, Eye, ShoppingCart, Box, OctagonXIcon } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { Input } from "@ui/components/input";
 import Link from "next/link";
-import { Container, Page, PageContent } from "@/components/shared/layout";
+import { Container, Page, PageContent } from "@ui/components/layout";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import orders from "@/data/order-tracking.json";
-import products from "@/data/products.json";
+} from "@ui/components/dropdown-menu";
+import orders from "@ui/data/order-tracking.json";
+import products from "@ui/data/products.json";
 
 type StatusKey = "ALL" | "SHIPPING" | "COMPLETED" | "CANCELLED";
 

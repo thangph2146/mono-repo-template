@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Star } from "lucide-react";
-import { Heading, Text, Badge } from "@/components/shared/typography";
+import { Heading, Text, Badge } from "@ui/components/typography";
 
 type ProductWideCardProps = {
   productId: string;
