@@ -8,6 +8,13 @@ import { Button } from "@ui/components/button";
 import { Input } from "@ui/components/input";
 import { Label } from "@ui/components/label";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@ui/components/select";
+import {
   Card,
   CardContent,
   CardDescription,
@@ -22,9 +29,52 @@ import { hydrateCartAfterLogin } from "@/lib/cart-sync";
 
 const STORAGE_KEY = "storesync_session";
 
+/** Chỉ dùng giao diện dev — khớp `apps/api` DatabaseSeeder. */
+const DEV_PRESET_NONE = "__none__";
+const DEV_ACCOUNT_PRESETS = [
+  {
+    value: "customer",
+    email: "khach-demo@storesync.local",
+    password: "demo",
+    label: "Đại lý Nam Sơn (customer)",
+  },
+  {
+    value: "sales",
+    email: "sales@storesync.local",
+    password: "demo",
+    label: "NV kinh doanh (sales)",
+  },
+  {
+    value: "manager",
+    email: "manager@storesync.local",
+    password: "demo",
+    label: "Quản lý kho (manager)",
+  },
+  {
+    value: "admin",
+    email: "admin@storesync.local",
+    password: "change-me",
+    label: "Quản trị (admin) — mật khẩu seed mặc định",
+  },
+  {
+    value: "super",
+    email: "super@storesync.local",
+    password: "demo",
+    label: "Siêu quản trị (super_admin)",
+  },
+  {
+    value: "hybrid",
+    email: "hybrid@storesync.local",
+    password: "demo",
+    label: "Đa role (sales + customer)",
+  },
+] as const;
+
+const IS_DEV = process.env.NODE_ENV === "development";
+
 function safeNext(raw: string | null): string {
   if (raw && raw.startsWith("/") && !raw.startsWith("//")) return raw;
-  return "/dashboard";
+  return "/orders";
 }
 
 function LoginFormInner() {
@@ -33,6 +83,7 @@ function LoginFormInner() {
   const queryClient = useQueryClient();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [devPreset, setDevPreset] = useState(DEV_PRESET_NONE);
   const [submitting, setSubmitting] = useState(false);
 
   const nextPath = useMemo(
@@ -74,6 +125,7 @@ function LoginFormInner() {
       void queryClient.invalidateQueries({ queryKey: ["products"] });
       void queryClient.invalidateQueries({ queryKey: ["categories"] });
       void queryClient.invalidateQueries({ queryKey: ["orders"] });
+      void queryClient.invalidateQueries({ queryKey: ["users"] });
       toast.success(`Xin chào ${user.fullName}`);
       router.push(nextPath);
     } catch (err) {
@@ -107,6 +159,61 @@ function LoginFormInner() {
                 </CardHeader>
 
                 <CardContent className="space-y-6">
+                  {IS_DEV && (
+                    <div className="rounded-xl border border-amber-500/35 bg-amber-500/10 dark:bg-amber-950/30 px-3 py-3 space-y-2">
+                      <p className="text-xs font-bold text-amber-950 dark:text-amber-100/90">
+                        Development: chọn tài khoản seed
+                      </p>
+                      <p className="text-[11px] text-amber-900/80 dark:text-amber-100/70 leading-snug">
+                        Điền sẵn email và mật khẩu từ{" "}
+                        <code className="font-mono">db:seed</code>. Không hiện ở
+                        bản production.
+                      </p>
+                      <div className="space-y-1.5">
+                        <Label
+                          htmlFor="dev-account-preset"
+                          className="text-xs font-medium"
+                        >
+                          Tài khoản mẫu
+                        </Label>
+                        <Select
+                          value={devPreset}
+                          onValueChange={(v) => {
+                            const next = v ?? DEV_PRESET_NONE;
+                            setDevPreset(next);
+                            if (next === DEV_PRESET_NONE) return;
+                            const p = DEV_ACCOUNT_PRESETS.find(
+                              (x) => x.value === next,
+                            );
+                            if (p) {
+                              setEmail(p.email);
+                              setPassword(p.password);
+                            }
+                          }}
+                        >
+                          <SelectTrigger
+                            id="dev-account-preset"
+                            className="h-10 w-full rounded-lg bg-background text-sm"
+                          >
+                            <SelectValue placeholder="— Chọn để điền form —" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value={DEV_PRESET_NONE}>
+                              — Không dùng preset —
+                            </SelectItem>
+                            {DEV_ACCOUNT_PRESETS.map((p) => (
+                              <SelectItem key={p.value} value={p.value}>
+                                {p.label}{" "}
+                                <span className="text-muted-foreground font-mono text-[11px]">
+                                  ({p.email})
+                                </span>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  )}
                   <div className="space-y-3">
                     <Label htmlFor="email" className="text-sm font-medium">Email</Label>
                     <div className="relative">

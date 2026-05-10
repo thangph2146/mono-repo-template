@@ -1,3 +1,6 @@
+# StoreSync: API + Postgres + 2 Next.js (storefront :3000, admin :3001).
+# Trình duyệt trên máy host luôn gọi API qua cổng đã publish (localhost:3002),
+# không dùng hostname dịch vụ Docker (api) trong NEXT_PUBLIC_*.
 services:
   postgres:
     image: postgres:16-alpine
@@ -59,7 +62,7 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3001
-      NEXT_PUBLIC_API_URL: http://api:3002/api
+      NEXT_PUBLIC_API_URL: http://localhost:3002/api
     ports:
       - "3001:3001"
     depends_on:
@@ -77,7 +80,7 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3000
-      NEXT_PUBLIC_API_URL: http://api:3002/api
+      NEXT_PUBLIC_API_URL: http://localhost:3002/api
     ports:
       - "3000:3000"
     depends_on:

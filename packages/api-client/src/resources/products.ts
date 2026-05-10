@@ -2,6 +2,8 @@ import type { ApiClient } from '../client';
 import type {
   CreateProductInput,
   Product,
+  ProductListParams,
+  ProductPagedResponse,
   UpdateProductInput,
 } from '../types';
 
@@ -10,12 +12,57 @@ export interface AdjustStockInput {
   reason?: string;
 }
 
+function appendProductListParams(
+  sp: URLSearchParams,
+  params: ProductListParams,
+): void {
+  if (params.activeOnly) sp.set('active', 'true');
+  if (params.category) sp.set('category', params.category);
+  if (params.brand) sp.set('brand', params.brand);
+  if (params.brandEmpty) sp.set('brandEmpty', 'true');
+  if (params.isActive === true) sp.set('isActive', 'true');
+  if (params.isActive === false) sp.set('isActive', 'false');
+  if (params.q) sp.set('q', params.q);
+  if (params.stock !== undefined && Number.isFinite(params.stock)) {
+    sp.set('stock', String(params.stock));
+  }
+  if (
+    params.retailPrice !== undefined &&
+    Number.isFinite(params.retailPrice)
+  ) {
+    sp.set('retailPrice', String(params.retailPrice));
+  }
+  if (params.stockBand) sp.set('stockBand', params.stockBand);
+  if (params.unitType?.trim()) sp.set('unitType', params.unitType.trim());
+  if (params.purchaseMode === 'si' || params.purchaseMode === 'le') {
+    sp.set('purchaseMode', params.purchaseMode);
+  }
+  if (params.page !== undefined && Number.isFinite(params.page)) {
+    sp.set('page', String(params.page));
+  }
+  if (params.limit !== undefined && Number.isFinite(params.limit)) {
+    sp.set('limit', String(params.limit));
+  }
+}
+
 export class ProductsApi {
   constructor(private readonly http: ApiClient) {}
 
-  list(options?: { activeOnly?: boolean }): Promise<Product[]> {
-    const query = options?.activeOnly ? '?active=true' : '';
-    return this.http.get<Product[]>(`/products${query}`);
+  /**
+   * Không gửi `page`+`limit` → mảng `Product[]`.
+   * Có đủ `page` & `limit` → `{ items, total }`.
+   */
+  list(
+    params?: ProductListParams,
+  ): Promise<Product[] | ProductPagedResponse> {
+    const sp = new URLSearchParams();
+    if (params && Object.keys(params).length > 0) {
+      appendProductListParams(sp, params);
+    }
+    const qs = sp.toString();
+    return this.http.get<Product[] | ProductPagedResponse>(
+      `/products${qs ? `?${qs}` : ''}`,
+    );
   }
 
   byCategory(category: string): Promise<Product[]> {

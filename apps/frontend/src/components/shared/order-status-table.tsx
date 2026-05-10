@@ -1,5 +1,10 @@
 import Link from "next/link";
-import { ArrowRight, CircleCheckBig, Truck } from "lucide-react";
+import {
+  ArrowRight,
+  CircleCheckBig,
+  OctagonX,
+  Truck,
+} from "lucide-react";
 import { Card, CardContent } from "@ui/components/card";
 import { Button } from "@ui/components/button";
 import {
@@ -11,20 +16,22 @@ import {
   TableRow,
 } from "@ui/components/table";
 
-type OrderStatusRow = {
-  id: string;
+export type OrderStatusTableRow = {
+  /** Khóa React (vd. id số đơn); hiển thị mã đơn ở cột đầu dùng `orderCode`. */
+  rowKey: string;
+  orderCode: string;
   date: string;
   statusText: string;
   etaOrTotal: string;
-  status: "shipping" | "completed";
+  status: "shipping" | "completed" | "cancelled";
   href: string;
   ctaLabel: string;
 };
 
-export function OrderStatusTable({ rows }: { rows: OrderStatusRow[] }) {
+export function OrderStatusTable({ rows }: { rows: OrderStatusTableRow[] }) {
   return (
-    <Card className="border-border py-0">
-      <CardContent className="p-0">
+    <Card className="border-border py-0 overflow-hidden">
+      <CardContent className="p-0 overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/30">
@@ -37,21 +44,25 @@ export function OrderStatusTable({ rows }: { rows: OrderStatusRow[] }) {
           </TableHeader>
           <TableBody>
             {rows.map((row) => (
-              <TableRow key={row.id}>
-                <TableCell className="pl-6 font-bold">{row.id}</TableCell>
+              <TableRow key={row.rowKey}>
+                <TableCell className="pl-6 font-bold">{row.orderCode}</TableCell>
                 <TableCell className="text-muted-foreground">{row.date}</TableCell>
                 <TableCell>
                   <span
                     className={`inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-bold ${
                       row.status === "shipping"
                         ? "bg-primary/10 text-primary"
-                        : "bg-success/15 text-success"
+                        : row.status === "completed"
+                          ? "bg-success/15 text-success"
+                          : "bg-destructive/10 text-destructive"
                     }`}
                   >
                     {row.status === "shipping" ? (
                       <Truck className="w-3.5 h-3.5" />
-                    ) : (
+                    ) : row.status === "completed" ? (
                       <CircleCheckBig className="w-3.5 h-3.5" />
+                    ) : (
+                      <OctagonX className="w-3.5 h-3.5" />
                     )}
                     {row.statusText}
                   </span>

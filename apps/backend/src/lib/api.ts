@@ -20,8 +20,11 @@ export const api = createStoreSyncSdk({
 
 export type {
   AdjustStockInput,
+  AssignedShipperRef,
   AuthUser,
+  ChangePasswordInput,
   Product,
+  ProductListParams,
   ProductUnitType,
   CreateProductInput,
   UpdateProductInput,
@@ -38,5 +41,6 @@ export type {
   CreateOrderItemInput,
   PaymentMethod,
   PaymentStatus,
+  UpdateProfileInput,
 } from "@workspace/api-client";
 export { ApiError } from "@workspace/api-client";

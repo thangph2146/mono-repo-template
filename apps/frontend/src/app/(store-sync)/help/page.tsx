@@ -35,8 +35,8 @@ export default function HelpPage() {
         <section>
           <Container max="8xl" className="px-4 md:px-8 space-y-6">
       <div className="space-y-2">
-        <h1 className="text-4xl font-black tracking-tight flex items-center gap-3">
-          <CircleHelp className="w-9 h-9 text-primary" />
+        <h1 className="text-3xl sm:text-4xl font-bold text-foreground tracking-tight flex items-center gap-3">
+          <CircleHelp className="w-8 h-8 text-primary shrink-0" aria-hidden />
           Trung tâm trợ giúp
         </h1>
         <p className="text-muted-foreground text-lg">

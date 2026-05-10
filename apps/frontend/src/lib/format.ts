@@ -17,3 +17,17 @@ export const formatDate = (iso: string | Date | undefined | null): string => {
     minute: "2-digit",
   });
 };
+
+/** Chỉ ngày — dùng bảng tóm tắt đơn hàng. */
+export const formatDateShort = (
+  iso: string | Date | undefined | null,
+): string => {
+  if (!iso) return "—";
+  const date = iso instanceof Date ? iso : new Date(iso);
+  if (Number.isNaN(date.getTime())) return "—";
+  return date.toLocaleDateString("vi-VN", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+};

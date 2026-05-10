@@ -1,7 +1,14 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import {
+  Suspense,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import Link from "next/link";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@ui/components/button";
 import { Input } from "@ui/components/input";
@@ -15,11 +22,25 @@ import {
   Tag,
   Minus,
   Plus,
+  FilterX,
+  X,
+  Loader2,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import type { Product, ProductUnitType } from "@/lib/api";
-import { useCategories, useProducts } from "@/hooks/queries";
+import {
+  useCatalogProducts,
+  useCategories,
+  useCategoryUsage,
+} from "@/hooks/queries";
+import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { useCart } from "@/hooks/use-cart";
 import { formatVND } from "@/lib/format";
+import {
+  getProductUnits,
+  scoreProductSearchMatch,
+} from "@/lib/catalog-filters";
 import { unitSellingAndListPrice } from "@/lib/product-price";
 import { resolveCategoryIcon } from "@/lib/category-icons";
 
@@ -38,13 +59,28 @@ const UNIT_FILTER_OPTS = [
   { key: "gói", label: "Gói/Lẻ" },
 ];
 
-export default function CatalogPage() {
-  const { data: productsData, isLoading, error } = useProducts();
+const CATALOG_PAGE_SIZE = 24;
+
+function CatalogPageInner() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const spKey = searchParams.toString();
+
   const { data: categoriesData } = useCategories(true);
+  const { data: usageData } = useCategoryUsage();
   const cart = useCart();
 
-  const products = useMemo(() => productsData ?? [], [productsData]);
   const categories = useMemo(() => categoriesData ?? [], [categoriesData]);
+  const usageMap = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const u of usageData ?? []) m.set(u.slug, u.productCount);
+    return m;
+  }, [usageData]);
+  const totalCatalogCount = useMemo(
+    () => [...usageMap.values()].reduce((a, b) => a + b, 0),
+    [usageMap],
+  );
 
   const categoryMap = useMemo(() => {
     const map = new Map<string, string>();
@@ -64,10 +100,94 @@ export default function CatalogPage() {
     [categories],
   );
 
-  const [searchTerm, setSearchTerm] = useState("");
-  const [categoryTab, setCategoryTab] = useState("ALL");
-  const [purchaseType, setPurchaseType] = useState("ALL");
-  const [unitFilter, setUnitFilter] = useState("ALL");
+  const [searchTerm, setSearchTerm] = useState(
+    () => searchParams.get("q") ?? "",
+  );
+  const [categoryTab, setCategoryTab] = useState(
+    () => searchParams.get("cat") ?? "ALL",
+  );
+  const [purchaseType, setPurchaseType] = useState(
+    () => searchParams.get("mode") ?? "ALL",
+  );
+  const [unitFilter, setUnitFilter] = useState(
+    () => searchParams.get("unit") ?? "ALL",
+  );
+  const [page, setPage] = useState(() => {
+    const n = parseInt(searchParams.get("page") ?? "1", 10);
+    return Number.isFinite(n) && n >= 1 ? n : 1;
+  });
+
+  const debouncedSearch = useDebouncedValue(searchTerm, 320);
+
+  const catalogListParams = useMemo(() => {
+    const purchaseMode =
+      purchaseType === "si"
+        ? ("si" as const)
+        : purchaseType === "le"
+          ? ("le" as const)
+          : undefined;
+    return {
+      activeOnly: true as const,
+      q: debouncedSearch.trim() || undefined,
+      category: categoryTab !== "ALL" ? categoryTab : undefined,
+      purchaseMode,
+      unitType: unitFilter !== "ALL" ? unitFilter : undefined,
+      page,
+      limit: CATALOG_PAGE_SIZE,
+    };
+  }, [debouncedSearch, categoryTab, purchaseType, unitFilter, page]);
+
+  const { data: catalogData, isLoading, error } =
+    useCatalogProducts(catalogListParams);
+
+  const filterSignature = `${debouncedSearch.trim()}|${categoryTab}|${purchaseType}|${unitFilter}`;
+  const filterBaselineRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (filterBaselineRef.current === null) {
+      filterBaselineRef.current = filterSignature;
+      return;
+    }
+    if (filterBaselineRef.current !== filterSignature) {
+      filterBaselineRef.current = filterSignature;
+      setPage(1);
+    }
+  }, [filterSignature]);
+
+  useEffect(() => {
+    const onPop = (): void => {
+      const sp = new URLSearchParams(window.location.search);
+      setSearchTerm(sp.get("q") ?? "");
+      setCategoryTab(sp.get("cat") ?? "ALL");
+      setPurchaseType(sp.get("mode") ?? "ALL");
+      setUnitFilter(sp.get("unit") ?? "ALL");
+      const pn = parseInt(sp.get("page") ?? "1", 10);
+      setPage(Number.isFinite(pn) && pn >= 1 ? pn : 1);
+    };
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
+  }, []);
+
+  useEffect(() => {
+    const p = new URLSearchParams();
+    const dq = debouncedSearch.trim();
+    if (dq) p.set("q", dq);
+    if (categoryTab !== "ALL") p.set("cat", categoryTab);
+    if (purchaseType !== "ALL") p.set("mode", purchaseType);
+    if (unitFilter !== "ALL") p.set("unit", unitFilter);
+    if (page > 1) p.set("page", String(page));
+    const qs = p.toString();
+    if (qs === spKey) return;
+    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+  }, [
+    debouncedSearch,
+    categoryTab,
+    purchaseType,
+    unitFilter,
+    page,
+    pathname,
+    router,
+    spKey,
+  ]);
 
   const handleAddToCart = (
     product: Product,
@@ -80,83 +200,149 @@ export default function CatalogPage() {
     });
   };
 
-  const filteredProducts = useMemo(() => {
-    return products.filter((p) => {
-      const q = searchTerm.toLowerCase().trim();
-      const matchSearch =
-        !q ||
-        p.name.toLowerCase().includes(q) ||
-        (p.brand ?? "").toLowerCase().includes(q) ||
-        p.category.toLowerCase().includes(q);
+  const totalProducts = catalogData?.total ?? 0;
+  const totalPages = Math.max(1, Math.ceil(totalProducts / CATALOG_PAGE_SIZE));
 
-      const matchCategory =
-        categoryTab === "ALL" || p.category === categoryTab;
+  useEffect(() => {
+    if (catalogData == null || isLoading) return;
+    const maxPage = Math.max(
+      1,
+      Math.ceil(catalogData.total / CATALOG_PAGE_SIZE),
+    );
+    if (page > maxPage) setPage(maxPage);
+  }, [catalogData, isLoading, page]);
 
-      const units = p.unitTypes ?? [];
-      const hasWholesale = units.some((u) => u.wholesalePrice !== null);
-      const hasRetail = units.some((u) => u.wholesalePrice === null);
-      const matchPurchase =
-        purchaseType === "ALL" ||
-        (purchaseType === "si" && hasWholesale) ||
-        (purchaseType === "le" && hasRetail);
+  const displayProducts = useMemo(() => {
+    const items = catalogData?.items ?? [];
+    const qLower = debouncedSearch.trim().toLowerCase();
+    if (!qLower) return items;
+    return [...items].sort(
+      (a, b) =>
+        scoreProductSearchMatch(b, debouncedSearch) -
+        scoreProductSearchMatch(a, debouncedSearch),
+    );
+  }, [catalogData?.items, debouncedSearch]);
 
-      const matchUnit =
-        unitFilter === "ALL" || units.some((u) => u.type === unitFilter);
+  const hasActiveFilters =
+    categoryTab !== "ALL" ||
+    purchaseType !== "ALL" ||
+    unitFilter !== "ALL" ||
+    Boolean(searchTerm.trim());
 
-      return matchSearch && matchCategory && matchPurchase && matchUnit;
+  const clearAllFilters = (): void => {
+    setCategoryTab("ALL");
+    setPurchaseType("ALL");
+    setUnitFilter("ALL");
+    setSearchTerm("");
+    setPage(1);
+  };
+
+  const activeChips: { key: string; label: string; onRemove: () => void }[] =
+    [];
+  if (categoryTab !== "ALL") {
+    activeChips.push({
+      key: "cat",
+      label: `DM: ${categoryMap.get(categoryTab) ?? categoryTab}`,
+      onRemove: () => setCategoryTab("ALL"),
     });
-  }, [products, searchTerm, categoryTab, purchaseType, unitFilter]);
+  }
+  if (purchaseType !== "ALL") {
+    const lab =
+      PURCHASE_TYPE_OPTS.find((o) => o.key === purchaseType)?.label ??
+      purchaseType;
+    activeChips.push({
+      key: "mode",
+      label: lab,
+      onRemove: () => setPurchaseType("ALL"),
+    });
+  }
+  if (unitFilter !== "ALL") {
+    const lab =
+      UNIT_FILTER_OPTS.find((o) => o.key === unitFilter)?.label ?? unitFilter;
+    activeChips.push({
+      key: "unit",
+      label: lab,
+      onRemove: () => setUnitFilter("ALL"),
+    });
+  }
+  if (searchTerm.trim()) {
+    activeChips.push({
+      key: "q",
+      label: `“${searchTerm.trim().slice(0, 24)}${searchTerm.trim().length > 24 ? "…" : ""}”`,
+      onRemove: () => setSearchTerm(""),
+    });
+  }
 
   return (
     <Page>
       <PageContent className="px-0 md:px-0 py-8 md:py-10 space-y-0">
         <section>
           <Container max="8xl" className="px-4 md:px-8 space-y-6">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-surface p-8 rounded-3xl shadow-sm border border-outline-variant">
-              <div>
-                <h1 className="text-4xl font-extrabold text-foreground mb-2">Danh mục sản phẩm</h1>
-                <p className="text-lg text-on-surface-variant font-medium">Chọn mua sỉ hoặc lẻ – Giá ưu đãi riêng cho đại lý</p>
+            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 bg-surface p-6 sm:p-8 rounded-3xl shadow-sm border border-outline-variant">
+              <div className="min-w-0">
+                <h1 className="text-3xl sm:text-4xl font-extrabold text-foreground mb-2 tracking-tight">
+                  Danh mục sản phẩm
+                </h1>
+                <p className="text-base sm:text-lg text-on-surface-variant font-medium">
+                  Dữ liệu lọc theo trang từ API (đang bán, tìm kiếm, danh mục, đơn
+                  vị, sỉ/lẻ). URL lưu bộ lọc để chia sẻ.
+                </p>
               </div>
-              <div className="flex gap-3 w-full md:w-auto">
-                <Link href="/checkout" className="hidden sm:flex">
-                  <Button className="h-16 px-8 text-xl rounded-2xl font-bold shadow-sm">
-                    <ShoppingCart className="w-6 h-6" />
-                    Giỏ hàng ({cart.unitCount})
+              <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto lg:min-w-[min(100%,28rem)]">
+                <Link href="/cart" className="hidden sm:block shrink-0">
+                  <Button
+                    type="button"
+                    className="h-14 px-6 text-base rounded-2xl font-bold shadow-sm w-full sm:w-auto"
+                  >
+                    <ShoppingCart className="w-5 h-5" />
+                    Giỏ ({cart.unitCount})
                   </Button>
                 </Link>
-                <div className="relative flex-grow">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-outline w-6 h-6" />
+                <div className="relative flex-1 min-w-0">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-5 h-5 pointer-events-none" />
                   <Input
-                    type="text"
-                    placeholder="Tìm tên sản phẩm, thương hiệu..."
+                    type="search"
+                    enterKeyHint="search"
+                    autoComplete="off"
+                    aria-label="Tìm sản phẩm"
+                    placeholder="SKU, tên, thương hiệu, danh mục…"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-12 py-7 text-xl h-16 w-full md:w-[420px] rounded-2xl bg-background border-outline-variant focus:ring-primary/20 transition-all shadow-sm"
+                    className="pl-11 h-14 text-base sm:text-lg w-full rounded-2xl bg-background border-outline-variant shadow-sm"
                   />
                 </div>
               </div>
             </div>
 
-            <div className="flex gap-2 overflow-x-auto pb-1 flex-wrap">
+            <div
+              className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1"
+              role="tablist"
+              aria-label="Danh mục"
+            >
               {categoryTabs.map((tab) => {
                 const Icon = tab.icon;
                 const active = categoryTab === tab.key;
                 const count =
                   tab.key === "ALL"
-                    ? products.length
-                    : products.filter((p) => p.category === tab.key).length;
+                    ? totalCatalogCount
+                    : (usageMap.get(tab.key) ?? 0);
                 return (
                   <Button
                     key={tab.key}
+                    type="button"
+                    role="tab"
+                    aria-selected={active}
                     onClick={() => setCategoryTab(tab.key)}
-                    className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm whitespace-nowrap border transition-all ${active
+                    className={`flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl font-bold text-sm whitespace-nowrap border transition-all shrink-0 ${active
                         ? "bg-primary text-primary-foreground border-primary shadow-md"
                         : "bg-background border-outline-variant text-on-surface-variant hover:bg-muted"
                       }`}
                   >
-                    <Icon className="w-4 h-4" />
+                    <Icon className="w-4 h-4 shrink-0" aria-hidden />
                     {tab.label}
-                    <Badge className={`ml-1 text-[10px] px-1.5 py-0 ${active ? "bg-white/20 text-white" : "bg-muted text-muted-foreground"}`}>
+                    <Badge
+                      className={`ml-0.5 text-[10px] px-1.5 py-0 tabular-nums ${active ? "bg-white/20 text-white" : "bg-muted text-muted-foreground"}`}
+                    >
                       {count}
                     </Badge>
                   </Button>
@@ -164,53 +350,108 @@ export default function CatalogPage() {
               })}
             </div>
 
-            <div className="flex flex-wrap gap-3 items-center bg-surface border border-outline-variant rounded-2xl p-4">
-              <Tag className="w-5 h-5 text-primary shrink-0" />
-              <span className="font-bold text-foreground text-sm">Lọc theo:</span>
-              <div className="flex gap-2 flex-wrap">
-                {PURCHASE_TYPE_OPTS.map((opt) => (
-                  <Button
-                    key={opt.key}
-                    onClick={() => setPurchaseType(opt.key)}
-                    className={`px-4 py-1.5 rounded-lg text-sm font-semibold border transition-all ${purchaseType === opt.key
-                        ? "bg-primary/10 text-primary border-primary/40"
-                        : "bg-background border-outline-variant text-on-surface-variant hover:bg-muted"
-                      }`}
-                  >
-                    {opt.label}
-                  </Button>
-                ))}
+            <div className="flex flex-col gap-3 bg-surface border border-outline-variant rounded-2xl p-4 sm:p-5">
+              <div className="flex flex-wrap items-center gap-2">
+                <Tag className="w-5 h-5 text-primary shrink-0" aria-hidden />
+                <span className="font-bold text-foreground text-sm">
+                  Kiểu mua &amp; đơn vị
+                </span>
               </div>
-              <div className="w-px h-6 bg-outline-variant hidden sm:block" />
-              <div className="flex gap-2 flex-wrap">
-                {UNIT_FILTER_OPTS.map((opt) => (
-                  <Button
-                    key={opt.key}
-                    onClick={() => setUnitFilter(opt.key)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${unitFilter === opt.key
-                        ? "bg-secondary/10 text-secondary border-secondary/40"
-                        : "bg-background border-outline-variant text-on-surface-variant hover:bg-muted"
-                      }`}
-                  >
-                    {opt.label}
-                  </Button>
-                ))}
+              <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3 sm:gap-4 sm:items-center">
+                <div className="flex gap-2 flex-wrap">
+                  {PURCHASE_TYPE_OPTS.map((opt) => (
+                    <Button
+                      key={opt.key}
+                      type="button"
+                      size="sm"
+                      onClick={() => setPurchaseType(opt.key)}
+                      className={`rounded-lg text-sm font-semibold border transition-all ${purchaseType === opt.key
+                          ? "bg-primary/10 text-primary border-primary/40"
+                          : "bg-background border-outline-variant text-on-surface-variant hover:bg-muted"
+                        }`}
+                    >
+                      {opt.label}
+                    </Button>
+                  ))}
+                </div>
+                <div className="hidden sm:block w-px h-7 bg-border shrink-0" />
+                <div className="flex gap-2 flex-wrap">
+                  {UNIT_FILTER_OPTS.map((opt) => (
+                    <Button
+                      key={opt.key}
+                      type="button"
+                      size="sm"
+                      onClick={() => setUnitFilter(opt.key)}
+                      className={`rounded-lg text-xs font-semibold border transition-all ${unitFilter === opt.key
+                          ? "bg-secondary/15 text-secondary-foreground border-secondary/40"
+                          : "bg-background border-outline-variant text-on-surface-variant hover:bg-muted"
+                        }`}
+                    >
+                      {opt.label}
+                    </Button>
+                  ))}
+                </div>
               </div>
             </div>
 
-            <div className="flex items-center justify-between">
-              <p className="text-sm text-on-surface-variant font-medium">
-                Hiển thị <span className="font-bold text-foreground">{filteredProducts.length}</span> sản phẩm
-              </p>
-              {(categoryTab !== "ALL" || purchaseType !== "ALL" || unitFilter !== "ALL" || searchTerm) && (
+            {activeChips.length > 0 && (
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-xs font-semibold text-muted-foreground">
+                  Đang lọc:
+                </span>
+                {activeChips.map((c) => (
+                  <button
+                    key={c.key}
+                    type="button"
+                    onClick={c.onRemove}
+                    className="inline-flex items-center gap-1 rounded-full border border-primary/25 bg-primary/5 pl-2.5 pr-1 py-0.5 text-xs font-medium text-foreground hover:bg-primary/10 transition-colors"
+                  >
+                    {c.label}
+                    <span className="flex h-5 w-5 items-center justify-center rounded-full hover:bg-primary/15">
+                      <X className="h-3 w-3" aria-hidden />
+                    </span>
+                  </button>
+                ))}
                 <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 text-xs gap-1 text-muted-foreground"
+                  onClick={clearAllFilters}
+                >
+                  <FilterX className="h-3.5 w-3.5" />
+                  Xóa hết
+                </Button>
+              </div>
+            )}
+
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+              <p className="text-sm text-on-surface-variant font-medium">
+                Trang{" "}
+                <span className="font-bold text-foreground tabular-nums">
+                  {page}
+                </span>
+                /{totalPages} —{" "}
+                <span className="font-bold text-foreground tabular-nums">
+                  {displayProducts.length}
+                </span>
+                /{totalProducts} sản phẩm khớp bộ lọc
+                {debouncedSearch !== searchTerm && searchTerm.trim() ? (
+                  <span className="text-muted-foreground text-xs ml-2">
+                    (đang gõ…)
+                  </span>
+                ) : null}
+              </p>
+              {hasActiveFilters && activeChips.length === 0 ? (
+                <Button
+                  type="button"
                   variant="link"
-                  onClick={() => { setCategoryTab("ALL"); setPurchaseType("ALL"); setUnitFilter("ALL"); setSearchTerm(""); }}
-                  className="text-sm text-primary font-semibold"
+                  onClick={clearAllFilters}
+                  className="text-sm text-primary font-semibold h-auto p-0 sm:self-auto"
                 >
                   Xóa bộ lọc
                 </Button>
-              )}
+              ) : null}
             </div>
 
             {error && (
@@ -233,8 +474,8 @@ export default function CatalogPage() {
 
             {!isLoading && !error && (
               <>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {filteredProducts.map((p) => (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                  {displayProducts.map((p) => (
                     <ProductCardWithUnitSelector
                       key={p.id}
                       product={p}
@@ -244,11 +485,72 @@ export default function CatalogPage() {
                   ))}
                 </div>
 
-                {filteredProducts.length === 0 && (
-                  <div className="text-center py-16 bg-muted/20 border border-dashed border-outline-variant rounded-2xl">
-                    <Package2 className="w-16 h-16 mx-auto text-outline-variant opacity-30 mb-4" />
-                    <p className="text-2xl font-bold text-foreground">Không tìm thấy sản phẩm phù hợp</p>
-                    <p className="text-muted-foreground mt-2">Thử từ khóa khác hoặc xóa bộ lọc tìm kiếm.</p>
+                {totalPages > 1 ? (
+                  <nav
+                    className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-10 pb-2"
+                    aria-label="Phân trang danh mục"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        className="rounded-xl h-11 w-11 shrink-0"
+                        disabled={page <= 1 || isLoading}
+                        onClick={() => {
+                          setPage((prev) => Math.max(1, prev - 1));
+                          window.scrollTo({
+                            top: 0,
+                            behavior: "smooth",
+                          });
+                        }}
+                        aria-label="Trang trước"
+                      >
+                        <ChevronLeft className="h-5 w-5" aria-hidden />
+                      </Button>
+                      <span className="text-sm font-semibold tabular-nums min-w-[5.5rem] text-center px-2">
+                        {page} / {totalPages}
+                      </span>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        className="rounded-xl h-11 w-11 shrink-0"
+                        disabled={page >= totalPages || isLoading}
+                        onClick={() => {
+                          setPage((prev) => Math.min(totalPages, prev + 1));
+                          window.scrollTo({
+                            top: 0,
+                            behavior: "smooth",
+                          });
+                        }}
+                        aria-label="Trang sau"
+                      >
+                        <ChevronRight className="h-5 w-5" aria-hidden />
+                      </Button>
+                    </div>
+                  </nav>
+                ) : null}
+
+                {displayProducts.length === 0 && (
+                  <div className="text-center py-16 px-4 bg-muted/20 border border-dashed border-outline-variant rounded-2xl">
+                    <Package2 className="w-16 h-16 mx-auto text-outline-variant opacity-30 mb-4" aria-hidden />
+                    <p className="text-xl sm:text-2xl font-bold text-foreground">
+                      Không tìm thấy sản phẩm phù hợp
+                    </p>
+                    <p className="text-muted-foreground mt-2 max-w-md mx-auto text-sm">
+                      Thử bỏ bớt bộ lọc hoặc từ khóa ngắn hơn (SKU, tên, thương hiệu).
+                    </p>
+                    {hasActiveFilters ? (
+                      <Button
+                        type="button"
+                        className="mt-6 rounded-xl font-bold"
+                        onClick={clearAllFilters}
+                      >
+                        <FilterX className="w-4 h-4 mr-2" />
+                        Xóa bộ lọc
+                      </Button>
+                    ) : null}
                   </div>
                 )}
               </>
@@ -257,6 +559,25 @@ export default function CatalogPage() {
         </section>
       </PageContent>
     </Page>
+  );
+}
+
+export default function CatalogPage() {
+  return (
+    <Suspense
+      fallback={
+        <Page>
+          <PageContent className="px-0 py-16 grid place-items-center min-h-[40vh]">
+            <Loader2
+              className="h-10 w-10 animate-spin text-primary"
+              aria-label="Đang tải danh mục"
+            />
+          </PageContent>
+        </Page>
+      }
+    >
+      <CatalogPageInner />
+    </Suspense>
   );
 }
 
@@ -269,19 +590,7 @@ function ProductCardWithUnitSelector({
   categoryLabel: string;
   onAddToCart: (product: Product, unit: ProductUnitType, qty: number) => void;
 }) {
-  const fallbackUnit: ProductUnitType = useMemo(
-    () => ({
-      type: p.unit,
-      label: p.unit,
-      wholesalePrice: p.wholesalePrice,
-      retailPrice: p.retailPrice,
-      minWholesaleQty: 0,
-      qtyPerUnit: 1,
-    }),
-    [p],
-  );
-  const units =
-    p.unitTypes && p.unitTypes.length > 0 ? p.unitTypes : [fallbackUnit];
+  const units = useMemo(() => getProductUnits(p), [p]);
   const [selectedUnit, setSelectedUnit] = useState<ProductUnitType>(units[0]!);
   const [quantity, setQuantity] = useState(1);
 
@@ -313,11 +622,11 @@ function ProductCardWithUnitSelector({
           <img
             src={primaryImage}
             alt={p.name}
-            className="w-full h-80 object-cover group-hover:scale-105 transition-transform duration-300"
+            className="w-full aspect-[4/5] max-h-80 object-cover group-hover:scale-105 transition-transform duration-300"
           />
         ) : (
-          <div className="w-full h-52 flex items-center justify-center bg-muted/30">
-            <Package2 className="w-12 h-12 text-outline-variant" />
+          <div className="w-full aspect-[4/5] max-h-80 flex items-center justify-center bg-muted/30">
+            <Package2 className="w-12 h-12 text-outline-variant" aria-hidden />
           </div>
         )}
         {firstCoupon && (

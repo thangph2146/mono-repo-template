@@ -14,8 +14,10 @@ import {
   PaymentMethod,
   PaymentStatus,
   Product,
+  User,
 } from '../entities';
 import { applyPromoCode } from '@workspace/promo-codes';
+import { UsersService } from '../users/users.service';
 
 export interface CreateOrderItemDto {
   productId: number;
@@ -43,6 +45,8 @@ const VALID_TRANSITIONS: Record<OrderStatus, OrderStatus[]> = {
   [OrderStatus.CANCELLED]: [],
 };
 
+const ORDER_POPULATE = ['customer', 'assignedShipper'] as const;
+
 @Injectable()
 export class OrdersService {
   private readonly logger = new Logger(OrdersService.name);
@@ -52,19 +56,20 @@ export class OrdersService {
     private readonly orderRepository: EntityRepository<Order>,
     @InjectRepository(Product)
     private readonly productRepository: EntityRepository<Product>,
+    private readonly usersService: UsersService,
   ) {}
 
   async findAll(): Promise<Order[]> {
-    return this.orderRepository.findAll<'customer'>({
-      populate: ['customer'],
+    return this.orderRepository.findAll({
+      populate: [...ORDER_POPULATE],
       orderBy: { createdAt: 'desc' },
     });
   }
 
   async findOne(id: number): Promise<Order> {
-    const order = await this.orderRepository.findOne<'customer'>(
+    const order = await this.orderRepository.findOne(
       { id },
-      { populate: ['customer'] },
+      { populate: [...ORDER_POPULATE] },
     );
     if (!order) {
       throw new NotFoundException(`Order with id ${id} not found`);
@@ -73,24 +78,72 @@ export class OrdersService {
   }
 
   async findByCustomer(customerId: number): Promise<Order[]> {
-    return this.orderRepository.find<'customer'>(
+    return this.orderRepository.find(
       { customer: customerId },
-      { populate: ['customer'], orderBy: { createdAt: 'desc' } },
+      { populate: [...ORDER_POPULATE], orderBy: { createdAt: 'desc' } },
     );
   }
 
   async findByCustomerEmail(email: string): Promise<Order[]> {
-    return this.orderRepository.find<'customer'>(
+    return this.orderRepository.find(
       { customerEmail: email },
-      { populate: ['customer'], orderBy: { createdAt: 'desc' } },
+      { populate: [...ORDER_POPULATE], orderBy: { createdAt: 'desc' } },
     );
   }
 
   async findByStatus(status: OrderStatus): Promise<Order[]> {
-    return this.orderRepository.find<'customer'>(
+    return this.orderRepository.find(
       { status },
-      { populate: ['customer'], orderBy: { createdAt: 'desc' } },
+      { populate: [...ORDER_POPULATE], orderBy: { createdAt: 'desc' } },
     );
+  }
+
+  /** Danh sách user có role `shipper` — admin/manager gán đơn (orders.write). */
+  async listShippers(): Promise<Pick<User, 'id' | 'email' | 'fullName'>[]> {
+    const users = await this.usersService.findByRoleCode('shipper');
+    return users
+      .filter((u) => u.isActive)
+      .map((u) => ({
+        id: u.id,
+        email: u.email,
+        fullName: u.fullName,
+      }))
+      .sort((a, b) => a.fullName.localeCompare(b.fullName, 'vi'));
+  }
+
+  /**
+   * Gán / bỏ gán shipper. Chỉ user đang có role `shipper` được phép gán.
+   */
+  async assignShipper(
+    orderId: number,
+    shipperUserId: number | null,
+  ): Promise<Order> {
+    const order = await this.findOne(orderId);
+    if (shipperUserId === null) {
+      order.assignedShipper = undefined;
+      await this.orderRepository.getEntityManager().flush();
+      return this.findOne(orderId);
+    }
+    const shipper = await this.usersService.findOne(shipperUserId);
+    if (!this.userHasRoleCode(shipper, 'shipper')) {
+      throw new BadRequestException(
+        `User ${shipper.email} không có vai trò shipper`,
+      );
+    }
+    if (!shipper.isActive) {
+      throw new BadRequestException('Tài khoản shipper đang bị vô hiệu hóa');
+    }
+    order.assignedShipper = shipper;
+    await this.orderRepository.getEntityManager().flush();
+    return this.findOne(orderId);
+  }
+
+  private userHasRoleCode(user: User, code: string): boolean {
+    if (!user.userRoleLinks.isInitialized()) return false;
+    const c = code.trim().toLowerCase();
+    return user.userRoleLinks
+      .getItems()
+      .some((l) => l.role?.code?.trim().toLowerCase() === c);
   }
 
   /**
@@ -210,7 +263,9 @@ export class OrdersService {
     }
 
     if (nextStatus === OrderStatus.SHIPPED) {
-      order.shippedBy = actor ?? order.shippedBy;
+      const fromAssignee = order.assignedShipper?.fullName;
+      const actorName = actor?.trim();
+      order.shippedBy = actorName || order.shippedBy || fromAssignee;
       order.shippedAt = new Date();
     }
     if (nextStatus === OrderStatus.DELIVERED) {
@@ -270,11 +325,70 @@ export class OrdersService {
     return this.updateStatus(id, OrderStatus.CANCELLED, actor);
   }
 
+  /**
+   * Đơn đã huỷ (tồn đã hoàn) → về `pending`: trừ tồn lại như lúc tạo đơn.
+   * Xóa dấu vết giao/huỷ; thanh toán về chưa thu.
+   */
+  async reopenCancelled(id: number, _actor?: string): Promise<Order> {
+    const order = await this.findOne(id);
+    if (order.status !== OrderStatus.CANCELLED) {
+      throw new ConflictException(
+        `Chỉ đơn đã huỷ mới được mở lại (hiện: ${order.status})`,
+      );
+    }
+
+    const items = this.orderItemsArray(order);
+    if (!items.length) {
+      throw new BadRequestException('Đơn không có dòng hàng');
+    }
+
+    const em = this.orderRepository.getEntityManager();
+    const productIds = Array.from(new Set(items.map((i) => i.productId)));
+    const products = await this.productRepository.find({
+      id: { $in: productIds },
+    });
+    const map = new Map(products.map((p) => [p.id, p]));
+
+    for (const item of items) {
+      const product = map.get(item.productId);
+      if (!product) {
+        throw new NotFoundException(`Product id ${item.productId} not found`);
+      }
+      const required = (item.qtyPerUnit ?? 1) * item.quantity;
+      if (product.stock < required) {
+        throw new ConflictException(
+          `Không đủ tồn để mở lại đơn: ${product.name} (cần ${required} ${product.unit}, còn ${product.stock})`,
+        );
+      }
+      product.stock -= required;
+    }
+
+    order.status = OrderStatus.PENDING;
+    order.cancelledAt = undefined;
+    order.shippedAt = undefined;
+    order.shippedBy = undefined;
+    order.assignedShipper = undefined;
+    order.deliveredAt = undefined;
+    order.deliveredBy = undefined;
+    order.paymentStatus = PaymentStatus.UNPAID;
+    order.isPaid = false;
+
+    await em.flush();
+    this.logger.log(
+      `Order ${order.orderNumber} reopened from cancelled → pending`,
+    );
+    return order;
+  }
+
   async update(id: number, orderData: Partial<Order>): Promise<Order> {
     const order = await this.findOne(id);
-    this.orderRepository.assign(order, orderData);
+    const safe = { ...orderData } as Partial<Order> & {
+      assignedShipper?: unknown;
+    };
+    delete safe.assignedShipper;
+    this.orderRepository.assign(order, safe);
     await this.orderRepository.getEntityManager().flush();
-    return order;
+    return this.findOne(id);
   }
 
   async delete(id: number): Promise<void> {
@@ -288,12 +402,32 @@ export class OrdersService {
     await this.orderRepository.getEntityManager().removeAndFlush(order);
   }
 
+  /**
+   * Cột JSON `items` đôi khi hydrate thành chuỗi (driver/DB) — cần mảng trước khi .map.
+   */
+  private orderItemsArray(order: Order): OrderItem[] {
+    const raw = order.items as unknown;
+    if (Array.isArray(raw)) return raw;
+    if (typeof raw === 'string') {
+      const t = raw.trim();
+      if (!t) return [];
+      try {
+        const p = JSON.parse(t) as unknown;
+        return Array.isArray(p) ? (p as OrderItem[]) : [];
+      } catch {
+        return [];
+      }
+    }
+    return [];
+  }
+
   private async restoreStock(order: Order): Promise<void> {
-    if (!order.items?.length) return;
-    const ids = order.items.map((i) => i.productId);
+    const items = this.orderItemsArray(order);
+    if (!items.length) return;
+    const ids = items.map((i) => i.productId);
     const products = await this.productRepository.find({ id: { $in: ids } });
     const map = new Map(products.map((p) => [p.id, p]));
-    for (const item of order.items) {
+    for (const item of items) {
       const product = map.get(item.productId);
       if (!product) continue;
       const restoreQty = (item.qtyPerUnit ?? 1) * item.quantity;

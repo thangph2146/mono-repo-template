@@ -15,6 +15,7 @@
     "@hookform/resolvers": "^5.2.2",
     "@tanstack/react-query": "^5.100.9",
     "@tanstack/react-query-devtools": "^5.100.9",
+    "@tanstack/react-table": "8.21.3",
     "@ui": "workspace:*",
     "@workspace/api-client": "workspace:*",
     "class-variance-authority": "^0.7.1",

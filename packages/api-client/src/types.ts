@@ -52,6 +52,18 @@ export type CreateUserInput = Omit<User, keyof AuditFields> & {
 
 export type UpdateUserInput = Partial<CreateUserInput>;
 
+/** Cập nhật hồ sơ đại lý (PUT /users/:id/profile) — không đổi email/mật khẩu/role. */
+export type UpdateProfileInput = {
+  fullName?: string;
+  phone?: string;
+  address?: string;
+};
+
+export type ChangePasswordInput = {
+  currentPassword: string;
+  newPassword: string;
+};
+
 export interface ProductUnitType {
   type: string;
   label: string;
@@ -59,6 +71,30 @@ export interface ProductUnitType {
   retailPrice: number;
   minWholesaleQty: number;
   qtyPerUnit: number;
+}
+
+/** Tham số lọc GET /products (admin / storefront có thể dùng từng phần). */
+export interface ProductListParams {
+  /** Tương đương ?active=true (chỉ còn bán) — ưu tiên khi không gửi isActive cụ thể. */
+  activeOnly?: boolean;
+  category?: string;
+  brand?: string;
+  /** SP không có brand (null / rỗng). */
+  brandEmpty?: boolean;
+  isActive?: boolean;
+  /** Tìm theo SKU, tên, slug danh mục, brand (LIKE, không phân biệt hoa thường tùm DB). */
+  q?: string;
+  stock?: number;
+  retailPrice?: number;
+  /** Mức tồn: ok ≥50, low 1–49, out ≤0 (khớp admin computeStatus). */
+  stockBand?: "ok" | "low" | "out";
+  /** Lọc theo đơn vị tính (`unitTypes[].type` hoặc `unit`). */
+  unitType?: string;
+  /** Kiểu mua: sỉ (có giá sỉ) / lẻ (có đơn vị chỉ lẻ). */
+  purchaseMode?: "si" | "le";
+  /** Cùng `limit` → API trả `{ items, total }` thay vì mảng. */
+  page?: number;
+  limit?: number;
 }
 
 export interface Product extends AuditFields {
@@ -77,6 +113,12 @@ export interface Product extends AuditFields {
   images?: string[] | null;
   coupons?: string[] | null;
   isActive: boolean;
+}
+
+/** Kết quả phân trang từ GET /products?page=&limit= */
+export interface ProductPagedResponse {
+  items: Product[];
+  total: number;
 }
 
 export type CreateProductInput = Omit<Product, keyof AuditFields>;
@@ -121,9 +163,13 @@ export interface OrderItem {
   image?: string;
 }
 
+/** User được gán làm shipper cho đơn (populate từ API). */
+export type AssignedShipperRef = Pick<User, 'id' | 'fullName' | 'email'>;
+
 export interface Order extends AuditFields {
   orderNumber: string;
   customer?: User | null;
+  assignedShipper?: AssignedShipperRef | null;
   customerName: string;
   customerEmail: string;
   customerPhone?: string | null;

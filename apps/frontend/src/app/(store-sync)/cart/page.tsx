@@ -11,12 +11,7 @@ import {
   CardTitle,
 } from "@ui/components/card";
 import { Container, Page, PageContent } from "@ui/components/layout";
-import {
-  ArrowLeft,
-  Package2,
-  ShoppingCart,
-  Trash2,
-} from "lucide-react";
+import { ArrowLeft, Package2, Trash2 } from "lucide-react";
 import { useCart } from "@/hooks/use-cart";
 import { CartLineItem } from "@/components/shared/cart-line-item";
 import { CartOrderSummary } from "@/components/shared/cart-order-summary";
@@ -28,23 +23,22 @@ export default function CartPage() {
 
   return (
     <Page>
-      <PageContent className="py-8 md:py-10">
-        <Container max="6xl" className="space-y-6">
+      <PageContent className="px-0 md:px-0 py-8 md:py-10 space-y-0">
+        <Container max="6xl" className="px-4 md:px-8 space-y-6">
           <div className="flex items-center justify-between gap-4">
             <div>
               <Button
                 variant="ghost"
                 onClick={() => router.back()}
-                className="mb-2 text-on-surface-variant hover:text-primary -ml-2"
+                className="mb-2 text-muted-foreground hover:text-primary -ml-2"
               >
                 <ArrowLeft className="size-4 mr-1" />
                 Tiếp tục mua hàng
               </Button>
-              <h1 className="text-3xl md:text-4xl font-extrabold flex items-center gap-3">
-                <ShoppingCart className="size-8 text-primary" />
+              <h1 className="text-3xl sm:text-4xl font-bold text-foreground tracking-tight">
                 Giỏ hàng
               </h1>
-              <p className="text-sm text-on-surface-variant mt-1">
+              <p className="text-lg text-muted-foreground mt-1">
                 {isEmpty
                   ? "Chưa có sản phẩm nào trong giỏ"
                   : `${lines.length} loại · ${unitCount} đơn vị`}

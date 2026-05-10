@@ -45,3 +45,38 @@ export function canUserAccess(user: AuthUser, code: PermissionCode): boolean {
   }
   return hasPermission(user.permissions, code);
 }
+
+/**
+ * Role nội bộ được seed trong API (không gồm `customer`).
+ * Dùng để biết tài khoản có được vào storesync-admin hay không.
+ */
+export const STAFF_ADMIN_ROLE_CODES = [
+  "super_admin",
+  "admin",
+  "manager",
+  "sales",
+  "shipper",
+] as const;
+
+/** Quyền “vận hành” — nếu có (kể cả role lạ trong DB) vẫn coi là nội bộ. */
+const STAFF_PANEL_PERMISSION_CODES: PermissionCode[] = [
+  PERMISSION_CODES.PRODUCTS_WRITE,
+  PERMISSION_CODES.CATEGORIES_WRITE,
+  PERMISSION_CODES.ORDERS_WRITE,
+  PERMISSION_CODES.USERS_MANAGE,
+  PERMISSION_CODES.RBAC_READ,
+  PERMISSION_CODES.DATA_MAINTENANCE,
+];
+
+/**
+ * Cổng quản trị chỉ dành cho nội bộ. Khách/đại lý (`customer`) thường chỉ có
+ * `*.read` + `orders.checkout` + `users.cart_own` — không đủ → chặn ở login/shell.
+ */
+export function canAccessStaffAdmin(user: AuthUser): boolean {
+  if (user.roles?.some((r) => isSuperAdminRoleCode(r.code))) return true;
+  const staffRoles = STAFF_ADMIN_ROLE_CODES as readonly string[];
+  if (user.roles?.some((r) => staffRoles.includes(r.code))) return true;
+  return STAFF_PANEL_PERMISSION_CODES.some((p) =>
+    hasPermission(user.permissions, p),
+  );
+}

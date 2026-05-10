@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import type { ColumnDef } from "@tanstack/react-table";
 import { toast } from "sonner";
 import { Button } from "@ui/components/button";
 import { Input } from "@ui/components/input";
@@ -23,15 +24,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@ui/components/select";
-import {
-  Plus,
-  Pencil,
-  Trash2,
-  Tags,
-  Search,
-  AlertCircle,
-} from "lucide-react";
+import { Plus, Pencil, Trash2, Tags, AlertCircle } from "lucide-react";
+import { AdminDataTable } from "@/components/admin-data-table";
 import { type Category, ApiError } from "@/lib/api";
+import { useAuth } from "@/providers/auth-provider";
+import { canUserAccess, PERMISSION_CODES } from "@workspace/api-client";
 import {
   useCategories,
   useCategoryUsage,
@@ -72,7 +69,13 @@ const slugify = (input: string): string =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
 
+type CategoryRow = Category & { productCount: number };
+
 export default function CategoriesPage() {
+  const { user } = useAuth();
+  const canWriteCategories = user
+    ? canUserAccess(user, PERMISSION_CODES.CATEGORIES_WRITE)
+    : false;
   const { data: categoriesData, isLoading: loading, error } = useCategories();
   const { data: usageData } = useCategoryUsage();
   const createMutation = useCreateCategory();
@@ -86,19 +89,18 @@ export default function CategoriesPage() {
     return map;
   }, [usageData]);
 
-  const [searchTerm, setSearchTerm] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const submitting = createMutation.isPending || updateMutation.isPending;
 
-  const filtered = useMemo(() => {
-    const q = searchTerm.toLowerCase().trim();
-    if (!q) return categories;
-    return categories.filter(
-      (c) =>
-        c.name.toLowerCase().includes(q) || c.slug.toLowerCase().includes(q),
-    );
-  }, [categories, searchTerm]);
+  const tableRows = useMemo<CategoryRow[]>(
+    () =>
+      categories.map((c) => ({
+        ...c,
+        productCount: usageMap.get(c.slug) ?? 0,
+      })),
+    [categories, usageMap],
+  );
 
   const openCreate = () => {
     setForm(EMPTY_FORM);
@@ -168,6 +170,121 @@ export default function CategoriesPage() {
     }
   };
 
+  const columns: ColumnDef<CategoryRow>[] = [
+    {
+      accessorKey: "name",
+      header: "Tên",
+      meta: { filterPlaceholder: "Lọc tên" },
+    },
+    {
+      accessorKey: "slug",
+      header: "Slug",
+      meta: { filterPlaceholder: "Lọc slug" },
+    },
+    {
+      accessorKey: "description",
+      header: "Mô tả",
+      cell: ({ getValue }) => (getValue() as string | null) || "—",
+      meta: { filterPlaceholder: "Lọc mô tả" },
+    },
+    {
+      id: "icon",
+      accessorFn: (r) => r.icon ?? "Package2",
+      header: "Icon",
+      cell: ({ row }) => {
+        const I = resolveCategoryIcon(row.original.icon);
+        return <I className="size-4 text-primary shrink-0" />;
+      },
+      filterFn: (row, id, v) => {
+        if (v == null || v === "") return true;
+        return String(row.getValue(id)) === String(v);
+      },
+      meta: {
+        filterVariant: "select",
+        filterLabel: "Icon (Lucide)",
+        selectOptions: CATEGORY_ICON_OPTIONS.map((name) => ({
+          value: name,
+          label: name,
+        })),
+      },
+    },
+    {
+      accessorKey: "sortOrder",
+      header: "Thứ tự",
+      filterFn: (row, id, v) => {
+        if (v == null || v === "") return true;
+        return Number(row.getValue(id)) === Number(v);
+      },
+      meta: { filterVariant: "number", filterPlaceholder: "Bằng…" },
+    },
+    {
+      id: "isActive",
+      accessorFn: (r) => (r.isActive ? "true" : "false"),
+      header: "Trạng thái",
+      cell: ({ row }) =>
+        row.original.isActive ? (
+          <Badge className="text-xs">Đang dùng</Badge>
+        ) : (
+          <Badge variant="outline" className="text-xs">
+            Ẩn
+          </Badge>
+        ),
+      filterFn: (row, id, v) => {
+        if (v == null || v === "") return true;
+        return row.getValue(id) === v;
+      },
+      meta: {
+        filterVariant: "select",
+        selectOptions: [
+          { value: "true", label: "Đang dùng" },
+          { value: "false", label: "Ẩn" },
+        ],
+      },
+    },
+    {
+      accessorKey: "productCount",
+      header: "Số SP",
+      filterFn: (row, id, v) => {
+        if (v == null || v === "") return true;
+        return Number(row.getValue(id)) === Number(v);
+      },
+      meta: { filterVariant: "number", filterPlaceholder: "Số SP = …" },
+    },
+    {
+      id: "actions",
+      header: "Thao tác",
+      enableColumnFilter: false,
+      enableSorting: false,
+      meta: { disableColumnFilter: true },
+      cell: ({ row }) => {
+        const c = row.original;
+        const usage = c.productCount;
+        if (!canWriteCategories) return null;
+        return (
+          <div className="flex flex-wrap gap-1">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 rounded-lg"
+              onClick={() => openEdit(c)}
+            >
+              <Pencil className="w-4 h-4 mr-1" /> Sửa
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 rounded-lg text-destructive hover:bg-destructive/10"
+              onClick={() => void handleDelete(c)}
+              disabled={usage > 0}
+            >
+              <Trash2 className="w-4 h-4" />
+            </Button>
+          </div>
+        );
+      },
+    },
+  ];
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -179,18 +296,26 @@ export default function CategoriesPage() {
           <p className="text-on-surface-variant font-medium mt-1">
             Quản lý danh mục dùng chung cho cả storefront và quản trị viên
           </p>
+          {user && !canWriteCategories && (
+            <p className="text-sm text-amber-800 dark:text-amber-200/90 mt-2 font-medium">
+              Chỉ xem: cần quyền{" "}
+              <span className="font-mono">categories.write</span> để thêm/sửa/xoá.
+            </p>
+          )}
         </div>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogTrigger
-            render={
-              <Button
-                onClick={openCreate}
-                className="flex items-center gap-2 shadow-md h-12 px-6 rounded-xl font-bold"
-              />
-            }
-          >
-            <Plus className="w-5 h-5" /> Thêm danh mục
-          </DialogTrigger>
+          {canWriteCategories && (
+            <DialogTrigger
+              render={
+                <Button
+                  onClick={openCreate}
+                  className="flex items-center gap-2 shadow-md h-12 px-6 rounded-xl font-bold"
+                />
+              }
+            >
+              <Plus className="w-5 h-5" /> Thêm danh mục
+            </DialogTrigger>
+          )}
           <DialogContent className="sm:max-w-[560px]">
             <DialogHeader>
               <DialogTitle className="text-2xl font-extrabold">
@@ -321,22 +446,11 @@ export default function CategoriesPage() {
         </Dialog>
       </div>
 
-      <div className="bg-surface rounded-2xl border border-outline-variant shadow-sm p-4 flex flex-col sm:flex-row gap-4 items-center justify-between">
-        <div className="relative w-full sm:w-96">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-outline w-4 h-4" />
-          <Input
-            placeholder="Tìm tên hoặc slug..."
-            className="pl-10 bg-background border-outline-variant rounded-xl"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-        <p className="text-sm text-on-surface-variant">
-          Tổng cộng:{" "}
-          <span className="font-bold text-foreground">{categories.length}</span>{" "}
-          danh mục
-        </p>
-      </div>
+      <p className="text-sm text-on-surface-variant">
+        Tổng{" "}
+        <span className="font-bold text-foreground">{categories.length}</span>{" "}
+        danh mục — bảng dùng chung: sắp xếp cột, lọc theo từng trường, tìm nhanh.
+      </p>
 
       {error && (
         <div className="text-center py-12 bg-destructive/5 border border-destructive/20 rounded-2xl">
@@ -350,92 +464,24 @@ export default function CategoriesPage() {
         </div>
       )}
 
-      {loading && !error && (
-        <div className="space-y-3">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <div
-              key={i}
-              className="h-20 rounded-2xl bg-muted/30 animate-pulse"
-            />
-          ))}
-        </div>
-      )}
-
-      {!loading && !error && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filtered.map((c) => {
-            const Icon = resolveCategoryIcon(c.icon);
-            const usage = usageMap.get(c.slug) ?? 0;
-            return (
-              <div
-                key={c.id}
-                className="bg-background border border-outline-variant rounded-2xl p-5 shadow-sm flex flex-col gap-3"
-              >
-                <div className="flex items-start gap-3">
-                  <div className="bg-primary/10 p-3 rounded-xl">
-                    <Icon className="size-6 text-primary" />
-                  </div>
-                  <div className="flex-grow min-w-0">
-                    <div className="flex items-center gap-2">
-                      <p className="font-bold text-lg text-foreground line-clamp-1">
-                        {c.name}
-                      </p>
-                      {!c.isActive && (
-                        <Badge className="text-[10px] bg-muted text-muted-foreground">
-                          Ẩn
-                        </Badge>
-                      )}
-                    </div>
-                    <p className="text-xs text-on-surface-variant font-mono">
-                      {c.slug}
-                    </p>
-                    {c.description && (
-                      <p className="text-sm text-on-surface-variant mt-1 line-clamp-2">
-                        {c.description}
-                      </p>
-                    )}
-                  </div>
-                </div>
-                <div className="flex items-center justify-between pt-2 border-t border-outline-variant/30">
-                  <Badge className="bg-primary/10 text-primary border-primary/20 font-semibold">
-                    {usage} sản phẩm
-                  </Badge>
-                  <div className="flex gap-1">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="rounded-lg"
-                      onClick={() => openEdit(c)}
-                    >
-                      <Pencil className="w-4 h-4 mr-1" /> Sửa
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="rounded-lg text-destructive hover:bg-destructive/10"
-                      onClick={() => void handleDelete(c)}
-                      disabled={usage > 0}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-
-          {filtered.length === 0 && (
-            <div className="col-span-full text-center py-16 bg-muted/20 rounded-2xl border border-dashed border-outline-variant">
-              <Tags className="w-16 h-16 mx-auto text-outline-variant opacity-20 mb-4" />
-              <p className="text-xl font-bold text-on-surface-variant">
-                Chưa có danh mục nào
-              </p>
-              <p className="text-sm text-on-surface-variant mt-1">
-                Bấm &quot;Thêm danh mục&quot; để tạo loại sản phẩm đầu tiên
-              </p>
-            </div>
-          )}
-        </div>
+      {!error && (
+        <AdminDataTable<CategoryRow>
+          data={tableRows}
+          columns={columns}
+          isLoading={loading}
+          emptyLabel={
+            canWriteCategories
+              ? 'Chưa có danh mục — bấm "Thêm danh mục".'
+              : "Chưa có dữ liệu hoặc không khớp bộ lọc."
+          }
+          defaultExpandedAll={false}
+          getGlobalFilterText={(r) =>
+            [r.name, r.slug, r.description ?? "", r.icon ?? "", String(r.sortOrder)]
+              .join(" ")
+              .toLowerCase()
+          }
+          globalFilterPlaceholder="Tìm nhanh tên, slug, mô tả…"
+        />
       )}
     </div>
   );

@@ -19,7 +19,12 @@ import {
   ApiResponse,
   ApiHeader,
 } from '@nestjs/swagger';
-import { UsersService, type CreateUserDto } from './users.service';
+import {
+  UsersService,
+  type ChangePasswordDto,
+  type CreateUserDto,
+  type UpdateProfileDto,
+} from './users.service';
 import { User } from '../entities/user.entity';
 import { PermissionsGuard } from '../auth/guards/permissions.guard';
 import { Public, Permissions } from '../auth/decorators/public.decorator';
@@ -153,6 +158,38 @@ export class UsersController {
   ): Promise<{ ok: true }> {
     await this.assertSelfOrManage(req, id);
     await this.usersService.saveCartSnapshot(id, body);
+    return { ok: true };
+  }
+
+  @Put(':id/profile')
+  @Public()
+  @ApiOperation({
+    summary:
+      'Cập nhật hồ sơ (tên, SĐT, địa chỉ cửa hàng) — chỉ chính chủ hoặc users.manage',
+  })
+  async updateProfile(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: UpdateProfileDto,
+    @Req() req: Request,
+  ): Promise<PublicUser> {
+    await this.assertSelfOrManage(req, id);
+    const user = await this.usersService.updateProfile(id, body);
+    return toPublicUser(user);
+  }
+
+  @Post(':id/change-password')
+  @Public()
+  @ApiOperation({
+    summary:
+      'Đổi mật khẩu — chỉ chính chủ (xác minh mật khẩu hiện tại) hoặc users.manage',
+  })
+  async changePassword(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: ChangePasswordDto,
+    @Req() req: Request,
+  ): Promise<{ ok: true }> {
+    await this.assertSelfOrManage(req, id);
+    await this.usersService.changePassword(id, body);
     return { ok: true };
   }
 

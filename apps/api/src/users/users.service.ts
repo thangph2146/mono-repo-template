@@ -3,6 +3,7 @@ import {
   NotFoundException,
   ConflictException,
   BadRequestException,
+  UnauthorizedException,
   Inject,
 } from '@nestjs/common';
 import { InjectRepository } from '@mikro-orm/nestjs';
@@ -20,6 +21,18 @@ export type CreateUserDto = Partial<User> & {
   password: string;
   fullName: string;
   roleCodes?: string[];
+};
+
+/** Chỉ tên / SĐT / địa chỉ — dùng cho storefront tự cập nhật hồ sơ. */
+export type UpdateProfileDto = {
+  fullName?: string;
+  phone?: string;
+  address?: string;
+};
+
+export type ChangePasswordDto = {
+  currentPassword: string;
+  newPassword: string;
 };
 
 @Injectable()
@@ -86,6 +99,41 @@ export class UsersService {
       await this.setRoleCodes(user.id, roleCodes);
     }
     return this.findOne(user.id);
+  }
+
+  async updateProfile(id: number, dto: UpdateProfileDto): Promise<User> {
+    const user = await this.findOne(id);
+    if (dto.fullName !== undefined) {
+      const t = dto.fullName.trim();
+      if (!t) {
+        throw new BadRequestException('fullName không được để trống');
+      }
+      user.fullName = t;
+    }
+    if (dto.phone !== undefined) {
+      user.phone = dto.phone.trim() || undefined;
+    }
+    if (dto.address !== undefined) {
+      user.address = dto.address.trim() || undefined;
+    }
+    await this.em.flush();
+    return this.findOne(id);
+  }
+
+  async changePassword(id: number, dto: ChangePasswordDto): Promise<void> {
+    const user = await this.findOne(id);
+    if (user.password !== dto.currentPassword.trim()) {
+      throw new UnauthorizedException('Mật khẩu hiện tại không đúng');
+    }
+    const next = dto.newPassword.trim();
+    if (next.length < 6) {
+      throw new BadRequestException('Mật khẩu mới tối thiểu 6 ký tự');
+    }
+    if (next === dto.currentPassword.trim()) {
+      throw new BadRequestException('Mật khẩu mới phải khác mật khẩu hiện tại');
+    }
+    user.password = next;
+    await this.em.flush();
   }
 
   async update(

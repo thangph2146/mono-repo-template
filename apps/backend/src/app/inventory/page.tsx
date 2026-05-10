@@ -1,7 +1,12 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMemo, useState } from "react";
+import type {
+  ColumnDef,
+  ColumnFiltersState,
+  OnChangeFn,
+} from "@tanstack/react-table";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Controller,
   useFieldArray,
@@ -11,7 +16,16 @@ import {
 import { toast } from "sonner";
 import { Button } from "@ui/components/button";
 import { Input } from "@ui/components/input";
+import { Textarea } from "@ui/components/textarea";
 import { Badge } from "@ui/components/badge";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@ui/components/card";
 import {
   Dialog,
   DialogContent,
@@ -28,35 +42,54 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@ui/components/select";
+import { ScrollArea } from "@ui/components/scroll-area";
 import {
   AlertTriangle,
-  ChevronDown,
-  Filter,
+  ChevronLeft,
+  ChevronRight,
+  FilterX,
+  ImageIcon,
   Layers,
   Minus,
-  Package2,
   Pencil,
   Plus,
-  Search,
   Trash2,
+  Upload,
 } from "lucide-react";
 import { ApiError, type Category, type Product } from "@/lib/api";
+import { useAuth } from "@/providers/auth-provider";
+import { canUserAccess, PERMISSION_CODES } from "@workspace/api-client";
 import {
   useAdjustStock,
   useCategories,
+  useCategoryUsage,
   useCreateProduct,
   useDeleteProduct,
   useProducts,
   useUpdateProduct,
 } from "@/hooks/queries";
+import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { formatVND } from "@/lib/format";
+import {
+  getProductSubRows,
+  productsToTreeRows,
+  type ProductTreeRow,
+} from "@/lib/admin-inventory-tree";
+import {
+  applyInventoryLineOnlyFilter,
+  inventoryFiltersToProductListParams,
+  inventoryHasLineOnlyFilter,
+} from "@/lib/inventory-api-filters";
+import { AdminDataTable } from "@/components/admin-data-table";
 import { resolveCategoryIcon } from "@/lib/category-icons";
 import {
   defaultProductForm,
   defaultUnitRow,
   formValuesToCreatePayload,
+  MAX_PRODUCT_IMAGE_BYTES,
   productFormSchema,
   productToFormValues,
+  validateProductImageField,
   type ProductFormValues,
 } from "./product-form";
 
@@ -74,11 +107,138 @@ function fieldError(
   return err?.message;
 }
 
+/** Preview trong form: URL / data URL; nếu tải lỗi vẫn hiện placeholder thay vì khung trống. */
+function InventoryImagePreview({ value }: { value: string }) {
+  const trimmed = (value ?? "").trim();
+  const canTryLoad =
+    /^https?:\/\//i.test(trimmed) || /^data:image\//i.test(trimmed);
+  const [broken, setBroken] = useState(false);
+
+  useEffect(() => {
+    setBroken(false);
+  }, [trimmed]);
+
+  const showPlaceholder = !canTryLoad || broken;
+
+  return (
+    <div className="relative aspect-[4/3] w-full overflow-hidden rounded-lg border border-outline-variant bg-muted/40">
+      {canTryLoad && !broken && (
+        // eslint-disable-next-line @next/next/no-img-element -- preview URL/data URL trong admin
+        <img
+          src={trimmed}
+          alt=""
+          className="absolute inset-0 h-full w-full object-cover"
+          onError={() => setBroken(true)}
+        />
+      )}
+      {showPlaceholder && (
+        <div className="absolute inset-0 flex h-full w-full flex-col items-center justify-center gap-1 px-2 text-center text-muted-foreground">
+          <ImageIcon className="h-8 w-8 opacity-50" />
+          <span className="text-[10px] font-medium leading-snug">
+            {broken
+              ? "Không tải được ảnh — kiểm tra URL hoặc file"
+              : "URL hoặc tải ảnh từ máy để xem trước"}
+          </span>
+        </div>
+      )}
+    </div>
+  );
+}
+
+const PAGE_SIZE = 20;
+
+const INVENTORY_PRODUCT_FORM_ID = "inventory-product-dialog-form";
+
 export default function InventoryPage() {
-  const { data, isLoading, error } = useProducts();
+  const { user } = useAuth();
+  const canWriteProducts = user
+    ? canUserAccess(user, PERMISSION_CODES.PRODUCTS_WRITE)
+    : false;
   const { data: categoriesData } = useCategories();
-  const inventory = useMemo(() => data ?? [], [data]);
+  const { data: usageData } = useCategoryUsage();
   const categories = useMemo(() => categoriesData ?? [], [categoriesData]);
+  const usageMap = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const u of usageData ?? []) m.set(u.slug, u.productCount);
+    return m;
+  }, [usageData]);
+
+  const [categoryFilter, setCategoryFilter] = useState("ALL");
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [globalFilter, setGlobalFilter] = useState("");
+  const debouncedColumnFilters = useDebouncedValue(columnFilters, 350);
+  const debouncedGlobalFilter = useDebouncedValue(globalFilter, 350);
+
+  const productListParamsBase = useMemo(
+    () =>
+      inventoryFiltersToProductListParams(
+        categoryFilter,
+        debouncedColumnFilters,
+        debouncedGlobalFilter,
+      ),
+    [categoryFilter, debouncedColumnFilters, debouncedGlobalFilter],
+  );
+
+  const filterSignature = useMemo(
+    () => JSON.stringify(productListParamsBase),
+    [productListParamsBase],
+  );
+
+  const [page, setPage] = useState(1);
+
+  useEffect(() => {
+    setPage(1);
+  }, [filterSignature]);
+
+  const productListParams = useMemo(
+    () => ({
+      ...productListParamsBase,
+      page,
+      limit: PAGE_SIZE,
+    }),
+    [productListParamsBase, page],
+  );
+
+  const { data, isLoading, error } = useProducts({
+    listParams: productListParams,
+  });
+  const inventory = useMemo(() => data?.items ?? [], [data?.items]);
+  const totalProducts = data?.total ?? 0;
+  const totalPages = Math.max(1, Math.ceil(totalProducts / PAGE_SIZE));
+
+  const clearAllFilters = (): void => {
+    setCategoryFilter("ALL");
+    setColumnFilters([]);
+    setGlobalFilter("");
+    setPage(1);
+  };
+
+  /** Tab danh mục và ô « Lọc theo cột → Danh mục » dùng chung state gọi API. */
+  const applyCategoryTab = useCallback((group: string): void => {
+    setCategoryFilter(group);
+    setColumnFilters((prev) => {
+      const rest = prev.filter((f) => f.id !== "category");
+      if (group === "ALL") return rest;
+      return [...rest, { id: "category", value: group }];
+    });
+  }, []);
+
+  const handleColumnFiltersChange = useCallback<OnChangeFn<ColumnFiltersState>>(
+    (updater) => {
+      setColumnFilters((prev) => {
+        const next =
+          typeof updater === "function" ? updater(prev) : updater;
+        const catRaw = next.find((f) => f.id === "category")?.value;
+        if (catRaw != null && String(catRaw) !== "") {
+          setCategoryFilter(String(catRaw));
+        } else {
+          setCategoryFilter("ALL");
+        }
+        return next;
+      });
+    },
+    [],
+  );
 
   const createProduct = useCreateProduct();
   const updateProduct = useUpdateProduct();
@@ -92,17 +252,63 @@ export default function InventoryPage() {
     defaultValues: defaultProductForm(defaultCategory),
   });
 
-  const { control, register, handleSubmit, reset, formState } = form;
-  const { fields, append, remove } = useFieldArray({
+  const { control, register, handleSubmit, reset, formState, watch, setValue } =
+    form;
+  const { fields, append, remove } = useFieldArray<
+    ProductFormValues,
+    "unitTypes"
+  >({
     control,
     name: "unitTypes",
   });
 
-  const categoryMap = useMemo(() => {
-    const map = new Map<string, Category>();
-    for (const c of categories) map.set(c.slug, c);
-    return map;
-  }, [categories]);
+  const imageList = watch("images") ?? [];
+  const appendImage = (): void => {
+    setValue("images", [...imageList, ""]);
+  };
+  const removeImageAt = (idx: number): void => {
+    if (imageList.length <= 1) return;
+    setValue(
+      "images",
+      imageList.filter((_, i) => i !== idx),
+    );
+  };
+
+  const onPickProductImage = useCallback(
+    (idx: number, files: FileList | null): void => {
+      const file = files?.[0];
+      if (!file) return;
+      if (!file.type.startsWith("image/")) {
+        toast.error("Chỉ chọn file ảnh");
+        return;
+      }
+      if (file.size > MAX_PRODUCT_IMAGE_BYTES) {
+        toast.error(
+          `Ảnh tối đa ${MAX_PRODUCT_IMAGE_BYTES / (1024 * 1024)}MB`,
+        );
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (): void => {
+        const dataUrl = reader.result;
+        if (typeof dataUrl !== "string") return;
+        const check = validateProductImageField(dataUrl);
+        if (check !== true) {
+          toast.error(check);
+          return;
+        }
+        setValue(`images.${idx}`, dataUrl, {
+          shouldValidate: true,
+          shouldDirty: true,
+        });
+      };
+      reader.onerror = (): void => {
+        toast.error("Không đọc được file");
+      };
+      reader.readAsDataURL(file);
+    },
+    [setValue],
+  );
 
   const categoryTabs = useMemo(
     () => [
@@ -116,20 +322,8 @@ export default function InventoryPage() {
     [categories],
   );
 
-  const [categoryFilter, setCategoryFilter] = useState("ALL");
-  const [searchTerm, setSearchTerm] = useState("");
-  const [expandedIds, setExpandedIds] = useState<Set<number>>(new Set());
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
-
-  const toggleExpand = (id: number): void => {
-    setExpandedIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  };
 
   const openCreate = (): void => {
     setEditingId(null);
@@ -194,21 +388,224 @@ export default function InventoryPage() {
     );
   };
 
-  const filtered = useMemo(
-    () =>
-      inventory.filter((p) => {
-        const matchCat =
-          categoryFilter === "ALL" || p.category === categoryFilter;
-        const q = searchTerm.toLowerCase().trim();
-        const matchSearch =
-          !q ||
-          p.name.toLowerCase().includes(q) ||
-          p.sku.toLowerCase().includes(q) ||
-          (p.brand ?? "").toLowerCase().includes(q);
-        return matchCat && matchSearch;
-      }),
-    [inventory, categoryFilter, searchTerm],
+  const baseTreeRows = useMemo(
+    () => productsToTreeRows(inventory),
+    [inventory],
   );
+  const lineOnly = useMemo(
+    () => inventoryHasLineOnlyFilter(columnFilters),
+    [columnFilters],
+  );
+  const treeRows = useMemo(
+    () => applyInventoryLineOnlyFilter(baseTreeRows, lineOnly),
+    [baseTreeRows, lineOnly],
+  );
+
+  const inventoryCategoryFilterOptions = useMemo(
+    () =>
+      categories.map((c) => ({
+        value: c.slug,
+        label: `${c.name} (${c.slug})`,
+      })),
+    [categories],
+  );
+
+  const inventoryBrandFilterOptions = useMemo(() => {
+    const set = new Set<string>();
+    for (const p of inventory) {
+      const b = (p.brand ?? "").trim();
+      set.add(b.length ? b : "—");
+    }
+    return [...set]
+      .sort((a, b) => a.localeCompare(b, "vi"))
+      .map((b) => ({
+        value: b,
+        label: b === "—" ? "(Không có thương hiệu)" : b,
+      }));
+  }, [inventory]);
+
+  const inventoryColumns: ColumnDef<ProductTreeRow>[] = [
+    {
+      accessorKey: "sku",
+      header: "SKU",
+      meta: { filterPlaceholder: "Lọc SKU" },
+    },
+    {
+      accessorKey: "name",
+      header: "Tên / Đơn vị",
+      meta: { filterPlaceholder: "Lọc tên" },
+    },
+    {
+      accessorKey: "category",
+      header: "Danh mục",
+      filterFn: (row, id, v) => {
+        if (v == null || v === "") return true;
+        return String(row.getValue(id)) === String(v);
+      },
+      meta: {
+        filterVariant: "select",
+        filterLabel: "Danh mục",
+        selectOptions: inventoryCategoryFilterOptions,
+      },
+    },
+    {
+      accessorKey: "brand",
+      header: "Thương hiệu",
+      filterFn: (row, id, v) => {
+        if (v == null || v === "") return true;
+        return String(row.getValue(id)) === String(v);
+      },
+      meta: {
+        filterVariant: "select",
+        filterLabel: "Thương hiệu",
+        selectOptions: inventoryBrandFilterOptions,
+      },
+    },
+    {
+      accessorKey: "stock",
+      header: "Tồn",
+      filterFn: (row, id, v) => {
+        if (v == null || v === "") return true;
+        return Number(row.getValue(id)) === Number(v);
+      },
+      cell: ({ row, getValue }) => {
+        const n = Number(getValue());
+        const u = row.original.unit;
+        return `${n.toLocaleString("vi-VN")} ${u}`;
+      },
+      meta: { filterVariant: "number", filterPlaceholder: "Tồn = …" },
+    },
+    {
+      accessorKey: "retailPrice",
+      header: "Giá lẻ",
+      filterFn: (row, id, v) => {
+        if (v == null || v === "") return true;
+        return Number(row.getValue(id)) === Number(v);
+      },
+      cell: ({ getValue }) => formatVND(Number(getValue())),
+      meta: { filterVariant: "number", filterPlaceholder: "Giá = …" },
+    },
+    {
+      accessorKey: "isActiveLabel",
+      header: "Kênh bán",
+      filterFn: (row, id, v) => {
+        if (v == null || v === "") return true;
+        return String(row.getValue(id)) === String(v);
+      },
+      cell: ({ row, getValue }) =>
+        row.original.rowKind === "unit" ? "—" : String(getValue()),
+      meta: {
+        filterVariant: "select",
+        selectOptions: [
+          { value: "Còn bán", label: "Còn bán" },
+          { value: "Ngừng", label: "Ngừng" },
+        ],
+      },
+    },
+    {
+      id: "stockBand",
+      accessorFn: (r) =>
+        r.rowKind === "product"
+          ? computeStatus(r.stock)
+          : computeStatus(r.parentStock),
+      header: "Mức tồn",
+      cell: ({ row, getValue }) =>
+        row.original.rowKind === "unit" ? "—" : String(getValue()),
+      filterFn: (row, id, v) => {
+        if (v == null || v === "") return true;
+        if (v === "__line__") {
+          if (row.original.rowKind === "unit") return true;
+          if (row.original.rowKind === "product") {
+            const sr = row.subRows;
+            return !!(sr && sr.length > 0);
+          }
+          return false;
+        }
+        return String(row.getValue(id)) === String(v);
+      },
+      meta: {
+        filterVariant: "select",
+        selectOptions: [
+          { value: "__line__", label: "Chỉ dòng đơn vị" },
+          { value: "Còn hàng", label: "Còn hàng" },
+          { value: "Sắp hết", label: "Sắp hết" },
+          { value: "Hết hàng", label: "Hết hàng" },
+        ],
+      },
+    },
+    {
+      id: "actions",
+      header: "Thao tác",
+      enableColumnFilter: false,
+      enableSorting: false,
+      meta: { disableColumnFilter: true },
+      cell: ({ row }) => {
+        const r = row.original;
+        if (r.rowKind !== "product") return null;
+        const item = r.product;
+        const status = computeStatus(item.stock);
+        return (
+          <div className="flex flex-wrap items-center gap-1">
+            {canWriteProducts && (
+              <>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-8 w-8 rounded-lg"
+                  onClick={() => handleAdjust(item, -1)}
+                  disabled={adjustStock.isPending || item.stock <= 0}
+                  aria-label="Xuất 1"
+                >
+                  <Minus className="w-3.5 h-3.5" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-8 w-8 rounded-lg"
+                  onClick={() => handleAdjust(item, 1)}
+                  disabled={adjustStock.isPending}
+                  aria-label="Nhập 1"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 rounded-lg font-bold text-primary"
+                  onClick={() => openEdit(item)}
+                >
+                  <Pencil className="w-3.5 h-3.5 mr-1" /> Sửa
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 rounded-lg text-destructive"
+                  onClick={() => handleDelete(item)}
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                </Button>
+              </>
+            )}
+            <Badge
+              variant="outline"
+              className={
+                status === "Còn hàng"
+                  ? "bg-success/15 text-success border-success/20"
+                  : status === "Sắp hết"
+                    ? "bg-warning/15 text-warning border-warning/20"
+                    : "bg-destructive/15 text-destructive border-destructive/20"
+              }
+            >
+              {status === "Sắp hết" && (
+                <AlertTriangle className="w-3 h-3 mr-1 inline" />
+              )}
+              {status}
+            </Badge>
+          </div>
+        );
+      },
+    },
+  ];
 
   const submitting =
     formState.isSubmitting ||
@@ -226,30 +623,43 @@ export default function InventoryPage() {
             Phân loại danh mục, quản lý đơn vị (thùng / can / chai / lốc / gói)
             và theo dõi tồn kho theo thời gian thực
           </p>
+          {user && !canWriteProducts && (
+            <p className="text-sm text-amber-800 dark:text-amber-200/90 mt-2 font-medium">
+              Chế độ chỉ xem: tài khoản không có quyền{" "}
+              <span className="font-mono">products.write</span> — không thể
+              thêm/sửa/xoá hay điều chỉnh tồn.
+            </p>
+          )}
         </div>
-        <Button
-          onClick={openCreate}
-          className="flex items-center gap-2 shadow-md h-12 px-6 rounded-xl font-bold"
-        >
-          <Plus className="w-5 h-5" /> Thêm sản phẩm mới
-        </Button>
+        {canWriteProducts && (
+          <Button
+            onClick={openCreate}
+            className="flex items-center gap-2 shadow-md h-12 px-6 rounded-xl font-bold"
+          >
+            <Plus className="w-5 h-5" /> Thêm sản phẩm mới
+          </Button>
+        )}
       </div>
 
       <Dialog open={dialogOpen} onOpenChange={onDialogOpenChange}>
-        <DialogContent className="sm:max-w-[760px] max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="text-2xl font-extrabold">
-              {editingId != null ? "Sửa sản phẩm" : "Thêm sản phẩm"}
-            </DialogTitle>
-            <DialogDescription>
-              Khai báo SKU, danh mục, ảnh và các đơn vị tính (thùng/can/chai...).
-              Mỗi đơn vị tính có giá sỉ &amp; giá lẻ riêng.
-            </DialogDescription>
-          </DialogHeader>
-          <form
-            onSubmit={handleSubmit(onValidSubmit)}
-            className="space-y-6"
-          >
+        <DialogContent className="flex flex-col gap-0 overflow-hidden p-0 sm:max-w-[90vw]">
+          <div className="shrink-0 space-y-1.5 px-4 pt-4 pr-12">
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-extrabold">
+                {editingId != null ? "Sửa sản phẩm" : "Thêm sản phẩm"}
+              </DialogTitle>
+              <DialogDescription>
+                Khai báo SKU, danh mục, ảnh và các đơn vị tính (thùng/can/chai...).
+                Mỗi đơn vị tính có giá sỉ &amp; giá lẻ riêng.
+              </DialogDescription>
+            </DialogHeader>
+          </div>
+          <ScrollArea className="min-h-0 flex-1 max-h-[70vh] overflow-y-auto">
+            <form
+              id={INVENTORY_PRODUCT_FORM_ID}
+              onSubmit={handleSubmit(onValidSubmit)}
+              className="space-y-6 p-4"
+            >
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="psku">Mã SKU</Label>
@@ -347,13 +757,120 @@ export default function InventoryPage() {
                   </p>
                 )}
               </div>
-              <div className="sm:col-span-2 space-y-2">
-                <Label htmlFor="pimg">Ảnh đại diện (URL)</Label>
-                <Input
-                  id="pimg"
-                  {...register("image")}
-                  placeholder="https://..."
-                />
+              <div className="sm:col-span-2">
+                <Card className="gap-0">
+                  <CardHeader className="border-b border-foreground/10 pb-4">
+                    <CardTitle className="text-base">Ảnh sản phẩm</CardTitle>
+                    <CardDescription>
+                      Dán URL hoặc chọn ảnh từ máy (base64, tối đa{" "}
+                      {MAX_PRODUCT_IMAGE_BYTES / (1024 * 1024)}MB mỗi ảnh). Ảnh
+                      đầu tiên thường làm đại diện trên cửa hàng.
+                    </CardDescription>
+                    {canWriteProducts && (
+                      <CardAction>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="rounded-lg gap-1"
+                          onClick={() => appendImage()}
+                        >
+                          <Plus className="w-4 h-4" />
+                          Thêm ảnh
+                        </Button>
+                      </CardAction>
+                    )}
+                  </CardHeader>
+                  <CardContent className="py-4">
+                    <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+                      {imageList.map((urlVal, idx) => {
+                        return (
+                          <Card key={idx} size="sm" className="py-0 shadow-none">
+                            <CardHeader className="pb-2">
+                              <CardTitle className="text-xs font-semibold text-muted-foreground">
+                                Ảnh {idx + 1}
+                              </CardTitle>
+                              {canWriteProducts && (
+                                <CardAction>
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-8 w-8 text-destructive hover:bg-destructive/10"
+                                    onClick={() => removeImageAt(idx)}
+                                    disabled={imageList.length === 1}
+                                    aria-label="Xóa ảnh này"
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                  </Button>
+                                </CardAction>
+                              )}
+                            </CardHeader>
+                            <CardContent className="space-y-3 pb-3 pt-0">
+                              <InventoryImagePreview value={urlVal ?? ""} />
+                              <div className="space-y-2">
+                                <Label
+                                  htmlFor={`pimg-${idx}`}
+                                  className="text-xs"
+                                >
+                                  URL hoặc data ảnh
+                                </Label>
+                                <Textarea
+                                  id={`pimg-${idx}`}
+                                  {...register(`images.${idx}`)}
+                                  placeholder="https://... hoặc data:image/png;base64,..."
+                                  rows={2}
+                                  className="min-h-[4rem] max-h-32 resize-y rounded-lg text-xs font-mono"
+                                  aria-invalid={
+                                    !!formState.errors.images?.[idx]
+                                  }
+                                />
+                                {canWriteProducts && (
+                                  <>
+                                    <input
+                                      type="file"
+                                      accept="image/*"
+                                      className="sr-only"
+                                      id={`pimg-file-${idx}`}
+                                      onChange={(e) => {
+                                        onPickProductImage(idx, e.target.files);
+                                        e.target.value = "";
+                                      }}
+                                    />
+                                    <Button
+                                      type="button"
+                                      variant="outline"
+                                      size="sm"
+                                      className="w-full gap-1 rounded-lg text-xs"
+                                      onClick={() =>
+                                        document
+                                          .getElementById(`pimg-file-${idx}`)
+                                          ?.click()
+                                      }
+                                    >
+                                      <Upload className="h-3.5 w-3.5" />
+                                      Chọn từ máy
+                                    </Button>
+                                  </>
+                                )}
+                                {fieldError(
+                                  formState.errors.images?.[idx],
+                                ) && (
+                                  <p className="text-xs text-destructive">
+                                    {
+                                      formState.errors.images?.[idx]
+                                        ?.message
+                                    }
+                                  </p>
+                                )}
+                              </div>
+                            </CardContent>
+                          </Card>
+                        );
+                      })}
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
               <div className="sm:col-span-2 space-y-2">
                 <Label htmlFor="pdesc">Mô tả ngắn</Label>
@@ -375,17 +892,19 @@ export default function InventoryPage() {
                     Mỗi đơn vị có số lượng quy đổi, giá sỉ và giá lẻ riêng.
                   </p>
                 </div>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="h-8 text-xs rounded-lg"
-                  onClick={() =>
-                    append({ ...defaultUnitRow(), type: "can", label: "" })
-                  }
-                >
-                  <Plus className="w-3 h-3 mr-1" /> Thêm đơn vị
-                </Button>
+                {canWriteProducts && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="h-8 text-xs rounded-lg"
+                    onClick={() =>
+                      append({ ...defaultUnitRow(), type: "can", label: "" })
+                    }
+                  >
+                    <Plus className="w-3 h-3 mr-1" /> Thêm đơn vị
+                  </Button>
+                )}
               </div>
 
               {typeof formState.errors.unitTypes?.message === "string" && (
@@ -477,43 +996,46 @@ export default function InventoryPage() {
                     />
                   </div>
                   <div className="sm:col-span-1 flex justify-end">
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="h-9 w-9 text-destructive hover:bg-destructive/10"
-                      onClick={() => remove(idx)}
-                      disabled={fields.length === 1}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
+                    {canWriteProducts && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-9 w-9 text-destructive hover:bg-destructive/10"
+                        onClick={() => remove(idx)}
+                        disabled={fields.length === 1}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    )}
                   </div>
                 </div>
               ))}
             </div>
-
-            <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                className="mr-auto rounded-xl"
-                onClick={() => onDialogOpenChange(false)}
-              >
-                Hủy
-              </Button>
-              <Button
-                type="submit"
-                className="rounded-xl font-bold"
-                disabled={submitting}
-              >
-                {submitting
-                  ? "Đang lưu..."
-                  : editingId != null
-                    ? "Cập nhật sản phẩm"
-                    : "Tạo sản phẩm"}
-              </Button>
-            </DialogFooter>
-          </form>
+            </form>
+          </ScrollArea>
+          <DialogFooter className="mx-0 mb-0 shrink-0 rounded-b-xl border-t border-foreground/10 bg-popover px-4 py-3 sm:flex-row sm:justify-end">
+            <Button
+              type="button"
+              variant="outline"
+              className="mr-auto rounded-xl"
+              onClick={() => onDialogOpenChange(false)}
+            >
+              Hủy
+            </Button>
+            <Button
+              type="submit"
+              form={INVENTORY_PRODUCT_FORM_ID}
+              className="rounded-xl font-bold"
+              disabled={submitting}
+            >
+              {submitting
+                ? "Đang lưu..."
+                : editingId != null
+                  ? "Cập nhật sản phẩm"
+                  : "Tạo sản phẩm"}
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
 
@@ -523,13 +1045,13 @@ export default function InventoryPage() {
           const active = categoryFilter === cat.group;
           const count =
             cat.group === "ALL"
-              ? inventory.length
-              : inventory.filter((p) => p.category === cat.group).length;
+              ? [...usageMap.values()].reduce((a, b) => a + b, 0)
+              : (usageMap.get(cat.group) ?? 0);
           return (
             <button
               key={cat.group}
               type="button"
-              onClick={() => setCategoryFilter(cat.group)}
+              onClick={() => applyCategoryTab(cat.group)}
               className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm border transition-all ${
                 active
                   ? "bg-primary text-primary-foreground border-primary shadow-md"
@@ -548,25 +1070,13 @@ export default function InventoryPage() {
         })}
       </div>
 
-      <div className="bg-surface rounded-2xl border border-outline-variant shadow-sm p-4 flex flex-col sm:flex-row gap-4 items-center justify-between">
-        <div className="relative w-full sm:w-96">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-outline w-4 h-4" />
-          <Input
-            placeholder="Tìm SKU, tên sản phẩm, thương hiệu..."
-            className="pl-10 bg-background border-outline-variant rounded-xl"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-        <div className="flex gap-2 w-full sm:w-auto">
-          <Button
-            variant="outline"
-            className="flex items-center gap-2 bg-background border-outline-variant rounded-xl font-semibold"
-          >
-            <Filter className="w-4 h-4" /> Lọc nâng cao
-          </Button>
-        </div>
-      </div>
+      <p className="text-sm text-on-surface-variant">
+        Dòng <span className="font-semibold">sản phẩm</span> mở rộng thành cây{" "}
+        <span className="font-semibold">đơn vị tính</span> (bấm mũi tên để mở).
+        Tab danh mục và ô lọc « Danh mục » luôn đồng bộ; cùng ô lọc / tìm nhanh gọi
+        API (phân trang {PAGE_SIZE} SP/trang); badge tab là tổng SP trong DB theo
+        danh mục.
+      </p>
 
       {error && (
         <div className="text-center py-12 bg-destructive/5 border border-destructive/20 rounded-2xl">
@@ -579,220 +1089,78 @@ export default function InventoryPage() {
         </div>
       )}
 
-      {isLoading && !error && (
-        <div className="space-y-3">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <div
-              key={i}
-              className="h-20 rounded-2xl bg-muted/30 animate-pulse"
-            />
-          ))}
-        </div>
-      )}
-
-      {!isLoading && !error && (
-        <div className="space-y-3">
-          {filtered.map((item) => {
-            const expanded = expandedIds.has(item.id);
-            const status = computeStatus(item.stock);
-            const primaryImage = item.images?.[0];
-            const units = item.unitTypes ?? [];
-            return (
-              <div
-                key={item.id}
-                className="bg-background border border-outline-variant rounded-2xl overflow-hidden shadow-sm"
+      {!error && (
+        <>
+          <AdminDataTable<ProductTreeRow>
+            data={treeRows}
+            columns={inventoryColumns}
+            getSubRows={lineOnly ? undefined : getProductSubRows}
+            isLoading={isLoading}
+            emptyLabel="Không có sản phẩm phù hợp bộ lọc."
+            defaultExpandedAll={false}
+            manualFiltering
+            columnFilters={columnFilters}
+            onColumnFiltersChange={handleColumnFiltersChange}
+            globalFilter={globalFilter}
+            onGlobalFilterChange={setGlobalFilter}
+            globalFilterPlaceholder="Tìm nhanh (API): SKU, tên, danh mục, brand…"
+            filterToolbarExtra={
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="h-9 rounded-lg gap-1.5"
+                onClick={clearAllFilters}
               >
-                <div
-                  className="flex flex-wrap items-center gap-4 px-5 py-4 cursor-pointer hover:bg-muted/20 transition-colors select-none"
-                  onClick={() => toggleExpand(item.id)}
-                >
-                  <div className="w-14 h-14 rounded-xl border border-outline-variant/40 bg-white flex items-center justify-center shrink-0 overflow-hidden">
-                    {primaryImage ? (
-                      <img
-                        src={primaryImage}
-                        alt=""
-                        className="w-full h-full object-contain p-1"
-                      />
-                    ) : (
-                      <Package2 className="w-6 h-6 text-outline-variant" />
-                    )}
-                  </div>
-
-                  <div className="flex-grow min-w-0">
-                    <p className="font-bold text-foreground line-clamp-1">
-                      {item.name}
-                    </p>
-                    <div className="flex flex-wrap items-center gap-2 mt-1">
-                      <Badge className="text-[10px] px-2 py-0 bg-muted text-on-surface-variant border-outline-variant/40 font-semibold">
-                        {categoryMap.get(item.category)?.name ?? item.category}
-                      </Badge>
-                      {item.brand && (
-                        <span className="text-xs text-on-surface-variant">
-                          {item.brand}
-                        </span>
-                      )}
-                      <span className="text-xs text-on-surface-variant font-mono">
-                        {item.sku}
-                      </span>
-                      {units.length > 0 && (
-                        <span className="text-xs text-on-surface-variant">
-                          {units.length} đơn vị:{" "}
-                          {units.map((u) => u.type).join(" / ")}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-3 flex-wrap justify-end shrink-0">
-                    <div
-                      className="flex items-center gap-1"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        className="h-8 w-8 rounded-lg"
-                        onClick={() => handleAdjust(item, -1)}
-                        disabled={adjustStock.isPending || item.stock <= 0}
-                        aria-label="Xuất kho 1 đơn vị"
-                      >
-                        <Minus className="w-3.5 h-3.5" />
-                      </Button>
-                      <div className="text-right min-w-[64px]">
-                        <p className="font-black text-lg text-foreground leading-none">
-                          {item.stock.toLocaleString("vi-VN")}
-                        </p>
-                        <p className="text-[10px] text-on-surface-variant">
-                          {item.unit}
-                        </p>
-                      </div>
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        className="h-8 w-8 rounded-lg"
-                        onClick={() => handleAdjust(item, 1)}
-                        disabled={adjustStock.isPending}
-                        aria-label="Nhập kho 1 đơn vị"
-                      >
-                        <Plus className="w-3.5 h-3.5" />
-                      </Button>
-                    </div>
-                    <Badge
-                      variant="outline"
-                      className={
-                        status === "Còn hàng"
-                          ? "bg-success/15 text-success border-success/20"
-                          : status === "Sắp hết"
-                            ? "bg-warning/15 text-warning border-warning/20"
-                            : "bg-destructive/15 text-destructive border-destructive/20"
-                      }
-                    >
-                      {status === "Sắp hết" && (
-                        <AlertTriangle className="w-3 h-3 mr-1" />
-                      )}
-                      {status}
-                    </Badge>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="font-bold text-primary hover:bg-primary/10 rounded-xl"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        openEdit(item);
-                      }}
-                    >
-                      <Pencil className="w-3.5 h-3.5 mr-1" /> Sửa
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="font-bold text-destructive hover:bg-destructive/10 rounded-xl"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDelete(item);
-                      }}
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </Button>
-                    <ChevronDown
-                      className={`w-4 h-4 text-outline transition-transform ${expanded ? "rotate-180" : ""}`}
-                    />
-                  </div>
-                </div>
-
-                {expanded && units.length > 0 && (
-                  <div className="border-t border-outline-variant/30 px-5 py-4 bg-surface/40">
-                    <p className="text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-3">
-                      Chi tiết tồn kho theo đơn vị hàng hóa
-                    </p>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                      {units.map((u) => {
-                        const unitStock = Math.floor(
-                          item.stock / Math.max(u.qtyPerUnit, 1),
-                        );
-                        return (
-                          <div
-                            key={u.type}
-                            className="rounded-xl border border-outline-variant/40 bg-background p-4 space-y-2"
-                          >
-                            <div className="flex items-center justify-between">
-                              <span className="font-bold text-sm text-foreground">
-                                {u.label}
-                              </span>
-                              <Badge className="text-[10px] px-2 py-0 bg-primary/10 text-primary border-primary/20 font-bold capitalize">
-                                {u.type}
-                              </Badge>
-                            </div>
-                            <div className="flex justify-between text-sm">
-                              <span className="text-on-surface-variant">
-                                Tồn kho
-                              </span>
-                              <span className="font-black text-foreground">
-                                {unitStock.toLocaleString("vi-VN")} {u.type}
-                              </span>
-                            </div>
-                            <div className="flex justify-between text-sm">
-                              <span className="text-on-surface-variant">
-                                Giá Sỉ
-                              </span>
-                              <span className="font-bold text-primary">
-                                {u.wholesalePrice
-                                  ? formatVND(u.wholesalePrice)
-                                  : "—"}
-                              </span>
-                            </div>
-                            <div className="flex justify-between text-sm">
-                              <span className="text-on-surface-variant">
-                                Giá Lẻ
-                              </span>
-                              <span className="font-bold text-foreground">
-                                {formatVND(u.retailPrice)}
-                              </span>
-                            </div>
-                            {u.minWholesaleQty > 0 && (
-                              <div className="text-[11px] text-on-surface-variant">
-                                Mua sỉ tối thiểu {u.minWholesaleQty} {u.type}
-                              </div>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-              </div>
-            );
-          })}
-
-          {filtered.length === 0 && (
-            <div className="text-center py-16 bg-muted/20 rounded-2xl border border-dashed border-outline-variant">
-              <Package2 className="w-16 h-16 mx-auto text-outline-variant opacity-20 mb-4" />
-              <p className="text-xl font-bold text-on-surface-variant">
-                Không có sản phẩm phù hợp
-              </p>
+                <FilterX className="size-4" />
+                Xóa bộ lọc
+              </Button>
+            }
+            getRowClassName={(row) =>
+              row.original.rowKind === "product"
+                ? row.original.product.stock <= 0
+                  ? "bg-destructive/5"
+                  : row.original.product.stock < 50
+                    ? "bg-warning/5"
+                    : undefined
+                : undefined
+            }
+          />
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <p className="text-sm text-muted-foreground">
+              {totalProducts === 0
+                ? "Không có sản phẩm"
+                : `Hiển thị ${(page - 1) * PAGE_SIZE + 1}–${Math.min(page * PAGE_SIZE, totalProducts)} / ${totalProducts} sản phẩm`}
+            </p>
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="h-9 rounded-lg"
+                disabled={page <= 1 || isLoading}
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+              >
+                <ChevronLeft className="size-4" />
+                Trước
+              </Button>
+              <span className="text-sm tabular-nums px-2">
+                Trang {page} / {totalPages}
+              </span>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="h-9 rounded-lg"
+                disabled={page >= totalPages || isLoading}
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              >
+                Sau
+                <ChevronRight className="size-4" />
+              </Button>
             </div>
-          )}
-        </div>
+          </div>
+        </>
       )}
     </div>
   );

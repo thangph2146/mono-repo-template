@@ -1,8 +1,10 @@
 export * from './types';
 export {
   PERMISSION_CODES,
+  STAFF_ADMIN_ROLE_CODES,
   hasPermission,
   canUserAccess,
+  canAccessStaffAdmin,
   isSuperAdminRoleCode,
   type PermissionCode,
 } from './permissions';

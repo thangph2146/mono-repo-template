@@ -30,11 +30,10 @@ export function CartLineItem({
     <div className="flex flex-col items-center gap-6 p-6 transition-colors hover:bg-muted/5 sm:flex-row">
       <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-outline-variant/50 bg-white p-2 shadow-sm">
         {line.image ? (
-          // eslint-disable-next-line @next/next/no-img-element -- URL từ API/catalog
           <img
             src={line.image}
             alt={line.name}
-            className="max-h-full object-contain"
+            className="w-full h-full object-cover rounded-lg"
           />
         ) : (
           <Package2 className="h-10 w-10 text-outline-variant" />

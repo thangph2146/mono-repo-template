@@ -1,7 +1,9 @@
 import type { ApiClient } from '../client';
 import type {
   AuthUser,
+  ChangePasswordInput,
   CreateUserInput,
+  UpdateProfileInput,
   UpdateUserInput,
   User,
   UserCartPayload,
@@ -37,6 +39,17 @@ export class UsersApi {
 
   update(id: number, input: UpdateUserInput): Promise<User> {
     return this.http.put<User>(`/users/${id}`, input);
+  }
+
+  updateProfile(id: number, input: UpdateProfileInput): Promise<User> {
+    return this.http.put<User>(`/users/${id}/profile`, input);
+  }
+
+  changePassword(id: number, input: ChangePasswordInput): Promise<{ ok: true }> {
+    return this.http.post<{ ok: true }>(
+      `/users/${id}/change-password`,
+      input,
+    );
   }
 
   remove(id: number): Promise<void> {

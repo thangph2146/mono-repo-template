@@ -8,7 +8,15 @@ import { Badge } from "@ui/components/badge";
 import { Button } from "@ui/components/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@ui/components/card";
 import { Container, Page, PageContent } from "@ui/components/layout";
-import { ArrowLeft, CheckCircle2, CircleDot, Clock3, Package, Truck } from "lucide-react";
+import {
+  ArrowLeft,
+  CheckCircle2,
+  CircleDot,
+  Clock3,
+  Loader2,
+  Package,
+  Truck,
+} from "lucide-react";
 import type { Order } from "@/lib/api";
 import { useOrder } from "@/hooks/queries";
 import { formatDate, formatVND } from "@/lib/format";
@@ -32,11 +40,26 @@ export default function OrderDetailPage() {
     }
   }, [session, router, params.orderId]);
 
+  if (!session) {
+    return (
+      <Page>
+        <PageContent className="flex min-h-[40vh] flex-col items-center justify-center gap-3 px-4">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" aria-hidden />
+          <p className="text-sm text-muted-foreground">Đang chuyển tới đăng nhập…</p>
+        </PageContent>
+      </Page>
+    );
+  }
+
+  if (!isValid) {
+    notFound();
+  }
+
   if (!loading && !data && !error) {
     notFound();
   }
 
-  if (session && data && data.customerEmail !== session.username) {
+  if (data && data.customerEmail !== session.username) {
     notFound();
   }
 
@@ -96,7 +119,7 @@ function OrderCard({ order }: { order: Order }) {
   return (
     <Card className="rounded-2xl border-outline-variant">
       <CardHeader className="border-b border-outline-variant/40">
-        <CardTitle className="text-3xl font-black tracking-tight">
+        <CardTitle className="text-2xl sm:text-3xl font-bold tracking-tight">
           Chi tiết đơn {order.orderNumber}
         </CardTitle>
       </CardHeader>
@@ -115,6 +138,14 @@ function OrderCard({ order }: { order: Order }) {
           <InfoTile icon={Truck} label="Trạng thái" value={order.status} />
           <InfoTile icon={Package} label="Tổng thanh toán" value={formatVND(order.totalAmount)} />
         </div>
+
+        {order.assignedShipper && (
+          <div className="rounded-xl border border-primary/20 bg-primary/5 px-4 py-3 text-sm">
+            <span className="text-muted-foreground font-semibold">Shipper phụ trách: </span>
+            <span className="font-bold text-foreground">{order.assignedShipper.fullName}</span>
+            <span className="text-muted-foreground"> · {order.assignedShipper.email}</span>
+          </div>
+        )}
 
         {order.shippingAddress && (
           <div className="bg-muted/30 border border-outline-variant/30 rounded-xl p-4">

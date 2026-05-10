@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -20,10 +20,23 @@ export default function AdminLoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
+  const staffOnlyToastRef = useRef(false);
 
   useEffect(() => {
     if (clientReady && user) router.replace("/");
   }, [clientReady, user, router]);
+
+  useEffect(() => {
+    if (!clientReady || staffOnlyToastRef.current) return;
+    if (typeof window === "undefined") return;
+    const q = new URLSearchParams(window.location.search);
+    if (q.get("reason") !== "staff_only") return;
+    staffOnlyToastRef.current = true;
+    toast.error(
+      "Tài khoản khách / đại lý không dùng được cổng quản trị. Hãy đăng nhập trên cửa hàng để đặt hàng.",
+    );
+    router.replace("/login", { scroll: false });
+  }, [clientReady, router]);
 
   if (!clientReady || user) {
     return (
@@ -36,9 +49,15 @@ export default function AdminLoginPage() {
   const runLogin = async (e: string, p: string) => {
     setBusy(true);
     try {
-      const ok = await login(e, p);
-      if (!ok) {
+      const result = await login(e, p);
+      if (result === "invalid_credentials") {
         toast.error("Sai email hoặc mật khẩu.");
+        return;
+      }
+      if (result === "staff_only") {
+        toast.error(
+          "Tài khoản này chỉ dùng trên cửa hàng (khách/đại lý). Cổng quản trị cần tài khoản nội bộ.",
+        );
         return;
       }
       toast.success("Đăng nhập thành công.");
@@ -64,7 +83,8 @@ export default function AdminLoginPage() {
           </div>
           <h1 className="text-2xl font-bold text-foreground">B2B Admin</h1>
           <p className="text-sm text-muted-foreground text-center">
-            Đăng nhập bằng tài khoản nội bộ (email + mật khẩu trong hệ thống).
+            Chỉ tài khoản nội bộ (quản trị, kho, kinh doanh…). Khách / đại lý vui
+            lòng dùng trang cửa hàng.
           </p>
         </div>
 
@@ -144,9 +164,10 @@ export default function AdminLoginPage() {
         </form>
 
         <p className="mt-6 text-center text-xs text-muted-foreground">
-          Menu và thao tác hiển thị theo{" "}
-          <span className="font-medium text-foreground">role &amp; quyền</span>{" "}
-          trên API.
+          Sau khi vào hệ thống, menu và nút thao tác khớp{" "}
+          <span className="font-medium text-foreground">quyền ghi</span> trên
+          API (ví dụ chỉ xem kho nếu không có{" "}
+          <span className="font-mono">products.write</span>).
         </p>
       </div>
       <Link

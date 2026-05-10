@@ -12,6 +12,7 @@ import {
 } from "react";
 import { useRouter } from "next/navigation";
 import type { AuthUser } from "@workspace/api-client";
+import { canAccessStaffAdmin } from "@workspace/api-client";
 import { api } from "@/lib/api";
 import {
   ADMIN_SESSION_EVENT,
@@ -43,9 +44,14 @@ function getServerSnapshot(): null {
   return null;
 }
 
+export type StaffLoginResult =
+  | "success"
+  | "invalid_credentials"
+  | "staff_only";
+
 type AuthContextValue = {
   user: AuthUser | null;
-  login: (email: string, password: string) => Promise<boolean>;
+  login: (email: string, password: string) => Promise<StaffLoginResult>;
   logout: () => void;
 };
 
@@ -61,10 +67,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = useCallback(async (email: string, password: string) => {
     const u = await api.users.login({ email: email.trim(), password });
-    if (!u) return false;
+    if (!u) return "invalid_credentials";
+    if (!canAccessStaffAdmin(u)) return "staff_only";
     writeAdminSession(u);
     window.dispatchEvent(new Event(ADMIN_SESSION_EVENT));
-    return true;
+    return "success";
   }, []);
 
   const logout = useCallback(() => {

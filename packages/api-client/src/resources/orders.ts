@@ -1,6 +1,7 @@
 import type { ApiClient } from '../client';
 import { normalizeOrder } from '../normalize-order';
 import type {
+  AssignedShipperRef,
   CreateOrderInput,
   Order,
   OrderStatus,
@@ -34,6 +35,22 @@ export class OrdersApi {
   get(id: number): Promise<Order> {
     return this.http
       .get<Order>(`/orders/${id}`)
+      .then((o) => normalizeOrder(o));
+  }
+
+  /** Nhân viên có role `shipper` — cần orders.write. */
+  listShippers(): Promise<AssignedShipperRef[]> {
+    return this.http.get<AssignedShipperRef[]>('/orders/dispatch/shippers');
+  }
+
+  assignShipper(
+    id: number,
+    shipperUserId: number | null,
+  ): Promise<Order> {
+    return this.http
+      .put<Order>(`/orders/${id}/assign-shipper`, {
+        shipperUserId: shipperUserId ?? null,
+      })
       .then((o) => normalizeOrder(o));
   }
 
@@ -76,6 +93,13 @@ export class OrdersApi {
   cancel(id: number, actor?: string): Promise<Order> {
     return this.http
       .post<Order>(`/orders/${id}/cancel`, { actor })
+      .then((o) => normalizeOrder(o));
+  }
+
+  /** Đơn đã huỷ → pending (trừ tồn lại). */
+  reopenFromCancelled(id: number, actor?: string): Promise<Order> {
+    return this.http
+      .post<Order>(`/orders/${id}/reopen-from-cancelled`, { actor })
       .then((o) => normalizeOrder(o));
   }
 

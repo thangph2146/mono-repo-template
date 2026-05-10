@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -54,6 +55,17 @@ export class OrdersController {
     return this.ordersService.findByStatus(status);
   }
 
+  @Get('dispatch/shippers')
+  @Permissions(PERMISSIONS.ORDERS_WRITE)
+  @ApiOperation({
+    summary: 'Danh sách nhân viên shipper (gán đơn)',
+  })
+  async listShippers(): Promise<
+    Array<{ id: number; email: string; fullName: string }>
+  > {
+    return this.ordersService.listShippers();
+  }
+
   @Get(':id')
   @Permissions(PERMISSIONS.ORDERS_READ)
   @ApiOperation({ summary: 'Get order by id' })
@@ -79,6 +91,27 @@ export class OrdersController {
     @Body() orderData: Partial<Order>,
   ): Promise<Order> {
     return this.ordersService.update(id, orderData);
+  }
+
+  @Put(':id/assign-shipper')
+  @Permissions(PERMISSIONS.ORDERS_WRITE)
+  @ApiOperation({
+    summary:
+      'Chỉ định shipper giao hàng (user phải có role shipper); null để bỏ gán',
+  })
+  async assignShipper(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: { shipperUserId?: number | null },
+  ): Promise<Order> {
+    const raw = body?.shipperUserId;
+    if (raw === null || raw === undefined) {
+      return this.ordersService.assignShipper(id, null);
+    }
+    const n = Number(raw);
+    if (!Number.isFinite(n) || n <= 0) {
+      throw new BadRequestException('shipperUserId không hợp lệ');
+    }
+    return this.ordersService.assignShipper(id, n);
   }
 
   @Put(':id/status')
@@ -123,6 +156,19 @@ export class OrdersController {
     @Body() body: ActorPayload = {},
   ): Promise<Order> {
     return this.ordersService.cancel(id, body.actor);
+  }
+
+  @Post(':id/reopen-from-cancelled')
+  @Permissions(PERMISSIONS.ORDERS_WRITE)
+  @ApiOperation({
+    summary:
+      'Mở lại đơn đã huỷ về Chờ xử lý (trừ tồn kho lại, reset thanh toán / giao)',
+  })
+  async reopenFromCancelled(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: ActorPayload = {},
+  ): Promise<Order> {
+    return this.ordersService.reopenCancelled(id, body.actor);
   }
 
   @Delete(':id')

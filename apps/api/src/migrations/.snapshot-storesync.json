@@ -597,10 +597,35 @@
           "comment": null,
           "enumItems": [],
           "mappedType": "datetime"
+        },
+        "assignedShipperId": {
+          "name": "assignedShipperId",
+          "type": "int",
+          "unsigned": true,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": 10,
+          "scale": 0,
+          "default": "NULL",
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "integer"
         }
       },
       "name": "orders",
       "indexes": [
+        {
+          "columnNames": [
+            "assignedShipperId"
+          ],
+          "keyName": "orders_assigned_shipper_id_foreign",
+          "unique": false,
+          "primary": false,
+          "constraint": false
+        },
         {
           "columnNames": [
             "customerId"
@@ -655,6 +680,19 @@
         }
       ],
       "foreignKeys": {
+        "orders_assigned_shipper_id_foreign": {
+          "columnNames": [
+            "assignedShipperId"
+          ],
+          "constraintName": "orders_assigned_shipper_id_foreign",
+          "localTableName": "orders",
+          "referencedTableName": "users",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "updateRule": "restrict",
+          "deleteRule": "set null"
+        },
         "orders_customer_id_foreign": {
           "columnNames": [
             "customerId"

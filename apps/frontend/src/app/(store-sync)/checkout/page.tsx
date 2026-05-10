@@ -16,13 +16,14 @@ import {
   ArrowLeft,
   Banknote,
   HelpCircle,
+  Loader2,
   Package2,
   ShoppingCart,
   Truck,
 } from "lucide-react";
 import { useCart } from "@/hooks/use-cart";
 import { useSession } from "@/hooks/use-session";
-import { useCreateOrder, useUserByEmail } from "@/hooks/queries";
+import { useCreateOrder, useUserById } from "@/hooks/queries";
 import { ApiError } from "@/lib/api";
 import { formatVND } from "@/lib/format";
 import { CartLineItem } from "@/components/shared/cart-line-item";
@@ -32,7 +33,9 @@ export default function CheckoutPage() {
   const router = useRouter();
   const cart = useCart();
   const session = useSession();
-  const { data: profile } = useUserByEmail(session?.username);
+  const sessionUserId = session?.id ? Number.parseInt(session.id, 10) : NaN;
+  const userId = Number.isFinite(sessionUserId) ? sessionUserId : undefined;
+  const { data: profile } = useUserById(userId);
   const createOrder = useCreateOrder();
 
   const isEmpty = cart.lines.length === 0;
@@ -46,7 +49,8 @@ export default function CheckoutPage() {
   if (!session) {
     return (
       <Page>
-        <PageContent className="flex min-h-[40vh] flex-col items-center justify-center gap-2 px-4">
+        <PageContent className="flex min-h-[40vh] flex-col items-center justify-center gap-3 px-4">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" aria-hidden />
           <p className="text-sm text-muted-foreground">Đang chuyển tới đăng nhập…</p>
         </PageContent>
       </Page>
@@ -115,10 +119,10 @@ export default function CheckoutPage() {
                 </Button>
               </Link>
               <div>
-                <h1 className="text-4xl font-extrabold text-foreground">
+                <h1 className="text-3xl sm:text-4xl font-bold text-foreground tracking-tight">
                   Giỏ hàng &amp; Đặt đơn COD
                 </h1>
-                <p className="text-lg text-on-surface-variant font-medium mt-1">
+                <p className="text-lg text-muted-foreground mt-1">
                   Kiểm tra lại sản phẩm và xác nhận thông tin giao nhận
                 </p>
               </div>

@@ -55,6 +55,10 @@ export class Order extends BaseEntity {
   @ManyToOne(() => User, { nullable: true, fieldName: 'customerId' })
   customer?: User;
 
+  /** NV giao hàng được quản trị chỉ định (role `shipper`). */
+  @ManyToOne(() => User, { nullable: true, fieldName: 'assignedShipperId' })
+  assignedShipper?: User;
+
   @Property()
   customerName!: string;
 

@@ -30,7 +30,7 @@ export default function AdminDashboardPage() {
   const ordersResource = useOrders({ enabled: canOrders });
 
   const products = useMemo(
-    () => productsResource.data ?? [],
+    () => productsResource.data?.items ?? [],
     [productsResource.data],
   );
   const orders = useMemo(

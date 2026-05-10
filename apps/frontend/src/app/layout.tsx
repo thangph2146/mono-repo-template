@@ -25,8 +25,12 @@ const robotoMono = Roboto_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "StoreSync B2B | Hệ thống Quản lý Đại lý",
-  description: "Giải pháp nhập hàng sỉ và quản lý kho bãi hiện đại cho cửa hàng tiện lợi.",
+  title: {
+    template: "%s · StoreSync B2B",
+    default: "Trang chủ",
+  },
+  description:
+    "Giải pháp nhập hàng sỉ và quản lý kho bãi hiện đại cho cửa hàng tiện lợi.",
 };
 
 export default function RootLayout({
@@ -36,7 +40,7 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
+      lang="vi"
       className={`${roboto.variable} ${robotoMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground" suppressHydrationWarning>

@@ -38,10 +38,29 @@ export function readAdminSession(): AuthUser | null {
 
 export function writeAdminSession(user: AuthUser): void {
   sessionStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(user));
+  sessionReadCache = {
+    raw: sessionStorage.getItem(ADMIN_SESSION_KEY),
+    user,
+  };
+}
+
+/** Sau khi cập nhật hồ sơ qua API — giữ nguyên permissions từ phiên đăng nhập. */
+export function patchAdminSessionProfile(
+  fields: Partial<
+    Pick<AuthUser, "fullName" | "phone" | "address" | "updatedAt">
+  >,
+): void {
+  const prev = readAdminSession();
+  if (!prev) return;
+  writeAdminSession({ ...prev, ...fields });
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new Event(ADMIN_SESSION_EVENT));
+  }
 }
 
 export function clearAdminSession(): void {
   sessionStorage.removeItem(ADMIN_SESSION_KEY);
+  sessionReadCache = null;
 }
 
 export function getAdminUserId(): number | null {

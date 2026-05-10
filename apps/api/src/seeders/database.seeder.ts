@@ -85,6 +85,7 @@ export class DatabaseSeeder extends Seeder {
       { code: 'admin', name: 'Quản trị' },
       { code: 'manager', name: 'Quản lý kho' },
       { code: 'sales', name: 'Kinh doanh' },
+      { code: 'shipper', name: 'Giao hàng' },
       { code: 'customer', name: 'Khách / đại lý' },
     ];
     for (const r of roleDefs) {
@@ -153,6 +154,12 @@ export class DatabaseSeeder extends Seeder {
       'orders.write',
       'orders.checkout',
     ]);
+    await linkRolePerms('shipper', [
+      'products.read',
+      'categories.read',
+      'orders.read',
+      'orders.write',
+    ]);
     await linkRolePerms('customer', [
       'products.read',
       'categories.read',
@@ -185,6 +192,8 @@ export class DatabaseSeeder extends Seeder {
       email: string;
       fullName: string;
       roleCodes: string[];
+      phone?: string;
+      address?: string;
     }> = [
       {
         email: 'manager@storesync.local',
@@ -197,18 +206,30 @@ export class DatabaseSeeder extends Seeder {
         roleCodes: ['sales'],
       },
       {
+        email: 'shipper@storesync.local',
+        fullName: 'Nguyễn Văn Shipper',
+        roleCodes: ['shipper'],
+      },
+      {
+        email: 'shipper2@storesync.local',
+        fullName: 'Trần Thị Giao',
+        roleCodes: ['shipper'],
+      },
+      {
         email: 'khach-demo@storesync.local',
         fullName: 'Đại lý Nam Sơn',
         roleCodes: ['customer'],
+        phone: '02837123456',
+        address: '120 Nguyễn Huệ, Quận 1, TP. Hồ Chí Minh',
       },
     ];
     for (const u of users) {
       if (await em.findOne(User, { email: u.email })) continue;
+      const { roleCodes: _rc, ...userFields } = u;
       em.create(
         User,
         {
-          email: u.email,
-          fullName: u.fullName,
+          ...userFields,
           password: 'demo',
           isActive: true,
         },

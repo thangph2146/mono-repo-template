@@ -9,9 +9,13 @@ export default function SupportPage() {
       <PageContent className="px-0 md:px-0 py-8 md:py-10 space-y-0">
         <section>
           <Container max="8xl" className="px-4 md:px-8 space-y-10">
-            <div className="text-center space-y-4">
-              <h1 className="text-5xl font-black text-foreground tracking-tight">Trung tâm hỗ trợ Đại lý</h1>
-              <p className="text-2xl text-muted-foreground font-medium">StoreSync luôn sẵn sàng đồng hành cùng sự phát triển của bạn</p>
+            <div className="text-center space-y-3 max-w-3xl mx-auto">
+              <h1 className="text-3xl sm:text-4xl font-bold text-foreground tracking-tight">
+                Trung tâm hỗ trợ đại lý
+              </h1>
+              <p className="text-lg text-muted-foreground">
+                StoreSync đồng hành cùng bạn xuyên suốt quá trình nhập hàng
+              </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">

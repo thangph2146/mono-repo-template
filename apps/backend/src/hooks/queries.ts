@@ -10,15 +10,20 @@ import {
 import {
   api,
   type AdjustStockInput,
+  type AssignedShipperRef,
   type Category,
   type CategoryUsage,
+  type ChangePasswordInput,
   type CreateCategoryInput,
   type CreateProductInput,
   type Order,
   type OrderStatus,
   type Product,
+  type ProductListParams,
   type UpdateCategoryInput,
   type UpdateProductInput,
+  type UpdateProfileInput,
+  type User,
 } from "@/lib/api";
 
 export const queryKeys = {
@@ -29,14 +34,24 @@ export const queryKeys = {
   category: (id: number) => ["categories", id] as const,
   orders: () => ["orders"] as const,
   order: (id: number) => ["orders", id] as const,
+  staffProfile: (id: number) => ["users", "staff-profile", id] as const,
 };
+
+export type ProductsListData = { items: Product[]; total: number };
 
 export const useProducts = (opts?: {
   enabled?: boolean;
-}): UseQueryResult<Product[], Error> =>
+  listParams?: ProductListParams;
+}): UseQueryResult<ProductsListData, Error> =>
   useQuery({
-    queryKey: queryKeys.products(),
-    queryFn: () => api.products.list(),
+    queryKey: [...queryKeys.products(), opts?.listParams ?? null] as const,
+    queryFn: async () => {
+      const res = await api.products.list(opts?.listParams);
+      if (Array.isArray(res)) {
+        return { items: res, total: res.length };
+      }
+      return { items: res.items, total: res.total };
+    },
     enabled: opts?.enabled ?? true,
   });
 
@@ -111,6 +126,13 @@ export const useOrders = (opts?: { enabled?: boolean }) =>
   useQuery<Order[], Error>({
     queryKey: queryKeys.orders(),
     queryFn: () => api.orders.list(),
+    enabled: opts?.enabled ?? true,
+  });
+
+export const useDispatchShippers = (opts?: { enabled?: boolean }) =>
+  useQuery<AssignedShipperRef[], Error>({
+    queryKey: ["orders", "dispatch", "shippers"] as const,
+    queryFn: () => api.orders.listShippers(),
     enabled: opts?.enabled ?? true,
   });
 
@@ -200,6 +222,36 @@ export const useCancelOrder = (): UseMutationResult<
   });
 };
 
+export const useReopenCancelledOrder = (): UseMutationResult<
+  Order,
+  Error,
+  { id: number; actor?: string }
+> => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, actor }) => api.orders.reopenFromCancelled(id, actor),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: queryKeys.orders() });
+      void qc.invalidateQueries({ queryKey: queryKeys.products() });
+    },
+  });
+};
+
+export const useAssignOrderShipper = (): UseMutationResult<
+  Order,
+  Error,
+  { id: number; shipperUserId: number | null }
+> => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, shipperUserId }) =>
+      api.orders.assignShipper(id, shipperUserId),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: queryKeys.orders() });
+    },
+  });
+};
+
 export const useUpdateOrderStatus = (): UseMutationResult<
   Order,
   Error,
@@ -213,5 +265,36 @@ export const useUpdateOrderStatus = (): UseMutationResult<
       void qc.invalidateQueries({ queryKey: queryKeys.orders() });
       void qc.invalidateQueries({ queryKey: queryKeys.products() });
     },
+  });
+};
+
+export const useStaffProfile = (userId: number | null | undefined) =>
+  useQuery<User, Error>({
+    queryKey: queryKeys.staffProfile(userId ?? -1),
+    queryFn: () => api.users.get(userId as number),
+    enabled: typeof userId === "number" && userId > 0,
+  });
+
+export const useUpdateStaffProfile = (): UseMutationResult<
+  User,
+  Error,
+  { id: number; input: UpdateProfileInput }
+> => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, input }) => api.users.updateProfile(id, input),
+    onSuccess: (u) => {
+      qc.setQueryData(queryKeys.staffProfile(u.id), u);
+    },
+  });
+};
+
+export const useChangeStaffPassword = (): UseMutationResult<
+  { ok: true },
+  Error,
+  { id: number; input: ChangePasswordInput }
+> => {
+  return useMutation({
+    mutationFn: ({ id, input }) => api.users.changePassword(id, input),
   });
 };
