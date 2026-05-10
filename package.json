@@ -5,9 +5,16 @@
   "scripts": {
     "build": "turbo build",
     "dev": "turbo dev",
+    "predev": "pnpm kill",
+    "dev:fresh": "pnpm kill && turbo dev",
+    "kill": "node scripts/kill-ports.mjs 3000 3001 3002 3100 3101",
+    "kill:web": "node scripts/kill-ports.mjs 3000 3001 3100 3101",
+    "kill:api": "node scripts/kill-ports.mjs 3002",
     "lint": "turbo lint",
     "format": "turbo format",
-    "typecheck": "turbo typecheck"
+    "typecheck": "turbo typecheck",
+    "api": "pnpm --filter @api",
+    "db": "pnpm --filter @api exec mikro-orm"
   },
   "devDependencies": {
     "@workspace/eslint-config": "workspace:*",

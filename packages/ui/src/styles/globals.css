@@ -102,7 +102,8 @@
   --destructive: #ba1a1a;
   --destructive-foreground: #ffffff;
   --border: #E2E8F0;
-  --input: #ffffff;
+  /* Must contrast with --card; white made border-input invisible on forms */
+  --input: #E2E8F0;
   --ring: #0D9488;
 
   /* Teal Sentinel palette */
@@ -193,7 +194,8 @@
   --destructive: #ffdad6;
   --destructive-foreground: #93000a;
   --border: #3d4947;
-  --input: #213145;
+  /* Same as card was #213145 — borders vanished; align with --border */
+  --input: #3d4947;
   --ring: #6bd8cb;
 
   --broadcast-red: #ffdad6;

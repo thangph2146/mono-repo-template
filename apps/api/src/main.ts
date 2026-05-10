@@ -1,8 +1,45 @@
 import { NestFactory } from '@nestjs/core';
+import { ValidationPipe } from '@nestjs/common';
+import { json } from 'express';
 import { AppModule } from './app.module';
+import { AppLogger } from './common/logger';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  await app.listen(process.env.PORT ?? 3002);
+  const app = await NestFactory.create(AppModule, { bufferLogs: true });
+  app.use(json({ limit: '50mb' }));
+
+  // Replace the default Nest logger with our centralised one as soon as the
+  // DI graph is ready so every framework log respects the shared format.
+  const appLogger = app.get(AppLogger);
+  appLogger.setContext('Bootstrap');
+  app.useLogger(appLogger);
+
+  app.setGlobalPrefix(process.env.API_PREFIX ?? 'api');
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      transform: true,
+      forbidNonWhitelisted: false,
+    }),
+  );
+
+  const corsOrigins = process.env.CORS_ORIGINS
+    ? process.env.CORS_ORIGINS.split(',').map((origin) => origin.trim())
+    : ['http://localhost:3000', 'http://localhost:3001'];
+
+  app.enableCors({
+    origin: corsOrigins,
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  });
+
+  app.enableShutdownHooks();
+
+  const port = Number(process.env.PORT ?? 3002);
+  await app.listen(port);
+
+  appLogger.log(`@api microservice listening on http://localhost:${port}`);
 }
+
 void bootstrap();

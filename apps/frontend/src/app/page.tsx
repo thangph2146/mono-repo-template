@@ -1,15 +1,11 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   ArrowRight,
   Zap,
   TrendingUp,
   Package,
-  Coffee,
-  Beer,
-  Utensils,
-  Sparkles,
   ChevronRight,
   Flame,
   CheckCircle2,
@@ -26,6 +22,68 @@ import { Heading, Text, Badge, LiveDot } from "@ui/components/typography";
 import { Button } from "@ui/components/button";
 import { ProductCard } from "@/components/shared/product-card";
 import { ProductWideCard } from "@/components/shared/product-wide-card";
+import { useCategories, useProducts } from "@/hooks/queries";
+import { resolveCategoryIcon } from "@/lib/category-icons";
+import { formatVND } from "@/lib/format";
+import type { Product } from "@/lib/api";
+
+const PLACEHOLDER_IMAGE =
+  "https://images.unsplash.com/photo-1604719312566-8912e9227c6a?w=600";
+
+/**
+ * Pick the best per-unit price for the homepage cards. Wholesale (giá sỉ)
+ * usually wins, so we surface that price along with the matching label so the
+ * card matches what the catalog shows.
+ */
+function pickPrimaryPrice(p: Product): {
+  price: number;
+  original: number | null;
+  label: string;
+} {
+  const wholesaleUnit = p.unitTypes?.find(
+    (u) =>
+      u.wholesalePrice !== null &&
+      u.wholesalePrice !== undefined &&
+      Number(u.wholesalePrice) < Number(u.retailPrice),
+  );
+  if (wholesaleUnit) {
+    return {
+      price: wholesaleUnit.wholesalePrice!,
+      original: wholesaleUnit.retailPrice,
+      label: wholesaleUnit.label,
+    };
+  }
+  const anyWholesale = p.unitTypes?.find(
+    (u) => u.wholesalePrice !== null && u.wholesalePrice !== undefined,
+  );
+  if (anyWholesale) {
+    const w = Number(anyWholesale.wholesalePrice);
+    const r = Number(anyWholesale.retailPrice);
+    return {
+      price: w,
+      original: w < r ? r : null,
+      label: anyWholesale.label,
+    };
+  }
+  const firstUnit = p.unitTypes?.[0];
+  if (firstUnit) {
+    return {
+      price: firstUnit.retailPrice,
+      original: null,
+      label: firstUnit.label,
+    };
+  }
+  const w = Number(p.wholesalePrice);
+  const r = Number(p.retailPrice);
+  if (Number.isFinite(w) && w > 0 && w < r) {
+    return { price: w, original: r, label: p.unit };
+  }
+  return {
+    price: r || w || 0,
+    original: null,
+    label: p.unit,
+  };
+}
 
 export default function Home() {
   const [timeLeft, setTimeLeft] = useState({
@@ -46,57 +104,37 @@ export default function Home() {
     return () => clearInterval(timer);
   }, []);
 
-  const categories = [
-    { name: "Nước giải khát", icon: <Beer className="size-6" />, count: "450+ mã hàng", color: "bg-blue-500/10 text-blue-600" },
-    { name: "Thực phẩm khô", icon: <Utensils className="size-6" />, count: "800+ mã hàng", color: "bg-orange-500/10 text-orange-600" },
-    { name: "Bánh kẹo", icon: <Coffee className="size-6" />, count: "320+ mã hàng", color: "bg-pink-500/10 text-pink-600" },
-    { name: "Hóa mỹ phẩm", icon: <Sparkles className="size-6" />, count: "600+ mã hàng", color: "bg-purple-500/10 text-purple-600" },
-    { name: "Đồ dùng cá nhân", icon: <Package className="size-6" />, count: "250+ mã hàng", color: "bg-teal-500/10 text-teal-600" },
-    { name: "Gia vị & Dầu ăn", icon: <TrendingUp className="size-6" />, count: "180+ mã hàng", color: "bg-yellow-500/10 text-yellow-600" },
-  ];
+  const { data: productsData, isLoading: productsLoading } = useProducts();
+  const { data: categoriesData } = useCategories(true);
 
-  const flashSaleProducts = [
-    {
-      id: 1,
-      productId: "PROD-001",
-      name: "Thùng 24 lon Coca-Cola 320ml",
-      originalPrice: "210.000đ",
-      salePrice: "179.000đ",
-      discount: "-15%",
-      sold: 85,
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuB-5MIMJYegmXMs4WyemXVbNzwCVDSBCPEE5Q45ACmYPfLmOVzjdqQv5rGqXkwG0AeU9B_RsEXVVXOXHXmjdbx_kgLpuIf3tiqUZWrUT1ISeVW4URC4pmq7dFJf6dF9ObCBU5TfdxBu0ARsPhzJ8OG_kaEPEguZYM12n-ZLvT8nL_wQxJIztupPlWNx_yUZIAfchDxZ5oDctVMM-ipK-XabO5I-rTLUuYo-kmAsbnkXehFso2IDImjDe85FcC8KRoo0T1zbvh3Z70E",
-    },
-    {
-      id: 2,
-      productId: "PROD-002",
-      name: "Thùng 30 gói Mì Hảo Hảo Chua Cay",
-      originalPrice: "135.000đ",
-      salePrice: "109.000đ",
-      discount: "-20%",
-      sold: 120,
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuDyrWT2YwfoQjQ8JTUUKPO3oUThhOjabvaCaigudtT2AnT4Fl9KwMhwru5roS76Xpb9l743b81FU605aOA3ISWCL-ZWih9Sg4pIypvMlyXAgQ_RvKkoFrneEL-i3fZZl66BkSVLvdjCMZefKV2Iv5gygNggGqyJyGk71dTHmnuLfv251bdNIAUbqoikJIdk8ewGjNBsBFwdHYpJkBCoFsjlT0JHTYsYcyrxj_n9aXf1ptJFDkTlRjks3OvZydi28RNe69etc6zGIDY",
-    },
-    {
-      id: 3,
-      productId: "PROD-003",
-      name: "Lốc 4 hộp Sữa Vinamilk 180ml",
-      originalPrice: "34.000đ",
-      salePrice: "27.500đ",
-      discount: "-18%",
-      sold: 240,
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuDO4v4rA6d4KabXIZqz7possiXK9y5KZ9P-3DLUMOQ9X2rZtoCBKSPuhI3nK9w03TVpgcEDAzqRUx-oAOeGWUQzcwvzWmWOj7wTgSbqT95MmbqwxqnRNTEewnwcq9qOia_4fZ3r1ZZ5opS5zM79rvMdD36lbmdYuROXv20RzDM0B9-a6hzPrGTS7GVmoFyHNOTBMHhZDBxwO7rydvxxIxBOu-a1kFvVWeGDh_W8AExEZ7jf7JSbrdFm4LAQOs03L5DmO9PyfC4fQhI",
-    },
-    {
-      id: 4,
-      productId: "PROD-004",
-      name: "Dầu ăn Tường An Cooking Oil 1L",
-      originalPrice: "52.000đ",
-      salePrice: "44.500đ",
-      discount: "-14%",
-      sold: 64,
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBkgLbfndvipRk3_pZ5TM8pADd0a20PN-oPdnHBEbIBWl38y6HA66dHyyiOuT9pKejs16kMAWN2AGmxV2o7CxReLU2ozBr1JalwbiJ1hQaZtZDNMxizt8rFiK1RtCmggUElOsIfk4XAF88jp41vhUU2QplYB-F7FCvjTWHT8Kk8eU_7jS6Ux9s5m6CxzzyMIo78Y-H8PlEeG8Ge_GW7NONcq9VHUfBoAYILXXkOYPAUT-EWWPjUTHnladjUwdrt55KIPs4oJw2x9Pk",
-    },
-  ];
+  const products = useMemo(() => productsData ?? [], [productsData]);
+  const categories = useMemo(() => categoriesData ?? [], [categoriesData]);
+
+  const categoryMap = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const c of categories) map.set(c.slug, c.name);
+    return map;
+  }, [categories]);
+
+  const flashSale = useMemo(
+    () =>
+      products
+        .filter(
+          (p) =>
+            (p.coupons && p.coupons.length > 0) ||
+            (p.unitTypes &&
+              p.unitTypes.some(
+                (u) => u.wholesalePrice !== null && u.wholesalePrice < u.retailPrice,
+              )),
+        )
+        .slice(0, 4),
+    [products],
+  );
+
+  const bestSellers = useMemo(
+    () => [...products].sort((a, b) => b.stock - a.stock).slice(0, 4),
+    [products],
+  );
 
   return (
     <Page className="selection:bg-primary/30 scroll-smooth">
@@ -137,7 +175,7 @@ export default function Home() {
                     <Text variant="small" className="uppercase tracking-widest font-bold">Đại lý tin dùng</Text>
                   </div>
                   <div className="space-y-1">
-                    <Heading as="span" size="section">5000+</Heading>
+                    <Heading as="span" size="section">{products.length || "5000"}+</Heading>
                     <Text variant="small" className="uppercase tracking-widest font-bold">Mặt hàng sỉ</Text>
                   </div>
                   <div className="space-y-1">
@@ -169,7 +207,7 @@ export default function Home() {
           </Container>
         </section>
 
-        {/* --- Flash Sale Section --- */}
+        {/* --- Flash Sale Section (data-driven) --- */}
         <section className="py-24 bg-surface relative overflow-hidden w-full">
           <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] -mr-64 -mt-64"></div>
           <Container max="8xl" className="px-6 md:px-12">
@@ -197,27 +235,60 @@ export default function Home() {
               </Link>
             </div>
 
-            <Grid cols={4} gap={8}>
-              {flashSaleProducts.map((p) => (
-                <ProductCard
-                  key={p.id}
-                  variant="flash"
-                  href={`/catalog/${p.productId}`}
-                  name={p.name}
-                  image={p.image}
-                  originalPrice={p.originalPrice}
-                  price={p.salePrice}
-                  discountLabel={p.discount}
-                  soldText={`Đã bán ${p.sold} lốc`}
-                  progressPercent={(p.sold / 300) * 100}
-                  primaryCtaLabel="Xem chi tiết"
-                />
-              ))}
-            </Grid>
+            {productsLoading ? (
+              <Grid cols={4} gap={8}>
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <div key={i} className="h-[520px] rounded-3xl bg-muted/40 animate-pulse" />
+                ))}
+              </Grid>
+            ) : flashSale.length === 0 ? (
+              <div className="text-center py-12 bg-muted/20 border border-dashed border-outline-variant rounded-2xl">
+                <Package className="w-16 h-16 mx-auto text-outline-variant opacity-30 mb-4" />
+                <p className="text-xl font-bold">Chưa có chương trình giảm giá</p>
+                <p className="text-muted-foreground mt-1">
+                  Quay lại sau để bắt deal mới nhé.
+                </p>
+              </div>
+            ) : (
+              <Grid cols={4} gap={8}>
+                {flashSale.map((p) => {
+                  const primary = pickPrimaryPrice(p);
+                  const discount =
+                    primary.original != null &&
+                    primary.original > primary.price
+                      ? Math.round(
+                          ((primary.original - primary.price) /
+                            primary.original) *
+                            100,
+                        )
+                      : null;
+                  return (
+                    <ProductCard
+                      key={p.id}
+                      variant="flash"
+                      href={`/catalog/${p.id}`}
+                      name={p.name}
+                      image={p.images?.[0] ?? PLACEHOLDER_IMAGE}
+                      originalPrice={
+                        primary.original != null &&
+                        primary.original > primary.price
+                          ? formatVND(primary.original)
+                          : undefined
+                      }
+                      price={formatVND(primary.price)}
+                      discountLabel={discount ? `-${discount}%` : undefined}
+                      soldText={`Tồn kho ${p.stock} ${p.unit}`}
+                      progressPercent={Math.min(100, (p.stock / 1000) * 100)}
+                      primaryCtaLabel="Xem chi tiết"
+                    />
+                  );
+                })}
+              </Grid>
+            )}
           </Container>
         </section>
 
-        {/* --- Categories Grid --- */}
+        {/* --- Categories Grid (data-driven) --- */}
         <section className="py-32 bg-background w-full">
           <Container max="8xl" className="px-6 md:px-12">
             <div className="text-center space-y-6 mb-20">
@@ -229,25 +300,43 @@ export default function Home() {
               </Text>
             </div>
 
-            <Grid cols={6} gap={8}>
-              {categories.map((cat, idx) => (
-                <div key={idx} className="group cursor-pointer">
-                  <div className={`aspect-square ${cat.color} rounded-[2.5rem] flex flex-col items-center justify-center gap-4 transition-all duration-300 group-hover:scale-105 group-hover:shadow-xl group-hover:shadow-primary/5 border border-transparent group-hover:border-primary/20`}>
-                    <div className="p-4 bg-white dark:bg-zinc-800 rounded-2xl shadow-sm transition-transform group-hover:rotate-12">
-                      {cat.icon}
-                    </div>
-                    <div className="text-center px-4">
-                      <Text variant="label" className="font-black tracking-tight">{cat.name}</Text>
-                      <Text variant="caption" className="font-bold opacity-80 mt-1">{cat.count}</Text>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </Grid>
+            {categories.length === 0 ? (
+              <Grid cols={4} gap={8}>
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <div key={i} className="aspect-square rounded-[2.5rem] bg-muted/30 animate-pulse" />
+                ))}
+              </Grid>
+            ) : (
+              <Grid cols={Math.min(6, categories.length) as 4 | 6} gap={8}>
+                {categories.map((cat) => {
+                  const Icon = resolveCategoryIcon(cat.icon);
+                  const count = products.filter((p) => p.category === cat.slug).length;
+                  return (
+                    <Link
+                      key={cat.slug}
+                      href={`/catalog?category=${cat.slug}`}
+                      className="group cursor-pointer"
+                    >
+                      <div className="aspect-square bg-primary/5 text-primary rounded-[2.5rem] flex flex-col items-center justify-center gap-4 transition-all duration-300 group-hover:scale-105 group-hover:shadow-xl group-hover:shadow-primary/5 border border-transparent group-hover:border-primary/20">
+                        <div className="p-4 bg-white dark:bg-zinc-800 rounded-2xl shadow-sm transition-transform group-hover:rotate-12">
+                          <Icon className="size-7" />
+                        </div>
+                        <div className="text-center px-4">
+                          <Text variant="label" className="font-black tracking-tight">{cat.name}</Text>
+                          <Text variant="caption" className="font-bold opacity-80 mt-1">
+                            {count} mã hàng
+                          </Text>
+                        </div>
+                      </div>
+                    </Link>
+                  );
+                })}
+              </Grid>
+            )}
           </Container>
         </section>
 
-        {/* --- Most Purchased Section --- */}
+        {/* --- Most Purchased Section (data-driven) --- */}
         <section className="py-32 bg-surface rounded-none md:rounded-[5rem] mx-0 md:mx-6 border-y md:border border-border shadow-inner w-full md:w-[calc(100%-3rem)]">
           <Container max="8xl" className="px-6 md:px-12 w-full">
             <div className="flex flex-col lg:flex-row gap-16 items-start min-w-0 w-full">
@@ -277,46 +366,46 @@ export default function Home() {
                     </div>
                   ))}
                 </div>
-                <Button size="lg" variant="outline" className="h-16 px-10 text-xl font-bold rounded-2xl border-2 mt-4 hover:bg-muted group">
-                  Xem bảng xếp hạng
-                  <ArrowRight className="ml-2 size-5 group-hover:translate-x-1 transition-transform" />
-                </Button>
+                <Link href="/catalog">
+                  <Button size="lg" variant="outline" className="h-16 px-10 text-xl font-bold rounded-2xl border-2 mt-4 hover:bg-muted group">
+                    Xem bảng xếp hạng
+                    <ArrowRight className="ml-2 size-5 group-hover:translate-x-1 transition-transform" />
+                  </Button>
+                </Link>
               </div>
               <div className="flex-1 min-w-0 w-full">
-                <Grid cols={2} gap={8}>
-                  <ProductWideCard
-                    productId="PROD-003"
-                    name="Thùng Sữa Tươi Vinamilk 180ml"
-                    price="285.000đ"
-                    sold="1.2k+ thùng"
-                    image="https://lh3.googleusercontent.com/aida-public/AB6AXuDO4v4rA6d4KabXIZqz7possiXK9y5KZ9P-3DLUMOQ9X2rZtoCBKSPuhI3nK9w03TVpgcEDAzqRUx-oAOeGWUQzcwvzWmWOj7wTgSbqT95MmbqwxqnRNTEewnwcq9qOia_4fZ3r1ZZ5opS5zM79rvMdD36lbmdYuROXv20RzDM0B9-a6hzPrGTS7GVmoFyHNOTBMHhZDBxwO7rydvxxIxBOu-a1kFvVWeGDh_W8AExEZ7jf7JSbrdFm4LAQOs03L5DmO9PyfC4fQhI"
-                    tag="Trending"
-                  />
-                  <ProductWideCard
-                    productId="PROD-002"
-                    name="Combo 10 Thùng Bia Tiger Crystal"
-                    price="3.450.000đ"
-                    sold="850 combo"
-                    image="https://lh3.googleusercontent.com/aida-public/AB6AXuB-5MIMJYegmXMs4WyemXVbNzwCVDSBCPEE5Q45ACmYPfLmOVzjdqQv5rGqXkwG0AeU9B_RsEXVVXOXHXmjdbx_kgLpuIf3tiqUZWrUT1ISeVW4URC4pmq7dFJf6dF9ObCBU5TfdxBu0ARsPhzJ8OG_kaEPEguZYM12n-ZLvT8nL_wQxJIztupPlWNx_yUZIAfchDxZ5oDctVMM-ipK-XabO5I-rTLUuYo-kmAsbnkXehFso2IDImjDe85FcC8KRoo0T1zbvh3Z70E"
-                    tag="Best Seller"
-                  />
-                  <ProductWideCard
-                    productId="PROD-002"
-                    name="Thùng Mì Hảo Hảo Tôm Chua Cay"
-                    price="105.000đ"
-                    sold="2.5k+ thùng"
-                    image="https://lh3.googleusercontent.com/aida-public/AB6AXuDyrWT2YwfoQjQ8JTUUKPO3oUThhOjabvaCaigudtT2AnT4Fl9KwMhwru5roS76Xpb9l743b81FU605aOA3ISWCL-ZWih9Sg4pIypvMlyXAgQ_RvKkoFrneEL-i3fZZl66BkSVLvdjCMZefKV2Iv5gygNggGqyJyGk71dTHmnuLfv251bdNIAUbqoikJIdk8ewGjNBsBFwdHYpJkBCoFsjlT0JHTYsYcyrxj_n9aXf1ptJFDkTlRjks3OvZydi28RNe69etc6zGIDY"
-                    tag="Hot Stock"
-                  />
-                  <ProductWideCard
-                    productId="PROD-004"
-                    name="Thùng Nước Tương Maggi 24 chai"
-                    price="420.000đ"
-                    sold="600 thùng"
-                    image="https://lh3.googleusercontent.com/aida-public/AB6AXuBkgLbfndvipRk3_pZ5TM8pADd0a20PN-oPdnHBEbIBWl38y6HA66dHyyiOuT9pKejs16kMAWN2AGmxV2o7CxReLU2ozBr1JalwbiJ1hQaZtZDNMxizt8rFiK1RtCmggUElOsIfk4XAF88jp41vhUU2QplYB-F7FCvjTWHT8Kk8eU_7jS6Ux9s5m6CxzzyMIo78Y-H8PlEeG8Ge_GW7NONcq9VHUfBoAYILXXkOYPAUT-EWWPjUTHnladjUwdrt55KIPs4oJw2x9Pk"
-                    tag="Top Rated"
-                  />
-                </Grid>
+                {productsLoading ? (
+                  <Grid cols={2} gap={8}>
+                    {Array.from({ length: 4 }).map((_, i) => (
+                      <div key={i} className="h-44 rounded-[2.5rem] bg-muted/40 animate-pulse" />
+                    ))}
+                  </Grid>
+                ) : (
+                  <Grid cols={2} gap={8}>
+                    {bestSellers.map((p, idx) => {
+                      const primary = pickPrimaryPrice(p);
+                      const tag = ["Best Seller", "Trending", "Hot Stock", "Top Rated"][idx] ?? "Hot";
+                      return (
+                        <ProductWideCard
+                          key={p.id}
+                          productId={String(p.id)}
+                          name={p.name}
+                          listPrice={
+                            primary.original != null &&
+                            primary.original > primary.price
+                              ? formatVND(primary.original)
+                              : undefined
+                          }
+                          price={`${formatVND(primary.price)} / ${primary.label}`}
+                          sold={`${p.stock.toLocaleString("vi-VN")} ${p.unit}`}
+                          image={p.images?.[0] ?? PLACEHOLDER_IMAGE}
+                          tag={tag}
+                          category={categoryMap.get(p.category) ?? p.category}
+                        />
+                      );
+                    })}
+                  </Grid>
+                )}
               </div>
             </div>
           </Container>
@@ -350,12 +439,16 @@ export default function Home() {
                 Đăng ký tài khoản đại lý ngay hôm nay để nhận bảng báo giá sỉ độc quyền và ưu đãi miễn phí vận chuyển cho đơn hàng đầu tiên.
               </Text>
               <div className="flex flex-col sm:flex-row gap-8 justify-center pt-8">
-                <Button size="lg" className="h-20 px-12 text-3xl font-black rounded-3xl bg-white text-primary hover:bg-white/90 shadow-2xl transition-all hover:scale-105 active:scale-95">
-                  Đăng ký ngay
-                </Button>
-                <Button size="lg" variant="outline" className="h-20 px-12 text-3xl font-black rounded-3xl border-2 border-white/20 text-foreground-primary hover:bg-white/10 hover:text-primary-foreground transition-all active:scale-95">
-                  Tư vấn trực tiếp
-                </Button>
+                <Link href="/register">
+                  <Button size="lg" className="h-20 px-12 text-3xl font-black rounded-3xl bg-white text-primary hover:bg-white/90 shadow-2xl transition-all hover:scale-105 active:scale-95">
+                    Đăng ký ngay
+                  </Button>
+                </Link>
+                <Link href="/support">
+                  <Button size="lg" variant="outline" className="h-20 px-12 text-3xl font-black rounded-3xl border-2 border-white/20 text-foreground-primary hover:bg-white/10 hover:text-primary-foreground transition-all active:scale-95">
+                    Tư vấn trực tiếp
+                  </Button>
+                </Link>
               </div>
             </div>
           </div>

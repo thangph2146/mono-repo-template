@@ -2,13 +2,15 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { 
-  ShieldCheck, 
-  LayoutDashboard, 
-  ListTodo, 
-  Package, 
-  Store, 
-  LogOut 
+import {
+  ShieldCheck,
+  Database,
+  LayoutDashboard,
+  ListTodo,
+  Package,
+  Store,
+  Tags,
+  LogOut,
 } from "lucide-react";
 import { cn } from "@ui/lib/utils";
 
@@ -16,7 +18,9 @@ const menuItems = [
   { href: "/", label: "Tổng quan", icon: LayoutDashboard },
   { href: "/orders", label: "Quản lý Đơn hàng", icon: ListTodo },
   { href: "/inventory", label: "Kho hàng & Sản phẩm", icon: Package },
+  { href: "/categories", label: "Loại sản phẩm", icon: Tags },
   { href: "/locations", label: "Đại lý & Cửa hàng", icon: Store },
+  { href: "/data", label: "Sao lưu dữ liệu", icon: Database },
 ];
 
 export function Sidebar() {

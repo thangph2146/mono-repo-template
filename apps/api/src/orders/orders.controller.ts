@@ -1,40 +1,46 @@
 import {
-  Controller,
-  Get,
-  Post,
-  Put,
-  Delete,
   Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
   Param,
   ParseIntPipe,
+  Post,
+  Put,
+  Query,
+  UseGuards,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { OrdersService } from './orders.service';
+import { ApiHeader, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { OrdersService, type CreateOrderDto } from './orders.service';
 import { Order, OrderStatus } from '../entities';
+import { PermissionsGuard } from '../auth/guards/permissions.guard';
+import { Public, Permissions } from '../auth/decorators/public.decorator';
+import { PERMISSIONS } from '../auth/permissions.constants';
+
+interface ActorPayload {
+  actor?: string;
+}
 
 @ApiTags('orders')
 @Controller('orders')
+@UseGuards(PermissionsGuard)
+@ApiHeader({ name: 'X-User-Id', required: false })
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
   @Get()
-  @ApiOperation({ summary: 'Get all orders' })
-  @ApiResponse({ status: 200, description: 'Return all orders' })
-  async findAll(): Promise<Order[]> {
+  @Permissions(PERMISSIONS.ORDERS_READ)
+  @ApiOperation({ summary: 'List orders (staff); ?email= lọc theo khách' })
+  async findAll(@Query('email') email?: string): Promise<Order[]> {
+    if (email) return this.ordersService.findByCustomerEmail(email);
     return this.ordersService.findAll();
   }
 
-  @Get(':id')
-  @ApiOperation({ summary: 'Get order by id' })
-  @ApiResponse({ status: 200, description: 'Return the order' })
-  @ApiResponse({ status: 404, description: 'Order not found' })
-  async findOne(@Param('id', ParseIntPipe) id: number): Promise<Order> {
-    return this.ordersService.findOne(id);
-  }
-
   @Get('customer/:customerId')
-  @ApiOperation({ summary: 'Get orders by customer' })
-  @ApiResponse({ status: 200, description: 'Return customer orders' })
+  @Permissions(PERMISSIONS.ORDERS_READ)
+  @ApiOperation({ summary: 'Get orders by customer id' })
   async findByCustomer(
     @Param('customerId', ParseIntPipe) customerId: number,
   ): Promise<Order[]> {
@@ -42,22 +48,32 @@ export class OrdersController {
   }
 
   @Get('status/:status')
+  @Permissions(PERMISSIONS.ORDERS_READ)
   @ApiOperation({ summary: 'Get orders by status' })
-  @ApiResponse({ status: 200, description: 'Return orders with status' })
   async findByStatus(@Param('status') status: OrderStatus): Promise<Order[]> {
     return this.ordersService.findByStatus(status);
   }
 
+  @Get(':id')
+  @Permissions(PERMISSIONS.ORDERS_READ)
+  @ApiOperation({ summary: 'Get order by id' })
+  async findOne(@Param('id', ParseIntPipe) id: number): Promise<Order> {
+    return this.ordersService.findOne(id);
+  }
+
   @Post()
-  @ApiOperation({ summary: 'Create a new order' })
+  @Public()
+  @ApiOperation({
+    summary: 'Create a new order from cart (server validates stock & price)',
+  })
   @ApiResponse({ status: 201, description: 'Order created' })
-  async create(@Body() orderData: Partial<Order>): Promise<Order> {
-    return this.ordersService.create(orderData);
+  async create(@Body() body: CreateOrderDto): Promise<Order> {
+    return this.ordersService.create(body);
   }
 
   @Put(':id')
-  @ApiOperation({ summary: 'Update an order' })
-  @ApiResponse({ status: 200, description: 'Order updated' })
+  @Permissions(PERMISSIONS.ORDERS_WRITE)
+  @ApiOperation({ summary: 'Update an order (admin)' })
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() orderData: Partial<Order>,
@@ -66,18 +82,53 @@ export class OrdersController {
   }
 
   @Put(':id/status')
-  @ApiOperation({ summary: 'Update order status' })
-  @ApiResponse({ status: 200, description: 'Order status updated' })
+  @Permissions(PERMISSIONS.ORDERS_WRITE)
+  @ApiOperation({ summary: 'Update order status (generic transition)' })
   async updateStatus(
     @Param('id', ParseIntPipe) id: number,
-    @Body('status') status: OrderStatus,
+    @Body() body: { status: OrderStatus; actor?: string },
   ): Promise<Order> {
-    return this.ordersService.updateStatus(id, status);
+    return this.ordersService.updateStatus(id, body.status, body.actor);
+  }
+
+  @Post(':id/confirm-shipped')
+  @Permissions(PERMISSIONS.ORDERS_WRITE)
+  @ApiOperation({
+    summary: 'Warehouse staff confirms the order has left the warehouse',
+  })
+  async confirmShipped(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: ActorPayload = {},
+  ): Promise<Order> {
+    return this.ordersService.confirmShipped(id, body.actor);
+  }
+
+  @Post(':id/confirm-delivered')
+  @Permissions(PERMISSIONS.ORDERS_WRITE)
+  @ApiOperation({
+    summary: 'Delivery staff confirms goods delivered & cash collected (COD)',
+  })
+  async confirmDelivered(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: ActorPayload = {},
+  ): Promise<Order> {
+    return this.ordersService.confirmDelivered(id, body.actor);
+  }
+
+  @Post(':id/cancel')
+  @Permissions(PERMISSIONS.ORDERS_WRITE)
+  @ApiOperation({ summary: 'Cancel an order and restore stock' })
+  async cancel(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: ActorPayload = {},
+  ): Promise<Order> {
+    return this.ordersService.cancel(id, body.actor);
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Delete an order' })
-  @ApiResponse({ status: 200, description: 'Order deleted' })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Permissions(PERMISSIONS.ORDERS_WRITE)
+  @ApiOperation({ summary: 'Delete an order (admin)' })
   async delete(@Param('id', ParseIntPipe) id: number): Promise<void> {
     return this.ordersService.delete(id);
   }

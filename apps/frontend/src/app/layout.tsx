@@ -5,7 +5,10 @@ import { Header } from "@/components/shared/header";
 import { Footer } from "@/components/shared/footer";
 import { ThemeProvider } from "@ui/components/theme-provider";
 import { TextSizeProvider } from "@ui/components/text-size-provider";
+import { Toaster } from "sonner";
 import NextTopLoader from "nextjs-toploader";
+import { QueryProvider } from "@/providers/query-provider";
+import { CartSyncBridge } from "@/components/shared/cart-sync-bridge";
 
 const roboto = Roboto({
   variable: "--font-roboto",
@@ -44,9 +47,13 @@ export default function RootLayout({
         />
         <ThemeProvider>
           <TextSizeProvider>
-            <Header />
-            <main className="flex-1">{children}</main>
-            <Footer />
+            <QueryProvider>
+              <CartSyncBridge />
+              <Header />
+              <main className="flex-1">{children}</main>
+              <Footer />
+              <Toaster position="top-right" richColors />
+            </QueryProvider>
           </TextSizeProvider>
         </ThemeProvider>
       </body>

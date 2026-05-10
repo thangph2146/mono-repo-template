@@ -3,11 +3,11 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useMemo } from "react";
-import { 
-  Store, 
-  ShoppingCart, 
-  Package, 
-  Headphones, 
+import {
+  Store,
+  ShoppingCart,
+  Package,
+  Headphones,
   Box,
   ShieldCheck,
   Bell,
@@ -16,6 +16,8 @@ import {
   LogOut,
   User,
 } from "lucide-react";
+import { Badge } from "@ui/components/badge";
+import { useCart, cartStore } from "@/hooks/use-cart";
 import { ThemeToggle } from "@ui/components/theme-toggle";
 import { TextSizeToggle } from "@ui/components/text-size-toggle";
 import { Separator } from "@ui/components/separator";
@@ -36,31 +38,28 @@ export function Header() {
   const pathname = usePathname();
   const router = useRouter();
   const session = useSession();
+  const { unitCount } = useCart();
 
   const nav = useMemo(() => {
-    if (session?.role === "admin") {
-      return [
-        { href: "/admin/orders", label: "Quản lý đơn", icon: Package },
-        { href: "/admin/inventory", label: "Kho hàng", icon: ShoppingCart },
-        { href: "/admin/locations", label: "Đại lý", icon: Headphones },
-        { href: "/graph", label: "Sơ đồ hệ thống", icon: Box },
-      ];
-    }
-    return [
+    const items: { href: string; label: string; icon: typeof ShoppingCart }[] = [
       { href: "/catalog", label: "Danh mục sỉ", icon: ShoppingCart },
-      { href: "/orders", label: "Đơn hàng", icon: Package },
+    ];
+    if (session) {
+      items.push({ href: "/orders", label: "Đơn hàng", icon: Package });
+    }
+    items.push(
       { href: "/support", label: "Hỗ trợ", icon: Headphones },
       { href: "/graph", label: "Sơ đồ hệ thống", icon: Box },
-    ];
-  }, [session?.role]);
+    );
+    return items;
+  }, [session]);
 
   const profileHref = "/profile";
 
   const handleLogout = () => {
     localStorage.removeItem("storesync_session");
-    window.dispatchEvent(
-      new StorageEvent("storage", { key: "storesync_session" }),
-    );
+    cartStore.clear();
+    window.dispatchEvent(new Event("storesync-session"));
     router.push("/login");
   };
 
@@ -101,6 +100,18 @@ export function Header() {
           <Separator orientation="vertical" className="mx-2 h-6 bg-outline-variant/50" />
 
           <div className="flex items-center gap-1">
+            <Link
+              href="/cart"
+              aria-label="Giỏ hàng"
+              className="relative inline-flex items-center justify-center rounded-lg size-9 text-on-surface-variant hover:text-primary hover:bg-muted transition-colors"
+            >
+              <ShoppingCart className="size-5" />
+              {unitCount > 0 && (
+                <Badge className="absolute -top-1 -right-1 h-5 min-w-5 px-1.5 rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center border border-background">
+                  {unitCount}
+                </Badge>
+              )}
+            </Link>
             <Button variant="ghost" size="icon" className="text-on-surface-variant hover:text-primary">
               <Bell className="size-5" />
             </Button>
@@ -126,9 +137,9 @@ export function Header() {
                       <User className="size-4" />
                       Trang cá nhân
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => router.push(session.role === "admin" ? "/admin/orders" : "/dashboard")}>
+                    <DropdownMenuItem onClick={() => router.push("/dashboard")}>
                       <Package className="size-4" />
-                      Khu vực làm việc
+                      Bảng điều khiển
                     </DropdownMenuItem>
                   </DropdownMenuGroup>
                   <DropdownMenuSeparator />

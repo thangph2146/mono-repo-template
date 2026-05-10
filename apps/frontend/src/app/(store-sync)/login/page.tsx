@@ -1,45 +1,92 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
+import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@ui/components/button";
 import { Input } from "@ui/components/input";
 import { Label } from "@ui/components/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@ui/components/card";
-import Link from "next/link";
-import { Store, Lock, User } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@ui/components/card";
 import { Container, Page, PageContent } from "@ui/components/layout";
+import { Store, Lock, User, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import accounts from "@ui/data/accounts.json";
+import { api, ApiError } from "@/lib/api";
+import { hydrateCartAfterLogin } from "@/lib/cart-sync";
 
-export default function LoginRegisterPage() {
+const STORAGE_KEY = "storesync_session";
+
+function safeNext(raw: string | null): string {
+  if (raw && raw.startsWith("/") && !raw.startsWith("//")) return raw;
+  return "/dashboard";
+}
+
+function LoginFormInner() {
   const router = useRouter();
-  const [username, setUsername] = useState("");
+  const searchParams = useSearchParams();
+  const queryClient = useQueryClient();
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const isDevMode = process.env.NODE_ENV === "development";
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleLogin = () => {
-    const account = accounts.find(
-      (item) => item.username === username.trim() && item.password === password,
-    );
+  const nextPath = useMemo(
+    () => safeNext(searchParams.get("next")),
+    [searchParams],
+  );
 
-    if (!account) {
-      toast.error("Sai tài khoản hoặc mật khẩu");
+  const handleLogin = async () => {
+    if (!email.trim() || !password) {
+      toast.error("Vui lòng nhập email và mật khẩu");
       return;
     }
-
-    localStorage.setItem(
-      "storesync_session",
-      JSON.stringify({
-        id: account.id,
-        username: account.username,
-        role: account.role,
-        displayName: account.displayName,
-      }),
-    );
-
-    toast.success(`Xin chào ${account.displayName}`);
-    router.push(account.role === "admin" ? "/admin/orders" : "/dashboard");
+    setSubmitting(true);
+    try {
+      const user = await api.users.login({
+        email: email.trim(),
+        password,
+      });
+      if (!user) {
+        toast.error("Sai tài khoản hoặc mật khẩu");
+        return;
+      }
+      const isAdmin = user.roles?.some(
+        (r) => r.code === "admin" || r.code === "super_admin",
+      );
+      const session = {
+        id: String(user.id),
+        username: user.email,
+        role: isAdmin ? "admin" : "store",
+        displayName: user.fullName,
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
+      window.dispatchEvent(new Event("storesync-session"));
+      try {
+        await hydrateCartAfterLogin(user.id);
+      } catch {
+        toast.warning("Không tải được giỏ hàng từ máy chủ — dùng giỏ trên máy");
+      }
+      void queryClient.invalidateQueries({ queryKey: ["products"] });
+      void queryClient.invalidateQueries({ queryKey: ["categories"] });
+      void queryClient.invalidateQueries({ queryKey: ["orders"] });
+      toast.success(`Xin chào ${user.fullName}`);
+      router.push(nextPath);
+    } catch (err) {
+      const message =
+        err instanceof ApiError
+          ? err.message
+          : err instanceof Error
+            ? err.message
+            : "Không kết nối được máy chủ";
+      toast.error(message);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -60,47 +107,28 @@ export default function LoginRegisterPage() {
                 </CardHeader>
 
                 <CardContent className="space-y-6">
-                  {isDevMode && (
-                    <div className="p-3 rounded-xl border border-primary/20 bg-primary/5 space-y-2">
-                      <p className="text-xs font-bold text-primary">Chọn nhanh tài khoản test (DEV)</p>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        {accounts.map((account) => (
-                          <Button
-                            key={account.id}
-                            type="button"
-                            size="sm"
-                            variant="outline"
-                            className="h-8 rounded-lg text-xs justify-start px-2.5"
-                            onClick={() => {
-                              setUsername(account.username);
-                              setPassword(account.password);
-                            }}
-                          >
-                            {account.role === "admin" ? "Admin" : "Cửa hàng"} - {account.username}
-                          </Button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
                   <div className="space-y-3">
-                    <Label htmlFor="username" className="text-sm font-medium">Tên đăng nhập</Label>
+                    <Label htmlFor="email" className="text-sm font-medium">Email</Label>
                     <div className="relative">
                       <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                       <Input
-                        id="username"
-                        type="text"
-                        placeholder="Nhập tài khoản"
+                        id="email"
+                        type="email"
+                        placeholder="admin@storesync.vn"
                         className="pl-10 h-12"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        autoComplete="email"
                       />
                     </div>
                   </div>
                   <div className="space-y-3">
                     <div className="flex justify-between items-center">
                       <Label htmlFor="password-login" className="text-sm font-medium">Mật khẩu</Label>
-                      <Link href="/support" className="text-sm text-primary font-medium hover:underline">
+                      <Link
+                        href="/support"
+                        className="text-sm text-primary font-medium hover:underline"
+                      >
                         Quên mật khẩu?
                       </Link>
                     </div>
@@ -114,12 +142,19 @@ export default function LoginRegisterPage() {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         onKeyDown={(e) => {
-                          if (e.key === "Enter") handleLogin();
+                          if (e.key === "Enter") void handleLogin();
                         }}
+                        autoComplete="current-password"
                       />
                     </div>
                   </div>
-                  <Button className="w-full h-12 text-base font-bold mt-6" size="lg" onClick={handleLogin}>
+                  <Button
+                    className="w-full h-12 text-base font-bold mt-6"
+                    size="lg"
+                    disabled={submitting}
+                    onClick={() => void handleLogin()}
+                  >
+                    {submitting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
                     Đăng nhập hệ thống
                   </Button>
                   <p className="text-sm text-center text-muted-foreground">
@@ -128,11 +163,6 @@ export default function LoginRegisterPage() {
                       Đăng ký ngay
                     </Link>
                   </p>
-                  {isDevMode && (
-                    <p className="text-xs text-muted-foreground bg-muted/30 p-3 rounded-xl">
-                      Demo: admin/admin123 (quản trị) hoặc cuahangso1/store123 (chủ cửa hàng)
-                    </p>
-                  )}
                 </CardContent>
               </Card>
             </div>
@@ -140,5 +170,21 @@ export default function LoginRegisterPage() {
         </section>
       </PageContent>
     </Page>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <Page>
+          <PageContent className="px-0 md:px-0 py-8 md:py-10 grid place-items-center min-h-[50vh]">
+            <Loader2 className="size-10 animate-spin text-primary" />
+          </PageContent>
+        </Page>
+      }
+    >
+      <LoginFormInner />
+    </Suspense>
   );
 }

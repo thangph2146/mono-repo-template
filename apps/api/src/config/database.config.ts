@@ -1,8 +1,20 @@
 import { MikroOrmModuleOptions } from '@mikro-orm/nestjs';
 import { ConfigService } from '@nestjs/config';
+import { PostgreSqlDriver } from '@mikro-orm/postgresql';
+import { MySqlDriver } from '@mikro-orm/mysql';
+import { SqliteDriver } from '@mikro-orm/sqlite';
+import { MsSqlDriver } from '@mikro-orm/mssql';
+import { MongoDriver } from '@mikro-orm/mongodb';
+import type { IDatabaseDriver, Configuration } from '@mikro-orm/core';
+
+type DbClient = 'postgresql' | 'mongodb' | 'mysql' | 'sqlite' | 'mssql';
+
+type DriverClass = new (
+  config: Configuration<IDatabaseDriver>,
+) => IDatabaseDriver;
 
 export interface DatabaseConfig {
-  client: 'postgresql' | 'mongodb' | 'mysql' | 'sqlite' | 'mssql';
+  client: DbClient;
   connectionString: string;
   dbName?: string;
   entities: string[];
@@ -13,13 +25,21 @@ export interface DatabaseConfig {
   };
 }
 
-export const getMikroOrmConfig = (
-  configService: ConfigService,
-): MikroOrmModuleOptions => {
-  const connectionString = configService.get<string>('DATABASE_URL', '');
-  let client = configService.get<DatabaseConfig['client']>('DB_CLIENT');
+const DRIVER_MAP: Record<DbClient, DriverClass> = {
+  postgresql: PostgreSqlDriver as unknown as DriverClass,
+  mysql: MySqlDriver as unknown as DriverClass,
+  sqlite: SqliteDriver as unknown as DriverClass,
+  mssql: MsSqlDriver as unknown as DriverClass,
+  mongodb: MongoDriver as unknown as DriverClass,
+};
 
-  // Detect client from connection string if not explicitly provided
+/** Dùng chung cho ConfigService và cho `driver` của MikroOrmModule.forRootAsync. */
+export function inferDbClient(
+  connectionString: string,
+  explicitClient: DbClient | undefined,
+): DbClient {
+  let client = explicitClient;
+
   if (!client && connectionString) {
     if (
       connectionString.startsWith('postgresql://') ||
@@ -43,16 +63,41 @@ export const getMikroOrmConfig = (
     }
   }
 
-  // Default to postgresql if still not determined
-  client = client || 'postgresql';
+  return client || 'postgresql';
+}
+
+/**
+ * Đọc `process.env` sau khi `ConfigModule` đã nạp `.env` (đặt `ConfigModule` trước `MikroOrmModule` trong `AppModule`).
+ * Bắt buộc cho @mikro-orm/nestjs khi dùng forRootAsync + useFactory — xem PR #204.
+ */
+export function getMikroOrmDriverClassForNest(): DriverClass {
+  const connectionString = process.env.DATABASE_URL ?? '';
+  const explicit = process.env.DB_CLIENT as DbClient | undefined;
+  const client = inferDbClient(connectionString, explicit);
+  return DRIVER_MAP[client];
+}
+
+export const getMikroOrmConfig = (
+  configService: ConfigService,
+): MikroOrmModuleOptions => {
+  const connectionString = configService.get<string>('DATABASE_URL', '');
+  const client = inferDbClient(
+    connectionString,
+    configService.get<DbClient>('DB_CLIENT'),
+  );
+
+  const driver = DRIVER_MAP[client];
 
   const baseOptions = {
     entities: ['./dist/**/*.entity.js'],
     entitiesTs: ['./src/**/*.entity.ts'],
     debug: configService.get<boolean>('DB_DEBUG', false),
     migrations: {
-      path: './migrations',
+      path: './dist/migrations',
       pathTs: './src/migrations',
+      glob: '!(*.d).{js,ts}',
+      transactional: true,
+      allOrNothing: true,
     },
   };
 
@@ -61,7 +106,7 @@ export const getMikroOrmConfig = (
     return {
       ...baseOptions,
       ...parsed,
-      driver: client,
+      driver,
     } as unknown as MikroOrmModuleOptions;
   }
 
@@ -77,7 +122,7 @@ export const getMikroOrmConfig = (
 
   return {
     ...baseOptions,
-    driver: client,
+    driver,
     host,
     port,
     user,
@@ -86,10 +131,7 @@ export const getMikroOrmConfig = (
   } as unknown as MikroOrmModuleOptions;
 };
 
-function parseConnectionString(
-  connectionString: string,
-  client: DatabaseConfig['client'],
-) {
+function parseConnectionString(connectionString: string, client: DbClient) {
   if (client === 'sqlite') {
     const dbName = connectionString.replace(/^sqlite:\/\//, '');
     return { dbName };
@@ -131,7 +173,7 @@ function parseConnectionString(
   }
 }
 
-function getDefaultPort(client: DatabaseConfig['client']): number {
+function getDefaultPort(client: DbClient): number {
   switch (client) {
     case 'postgresql':
       return 5432;

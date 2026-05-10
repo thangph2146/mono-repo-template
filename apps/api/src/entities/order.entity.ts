@@ -1,20 +1,37 @@
 import {
   Entity,
-  PrimaryKey,
-  Property,
   Enum,
-  ManyToOne,
   Index,
+  ManyToOne,
+  Property,
+  Unique,
 } from '@mikro-orm/core';
+import { BaseEntity } from './base.entity';
 import { User } from './user.entity';
 
+/**
+ * Order workflow (cash-on-delivery only):
+ *   pending     → vừa tạo, chờ xác nhận tại kho
+ *   confirmed   → kho đã xác nhận sẽ giao (đã giữ tồn kho)
+ *   shipped     → nhân viên kho/giao vận đã xuất kho lên đường
+ *   delivered   → nhân viên giao đã trao hàng & thu tiền (COD)
+ *   cancelled   → huỷ trước khi giao, hoàn lại tồn kho
+ */
 export enum OrderStatus {
   PENDING = 'pending',
   CONFIRMED = 'confirmed',
-  PROCESSING = 'processing',
   SHIPPED = 'shipped',
   DELIVERED = 'delivered',
   CANCELLED = 'cancelled',
+}
+
+export enum PaymentMethod {
+  COD = 'cod',
+}
+
+export enum PaymentStatus {
+  UNPAID = 'unpaid',
+  PAID = 'paid',
 }
 
 export interface OrderItem {
@@ -25,16 +42,14 @@ export interface OrderItem {
   unitType: string;
   unitPrice: number;
   totalPrice: number;
+  qtyPerUnit?: number;
   image?: string;
 }
 
-@Entity()
-export class Order {
-  @PrimaryKey({ type: 'integer', autoincrement: true })
-  id!: number;
-
-  @Property({ unique: true })
-  @Index()
+@Entity({ tableName: 'orders' })
+export class Order extends BaseEntity {
+  @Property()
+  @Unique()
   orderNumber!: string;
 
   @ManyToOne(() => User, { nullable: true, fieldName: 'customerId' })
@@ -49,7 +64,7 @@ export class Order {
   @Property({ nullable: true })
   customerPhone?: string;
 
-  @Property({ nullable: true, type: 'text' })
+  @Property({ type: 'text', nullable: true })
   shippingAddress?: string;
 
   @Property({ type: 'json' })
@@ -68,23 +83,39 @@ export class Order {
   totalAmount!: number;
 
   @Enum({ items: () => OrderStatus, default: OrderStatus.PENDING })
+  @Index()
   status: OrderStatus = OrderStatus.PENDING;
 
   @Property({ nullable: true })
   couponCode?: string;
 
-  @Property({ nullable: true, type: 'text' })
+  @Property({ type: 'text', nullable: true })
   notes?: string;
 
-  @Property({ nullable: true })
-  paymentMethod?: string;
+  @Enum({ items: () => PaymentMethod, default: PaymentMethod.COD })
+  paymentMethod: PaymentMethod = PaymentMethod.COD;
+
+  @Enum({ items: () => PaymentStatus, default: PaymentStatus.UNPAID })
+  @Index()
+  paymentStatus: PaymentStatus = PaymentStatus.UNPAID;
 
   @Property({ default: false })
   isPaid: boolean = false;
 
-  @Property({ type: 'datetime', onCreate: () => new Date() })
-  createdAt: Date = new Date();
+  /** Người xác nhận xuất kho (warehouse). */
+  @Property({ nullable: true })
+  shippedBy?: string;
 
-  @Property({ type: 'datetime', onUpdate: () => new Date() })
-  updatedAt: Date = new Date();
+  @Property({ type: 'datetime', nullable: true })
+  shippedAt?: Date;
+
+  /** Người xác nhận giao thành công & thu tiền. */
+  @Property({ nullable: true })
+  deliveredBy?: string;
+
+  @Property({ type: 'datetime', nullable: true })
+  deliveredAt?: Date;
+
+  @Property({ type: 'datetime', nullable: true })
+  cancelledAt?: Date;
 }

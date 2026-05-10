@@ -1,20 +1,21 @@
-import { Entity, PrimaryKey, Property } from '@mikro-orm/core';
+import { Entity, Index, Property, Unique } from '@mikro-orm/core';
+import { BaseEntity } from './base.entity';
 
-@Entity()
-export class Product {
-  @PrimaryKey({ type: 'integer', autoincrement: true })
-  id!: number;
-
-  @Property({ unique: true })
+@Entity({ tableName: 'products' })
+export class Product extends BaseEntity {
+  @Property()
+  @Unique()
   sku!: string;
 
   @Property()
+  @Index()
   name!: string;
 
-  @Property({ nullable: true, type: 'text' })
+  @Property({ type: 'text', nullable: true })
   description?: string;
 
   @Property()
+  @Index()
   category!: string;
 
   @Property({ nullable: true })
@@ -56,10 +57,4 @@ export class Product {
 
   @Property({ default: true })
   isActive: boolean = true;
-
-  @Property({ type: 'datetime', onCreate: () => new Date() })
-  createdAt: Date = new Date();
-
-  @Property({ type: 'datetime', onUpdate: () => new Date() })
-  updatedAt: Date = new Date();
 }

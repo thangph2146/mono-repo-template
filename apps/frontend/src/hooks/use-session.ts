@@ -22,11 +22,16 @@ function getServerSnapshot(): string | null {
 
 function subscribe(callback: () => void) {
   if (typeof window === "undefined") return () => {};
-  const handler = (event: StorageEvent) => {
-    if (event.key === STORAGE_KEY) callback();
+  const onStorage = (event: StorageEvent) => {
+    if (event.key === STORAGE_KEY || event.key === null) callback();
   };
-  window.addEventListener("storage", handler);
-  return () => window.removeEventListener("storage", handler);
+  const onCustom = () => callback();
+  window.addEventListener("storage", onStorage);
+  window.addEventListener("storesync-session", onCustom);
+  return () => {
+    window.removeEventListener("storage", onStorage);
+    window.removeEventListener("storesync-session", onCustom);
+  };
 }
 
 export function useSession(): MockSession | null {

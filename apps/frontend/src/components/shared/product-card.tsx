@@ -46,12 +46,12 @@ export function ProductCard({
 }: ProductCardProps) {
   return (
     <Card className="py-0 border-outline-variant overflow-hidden group hover:shadow-xl transition-all duration-300 bg-background rounded-2xl">
-      <Link href={href} className={`block relative ${variant === "catalog" ? "w-full h-64 p-6" : "h-64 p-4"} bg-gradient-to-b from-white to-muted/20`}>
+      <Link href={href} className={`block relative ${variant === "catalog" ? "w-full h-64" : "h-64"} bg-gradient-to-b from-white to-muted/20`}>
         <div className="w-full h-full rounded-2xl bg-white/70 border border-outline-variant/30 shadow-inner flex items-center justify-center overflow-hidden">
           <img
             src={image}
             alt={name}
-            className="max-h-[88%] max-w-[88%] object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.18)] rounded-lg transition-transform duration-500 group-hover:scale-105"
+            className="w-full h-full rounded-3xl object-cover drop-shadow-[0_10px_20px_rgba(0,0,0,0.18)] rounded-lg transition-transform duration-500 group-hover:scale-105"
           />
         </div>
 
@@ -91,8 +91,16 @@ export function ProductCard({
         </Link>
 
         <div className="mt-auto pt-4 border-t border-outline-variant/30 space-y-2">
-          {originalPrice && <Text variant="muted" className="line-through font-medium">{originalPrice}</Text>}
-          <Heading as="span" size="title" color="primary">{price}</Heading>
+          <div className="flex flex-wrap items-baseline gap-2">
+            {originalPrice && (
+              <Text variant="muted" className="line-through font-medium text-sm shrink-0">
+                {originalPrice}
+              </Text>
+            )}
+            <Heading as="span" size="title" color="primary" className="shrink-0">
+              {price}
+            </Heading>
+          </div>
 
           {variant === "catalog" && minQty && (
             <div className="text-base font-bold text-primary mt-1 flex items-center gap-1">
