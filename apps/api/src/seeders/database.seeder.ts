@@ -8,7 +8,9 @@ import {
   PaymentStatus,
   type OrderItem,
 } from '../entities/order.entity';
+import { Permission } from '../entities/permission.entity';
 import { Product } from '../entities/product.entity';
+import { RolePermissionLink } from '../entities/role-permission-link.entity';
 import { Role } from '../entities/role.entity';
 import { User } from '../entities/user.entity';
 import { UserRoleLink } from '../entities/user-role-link.entity';
@@ -40,6 +42,8 @@ export class DatabaseSeeder extends Seeder {
         process.env.DB_CLIENT ?? '(infer)',
       );
     }
+    // Bắt buộc trước user: `schema:fresh --seed` không chạy migration SQL — bảng roles có thể trống.
+    await this.ensureRbacBaseline(em);
     await this.seedAdmin(em);
     await this.seedB2bUsers(em);
     await this.seedDemoAccounts(em);
@@ -47,6 +51,115 @@ export class DatabaseSeeder extends Seeder {
     await this.seedProducts(em);
     await em.flush();
     await this.seedSampleOrders(em);
+    await em.flush();
+  }
+
+  /**
+   * Đồng bộ nội dung RBAC với migration `Migration20260508203000` (permissions, roles, roles_permissions).
+   * An toàn khi chạy lại: chỉ tạo bản ghi / liên kết còn thiếu.
+   */
+  private async ensureRbacBaseline(em: EntityManager): Promise<void> {
+    const permDefs: Array<{ code: string; name: string }> = [
+      { code: '*', name: 'Toàn hệ thống' },
+      { code: 'products.read', name: 'Xem sản phẩm' },
+      { code: 'products.write', name: 'Quản lý sản phẩm' },
+      { code: 'categories.read', name: 'Xem danh mục' },
+      { code: 'categories.write', name: 'Quản lý danh mục' },
+      { code: 'orders.read', name: 'Xem đơn hàng' },
+      { code: 'orders.write', name: 'Cập nhật đơn hàng' },
+      { code: 'orders.checkout', name: 'Đặt hàng' },
+      { code: 'users.manage', name: 'Quản lý người dùng' },
+      { code: 'users.cart_own', name: 'Giỏ hàng của tôi' },
+      { code: 'rbac.read', name: 'Xem role & quyền' },
+      { code: 'data.maintenance', name: 'Sao lưu / import dữ liệu' },
+    ];
+    for (const p of permDefs) {
+      if (!(await em.findOne(Permission, { code: p.code }))) {
+        em.create(Permission, { code: p.code, name: p.name }, { partial: true });
+      }
+    }
+    await em.flush();
+
+    const roleDefs: Array<{ code: string; name: string }> = [
+      { code: 'super_admin', name: 'Siêu quản trị' },
+      { code: 'admin', name: 'Quản trị' },
+      { code: 'manager', name: 'Quản lý kho' },
+      { code: 'sales', name: 'Kinh doanh' },
+      { code: 'customer', name: 'Khách / đại lý' },
+    ];
+    for (const r of roleDefs) {
+      if (!(await em.findOne(Role, { code: r.code }))) {
+        em.create(Role, { code: r.code, name: r.name }, { partial: true });
+      }
+    }
+    await em.flush();
+
+    const getPerm = async (code: string) => {
+      const p = await em.findOne(Permission, { code });
+      if (!p) throw new Error(`[ensureRbacBaseline] Thiếu permission: ${code}`);
+      return p;
+    };
+    const getRole = async (code: string) => {
+      const r = await em.findOne(Role, { code });
+      if (!r) throw new Error(`[ensureRbacBaseline] Thiếu role: ${code}`);
+      return r;
+    };
+
+    const linkRolePerms = async (roleCode: string, permCodes: string[]) => {
+      const r = await getRole(roleCode);
+      for (const c of permCodes) {
+        const p = await getPerm(c);
+        const exists = await em.findOne(RolePermissionLink, {
+          role: r,
+          permission: p,
+        });
+        if (exists) continue;
+        em.create(
+          RolePermissionLink,
+          { role: r, permission: p },
+          { partial: true },
+        );
+      }
+    };
+
+    await linkRolePerms('super_admin', ['*']);
+    await linkRolePerms('admin', [
+      'products.read',
+      'products.write',
+      'categories.read',
+      'categories.write',
+      'orders.read',
+      'orders.write',
+      'orders.checkout',
+      'users.manage',
+      'users.cart_own',
+      'rbac.read',
+      'data.maintenance',
+    ]);
+    await linkRolePerms('manager', [
+      'products.read',
+      'products.write',
+      'categories.read',
+      'categories.write',
+      'orders.read',
+      'orders.write',
+      'orders.checkout',
+      'rbac.read',
+    ]);
+    await linkRolePerms('sales', [
+      'products.read',
+      'categories.read',
+      'orders.read',
+      'orders.write',
+      'orders.checkout',
+    ]);
+    await linkRolePerms('customer', [
+      'products.read',
+      'categories.read',
+      'orders.read',
+      'orders.checkout',
+      'users.cart_own',
+    ]);
     await em.flush();
   }
 

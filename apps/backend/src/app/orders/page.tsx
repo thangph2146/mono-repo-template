@@ -271,8 +271,8 @@ export default function AdminOrdersPage() {
             <p
               className={`text-xs font-semibold mt-1 ${
                 statusFilter === f.key
-                  ? "text-primary-foreground/80"
-                  : "text-on-surface-variant"
+                  ? "text-primary-foreground/70"
+                    : "text-muted-foreground"
               }`}
             >
               {f.label}

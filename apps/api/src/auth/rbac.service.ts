@@ -29,7 +29,8 @@ export class RbacService {
     for (const link of user.userRoleLinks) {
       const role = link.role;
       if (!role) continue;
-      if (role.code === 'super_admin') {
+      const roleCode = role.code?.trim().toLowerCase();
+      if (roleCode === 'super_admin') {
         codes.add('*');
       }
       for (const pl of role.permissionLinks) {

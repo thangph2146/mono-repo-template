@@ -1,4 +1,11 @@
 export * from './types';
+export {
+  PERMISSION_CODES,
+  hasPermission,
+  canUserAccess,
+  isSuperAdminRoleCode,
+  type PermissionCode,
+} from './permissions';
 export { ApiClient, ApiError } from './client';
 export type { ApiClientOptions, RequestOptions } from './client';
 export { ProductsApi } from './resources/products';

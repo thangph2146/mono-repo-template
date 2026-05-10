@@ -6,9 +6,9 @@ import { User } from './user.entity';
 @Entity({ tableName: 'users_roles' })
 @Unique({ properties: ['user', 'role'] })
 export class UserRoleLink extends BaseEntity {
-  @ManyToOne(() => User, { inversedBy: 'userRoleLinks' })
+  @ManyToOne(() => User, { inversedBy: 'userRoleLinks', fieldName: 'user_id' })
   user!: User;
 
-  @ManyToOne(() => Role, { inversedBy: 'userLinks' })
+  @ManyToOne(() => Role, { inversedBy: 'userLinks', fieldName: 'role_id' })
   role!: Role;
 }

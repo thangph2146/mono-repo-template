@@ -2,10 +2,17 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { json } from 'express';
 import { AppModule } from './app.module';
-import { AppLogger } from './common/logger';
+import { AppLogger, registerDevHttpLogging } from './common/logger';
+
+const isDev = process.env.NODE_ENV === 'development';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, { bufferLogs: true });
+  const app = await NestFactory.create(AppModule, {
+    bufferLogs: true,
+    logger: isDev
+      ? ['error', 'warn', 'log', 'debug', 'verbose']
+      : ['error', 'warn', 'log'],
+  });
   app.use(json({ limit: '50mb' }));
 
   // Replace the default Nest logger with our centralised one as soon as the
@@ -13,6 +20,7 @@ async function bootstrap() {
   const appLogger = app.get(AppLogger);
   appLogger.setContext('Bootstrap');
   app.useLogger(appLogger);
+  registerDevHttpLogging(app, appLogger);
 
   app.setGlobalPrefix(process.env.API_PREFIX ?? 'api');
 

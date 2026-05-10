@@ -31,10 +31,13 @@ export const queryKeys = {
   order: (id: number) => ["orders", id] as const,
 };
 
-export const useProducts = (): UseQueryResult<Product[], Error> =>
+export const useProducts = (opts?: {
+  enabled?: boolean;
+}): UseQueryResult<Product[], Error> =>
   useQuery({
     queryKey: queryKeys.products(),
     queryFn: () => api.products.list(),
+    enabled: opts?.enabled ?? true,
   });
 
 export const useCreateProduct = (): UseMutationResult<
@@ -104,10 +107,11 @@ export const useCategoryUsage = () =>
     queryFn: () => api.categories.usage(),
   });
 
-export const useOrders = () =>
+export const useOrders = (opts?: { enabled?: boolean }) =>
   useQuery<Order[], Error>({
     queryKey: queryKeys.orders(),
     queryFn: () => api.orders.list(),
+    enabled: opts?.enabled ?? true,
   });
 
 export const useCreateCategory = (): UseMutationResult<

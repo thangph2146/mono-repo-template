@@ -5,7 +5,11 @@ import { MySqlDriver } from '@mikro-orm/mysql';
 import { SqliteDriver } from '@mikro-orm/sqlite';
 import { MsSqlDriver } from '@mikro-orm/mssql';
 import { MongoDriver } from '@mikro-orm/mongodb';
-import type { IDatabaseDriver, Configuration } from '@mikro-orm/core';
+import {
+  EntityCaseNamingStrategy,
+  type IDatabaseDriver,
+  type Configuration,
+} from '@mikro-orm/core';
 
 type DbClient = 'postgresql' | 'mongodb' | 'mysql' | 'sqlite' | 'mssql';
 
@@ -77,6 +81,26 @@ export function getMikroOrmDriverClassForNest(): DriverClass {
   return DRIVER_MAP[client];
 }
 
+function resolveMikroDebug(configService: ConfigService): boolean {
+  const nodeEnv =
+    configService.get<string>('NODE_ENV') ?? process.env.NODE_ENV ?? '';
+  const raw = configService.get<string | boolean | undefined>('DB_DEBUG');
+  const off =
+    raw === false ||
+    raw === 'false' ||
+    raw === '0' ||
+    raw === 'off' ||
+    raw === 'no';
+  const on =
+    raw === true ||
+    raw === 'true' ||
+    raw === '1' ||
+    raw === 'on' ||
+    raw === 'yes';
+  if (off) return false;
+  return nodeEnv === 'development' || on;
+}
+
 export const getMikroOrmConfig = (
   configService: ConfigService,
 ): MikroOrmModuleOptions => {
@@ -91,7 +115,9 @@ export const getMikroOrmConfig = (
   const baseOptions = {
     entities: ['./dist/**/*.entity.js'],
     entitiesTs: ['./src/**/*.entity.ts'],
-    debug: configService.get<boolean>('DB_DEBUG', false),
+    /** Migration SQL dùng camelCase (`createdAt`); mặc định MySQL driver dùng snake_case → lệch khi seed/flush. */
+    namingStrategy: EntityCaseNamingStrategy,
+    debug: resolveMikroDebug(configService),
     migrations: {
       path: './dist/migrations',
       pathTs: './src/migrations',

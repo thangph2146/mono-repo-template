@@ -1,5 +1,6 @@
 import type { ApiClient } from '../client';
 import type {
+  AuthUser,
   CreateUserInput,
   UpdateUserInput,
   User,
@@ -42,8 +43,8 @@ export class UsersApi {
     return this.http.delete<void>(`/users/${id}`);
   }
 
-  login(credentials: UserCredentials): Promise<User | null> {
-    return this.http.post<User | null>('/users/login', credentials);
+  login(credentials: UserCredentials): Promise<AuthUser | null> {
+    return this.http.post<AuthUser | null>('/users/login', credentials);
   }
 
   getCart(userId: number): Promise<UserCartPayload> {

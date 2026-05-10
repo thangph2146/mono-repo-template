@@ -6,9 +6,9 @@ import { Role } from './role.entity';
 @Entity({ tableName: 'roles_permissions' })
 @Unique({ properties: ['role', 'permission'] })
 export class RolePermissionLink extends BaseEntity {
-  @ManyToOne(() => Role)
+  @ManyToOne(() => Role, { fieldName: 'role_id' })
   role!: Role;
 
-  @ManyToOne(() => Permission)
+  @ManyToOne(() => Permission, { fieldName: 'permission_id' })
   permission!: Permission;
 }

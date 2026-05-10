@@ -39,6 +39,8 @@ export type PublicUser = {
   roles: Array<{ code: string; name: string }>;
 };
 
+export type LoginUser = PublicUser & { permissions: string[] };
+
 function toPublicUser(user: User): PublicUser {
   const roles = user.userRoleLinks.isInitialized()
     ? user.userRoleLinks.getItems().map((l) => ({
@@ -81,9 +83,26 @@ export class UsersController {
   async validateUser(
     @Body('email') email: string,
     @Body('password') password: string,
-  ): Promise<PublicUser | null> {
+  ): Promise<LoginUser | null> {
     const user = await this.usersService.validateUser(email, password);
-    return user ? toPublicUser(user) : null;
+    if (!user) {
+      return null;
+    }
+    // Luôn load lại kèm userRoleLinks.role — tránh identity map thiếu collection sau validate.
+    const loaded = await this.usersService.findOne(user.id);
+    const publicUser = toPublicUser(loaded);
+    const codes = await this.rbac.getEffectivePermissionCodes(loaded.id);
+    const permissions = [...codes].sort();
+    const hasSuperRole = publicUser.roles.some(
+      (r) => r.code?.trim().toLowerCase() === 'super_admin',
+    );
+    if (hasSuperRole && !permissions.includes('*')) {
+      permissions.unshift('*');
+    }
+    return {
+      ...publicUser,
+      permissions,
+    };
   }
 
   @Get()

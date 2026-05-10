@@ -4,6 +4,35 @@
  * shaping, and JSON parsing once and re-use it everywhere.
  */
 
+import {
+  buildDevLogResponseJson,
+  formatDevApiStateHint,
+  formatDevRequestBody,
+  formatDevResponsePayload,
+  printDevApiCall,
+  printDevApiNetworkError,
+} from './dev-log-format';
+
+function readNodeEnv(): string | undefined {
+  // Node / SSR: process.env có sẵn. Browser: nhiều bundler (Next, Vite) vẫn thay
+  // `process.env.NODE_ENV` bằng literal; globalThis.process thường không tồn tại.
+  if (typeof process !== 'undefined' && process.env?.NODE_ENV) {
+    return process.env.NODE_ENV;
+  }
+  const proc = (
+    globalThis as typeof globalThis & {
+      process?: { env?: Record<string, string | undefined> };
+    }
+  ).process;
+  return proc?.env?.NODE_ENV;
+}
+
+function defaultDevLogging(options: ApiClientOptions): boolean {
+  if (options.devLogging === false) return false;
+  if (options.devLogging === true) return true;
+  return readNodeEnv() === 'development';
+}
+
 export interface ApiClientOptions {
   /** Base URL of the API, including the global prefix (e.g. http://localhost:3002/api). */
   baseUrl: string;
@@ -22,6 +51,24 @@ export interface ApiClientOptions {
   timeoutMs?: number;
   /** Custom fetch implementation (e.g. for SSR / Node 18 stubs). */
   fetch?: typeof globalThis.fetch;
+  /**
+   * Khi true (mặc định nếu `NODE_ENV === "development"`), ghi ra console
+   * method, path, status và thời gian — tiện theo dõi app gọi API.
+   */
+  devLogging?: boolean;
+  /** Tiền tố log (vd: `storesync-admin`) để phân biệt app trong monorepo. */
+  devLogTag?: string;
+  /**
+   * Chuỗi hoặc object mô tả user/role gửi kèm mỗi dòng log dev (không dùng cho secrets).
+   */
+  getDevAuthContext?: () =>
+    | string
+    | Record<string, unknown>
+    | null
+    | undefined
+    | Promise<
+        string | Record<string, unknown> | null | undefined
+      >;
 }
 
 export interface RequestOptions {
@@ -67,6 +114,9 @@ export class ApiClient {
   private readonly fetcher: typeof globalThis.fetch;
   private readonly getAuthToken?: ApiClientOptions['getAuthToken'];
   private readonly getUserId?: ApiClientOptions['getUserId'];
+  private readonly devLogging: boolean;
+  private readonly devLogTag: string;
+  private readonly getDevAuthContext?: ApiClientOptions['getDevAuthContext'];
 
   constructor(options: ApiClientOptions) {
     this.baseUrl = options.baseUrl;
@@ -75,6 +125,21 @@ export class ApiClient {
     this.fetcher = options.fetch ?? globalThis.fetch.bind(globalThis);
     this.getAuthToken = options.getAuthToken;
     this.getUserId = options.getUserId;
+    this.devLogging = defaultDevLogging(options);
+    this.devLogTag = options.devLogTag ?? 'api-client';
+    this.getDevAuthContext = options.getDevAuthContext;
+  }
+
+  private async formatDevAuthSuffix(): Promise<string> {
+    if (!this.getDevAuthContext) return '';
+    try {
+      const ctx = await this.getDevAuthContext();
+      if (ctx === null || ctx === undefined || ctx === '') return '';
+      const text = typeof ctx === 'string' ? ctx : JSON.stringify(ctx);
+      return ` | auth: ${text}`;
+    } catch {
+      return ' | auth: ?';
+    }
   }
 
   get<T>(path: string, options?: RequestOptions): Promise<T> {
@@ -136,6 +201,17 @@ export class ApiClient {
       });
     }
 
+    const t0 =
+      typeof performance !== 'undefined' && typeof performance.now === 'function'
+        ? performance.now()
+        : Date.now();
+
+    const authSuffix = this.devLogging ? await this.formatDevAuthSuffix() : '';
+    const reqBodyLog =
+      this.devLogging && body !== undefined
+        ? formatDevRequestBody(body)
+        : undefined;
+
     let response: Response;
     try {
       response = await this.fetcher(url, {
@@ -149,11 +225,45 @@ export class ApiClient {
               : JSON.stringify(body),
         signal: controller.signal,
       });
+    } catch (err) {
+      if (this.devLogging) {
+        const ms =
+          (typeof performance !== 'undefined' &&
+          typeof performance.now === 'function'
+            ? performance.now()
+            : Date.now()) - t0;
+        printDevApiNetworkError({
+          tag: this.devLogTag,
+          method,
+          path,
+          ms,
+          authSuffix,
+          err,
+        });
+      }
+      throw err;
     } finally {
       clearTimeout(timer);
     }
 
     if (response.status === 204) {
+      if (this.devLogging) {
+        const ms =
+          (typeof performance !== 'undefined' &&
+          typeof performance.now === 'function'
+            ? performance.now()
+            : Date.now()) - t0;
+        printDevApiCall({
+          tag: this.devLogTag,
+          method,
+          path,
+          status: 204,
+          ms,
+          reqBodyText: reqBodyLog,
+          authSuffix,
+          respSummary: '204 — không có body',
+        });
+      }
       return undefined as T;
     }
 
@@ -163,6 +273,33 @@ export class ApiClient {
     const payload: unknown = isJson
       ? await response.json().catch(() => null)
       : await response.text().catch(() => null);
+
+    if (this.devLogging) {
+      const ms =
+        (typeof performance !== 'undefined' &&
+        typeof performance.now === 'function'
+          ? performance.now()
+          : Date.now()) - t0;
+      const respSummary = formatDevResponsePayload(
+        response.status,
+        payload,
+        response.ok,
+      );
+      const stateHint = formatDevApiStateHint(path, method, payload, response.ok);
+      const responseJson = buildDevLogResponseJson(path, response.ok, payload);
+      printDevApiCall({
+        tag: this.devLogTag,
+        method,
+        path,
+        status: response.status,
+        ms,
+        reqBodyText: reqBodyLog,
+        authSuffix,
+        respSummary,
+        stateHint,
+        responseJson,
+      });
+    }
 
     if (!response.ok) {
       throw new ApiError(

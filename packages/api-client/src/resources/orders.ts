@@ -1,4 +1,5 @@
 import type { ApiClient } from '../client';
+import { normalizeOrder } from '../normalize-order';
 import type {
   CreateOrderInput,
   Order,
@@ -13,27 +14,39 @@ export class OrdersApi {
     const query = options?.email
       ? `?email=${encodeURIComponent(options.email)}`
       : '';
-    return this.http.get<Order[]>(`/orders${query}`);
+    return this.http
+      .get<Order[]>(`/orders${query}`)
+      .then((rows) => rows.map(normalizeOrder));
   }
 
   byStatus(status: OrderStatus): Promise<Order[]> {
-    return this.http.get<Order[]>(`/orders/status/${status}`);
+    return this.http
+      .get<Order[]>(`/orders/status/${status}`)
+      .then((rows) => rows.map(normalizeOrder));
   }
 
   byCustomer(customerId: number): Promise<Order[]> {
-    return this.http.get<Order[]>(`/orders/customer/${customerId}`);
+    return this.http
+      .get<Order[]>(`/orders/customer/${customerId}`)
+      .then((rows) => rows.map(normalizeOrder));
   }
 
   get(id: number): Promise<Order> {
-    return this.http.get<Order>(`/orders/${id}`);
+    return this.http
+      .get<Order>(`/orders/${id}`)
+      .then((o) => normalizeOrder(o));
   }
 
   create(input: CreateOrderInput): Promise<Order> {
-    return this.http.post<Order>('/orders', input);
+    return this.http
+      .post<Order>('/orders', input)
+      .then((o) => normalizeOrder(o));
   }
 
   update(id: number, input: UpdateOrderInput): Promise<Order> {
-    return this.http.put<Order>(`/orders/${id}`, input);
+    return this.http
+      .put<Order>(`/orders/${id}`, input)
+      .then((o) => normalizeOrder(o));
   }
 
   updateStatus(
@@ -41,21 +54,29 @@ export class OrdersApi {
     status: OrderStatus,
     actor?: string,
   ): Promise<Order> {
-    return this.http.put<Order>(`/orders/${id}/status`, { status, actor });
+    return this.http
+      .put<Order>(`/orders/${id}/status`, { status, actor })
+      .then((o) => normalizeOrder(o));
   }
 
   /** Warehouse staff confirms the order has shipped. */
   confirmShipped(id: number, actor?: string): Promise<Order> {
-    return this.http.post<Order>(`/orders/${id}/confirm-shipped`, { actor });
+    return this.http
+      .post<Order>(`/orders/${id}/confirm-shipped`, { actor })
+      .then((o) => normalizeOrder(o));
   }
 
   /** Delivery staff confirms goods handed over and cash collected (COD). */
   confirmDelivered(id: number, actor?: string): Promise<Order> {
-    return this.http.post<Order>(`/orders/${id}/confirm-delivered`, { actor });
+    return this.http
+      .post<Order>(`/orders/${id}/confirm-delivered`, { actor })
+      .then((o) => normalizeOrder(o));
   }
 
   cancel(id: number, actor?: string): Promise<Order> {
-    return this.http.post<Order>(`/orders/${id}/cancel`, { actor });
+    return this.http
+      .post<Order>(`/orders/${id}/cancel`, { actor })
+      .then((o) => normalizeOrder(o));
   }
 
   remove(id: number): Promise<void> {

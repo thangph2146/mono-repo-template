@@ -29,6 +29,11 @@ export interface User extends AuditFields {
   isActive: boolean;
 }
 
+/** Kết quả đăng nhập: user kèm union quyền hiệu lực (từ mọi role). */
+export interface AuthUser extends User {
+  permissions: string[];
+}
+
 export interface UserCredentials {
   email: string;
   password: string;

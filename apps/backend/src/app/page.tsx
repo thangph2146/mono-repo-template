@@ -14,10 +14,20 @@ import {
 } from "lucide-react";
 import { useOrders, useProducts } from "@/hooks/queries";
 import { formatVND } from "@/lib/format";
+import { useAuth } from "@/providers/auth-provider";
+import { canUserAccess, PERMISSION_CODES } from "@workspace/api-client";
 
 export default function AdminDashboardPage() {
-  const productsResource = useProducts();
-  const ordersResource = useOrders();
+  const { user } = useAuth();
+  const canProducts = user
+    ? canUserAccess(user, PERMISSION_CODES.PRODUCTS_READ)
+    : false;
+  const canOrders = user
+    ? canUserAccess(user, PERMISSION_CODES.ORDERS_READ)
+    : false;
+
+  const productsResource = useProducts({ enabled: canProducts });
+  const ordersResource = useOrders({ enabled: canOrders });
 
   const products = useMemo(
     () => productsResource.data ?? [],
@@ -42,8 +52,11 @@ export default function AdminDashboardPage() {
     return { pending, shipping, delivered, revenue, lowStock, outOfStock };
   }, [orders, products]);
 
-  const loading = productsResource.isLoading || ordersResource.isLoading;
+  const loading =
+    (canProducts && productsResource.isLoading) ||
+    (canOrders && ordersResource.isLoading);
   const error = productsResource.error ?? ordersResource.error;
+  const noOverviewAccess = !canProducts && !canOrders;
 
   return (
     <div className="space-y-8">
@@ -53,6 +66,16 @@ export default function AdminDashboardPage() {
           Theo dõi nhanh tồn kho và đơn hàng theo thời gian thực
         </p>
       </div>
+
+      {noOverviewAccess && (
+        <div className="rounded-2xl border border-border bg-muted/20 px-6 py-8 text-center text-muted-foreground">
+          <p className="font-medium text-foreground">Không đủ quyền xem tổng quan</p>
+          <p className="text-sm mt-2">
+            Tài khoản cần quyền <span className="font-mono">products.read</span> hoặc{" "}
+            <span className="font-mono">orders.read</span>. Dùng menu bên trái theo quyền được gán.
+          </p>
+        </div>
+      )}
 
       {error && (
         <div className="text-center py-12 bg-destructive/5 border border-destructive/20 rounded-2xl">
@@ -69,7 +92,7 @@ export default function AdminDashboardPage() {
         </div>
       )}
 
-      {!loading && !error && (
+      {!noOverviewAccess && !loading && !error && (
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <StatCard

@@ -25,6 +25,7 @@ import {
   CollapsibleTrigger,
 } from "@ui/components/collapsible";
 import { cn } from "@ui/lib/utils";
+import { readAdminSession } from "@/lib/auth-session";
 import {
   Database,
   Download,
@@ -72,8 +73,12 @@ export default function DataBackupPage() {
   };
 
   const authHeaders = (): HeadersInit => {
+    const headers: Record<string, string> = {};
     const t = secret.trim();
-    return t ? { "X-Backup-Secret": t } : {};
+    if (t) headers["X-Backup-Secret"] = t;
+    const uid = readAdminSession()?.id;
+    if (uid != null) headers["X-User-Id"] = String(uid);
+    return headers;
   };
 
   const downloadBlob = (blob: Blob, filename: string): void => {

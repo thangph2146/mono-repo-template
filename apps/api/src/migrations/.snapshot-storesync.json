@@ -19,8 +19,8 @@
           "enumItems": [],
           "mappedType": "integer"
         },
-        "created_at": {
-          "name": "created_at",
+        "createdAt": {
+          "name": "createdAt",
           "type": "datetime",
           "unsigned": false,
           "autoincrement": false,
@@ -35,8 +35,8 @@
           "enumItems": [],
           "mappedType": "datetime"
         },
-        "updated_at": {
-          "name": "updated_at",
+        "updatedAt": {
+          "name": "updatedAt",
           "type": "datetime",
           "unsigned": false,
           "autoincrement": false,
@@ -49,7 +49,8 @@
           "default": "current_timestamp()",
           "comment": null,
           "enumItems": [],
-          "mappedType": "datetime"
+          "mappedType": "datetime",
+          "extra": "on update current_timestamp()"
         },
         "name": {
           "name": "name",
@@ -115,8 +116,8 @@
           "enumItems": [],
           "mappedType": "string"
         },
-        "sort_order": {
-          "name": "sort_order",
+        "sortOrder": {
+          "name": "sortOrder",
           "type": "int",
           "unsigned": false,
           "autoincrement": false,
@@ -131,8 +132,8 @@
           "enumItems": [],
           "mappedType": "integer"
         },
-        "is_active": {
-          "name": "is_active",
+        "isActive": {
+          "name": "isActive",
           "type": "tinyint(1)",
           "unsigned": false,
           "autoincrement": false,
@@ -201,8 +202,8 @@
           "enumItems": [],
           "mappedType": "integer"
         },
-        "created_at": {
-          "name": "created_at",
+        "createdAt": {
+          "name": "createdAt",
           "type": "datetime",
           "unsigned": false,
           "autoincrement": false,
@@ -217,8 +218,8 @@
           "enumItems": [],
           "mappedType": "datetime"
         },
-        "updated_at": {
-          "name": "updated_at",
+        "updatedAt": {
+          "name": "updatedAt",
           "type": "datetime",
           "unsigned": false,
           "autoincrement": false,
@@ -231,10 +232,11 @@
           "default": "current_timestamp()",
           "comment": null,
           "enumItems": [],
-          "mappedType": "datetime"
+          "mappedType": "datetime",
+          "extra": "on update current_timestamp()"
         },
-        "order_number": {
-          "name": "order_number",
+        "orderNumber": {
+          "name": "orderNumber",
           "type": "varchar(255)",
           "unsigned": false,
           "autoincrement": false,
@@ -265,8 +267,8 @@
           "enumItems": [],
           "mappedType": "integer"
         },
-        "customer_name": {
-          "name": "customer_name",
+        "customerName": {
+          "name": "customerName",
           "type": "varchar(255)",
           "unsigned": false,
           "autoincrement": false,
@@ -281,8 +283,8 @@
           "enumItems": [],
           "mappedType": "string"
         },
-        "customer_email": {
-          "name": "customer_email",
+        "customerEmail": {
+          "name": "customerEmail",
           "type": "varchar(255)",
           "unsigned": false,
           "autoincrement": false,
@@ -297,8 +299,8 @@
           "enumItems": [],
           "mappedType": "string"
         },
-        "customer_phone": {
-          "name": "customer_phone",
+        "customerPhone": {
+          "name": "customerPhone",
           "type": "varchar(255)",
           "unsigned": false,
           "autoincrement": false,
@@ -313,8 +315,8 @@
           "enumItems": [],
           "mappedType": "string"
         },
-        "shipping_address": {
-          "name": "shipping_address",
+        "shippingAddress": {
+          "name": "shippingAddress",
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
@@ -361,8 +363,8 @@
           "enumItems": [],
           "mappedType": "decimal"
         },
-        "discount_amount": {
-          "name": "discount_amount",
+        "discountAmount": {
+          "name": "discountAmount",
           "type": "decimal(18,2)",
           "unsigned": false,
           "autoincrement": false,
@@ -377,8 +379,8 @@
           "enumItems": [],
           "mappedType": "decimal"
         },
-        "shipping_fee": {
-          "name": "shipping_fee",
+        "shippingFee": {
+          "name": "shippingFee",
           "type": "decimal(18,2)",
           "unsigned": false,
           "autoincrement": false,
@@ -393,8 +395,8 @@
           "enumItems": [],
           "mappedType": "decimal"
         },
-        "total_amount": {
-          "name": "total_amount",
+        "totalAmount": {
+          "name": "totalAmount",
           "type": "decimal(18,2)",
           "unsigned": false,
           "autoincrement": false,
@@ -411,13 +413,13 @@
         },
         "status": {
           "name": "status",
-          "type": "enum('pending','confirmed','processing','shipped','delivered','cancelled')",
+          "type": "enum('pending','confirmed','shipped','delivered','cancelled')",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": false,
           "unique": false,
-          "length": 10,
+          "length": 9,
           "precision": null,
           "scale": null,
           "default": "'\\'pending\\''",
@@ -425,15 +427,14 @@
           "enumItems": [
             "pending",
             "confirmed",
-            "processing",
             "shipped",
             "delivered",
             "cancelled"
           ],
           "mappedType": "enum"
         },
-        "coupon_code": {
-          "name": "coupon_code",
+        "couponCode": {
+          "name": "couponCode",
           "type": "varchar(255)",
           "unsigned": false,
           "autoincrement": false,
@@ -464,8 +465,61 @@
           "enumItems": [],
           "mappedType": "text"
         },
-        "payment_method": {
-          "name": "payment_method",
+        "paymentMethod": {
+          "name": "paymentMethod",
+          "type": "enum('cod')",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": 3,
+          "precision": null,
+          "scale": null,
+          "default": "'\\'cod\\''",
+          "comment": null,
+          "enumItems": [
+            "cod"
+          ],
+          "mappedType": "enum"
+        },
+        "paymentStatus": {
+          "name": "paymentStatus",
+          "type": "enum('unpaid','paid')",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": 6,
+          "precision": null,
+          "scale": null,
+          "default": "'\\'unpaid\\''",
+          "comment": null,
+          "enumItems": [
+            "unpaid",
+            "paid"
+          ],
+          "mappedType": "enum"
+        },
+        "isPaid": {
+          "name": "isPaid",
+          "type": "tinyint(1)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": 3,
+          "scale": 0,
+          "default": "false",
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "boolean"
+        },
+        "shippedBy": {
+          "name": "shippedBy",
           "type": "varchar(255)",
           "unsigned": false,
           "autoincrement": false,
@@ -480,21 +534,69 @@
           "enumItems": [],
           "mappedType": "string"
         },
-        "is_paid": {
-          "name": "is_paid",
-          "type": "tinyint(1)",
+        "shippedAt": {
+          "name": "shippedAt",
+          "type": "datetime",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
-          "nullable": false,
+          "nullable": true,
           "unique": false,
-          "length": null,
-          "precision": 3,
-          "scale": 0,
-          "default": "false",
+          "length": 0,
+          "precision": null,
+          "scale": null,
+          "default": "NULL",
           "comment": null,
           "enumItems": [],
-          "mappedType": "boolean"
+          "mappedType": "datetime"
+        },
+        "deliveredBy": {
+          "name": "deliveredBy",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": false,
+          "length": 255,
+          "precision": null,
+          "scale": null,
+          "default": "'NULL'",
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "string"
+        },
+        "deliveredAt": {
+          "name": "deliveredAt",
+          "type": "datetime",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": false,
+          "length": 0,
+          "precision": null,
+          "scale": null,
+          "default": "NULL",
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "datetime"
+        },
+        "cancelledAt": {
+          "name": "cancelledAt",
+          "type": "datetime",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": false,
+          "length": 0,
+          "precision": null,
+          "scale": null,
+          "default": "NULL",
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "datetime"
         }
       },
       "name": "orders",
@@ -503,19 +605,28 @@
           "columnNames": [
             "customerId"
           ],
-          "keyName": "orders_customerId_index",
+          "keyName": "orders_customer_id_index",
           "unique": false,
           "primary": false,
           "constraint": false
         },
         {
           "columnNames": [
-            "order_number"
+            "orderNumber"
           ],
           "keyName": "orders_order_number_unique",
           "unique": true,
           "primary": false,
           "constraint": true
+        },
+        {
+          "columnNames": [
+            "paymentStatus"
+          ],
+          "keyName": "orders_payment_status_index",
+          "unique": false,
+          "primary": false,
+          "constraint": false
         },
         {
           "columnNames": [
@@ -544,17 +655,17 @@
         }
       ],
       "foreignKeys": {
-        "orders_customerId_foreign": {
+        "orders_customer_id_foreign": {
           "columnNames": [
             "customerId"
           ],
-          "constraintName": "orders_customerId_foreign",
+          "constraintName": "orders_customer_id_foreign",
           "localTableName": "orders",
           "referencedTableName": "users",
           "referencedColumnNames": [
             "id"
           ],
-          "updateRule": "cascade",
+          "updateRule": "restrict",
           "deleteRule": "set null"
         }
       },
@@ -579,8 +690,134 @@
           "enumItems": [],
           "mappedType": "integer"
         },
-        "created_at": {
-          "name": "created_at",
+        "createdAt": {
+          "name": "createdAt",
+          "type": "datetime(6)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": 6,
+          "precision": null,
+          "scale": null,
+          "default": "current_timestamp(6)",
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "datetime"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "datetime(6)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": 6,
+          "precision": null,
+          "scale": null,
+          "default": "current_timestamp(6)",
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "datetime",
+          "extra": "on update current_timestamp(6)"
+        },
+        "code": {
+          "name": "code",
+          "type": "varchar(64)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": true,
+          "length": 64,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "string"
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(120)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": 120,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "string"
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": false,
+          "length": 65535,
+          "precision": null,
+          "scale": null,
+          "default": "'NULL'",
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "text"
+        }
+      },
+      "name": "permissions",
+      "indexes": [
+        {
+          "columnNames": [
+            "code"
+          ],
+          "keyName": "permissions_code_unique",
+          "unique": true,
+          "primary": false,
+          "constraint": true
+        },
+        {
+          "columnNames": [
+            "id"
+          ],
+          "keyName": "PRIMARY",
+          "unique": true,
+          "primary": true,
+          "constraint": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {},
+      "nativeEnums": {},
+      "comment": ""
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "int",
+          "unsigned": true,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": 10,
+          "scale": 0,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "integer"
+        },
+        "createdAt": {
+          "name": "createdAt",
           "type": "datetime",
           "unsigned": false,
           "autoincrement": false,
@@ -595,8 +832,8 @@
           "enumItems": [],
           "mappedType": "datetime"
         },
-        "updated_at": {
-          "name": "updated_at",
+        "updatedAt": {
+          "name": "updatedAt",
           "type": "datetime",
           "unsigned": false,
           "autoincrement": false,
@@ -609,7 +846,8 @@
           "default": "current_timestamp()",
           "comment": null,
           "enumItems": [],
-          "mappedType": "datetime"
+          "mappedType": "datetime",
+          "extra": "on update current_timestamp()"
         },
         "sku": {
           "name": "sku",
@@ -707,8 +945,8 @@
           "enumItems": [],
           "mappedType": "string"
         },
-        "base_price": {
-          "name": "base_price",
+        "basePrice": {
+          "name": "basePrice",
           "type": "decimal(18,2)",
           "unsigned": false,
           "autoincrement": false,
@@ -723,8 +961,8 @@
           "enumItems": [],
           "mappedType": "decimal"
         },
-        "wholesale_price": {
-          "name": "wholesale_price",
+        "wholesalePrice": {
+          "name": "wholesalePrice",
           "type": "decimal(18,2)",
           "unsigned": false,
           "autoincrement": false,
@@ -739,8 +977,8 @@
           "enumItems": [],
           "mappedType": "decimal"
         },
-        "retail_price": {
-          "name": "retail_price",
+        "retailPrice": {
+          "name": "retailPrice",
           "type": "decimal(18,2)",
           "unsigned": false,
           "autoincrement": false,
@@ -787,8 +1025,8 @@
           "enumItems": [],
           "mappedType": "string"
         },
-        "unit_types": {
-          "name": "unit_types",
+        "unitTypes": {
+          "name": "unitTypes",
           "type": "longtext",
           "unsigned": false,
           "autoincrement": false,
@@ -835,8 +1073,8 @@
           "enumItems": [],
           "mappedType": "unknown"
         },
-        "is_active": {
-          "name": "is_active",
+        "isActive": {
+          "name": "isActive",
           "type": "tinyint(1)",
           "unsigned": false,
           "autoincrement": false,
@@ -903,9 +1141,9 @@
           "expression": "json_valid(`images`)"
         },
         {
-          "name": "unit_types",
-          "definition": "check json_valid(`unit_types`)",
-          "expression": "json_valid(`unit_types`)"
+          "name": "unitTypes",
+          "definition": "check json_valid(`unitTypes`)",
+          "expression": "json_valid(`unitTypes`)"
         }
       ],
       "foreignKeys": {},
@@ -930,8 +1168,291 @@
           "enumItems": [],
           "mappedType": "integer"
         },
-        "created_at": {
-          "name": "created_at",
+        "createdAt": {
+          "name": "createdAt",
+          "type": "datetime(6)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": 6,
+          "precision": null,
+          "scale": null,
+          "default": "current_timestamp(6)",
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "datetime"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "datetime(6)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": 6,
+          "precision": null,
+          "scale": null,
+          "default": "current_timestamp(6)",
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "datetime",
+          "extra": "on update current_timestamp(6)"
+        },
+        "code": {
+          "name": "code",
+          "type": "varchar(64)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": true,
+          "length": 64,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "string"
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(120)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": 120,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "string"
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": false,
+          "length": 65535,
+          "precision": null,
+          "scale": null,
+          "default": "'NULL'",
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "text"
+        }
+      },
+      "name": "roles",
+      "indexes": [
+        {
+          "columnNames": [
+            "id"
+          ],
+          "keyName": "PRIMARY",
+          "unique": true,
+          "primary": true,
+          "constraint": true
+        },
+        {
+          "columnNames": [
+            "code"
+          ],
+          "keyName": "roles_code_unique",
+          "unique": true,
+          "primary": false,
+          "constraint": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {},
+      "nativeEnums": {},
+      "comment": ""
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "int",
+          "unsigned": true,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": 10,
+          "scale": 0,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "integer"
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "datetime(6)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": 6,
+          "precision": null,
+          "scale": null,
+          "default": "current_timestamp(6)",
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "datetime"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "datetime(6)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": 6,
+          "precision": null,
+          "scale": null,
+          "default": "current_timestamp(6)",
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "datetime",
+          "extra": "on update current_timestamp(6)"
+        },
+        "role_id": {
+          "name": "role_id",
+          "type": "int",
+          "unsigned": true,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": true,
+          "length": null,
+          "precision": 10,
+          "scale": 0,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "integer"
+        },
+        "permission_id": {
+          "name": "permission_id",
+          "type": "int",
+          "unsigned": true,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": 10,
+          "scale": 0,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "integer"
+        }
+      },
+      "name": "roles_permissions",
+      "indexes": [
+        {
+          "columnNames": [
+            "id"
+          ],
+          "keyName": "PRIMARY",
+          "unique": true,
+          "primary": true,
+          "constraint": true
+        },
+        {
+          "columnNames": [
+            "permission_id"
+          ],
+          "keyName": "roles_permissions_permission_id_index",
+          "unique": false,
+          "primary": false,
+          "constraint": false
+        },
+        {
+          "columnNames": [
+            "role_id"
+          ],
+          "keyName": "roles_permissions_role_id_index",
+          "unique": false,
+          "primary": false,
+          "constraint": false
+        },
+        {
+          "columnNames": [
+            "role_id",
+            "permission_id"
+          ],
+          "keyName": "roles_permissions_role_permission_unique",
+          "unique": true,
+          "primary": false,
+          "constraint": true,
+          "composite": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {
+        "fk_rp_permission": {
+          "columnNames": [
+            "permission_id"
+          ],
+          "constraintName": "fk_rp_permission",
+          "localTableName": "roles_permissions",
+          "referencedTableName": "permissions",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "updateRule": "restrict",
+          "deleteRule": "cascade"
+        },
+        "fk_rp_role": {
+          "columnNames": [
+            "role_id"
+          ],
+          "constraintName": "fk_rp_role",
+          "localTableName": "roles_permissions",
+          "referencedTableName": "roles",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "updateRule": "restrict",
+          "deleteRule": "cascade"
+        }
+      },
+      "nativeEnums": {},
+      "comment": ""
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "int",
+          "unsigned": true,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": 10,
+          "scale": 0,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "integer"
+        },
+        "createdAt": {
+          "name": "createdAt",
           "type": "datetime",
           "unsigned": false,
           "autoincrement": false,
@@ -946,8 +1467,8 @@
           "enumItems": [],
           "mappedType": "datetime"
         },
-        "updated_at": {
-          "name": "updated_at",
+        "updatedAt": {
+          "name": "updatedAt",
           "type": "datetime",
           "unsigned": false,
           "autoincrement": false,
@@ -960,7 +1481,8 @@
           "default": "current_timestamp()",
           "comment": null,
           "enumItems": [],
-          "mappedType": "datetime"
+          "mappedType": "datetime",
+          "extra": "on update current_timestamp()"
         },
         "email": {
           "name": "email",
@@ -994,8 +1516,8 @@
           "enumItems": [],
           "mappedType": "string"
         },
-        "full_name": {
-          "name": "full_name",
+        "fullName": {
+          "name": "fullName",
           "type": "varchar(255)",
           "unsigned": false,
           "autoincrement": false,
@@ -1042,29 +1564,8 @@
           "enumItems": [],
           "mappedType": "text"
         },
-        "role": {
-          "name": "role",
-          "type": "enum('admin','manager','sales','customer')",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "unique": false,
-          "length": 8,
-          "precision": null,
-          "scale": null,
-          "default": "'\\'customer\\''",
-          "comment": null,
-          "enumItems": [
-            "admin",
-            "manager",
-            "sales",
-            "customer"
-          ],
-          "mappedType": "enum"
-        },
-        "is_active": {
-          "name": "is_active",
+        "isActive": {
+          "name": "isActive",
           "type": "tinyint(1)",
           "unsigned": false,
           "autoincrement": false,
@@ -1078,6 +1579,22 @@
           "comment": null,
           "enumItems": [],
           "mappedType": "boolean"
+        },
+        "cartJson": {
+          "name": "cartJson",
+          "type": "longtext",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": false,
+          "length": 4294967295,
+          "precision": null,
+          "scale": null,
+          "default": "NULL",
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "unknown"
         }
       },
       "name": "users",
@@ -1099,19 +1616,167 @@
           "unique": true,
           "primary": false,
           "constraint": true
-        },
-        {
-          "columnNames": [
-            "role"
-          ],
-          "keyName": "users_role_index",
-          "unique": false,
-          "primary": false,
-          "constraint": false
         }
       ],
       "checks": [],
       "foreignKeys": {},
+      "nativeEnums": {},
+      "comment": ""
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "int",
+          "unsigned": true,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": 10,
+          "scale": 0,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "integer"
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "datetime(6)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": 6,
+          "precision": null,
+          "scale": null,
+          "default": "current_timestamp(6)",
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "datetime"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "datetime(6)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": 6,
+          "precision": null,
+          "scale": null,
+          "default": "current_timestamp(6)",
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "datetime",
+          "extra": "on update current_timestamp(6)"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "int",
+          "unsigned": true,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": true,
+          "length": null,
+          "precision": 10,
+          "scale": 0,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "integer"
+        },
+        "role_id": {
+          "name": "role_id",
+          "type": "int",
+          "unsigned": true,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": 10,
+          "scale": 0,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "integer"
+        }
+      },
+      "name": "users_roles",
+      "indexes": [
+        {
+          "columnNames": [
+            "id"
+          ],
+          "keyName": "PRIMARY",
+          "unique": true,
+          "primary": true,
+          "constraint": true
+        },
+        {
+          "columnNames": [
+            "role_id"
+          ],
+          "keyName": "users_roles_role_id_index",
+          "unique": false,
+          "primary": false,
+          "constraint": false
+        },
+        {
+          "columnNames": [
+            "user_id"
+          ],
+          "keyName": "users_roles_user_id_index",
+          "unique": false,
+          "primary": false,
+          "constraint": false
+        },
+        {
+          "columnNames": [
+            "user_id",
+            "role_id"
+          ],
+          "keyName": "users_roles_user_role_unique",
+          "unique": true,
+          "primary": false,
+          "constraint": true,
+          "composite": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {
+        "fk_ur_role": {
+          "columnNames": [
+            "role_id"
+          ],
+          "constraintName": "fk_ur_role",
+          "localTableName": "users_roles",
+          "referencedTableName": "roles",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "updateRule": "restrict",
+          "deleteRule": "cascade"
+        },
+        "fk_ur_user": {
+          "columnNames": [
+            "user_id"
+          ],
+          "constraintName": "fk_ur_user",
+          "localTableName": "users_roles",
+          "referencedTableName": "users",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "updateRule": "restrict",
+          "deleteRule": "cascade"
+        }
+      },
       "nativeEnums": {},
       "comment": ""
     }
