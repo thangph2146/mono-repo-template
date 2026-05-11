@@ -22,7 +22,10 @@ async function bootstrap() {
   app.useLogger(appLogger);
   registerDevHttpLogging(app, appLogger);
 
-  app.setGlobalPrefix(process.env.API_PREFIX ?? 'api');
+  const apiPrefix = (process.env.API_PREFIX ?? 'api').trim();
+  if (apiPrefix) {
+    app.setGlobalPrefix(apiPrefix);
+  }
 
   app.useGlobalPipes(
     new ValidationPipe({

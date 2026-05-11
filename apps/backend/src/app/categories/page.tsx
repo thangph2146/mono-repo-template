@@ -402,21 +402,21 @@ export default function CategoriesPage() {
           return (
             <div className="flex flex-wrap gap-1">
               <Button
-                variant="ghost"
+                variant="outline"
                 size="sm"
-                className="h-8 rounded-lg"
+                className="h-8 gap-1 rounded-lg"
                 onClick={() => openEdit(c)}
               >
                 <Pencil className="w-4 h-4 mr-1" /> Sửa
               </Button>
               <Button
-                variant="ghost"
+                variant="outline"
                 size="sm"
-                className="h-8 rounded-lg text-destructive hover:bg-destructive/10"
+                className="h-8 gap-1 rounded-lg border-destructive/40 text-destructive hover:bg-destructive/10"
                 onClick={() => requestDelete(c)}
                 disabled={usage > 0}
               >
-                <Trash2 className="w-4 h-4" />
+                <Trash2 className="w-4 h-4" /> Xóa
               </Button>
             </div>
           );

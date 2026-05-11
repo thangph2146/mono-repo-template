@@ -43,6 +43,7 @@ import {
 import { useSession } from "@/hooks/use-session";
 
 export function Header() {
+  const isDevelopment = process.env.NODE_ENV === "development";
   const pathname = usePathname();
   const router = useRouter();
   const session = useSession();
@@ -56,12 +57,12 @@ export function Header() {
     if (session) {
       items.push({ href: "/orders", label: "Đơn hàng", icon: Package });
     }
-    items.push(
-      { href: "/support", label: "Hỗ trợ", icon: Headphones },
-      { href: "/graph", label: "Sơ đồ hệ thống", icon: Box },
-    );
+    items.push({ href: "/support", label: "Hỗ trợ", icon: Headphones });
+    if (isDevelopment) {
+      items.push({ href: "/graph", label: "Sơ đồ hệ thống", icon: Box });
+    }
     return items;
-  }, [session]);
+  }, [session, isDevelopment]);
 
   const profileHref = "/profile";
 

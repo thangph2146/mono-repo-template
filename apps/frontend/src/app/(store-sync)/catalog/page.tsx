@@ -635,7 +635,7 @@ function ProductCardWithUnitSelector({
           </div>
         )}
         {firstCoupon && (
-          <div className="absolute top-3 left-3 bg-destructive text-white text-xs font-bold px-2 py-1 rounded-lg">
+          <div className="absolute top-3 left-3 max-w-[60%] rounded-lg bg-destructive px-2 py-1 text-[10px] font-bold leading-tight text-white whitespace-normal break-words shadow-sm">
             {firstCoupon}
           </div>
         )}

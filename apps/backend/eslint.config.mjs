@@ -1,32 +1,3 @@
-import { defineConfig, globalIgnores } from "eslint/config";
+import { createNextAppConfig } from "@workspace/eslint-config/next-app";
 import { nextBackendServiceBoundary } from "@workspace/eslint-config/service-boundaries";
-import nextVitals from "eslint-config-next/core-web-vitals";
-import nextTs from "eslint-config-next/typescript";
-
-const eslintConfig = defineConfig([
-  ...nextVitals,
-  ...nextTs,
-  // Override default ignores of eslint-config-next.
-  globalIgnores([
-    // Default ignores of eslint-config-next:
-    ".next/**",
-    "out/**",
-    "build/**",
-    "next-env.d.ts",
-    ".graphify/**",
-  ]),
-  {
-    rules: {
-      // Project uses external image URLs; opt out of next/image enforcement.
-      "@next/next/no-img-element": "off",
-      // Admin screens reset list page when filters change; syncing URL/query is a valid pattern.
-      "react-hooks/set-state-in-effect": "off",
-      // TanStack Table and hand-tuned column memoization are intentional; Compiler rules are noisy here.
-      "react-hooks/preserve-manual-memoization": "off",
-      "react-hooks/incompatible-library": "off",
-    },
-  },
-  ...nextBackendServiceBoundary,
-]);
-
-export default eslintConfig;
+export default createNextAppConfig([...nextBackendServiceBoundary]);

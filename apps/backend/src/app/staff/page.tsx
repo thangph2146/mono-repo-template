@@ -774,7 +774,7 @@ export default function StaffAndRbacPage() {
                             type="button"
                             variant="outline"
                             size="sm"
-                            className="rounded-lg"
+                            className="h-8 gap-1 rounded-lg"
                             onClick={() => openEdit(u)}
                             disabled={busy}
                           >
@@ -782,9 +782,9 @@ export default function StaffAndRbacPage() {
                           </Button>
                           <Button
                             type="button"
-                            variant="ghost"
+                            variant="outline"
                             size="sm"
-                            className="rounded-lg text-destructive hover:text-destructive"
+                            className="h-8 gap-1 rounded-lg border-destructive/40 text-destructive hover:bg-destructive/10"
                             onClick={() => setDeleteTarget(u)}
                             disabled={busy || u.id === session.id}
                             title={
@@ -793,7 +793,7 @@ export default function StaffAndRbacPage() {
                                 : "Xoá tạm"
                             }
                           >
-                            Xoá
+                            <Trash2 className="size-3.5" /> Xóa
                           </Button>
                         </TableCell>
                       </TableRow>

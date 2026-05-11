@@ -313,7 +313,7 @@ export default function Home() {
                   return (
                     <Link
                       key={cat.slug}
-                      href={`/catalog?category=${cat.slug}`}
+                      href={`/catalog?cat=${cat.slug}`}
                       className="group cursor-pointer"
                     >
                       <div className="aspect-square bg-primary/5 text-primary rounded-[2.5rem] flex flex-col items-center justify-center gap-4 transition-all duration-300 group-hover:scale-105 group-hover:shadow-xl group-hover:shadow-primary/5 border border-transparent group-hover:border-primary/20">

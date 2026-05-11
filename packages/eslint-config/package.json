@@ -6,6 +6,7 @@
   "exports": {
     "./base": "./base.js",
     "./next-js": "./next.js",
+    "./next-app": "./next-app.js",
     "./react-internal": "./react-internal.js",
     "./service-boundaries": "./service-boundaries.js"
   },

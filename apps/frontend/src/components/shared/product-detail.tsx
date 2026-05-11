@@ -7,6 +7,8 @@ import {
   Package,
   ShoppingCart,
   Truck,
+  Gift,
+  Percent,
   Minus,
   Plus,
   AlertTriangle,
@@ -28,6 +30,57 @@ type ProductDetailProps = {
   backHref?: string;
   supportHref?: string;
 };
+
+type GiftRule = {
+  minQty: number;
+  unitType: string;
+  giftQty: number;
+  giftName: string;
+  giftSku: string;
+  giftUnitType: string;
+};
+
+function normalizeUnitType(raw: string): string {
+  return raw.trim().toLocaleLowerCase("vi");
+}
+
+function parseGiftRulesFromFulfillmentNote(note: string | null | undefined): GiftRule[] {
+  if (!note) return [];
+  const out: GiftRule[] = [];
+  for (const rawLine of note.split("\n")) {
+    const line = rawLine.trim();
+    if (!line.startsWith("- Từ ")) continue;
+    const m = line.match(/^- Từ\s+(\d+)\s+(.+?):\s+tặng\s+(\d+)\s+(.+)\.$/);
+    if (!m) continue;
+
+    const minQty = Math.max(1, Number(m[1]) || 1);
+    const unitType = m[2].trim();
+    const giftQty = Math.max(1, Number(m[3]) || 1);
+
+    let giftPayload = m[4].trim();
+    let giftUnitType = "";
+    let giftSku = "";
+
+    const unitMarker = " - đơn vị quà: ";
+    const unitAt = giftPayload.lastIndexOf(unitMarker);
+    if (unitAt >= 0) {
+      giftUnitType = giftPayload.slice(unitAt + unitMarker.length).trim();
+      giftPayload = giftPayload.slice(0, unitAt).trim();
+    }
+
+    const skuMatch = giftPayload.match(/\(SKU:\s*([^)]+)\)\s*$/);
+    if (skuMatch) {
+      giftSku = skuMatch[1].trim();
+      giftPayload = giftPayload.slice(0, skuMatch.index).trim();
+    }
+
+    const giftName = giftPayload.trim();
+    if (!giftName) continue;
+
+    out.push({ minQty, unitType, giftQty, giftName, giftSku, giftUnitType });
+  }
+  return out;
+}
 
 export function ProductDetail({
   product,
@@ -73,8 +126,22 @@ export function ProductDetail({
     selectedUnit.type,
   );
   const pricingQty = qtyInCart + qty;
+  const activeGiftRule = useMemo(() => {
+    const rules = parseGiftRulesFromFulfillmentNote(product.fulfillmentNote);
+    const key = normalizeUnitType(selectedUnit.type);
+    return rules.find((r) => normalizeUnitType(r.unitType) === key) ?? null;
+  }, [product.fulfillmentNote, selectedUnit.type]);
+  const isGiftUnlocked = activeGiftRule != null && pricingQty >= activeGiftRule.minQty;
 
   const isWholesale = selectedUnit.wholesalePrice !== null;
+  const priceDiscountPercent = useMemo(() => {
+    const wholesale = selectedUnit.wholesalePrice;
+    if (wholesale == null) return 0;
+    const retail = Math.max(0, Math.floor(selectedUnit.retailPrice || 0));
+    const promo = Math.max(0, Math.floor(wholesale || 0));
+    if (retail <= 0 || promo <= 0 || promo >= retail) return 0;
+    return Math.round(((retail - promo) / retail) * 100);
+  }, [selectedUnit.retailPrice, selectedUnit.wholesalePrice]);
   const { current: unitPrice, list: listPrice } = unitSellingAndListPrice(
     selectedUnit,
     pricingQty,
@@ -269,6 +336,79 @@ export function ProductDetail({
                   </span>
                 )}
               </p>
+            )}
+            {isWholesale && minPromoQty > 1 && (
+              <div
+                className={`rounded-xl border px-3 py-2 text-sm ${
+                  pricingQty >= minPromoQty
+                    ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-800 dark:text-emerald-300"
+                    : "border-amber-500/35 bg-amber-500/10 text-amber-900 dark:text-amber-200"
+                }`}
+              >
+                <p className="font-semibold flex items-center gap-2">
+                  <Percent className="w-4 h-4" />
+                  {pricingQty >= minPromoQty
+                    ? "Đã chuyển sang giá khuyến mãi"
+                    : "Chưa đủ điều kiện giá khuyến mãi"}
+                </p>
+                <p className="mt-1">
+                  Điều kiện áp dụng: từ{" "}
+                  <span className="font-bold">
+                    {minPromoQty} {selectedUnit.type}
+                  </span>
+                  {priceDiscountPercent > 0 ? (
+                    <>
+                      {" "}
+                      - giảm <span className="font-bold">{priceDiscountPercent}%</span>.
+                    </>
+                  ) : (
+                    "."
+                  )}
+                </p>
+                {pricingQty < minPromoQty && (
+                  <p className="mt-1 text-xs opacity-90">
+                    Cần thêm{" "}
+                    <span className="font-bold">
+                      {Math.max(0, minPromoQty - pricingQty)}
+                    </span>{" "}
+                    {selectedUnit.type} để chuyển sang giá khuyến mãi.
+                  </p>
+                )}
+              </div>
+            )}
+            {activeGiftRule && (
+              <div
+                className={`rounded-xl border px-3 py-2 text-sm ${
+                  isGiftUnlocked
+                    ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-800 dark:text-emerald-300"
+                    : "border-amber-500/35 bg-amber-500/10 text-amber-900 dark:text-amber-200"
+                }`}
+              >
+                <p className="font-semibold flex items-center gap-2">
+                  <Gift className="w-4 h-4" />
+                  {isGiftUnlocked ? "Đã đủ điều kiện nhận quà" : "Ưu đãi quà tặng"}
+                </p>
+                <p className="mt-1">
+                  Từ <span className="font-bold">{activeGiftRule.minQty}</span>{" "}
+                  {selectedUnit.type}: tặng{" "}
+                  <span className="font-bold">
+                    {activeGiftRule.giftQty} {activeGiftRule.giftName}
+                  </span>
+                  {activeGiftRule.giftSku ? ` (SKU: ${activeGiftRule.giftSku})` : ""}
+                  {activeGiftRule.giftUnitType
+                    ? ` - đơn vị quà: ${activeGiftRule.giftUnitType}`
+                    : ""}.
+                </p>
+                {!isGiftUnlocked && (
+                  <p className="mt-1 text-xs opacity-90">
+                    Cần thêm{" "}
+                    <span className="font-bold">
+                      {Math.max(0, activeGiftRule.minQty - pricingQty)}
+                    </span>{" "}
+                    {selectedUnit.type} để nhận quà.
+                  </p>
+                )}
+              </div>
             )}
             {totalPrice > 0 && (
               <div className="pt-2 border-t border-outline-variant/30 flex items-center justify-between">

@@ -1,31 +1,3 @@
-import { defineConfig, globalIgnores } from "eslint/config";
+import { createNextAppConfig } from "@workspace/eslint-config/next-app";
 import { nextFrontendServiceBoundary } from "@workspace/eslint-config/service-boundaries";
-import nextVitals from "eslint-config-next/core-web-vitals";
-import nextTs from "eslint-config-next/typescript";
-
-const eslintConfig = defineConfig([
-  ...nextVitals,
-  ...nextTs,
-  // Override default ignores of eslint-config-next.
-  globalIgnores([
-    // Default ignores of eslint-config-next:
-    ".next/**",
-    "out/**",
-    "build/**",
-    "next-env.d.ts",
-    // Generated/external scripts
-    ".graphify/**",
-  ]),
-  {
-    rules: {
-      // Project uses external image URLs; opt out of next/image enforcement.
-      "@next/next/no-img-element": "off",
-      "react-hooks/set-state-in-effect": "off",
-      "react-hooks/preserve-manual-memoization": "off",
-      "react-hooks/incompatible-library": "off",
-    },
-  },
-  ...nextFrontendServiceBoundary,
-]);
-
-export default eslintConfig;
+export default createNextAppConfig([...nextFrontendServiceBoundary]);

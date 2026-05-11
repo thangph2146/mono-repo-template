@@ -428,6 +428,69 @@ export default function InventoryPage() {
   const imageList = watch("images") ?? [];
   const watchedUnitTypes = watch("unitTypes");
   const couponRows = watch("coupons") ?? [""];
+  const generatedGiftNotePreview = useMemo(() => {
+    const giftRules = (watchedUnitTypes ?? [])
+      .filter((u) => u?.promoMode === "gift")
+      .map((u) => {
+        const unitType = String(u?.type ?? "").trim() || "đơn vị";
+        const minQty = Math.max(1, Math.floor(Number(u?.minWholesaleQty ?? 0) || 0));
+        const giftQty = Math.max(1, Math.floor(Number(u?.giftQty ?? 1) || 1));
+        const giftName = String(u?.giftProductName ?? "").trim();
+        const giftSku = String(u?.giftProductSku ?? "").trim();
+        const giftUnitType = String(u?.giftProductUnitType ?? "").trim();
+        if (!giftName) return null;
+        return `- Từ ${minQty} ${unitType}: tặng ${giftQty} ${giftName}${giftSku ? ` (SKU: ${giftSku})` : ""}${giftUnitType ? ` - đơn vị quà: ${giftUnitType}` : ""}.`;
+      })
+      .filter((line): line is string => Boolean(line));
+
+    if (giftRules.length === 0) return "";
+    return `KM quà tặng theo đơn vị:\n${giftRules.join("\n")}`;
+  }, [watchedUnitTypes]);
+  const generatedPriceNotePreview = useMemo(() => {
+    const priceRules = (watchedUnitTypes ?? [])
+      .filter((u) => u?.promoMode === "price")
+      .map((u) => {
+        const unitType = String(u?.type ?? "").trim() || "đơn vị";
+        const minQty = Math.max(1, Math.floor(Number(u?.minWholesaleQty ?? 0) || 0));
+        const retail = Math.max(0, Math.floor(Number(u?.retailPrice ?? 0) || 0));
+        const wholesale = Math.max(0, Math.floor(Number(u?.wholesalePrice ?? 0) || 0));
+        if (retail <= 0 || wholesale <= 0 || wholesale >= retail) return null;
+        const pct = Math.round(((retail - wholesale) / retail) * 100);
+        if (pct <= 0) return null;
+        return `- Từ ${minQty} ${unitType}: giảm ${pct}% (${retail}đ -> ${wholesale}đ).`;
+      })
+      .filter((line): line is string => Boolean(line));
+    if (priceRules.length === 0) return "";
+    return `KM giá theo đơn vị:\n${priceRules.join("\n")}`;
+  }, [watchedUnitTypes]);
+  const autoGiftTagsPreview = useMemo(() => {
+    const tags = new Set<string>();
+    (watchedUnitTypes ?? []).forEach((u) => {
+      if (u?.promoMode !== "gift") return;
+      const giftName = String(u?.giftProductName ?? "").trim();
+      const giftQty = Math.max(1, Math.floor(Number(u?.giftQty ?? 1) || 1));
+      const minQty = Math.max(1, Math.floor(Number(u?.minWholesaleQty ?? 0) || 0));
+      const unitLabel = String(u?.type ?? "").trim() || "đơn vị";
+      if (giftName) tags.add(`tặng ${giftQty} ${giftName} khi mua từ ${minQty} ${unitLabel}`);
+    });
+    return Array.from(tags).filter(Boolean);
+  }, [watchedUnitTypes]);
+  const autoPriceTagsPreview = useMemo(() => {
+    const tags = new Set<string>();
+    (watchedUnitTypes ?? []).forEach((u) => {
+      if (u?.promoMode !== "price") return;
+      const retail = Math.max(0, Math.floor(Number(u?.retailPrice ?? 0) || 0));
+      const wholesale = Math.max(0, Math.floor(Number(u?.wholesalePrice ?? 0) || 0));
+      if (retail <= 0 || wholesale <= 0 || wholesale >= retail) return;
+      const pct = Math.round(((retail - wholesale) / retail) * 100);
+      if (pct > 0) {
+        const unitLabel = String(u?.type ?? "").trim() || "đơn vị";
+        const minQty = Math.max(1, Math.floor(Number(u?.minWholesaleQty ?? 0) || 0));
+        tags.add(`giảm ${pct}% khi mua từ ${minQty} ${unitLabel}`);
+      }
+    });
+    return Array.from(tags).filter(Boolean);
+  }, [watchedUnitTypes]);
 
   const appendCouponRow = (): void => {
     setValue("coupons", [...couponRows, ""], {
@@ -505,6 +568,26 @@ export default function InventoryPage() {
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
+  const giftProductOptions = useMemo(
+    () =>
+      inventory
+        .filter((p) => p.id !== editingId)
+        .map((p) => ({
+          id: p.id,
+          sku: p.sku,
+          name: p.name,
+          label: `${p.name} (${p.sku})`,
+          unitOptions:
+            p.unitTypes && p.unitTypes.length > 0
+              ? p.unitTypes.map((u) => ({
+                  value: u.type,
+                  label: u.label?.trim() || u.type,
+                }))
+              : [{ value: p.unit || "đơn vị", label: p.unit || "đơn vị" }],
+        }))
+        .sort((a, b) => a.name.localeCompare(b.name, "vi")),
+    [inventory, editingId],
+  );
 
   const openCreate = (): void => {
     setEditingId(null);
@@ -776,7 +859,7 @@ export default function InventoryPage() {
               <Badge
                 key={t}
                 variant="secondary"
-                className="border-destructive/25 bg-destructive/10 text-[10px] font-semibold text-destructive"
+                className="max-w-full whitespace-normal break-words text-left h-auto border-destructive/25 bg-destructive/10 text-[10px] font-semibold text-destructive"
               >
                 {t}
               </Badge>
@@ -924,20 +1007,20 @@ export default function InventoryPage() {
                   <Plus className="w-3.5 h-3.5" />
                 </Button>
                 <Button
-                  variant="ghost"
+                  variant="outline"
                   size="sm"
-                  className="h-8 rounded-lg font-bold text-primary"
+                  className="h-8 gap-1 rounded-lg"
                   onClick={() => openEdit(item)}
                 >
                   <Pencil className="w-3.5 h-3.5 mr-1" /> Sửa
                 </Button>
                 <Button
-                  variant="ghost"
+                  variant="outline"
                   size="sm"
-                  className="h-8 rounded-lg text-destructive"
+                  className="h-8 gap-1 rounded-lg border-destructive/40 text-destructive hover:bg-destructive/10"
                   onClick={() => requestDeleteProduct(item)}
                 >
-                  <Trash2 className="w-3.5 h-3.5" />
+                  <Trash2 className="w-3.5 h-3.5" /> Xóa
                 </Button>
               </>
             )}
@@ -1345,6 +1428,17 @@ export default function InventoryPage() {
                       Thêm tag
                     </Button>
                   )}
+                  {autoGiftTagsPreview.length > 0 ||
+                  autoPriceTagsPreview.length > 0 ? (
+                    <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/5 p-2">
+                      <p className="text-[11px] font-medium text-emerald-700 dark:text-emerald-300">
+                        Tag KM tự động từ cấu hình:
+                      </p>
+                      <p className="mt-1 text-[11px] text-muted-foreground break-words">
+                        {[...autoGiftTagsPreview, ...autoPriceTagsPreview].join(", ")}
+                      </p>
+                    </div>
+                  ) : null}
                 </div>
               </div>
               <div className="sm:col-span-2 space-y-2 rounded-xl border border-dashed border-amber-500/35 bg-amber-500/[0.06] p-4 dark:bg-amber-500/10">
@@ -1371,6 +1465,26 @@ export default function InventoryPage() {
                     {formState.errors.fulfillmentNote?.message}
                   </p>
                 )}
+                {generatedGiftNotePreview ? (
+                  <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/5 p-2">
+                    <p className="text-[11px] font-medium text-emerald-700 dark:text-emerald-300">
+                      Ghi chú KM tự động theo cấu hình quà tặng:
+                    </p>
+                    <pre className="mt-1 whitespace-pre-wrap break-words text-[11px] text-muted-foreground">
+                      {generatedGiftNotePreview}
+                    </pre>
+                  </div>
+                ) : null}
+                {generatedPriceNotePreview ? (
+                  <div className="rounded-lg border border-primary/30 bg-primary/5 p-2">
+                    <p className="text-[11px] font-medium text-primary">
+                      Ghi chú KM tự động theo giá khuyến mãi:
+                    </p>
+                    <pre className="mt-1 whitespace-pre-wrap break-words text-[11px] text-muted-foreground">
+                      {generatedPriceNotePreview}
+                    </pre>
+                  </div>
+                ) : null}
               </div>
             </div>
 
@@ -1381,10 +1495,10 @@ export default function InventoryPage() {
                     Đơn vị tính &amp; giá theo loại hàng
                   </p>
                   <p className="text-xs text-on-surface-variant">
-                    Giá ban đầu và giá khuyến mãi; để trống giá khuyến mãi nếu chỉ
-                    dùng một mức. &quot;SL tối thiểu (KM)&quot; là số lượng theo{" "}
-                    <em>đúng loại hàng này</em> của <em>đúng sản phẩm này</em> để áp
-                    giá KM; khách đổi số lượng trên giỏ thì giá cập nhật tự động.
+                    Mỗi loại hàng chọn một cơ chế khuyến mãi:{" "}
+                    <strong>Giá khuyến mãi</strong> hoặc{" "}
+                    <strong>Quà tặng</strong>. &quot;SL tối thiểu (KM)&quot; áp cho{" "}
+                    <em>đúng loại hàng này</em> của <em>đúng sản phẩm này</em>.
                   </p>
                 </div>
                 {canWriteProducts && (
@@ -1457,41 +1571,209 @@ export default function InventoryPage() {
                     />
                   </div>
                   <div className="space-y-1 sm:col-span-2">
-                    <Label className="text-xs">Giá khuyến mãi (tuỳ chọn)</Label>
-                    <p className="text-[10px] text-muted-foreground leading-snug">
-                      Chỉ áp khi đủ{" "}
-                      <span className="font-semibold text-foreground">SL tối thiểu (KM)</span>{" "}
-                      bên phải (theo cùng loại <span className="font-mono">{String(watchedUnitTypes?.[idx]?.type ?? "").trim() || "…"}</span>).
-                    </p>
-                    <Controller
-                      name={`unitTypes.${idx}.wholesalePrice`}
-                      control={control}
-                      render={({ field }) => (
+                    <Label className="text-xs">Cơ chế khuyến mãi</Label>
+                    <select
+                      {...register(`unitTypes.${idx}.promoMode`)}
+                      className="h-9 w-full rounded-lg border border-outline-variant bg-background px-2 text-sm"
+                    >
+                      <option value="none">Không áp</option>
+                      <option value="price">Giá khuyến mãi</option>
+                      <option value="gift">Quà tặng</option>
+                    </select>
+                  </div>
+                  {watchedUnitTypes?.[idx]?.promoMode === "price" && (
+                    <div className="space-y-1 sm:col-span-2">
+                      <Label className="text-xs">Giá khuyến mãi</Label>
+                      <p className="text-[10px] text-muted-foreground leading-snug">
+                        Chỉ áp khi đủ{" "}
+                        <span className="font-semibold text-foreground">
+                          SL tối thiểu (KM)
+                        </span>{" "}
+                        bên phải (theo cùng loại{" "}
+                        <span className="font-mono">
+                          {String(watchedUnitTypes?.[idx]?.type ?? "").trim() ||
+                            "…"}
+                        </span>
+                        ).
+                      </p>
+                      <Controller
+                        name={`unitTypes.${idx}.wholesalePrice`}
+                        control={control}
+                        render={({ field }) => (
+                          <Input
+                            type="number"
+                            min={0}
+                            className="h-9 text-sm rounded-lg"
+                            value={
+                              field.value === null || field.value === undefined
+                                ? ""
+                                : field.value
+                            }
+                            onChange={(e) => {
+                              const raw = e.target.value;
+                              field.onChange(raw === "" ? null : Number(raw));
+                            }}
+                          />
+                        )}
+                      />
+                      {fieldError(
+                        formState.errors.unitTypes?.[idx]?.wholesalePrice,
+                      ) && (
+                        <p className="text-[10px] text-destructive">
+                          {formState.errors.unitTypes?.[idx]?.wholesalePrice
+                            ?.message as string}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                  {watchedUnitTypes?.[idx]?.promoMode === "gift" && (
+                    <div className="space-y-1 sm:col-span-12">
+                      <Label className="text-xs">Sản phẩm quà tặng</Label>
+                      <Controller
+                        name={`unitTypes.${idx}.giftProductId`}
+                        control={control}
+                        render={({ field }) => (
+                          <>
+                            <Select
+                              value={field.value == null ? "" : String(field.value)}
+                              onValueChange={(value) => {
+                                const selected = giftProductOptions.find(
+                                  (o) => String(o.id) === value,
+                                );
+                                field.onChange(value === "" ? null : Number(value));
+                                setValue(
+                                  `unitTypes.${idx}.giftProductName`,
+                                  selected?.name ?? "",
+                                  { shouldValidate: true, shouldDirty: true },
+                                );
+                                setValue(
+                                  `unitTypes.${idx}.giftProductSku`,
+                                  selected?.sku ?? "",
+                                  { shouldValidate: true, shouldDirty: true },
+                                );
+                                setValue(
+                                  `unitTypes.${idx}.giftProductUnitType`,
+                                  selected?.unitOptions?.[0]?.value ?? "",
+                                  { shouldValidate: true, shouldDirty: true },
+                                );
+                              }}
+                            >
+                              <SelectTrigger className="h-9 text-sm rounded-lg w-full">
+                                <SelectValue placeholder="Chọn sản phẩm quà tặng">
+                                  {(() => {
+                                    const selected = giftProductOptions.find(
+                                      (o) => o.id === field.value,
+                                    );
+                                    if (selected) return selected.label;
+                                    const fallbackName = (
+                                      watchedUnitTypes?.[idx]?.giftProductName ?? ""
+                                    ).trim();
+                                    const fallbackSku = (
+                                      watchedUnitTypes?.[idx]?.giftProductSku ?? ""
+                                    ).trim();
+                                    if (!fallbackName) return undefined;
+                                    return fallbackSku
+                                      ? `${fallbackName} (${fallbackSku})`
+                                      : fallbackName;
+                                  })()}
+                                </SelectValue>
+                              </SelectTrigger>
+                              <SelectContent>
+                                {giftProductOptions.map((opt) => (
+                                  <SelectItem key={opt.id} value={String(opt.id)}>
+                                    {opt.label}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <Controller
+                              name={`unitTypes.${idx}.giftProductUnitType`}
+                              control={control}
+                              render={({ field: unitField }) => {
+                                const selected = giftProductOptions.find(
+                                  (o) =>
+                                    String(o.id) ===
+                                    String(
+                                      watchedUnitTypes?.[idx]?.giftProductId ?? "",
+                                    ),
+                                );
+                                const unitOptions = selected?.unitOptions ?? [];
+                                return (
+                                  <div className="mt-2 space-y-1">
+                                    <Label className="text-xs">Đơn vị quà tặng</Label>
+                                    <Select
+                                      value={unitField.value ?? ""}
+                                      onValueChange={(value) =>
+                                        unitField.onChange(value)
+                                      }
+                                      disabled={unitOptions.length === 0}
+                                    >
+                                      <SelectTrigger className="h-9 text-sm rounded-lg w-full">
+                                        <SelectValue placeholder="Chọn đơn vị quà tặng" />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        {unitOptions.map((unitOpt) => (
+                                          <SelectItem
+                                            key={unitOpt.value}
+                                            value={unitOpt.value}
+                                          >
+                                            {unitOpt.label}
+                                          </SelectItem>
+                                        ))}
+                                      </SelectContent>
+                                    </Select>
+                                  </div>
+                                );
+                              }}
+                            />
+                          </>
+                        )}
+                      />
+                      <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+                        <Input
+                          {...register(`unitTypes.${idx}.giftProductName`)}
+                          placeholder="Tên quà"
+                          className="h-9 text-sm rounded-lg sm:col-span-2"
+                        />
                         <Input
                           type="number"
-                          min={0}
+                          min={1}
+                          {...register(`unitTypes.${idx}.giftQty`)}
+                          placeholder="SL quà"
                           className="h-9 text-sm rounded-lg"
-                          value={
-                            field.value === null || field.value === undefined
-                              ? ""
-                              : field.value
-                          }
-                          onChange={(e) => {
-                            const raw = e.target.value;
-                            field.onChange(
-                              raw === "" ? null : Number(raw),
-                            );
-                          }}
                         />
+                      </div>
+                      <Input
+                        {...register(`unitTypes.${idx}.giftProductSku`)}
+                        placeholder="SKU quà (tuỳ chọn)"
+                        className="h-9 text-sm rounded-lg"
+                      />
+                      {fieldError(
+                        formState.errors.unitTypes?.[idx]?.giftProductUnitType,
+                      ) && (
+                        <p className="text-[10px] text-destructive">
+                          {formState.errors.unitTypes?.[idx]?.giftProductUnitType
+                            ?.message as string}
+                        </p>
                       )}
-                    />
-                  </div>
+                      {fieldError(
+                        formState.errors.unitTypes?.[idx]?.giftProductName,
+                      ) && (
+                        <p className="text-[10px] text-destructive">
+                          {formState.errors.unitTypes?.[idx]?.giftProductName
+                            ?.message as string}
+                        </p>
+                      )}
+                    </div>
+                  )}
                   <div className="space-y-1 sm:col-span-1">
                     <Label className="text-xs leading-tight">
                       SL tối thiểu (KM)
                     </Label>
                     <p className="text-[9px] text-muted-foreground leading-tight">
-                      Số lượng tối thiểu theo loại này để áp giá KM (0 = từ 1 là áp).
+                      {watchedUnitTypes?.[idx]?.promoMode === "none"
+                        ? "Không áp khuyến mãi: để 0."
+                        : "Số lượng tối thiểu để kích hoạt cơ chế KM ở dòng này."}
                     </p>
                     <Input
                       type="number"
@@ -1514,9 +1796,20 @@ export default function InventoryPage() {
                       </Button>
                     )}
                   </div>
-                  {watchedUnitTypes?.[idx] != null && (
-                    <UnitRowSaleHint {...watchedUnitTypes[idx]!} />
-                  )}
+                  {watchedUnitTypes?.[idx] != null &&
+                    watchedUnitTypes[idx]!.promoMode === "price" && (
+                      <UnitRowSaleHint {...watchedUnitTypes[idx]!} />
+                    )}
+                  {watchedUnitTypes?.[idx] != null &&
+                    watchedUnitTypes[idx]!.promoMode === "gift" && (
+                      <p className="text-[10px] text-muted-foreground sm:col-span-12 -mt-1">
+                        Quà tặng kích hoạt khi đạt SL tối thiểu của loại{" "}
+                        <span className="font-mono">
+                          {watchedUnitTypes[idx]!.type || "đơn vị"}
+                        </span>
+                        . Hệ thống tự ghi chú vào phần hướng dẫn kho/shipper.
+                      </p>
+                    )}
                 </div>
               ))}
             </div>
