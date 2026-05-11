@@ -21,7 +21,7 @@ import {
   ShoppingCart,
   Truck,
 } from "lucide-react";
-import { useCart } from "@/hooks/use-cart";
+import { mergeLinesForCreateOrder, useCart } from "@/hooks/use-cart";
 import { useSession } from "@/hooks/use-session";
 import { useCreateOrder, useUserById } from "@/hooks/queries";
 import { ApiError } from "@/lib/api";
@@ -84,11 +84,7 @@ export default function CheckoutPage() {
         shippingAddress,
         notes: notes || undefined,
         paymentMethod: "cod",
-        items: cart.lines.map((l) => ({
-          productId: l.productId,
-          quantity: l.quantity,
-          unitType: l.unitType,
-        })),
+        items: mergeLinesForCreateOrder(cart.lines),
         couponCode: cart.couponCodeForOrder,
       });
       cart.clear();
@@ -260,7 +256,7 @@ export default function CheckoutPage() {
 
                     {cart.wholesaleSavings > 0 && (
                       <p className="rounded-xl border border-success/20 bg-success/5 px-3 py-2 text-xs leading-relaxed text-success">
-                        <strong>Tiết kiệm giá sỉ</strong> (so với giá lẻ cùng quy cách, đã
+                        <strong>Tiết kiệm từ giá khuyến mãi</strong> (so với giá ban đầu cùng quy cách, đã
                         gộp trong tạm tính):{" "}
                         <span className="font-black tabular-nums">
                           {formatVND(cart.wholesaleSavings)}

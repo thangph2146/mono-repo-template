@@ -27,7 +27,7 @@ export interface ProductListOptions {
   stockBand?: ProductListStockBand;
   /** Khớp `unitTypes[].type` hoặc cột `unit`. */
   unitType?: string;
-  /** Sỉ: có đơn vị với wholesalePrice; lẻ: có đơn vị wholesalePrice null. */
+  /** `si`: có giá khuyến mãi (wholesale); `le`: chỉ giá ban đầu (wholesale null). */
   purchaseMode?: 'si' | 'le';
 }
 
@@ -121,10 +121,7 @@ export class ProductsService {
     const units = this.unitsForFilter(p);
     if (options.unitType) {
       const ut = options.unitType.trim();
-      if (
-        !units.some((u) => u.type === ut) &&
-        p.unit !== ut
-      ) {
+      if (!units.some((u) => u.type === ut) && p.unit !== ut) {
         return false;
       }
     }
@@ -137,6 +134,24 @@ export class ProductsService {
       if (!hasRetail) return false;
     }
     return true;
+  }
+
+  private notDeleted(): FilterQuery<Product> {
+    return { deletedAt: null };
+  }
+
+  private mergeWhere(
+    a: FilterQuery<Product>,
+    b: FilterQuery<Product>,
+  ): FilterQuery<Product> {
+    const empty = (x: FilterQuery<Product>) =>
+      x == null ||
+      (typeof x === 'object' &&
+        !Array.isArray(x) &&
+        Object.keys(x as object).length === 0);
+    if (empty(a)) return b;
+    if (empty(b)) return a;
+    return { $and: [a, b] };
   }
 
   private buildListWhere(options?: ProductListOptions): FilterQuery<Product> {
@@ -194,12 +209,15 @@ export class ProductsService {
     return parts.length === 0
       ? {}
       : parts.length === 1
-        ? parts[0]!
+        ? parts[0]
         : { $and: parts };
   }
 
   async findAll(options?: ProductListOptions): Promise<Product[]> {
-    const where = this.buildListWhere(options);
+    const where = this.mergeWhere(
+      this.buildListWhere(options),
+      this.notDeleted(),
+    );
     const rows = await this.productRepository.find(where, {
       orderBy: { id: 'asc' },
     });
@@ -210,7 +228,10 @@ export class ProductsService {
   async findPage(
     options: ProductListOptions & { page: number; limit: number },
   ): Promise<{ items: Product[]; total: number }> {
-    const where = this.buildListWhere(options);
+    const where = this.mergeWhere(
+      this.buildListWhere(options),
+      this.notDeleted(),
+    );
     const page = Math.max(1, Math.floor(options.page));
     const limit = Math.min(200, Math.max(1, Math.floor(options.limit)));
     const rows = await this.productRepository.find(where, {
@@ -227,7 +248,10 @@ export class ProductsService {
   }
 
   async findOne(id: number): Promise<Product> {
-    const product = await this.productRepository.findOne({ id });
+    const product = await this.productRepository.findOne({
+      id,
+      deletedAt: null,
+    });
     if (!product) {
       throw new NotFoundException(`Product with id ${id} not found`);
     }
@@ -235,18 +259,30 @@ export class ProductsService {
   }
 
   async findBySku(sku: string): Promise<Product | null> {
-    const product = await this.productRepository.findOne({ sku });
+    const product = await this.productRepository.findOne({
+      sku,
+      deletedAt: null,
+    });
     return product ? this.hydrateJsonColumns(product) : null;
   }
 
   async findByCategory(category: string): Promise<Product[]> {
-    return this.hydrateAll(await this.productRepository.find({ category }));
+    return this.hydrateAll(
+      await this.productRepository.find({ category, deletedAt: null }),
+    );
   }
 
   async create(productData: Partial<Product>): Promise<Product> {
     if (productData.sku) {
-      const existing = await this.findBySku(productData.sku);
+      const existing = await this.productRepository.findOne({
+        sku: productData.sku,
+      });
       if (existing) {
+        if (existing.deletedAt) {
+          throw new ConflictException(
+            `SKU "${productData.sku}" đang trong thùng rác (id ${existing.id}). Khôi phục sản phẩm hoặc đổi mã SKU.`,
+          );
+        }
         throw new ConflictException(`SKU "${productData.sku}" already exists`);
       }
     }
@@ -259,7 +295,14 @@ export class ProductsService {
 
   async update(id: number, productData: Partial<Product>): Promise<Product> {
     const product = await this.findOne(id);
-    this.productRepository.assign(product, productData);
+    const incoming = { ...productData } as Record<string, unknown>;
+    delete incoming.id;
+    delete incoming.createdAt;
+    delete incoming.updatedAt;
+    this.productRepository.assign(
+      product,
+      incoming as Partial<Product>,
+    );
     await this.productRepository.getEntityManager().flush();
     return product;
   }
@@ -291,6 +334,63 @@ export class ProductsService {
 
   async delete(id: number): Promise<void> {
     const product = await this.findOne(id);
+    product.deletedAt = new Date();
+    await this.productRepository.getEntityManager().flush();
+  }
+
+  async listTrashed(options?: {
+    page?: number;
+    limit?: number;
+    q?: string;
+  }): Promise<{ items: Product[]; total: number }> {
+    const where: FilterQuery<Product> = { deletedAt: { $ne: null } };
+    const rows = await this.productRepository.find(where, {
+      orderBy: { deletedAt: 'DESC', id: 'DESC' },
+    });
+    let hydrated = this.hydrateAll(rows);
+    const q = options?.q?.trim().toLowerCase();
+    if (q) {
+      hydrated = hydrated.filter((p) => {
+        const sku = String(p.sku ?? '').toLowerCase();
+        const name = String(p.name ?? '').toLowerCase();
+        const cat = String(p.category ?? '').toLowerCase();
+        return sku.includes(q) || name.includes(q) || cat.includes(q);
+      });
+    }
+    const total = hydrated.length;
+    const page = Math.max(1, Math.floor(options?.page ?? 1));
+    const limit = Math.min(200, Math.max(1, Math.floor(options?.limit ?? 100)));
+    const offset = (page - 1) * limit;
+    const items = hydrated.slice(offset, offset + limit);
+    return { items, total };
+  }
+
+  async restore(id: number): Promise<Product> {
+    const product = await this.productRepository.findOne({
+      id,
+      deletedAt: { $ne: null },
+    });
+    if (!product) {
+      throw new NotFoundException(
+        `Không có sản phẩm id ${id} trong thùng rác hoặc đã được khôi phục`,
+      );
+    }
+    product.deletedAt = null;
+    await this.productRepository.getEntityManager().flush();
+    return this.hydrateJsonColumns(product);
+  }
+
+  /** Xóa hẳn bản ghi đang ở thùng rác (không thể hoàn tác). */
+  async purgeTrashed(id: number): Promise<void> {
+    const product = await this.productRepository.findOne({
+      id,
+      deletedAt: { $ne: null },
+    });
+    if (!product) {
+      throw new NotFoundException(
+        `Không có sản phẩm id ${id} trong thùng rác — chỉ xóa vĩnh viễn bản đã xóa tạm.`,
+      );
+    }
     await this.productRepository.getEntityManager().removeAndFlush(product);
   }
 }

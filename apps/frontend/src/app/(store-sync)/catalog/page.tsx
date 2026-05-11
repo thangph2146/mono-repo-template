@@ -45,9 +45,9 @@ import { unitSellingAndListPrice } from "@/lib/product-price";
 import { resolveCategoryIcon } from "@/lib/category-icons";
 
 const PURCHASE_TYPE_OPTS = [
-  { key: "ALL", label: "Sỉ & Lẻ" },
-  { key: "si", label: "Mua Sỉ (thùng/lốc)" },
-  { key: "le", label: "Mua Lẻ (lon/chai/gói)" },
+  { key: "ALL", label: "Tất cả (KM & ban đầu)" },
+  { key: "si", label: "Có giá khuyến mãi (thùng/lốc…)" },
+  { key: "le", label: "Chỉ giá ban đầu (lon/chai/gói…)" },
 ];
 
 const UNIT_FILTER_OPTS = [
@@ -285,7 +285,7 @@ function CatalogPageInner() {
                 </h1>
                 <p className="text-base sm:text-lg text-on-surface-variant font-medium">
                   Dữ liệu lọc theo trang từ API (đang bán, tìm kiếm, danh mục, đơn
-                  vị, sỉ/lẻ). URL lưu bộ lọc để chia sẻ.
+                  vị, giá ban đầu/KM). URL lưu bộ lọc để chia sẻ.
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto lg:min-w-[min(100%,28rem)]">
@@ -595,14 +595,17 @@ function ProductCardWithUnitSelector({
   const [quantity, setQuantity] = useState(1);
 
   const isWholesale = selectedUnit.wholesalePrice !== null;
-  const { current: displayPrice, list: listPrice } =
-    unitSellingAndListPrice(selectedUnit);
+  const { current: displayPrice, list: listPrice } = unitSellingAndListPrice(
+    selectedUnit,
+    quantity,
+  );
 
   const maxQty = Math.max(
     1,
     Math.floor(p.stock / Math.max(selectedUnit.qtyPerUnit, 1)),
   );
-  const minQty = isWholesale ? Math.max(1, selectedUnit.minWholesaleQty || 1) : 1;
+  /** Luôn cho mua từ 1; `minWholesaleQty` chỉ quyết định giá KM hay giá ban đầu. */
+  const minPurchaseQty = 1;
   const outOfStock = maxQty <= 0;
 
   const primaryImage = p.images?.[0];
@@ -610,9 +613,7 @@ function ProductCardWithUnitSelector({
 
   const changeUnit = (u: ProductUnitType) => {
     setSelectedUnit(u);
-    setQuantity(
-      u.wholesalePrice !== null ? Math.max(1, u.minWholesaleQty || 1) : 1,
-    );
+    setQuantity(1);
   };
 
   return (
@@ -669,7 +670,9 @@ function ProductCardWithUnitSelector({
                     }`}
                 >
                   {u.label}
-                  {isSi && <span className="ml-1 opacity-70">• Sỉ</span>}
+                  {isSi && (
+                    <span className="ml-1 opacity-70">• Khuyến mãi</span>
+                  )}
                 </Button>
               );
             })}
@@ -688,23 +691,34 @@ function ProductCardWithUnitSelector({
             </div>
             {isWholesale && selectedUnit.minWholesaleQty > 0 && (
               <p className="text-xs text-on-surface-variant">
-                Tối thiểu {selectedUnit.minWholesaleQty} {selectedUnit.type}
+                Giá KM khi đặt ≥ {selectedUnit.minWholesaleQty} {selectedUnit.type}
+                {quantity < selectedUnit.minWholesaleQty && (
+                  <span className="block text-[10px] mt-0.5 text-muted-foreground">
+                    Đang chọn {quantity}: giá ban đầu — có thể mua 1.
+                  </span>
+                )}
               </p>
             )}
             {!isWholesale && (
               <p className="text-xs text-on-surface-variant">
-                Giá lẻ / {selectedUnit.type}
+                Giá ban đầu / {selectedUnit.type}
               </p>
             )}
           </div>
           <div className="ml-auto text-right">
             {isWholesale ? (
-              <Badge className="bg-primary/10 text-primary border-primary/20 font-bold text-xs">
-                Giá Sỉ
+              <Badge
+                className={
+                  listPrice != null
+                    ? "bg-primary/10 text-primary border-primary/20 font-bold text-xs"
+                    : "bg-secondary/10 text-secondary-foreground border-secondary/20 font-bold text-xs"
+                }
+              >
+                {listPrice != null ? "Giá KM (đủ SL)" : "Giá ban đầu"}
               </Badge>
             ) : (
               <Badge className="bg-secondary/10 text-secondary border-secondary/20 font-bold text-xs">
-                Giá Lẻ
+                Giá ban đầu
               </Badge>
             )}
             <p className="text-[10px] text-on-surface-variant mt-1 font-medium">
@@ -719,20 +733,24 @@ function ProductCardWithUnitSelector({
               variant="ghost"
               size="icon"
               className="h-11 w-11 rounded-none"
-              onClick={() => setQuantity((q) => Math.max(minQty, q - 1))}
-              disabled={outOfStock || quantity <= minQty}
+              onClick={() =>
+                setQuantity((q) => Math.max(minPurchaseQty, q - 1))
+              }
+              disabled={outOfStock || quantity <= minPurchaseQty}
             >
               <Minus className="w-4 h-4" />
             </Button>
             <input
               type="number"
               value={quantity}
-              min={minQty}
+              min={minPurchaseQty}
               max={maxQty}
               onChange={(e) => {
                 const n = Number(e.target.value);
                 if (Number.isFinite(n)) {
-                  setQuantity(Math.min(Math.max(n, minQty), maxQty));
+                  setQuantity(
+                    Math.min(Math.max(n, minPurchaseQty), maxQty),
+                  );
                 }
               }}
               className="w-12 text-center font-extrabold bg-transparent border-0 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"

@@ -3,7 +3,10 @@ import { MikroORM } from '@mikro-orm/core';
 import type { EntityMetadata } from '@mikro-orm/core';
 import ExcelJS from 'exceljs';
 import { PERSISTENT_ENTITY_CLASSES } from '../entities/registry';
-import { DataBackupService, type StoreSyncBackupPayload } from './data-backup.service';
+import {
+  DataBackupService,
+  type StoreSyncBackupPayload,
+} from './data-backup.service';
 
 const EXCEL_META_SHEET = '_backup_meta';
 /** Sheet đầu tiên (thân thiện người dùng); không dùng trong import entity. */
@@ -46,7 +49,11 @@ export class DataExcelService {
         const c = sheet.getCell('A1');
         c.value = '(Không có bản ghi)';
         c.font = { italic: true, size: 12, color: { argb: 'FF666666' } };
-        c.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+        c.alignment = {
+          vertical: 'middle',
+          horizontal: 'center',
+          wrapText: true,
+        };
         continue;
       }
       const keys = unionKeys(rows);
@@ -57,7 +64,7 @@ export class DataExcelService {
       formatEntitySheet(sheet, keys, rows.length);
     }
 
-    return (await wb.xlsx.writeBuffer()) as ExcelJS.Buffer;
+    return await wb.xlsx.writeBuffer();
   }
 
   async importWorkbook(buffer: Uint8Array): Promise<{ inserted: number }> {
@@ -95,7 +102,10 @@ export class DataExcelService {
 
     const entities: Record<string, Record<string, unknown>[]> = {};
     for (const sheet of wb.worksheets) {
-      if (sheet.name === EXCEL_META_SHEET || sheet.name === EXCEL_README_SHEET) {
+      if (
+        sheet.name === EXCEL_META_SHEET ||
+        sheet.name === EXCEL_README_SHEET
+      ) {
         continue;
       }
       const entityMeta = metaByClass.get(sheet.name);
@@ -108,7 +118,8 @@ export class DataExcelService {
 
     const payload: StoreSyncBackupPayload = {
       format: meta.format as StoreSyncBackupPayload['format'],
-      schemaVersion: meta.schemaVersion as StoreSyncBackupPayload['schemaVersion'],
+      schemaVersion:
+        meta.schemaVersion as StoreSyncBackupPayload['schemaVersion'],
       generatedAt: new Date().toISOString(),
       driverHint: 'excel-import',
       entities,
@@ -126,12 +137,7 @@ function addReadmeSheet(
   const sheet = wb.addWorksheet(EXCEL_README_SHEET, {
     properties: { tabColor: { argb: 'FF2B579A' } },
   });
-  sheet.columns = [
-    { width: 4 },
-    { width: 42 },
-    { width: 52 },
-    { width: 14 },
-  ];
+  sheet.columns = [{ width: 4 }, { width: 42 }, { width: 52 }, { width: 14 }];
 
   const title = sheet.getCell('B2');
   title.value = 'StoreSync — Sao lưu dữ liệu';
@@ -143,7 +149,11 @@ function addReadmeSheet(
   sheet.mergeCells('B3:D3');
 
   sheet.getCell('B5').value = 'Cách dùng nhanh';
-  sheet.getCell('B5').font = { size: 13, bold: true, color: { argb: 'FF2B579A' } };
+  sheet.getCell('B5').font = {
+    size: 13,
+    bold: true,
+    color: { argb: 'FF2B579A' },
+  };
 
   const tips = [
     'Mỗi tab (trừ sheet này) là một entity trong database — hàng đầu là tên cột.',
@@ -163,7 +173,11 @@ function addReadmeSheet(
 
   r += 1;
   sheet.getCell(`B${r}`).value = 'Tổng quan dữ liệu';
-  sheet.getCell(`B${r}`).font = { size: 13, bold: true, color: { argb: 'FF2B579A' } };
+  sheet.getCell(`B${r}`).font = {
+    size: 13,
+    bold: true,
+    color: { argb: 'FF2B579A' },
+  };
   r++;
 
   const headerRow = sheet.getRow(r);
@@ -232,7 +246,11 @@ function formatEntitySheet(
   const header = sheet.getRow(1);
   header.height = 22;
   header.font = { bold: true, color: { argb: HEADER_FONT }, size: 11 };
-  header.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+  header.alignment = {
+    vertical: 'middle',
+    horizontal: 'center',
+    wrapText: true,
+  };
   for (let c = 1; c <= colCount; c++) {
     const cell = header.getCell(c);
     cell.fill = {
@@ -253,7 +271,11 @@ function formatEntitySheet(
         v === null || v === undefined
           ? ''
           : typeof v === 'object' && v !== null && 'richText' in (v as object)
-            ? String((v as { richText?: { text: string }[] }).richText?.map((x) => x.text).join('') ?? '')
+            ? String(
+                (v as { richText?: { text: string }[] }).richText
+                  ?.map((x) => x.text)
+                  .join('') ?? '',
+              )
             : typeof v === 'object'
               ? JSON.stringify(v)
               : String(v);
@@ -317,7 +339,8 @@ function cellToExcel(v: unknown): string | number | Date | boolean {
     return JSON.stringify(v, null, 2);
   }
   if (typeof v === 'boolean' || typeof v === 'number') return v;
-  return String(v);
+  if (typeof v === 'string') return v;
+  return '';
 }
 
 function jsonPropertyNames(meta: EntityMetadata): Set<string> {
@@ -339,7 +362,12 @@ function sheetToObjects(
   const headerRow = sheet.getRow(1);
   const keys: string[] = [];
   headerRow.eachCell({ includeEmpty: false }, (cell, colNumber) => {
-    keys[colNumber - 1] = String(cell.value ?? '').trim();
+    const v = cell.value;
+    let s = '';
+    if (v === null || v === undefined) s = '';
+    else if (typeof v === 'object') s = JSON.stringify(v);
+    else s = String(v);
+    keys[colNumber - 1] = s.trim();
   });
   if (keys.length === 0 || keys[0]?.startsWith('(')) return [];
 
@@ -355,7 +383,7 @@ function sheetToObjects(
       if (!key) continue;
       const cell = row.getCell(c + 1);
       let val: unknown = cell.value;
-      if (val && typeof val === 'object' && 'richText' in (val as object)) {
+      if (val && typeof val === 'object' && 'richText' in val) {
         val = (val as { richText: { text: string }[] }).richText
           .map((t) => t.text)
           .join('');

@@ -17,6 +17,11 @@ const eslintConfig = defineConfig([
     rules: {
       // Project uses external image URLs; opt out of next/image enforcement.
       "@next/next/no-img-element": "off",
+      // Admin screens reset list page when filters change; syncing URL/query is a valid pattern.
+      "react-hooks/set-state-in-effect": "off",
+      // TanStack Table and hand-tuned column memoization are intentional; Compiler rules are noisy here.
+      "react-hooks/preserve-manual-memoization": "off",
+      "react-hooks/incompatible-library": "off",
     },
   },
 ]);

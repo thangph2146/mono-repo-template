@@ -6,10 +6,7 @@ import {
 import { Reflector } from '@nestjs/core';
 import type { CanActivate, ExecutionContext } from '@nestjs/common';
 import type { Request } from 'express';
-import {
-  IS_PUBLIC_KEY,
-  PERMISSIONS_KEY,
-} from '../decorators/public.decorator';
+import { IS_PUBLIC_KEY, PERMISSIONS_KEY } from '../decorators/public.decorator';
 import { RbacService } from '../rbac.service';
 import { parseXUserId } from '../request-user.util';
 

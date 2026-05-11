@@ -147,6 +147,22 @@
           "comment": null,
           "enumItems": [],
           "mappedType": "boolean"
+        },
+        "deletedAt": {
+          "name": "deletedAt",
+          "type": "datetime(6)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": false,
+          "length": 6,
+          "precision": null,
+          "scale": null,
+          "default": "NULL",
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "datetime"
         }
       },
       "name": "categories",
@@ -613,6 +629,22 @@
           "comment": null,
           "enumItems": [],
           "mappedType": "integer"
+        },
+        "deletedAt": {
+          "name": "deletedAt",
+          "type": "datetime(6)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": false,
+          "length": 6,
+          "precision": null,
+          "scale": null,
+          "default": "NULL",
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "datetime"
         }
       },
       "name": "orders",
@@ -1126,6 +1158,38 @@
           "comment": null,
           "enumItems": [],
           "mappedType": "boolean"
+        },
+        "deletedAt": {
+          "name": "deletedAt",
+          "type": "datetime(6)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": false,
+          "length": 6,
+          "precision": null,
+          "scale": null,
+          "default": "NULL",
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "datetime"
+        },
+        "fulfillmentNote": {
+          "name": "fulfillmentNote",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": false,
+          "length": 65535,
+          "precision": null,
+          "scale": null,
+          "default": "'NULL'",
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "text"
         }
       },
       "name": "products",
@@ -1633,6 +1697,22 @@
           "comment": null,
           "enumItems": [],
           "mappedType": "unknown"
+        },
+        "deletedAt": {
+          "name": "deletedAt",
+          "type": "datetime(6)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": false,
+          "length": 6,
+          "precision": null,
+          "scale": null,
+          "default": "NULL",
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "datetime"
         }
       },
       "name": "users",

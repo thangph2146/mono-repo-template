@@ -93,8 +93,9 @@
   --popover-foreground: #0b1c30;
   --primary: #0D9488;
   --primary-foreground: #ffffff;
-  --secondary: #ffffff;
-  --secondary-foreground: #1E293B;
+  /* Không dùng #fff: trùng --card → badge/button secondary mất nền */
+  --secondary: #dce9ff;
+  --secondary-foreground: #213145;
   --muted: #e5eeff;
   --muted-foreground: #3d4947;
   --accent: #e5eeff;

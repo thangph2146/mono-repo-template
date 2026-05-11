@@ -33,10 +33,78 @@ export class OrdersController {
 
   @Get()
   @Permissions(PERMISSIONS.ORDERS_READ)
-  @ApiOperation({ summary: 'List orders (staff); ?email= lọc theo khách' })
-  async findAll(@Query('email') email?: string): Promise<Order[]> {
+  @ApiOperation({
+    summary:
+      'List orders (staff); ?email= khách; ?q=&page=&limit= phân trang + tìm nhanh',
+  })
+  async findAll(
+    @Query('email') email?: string,
+    @Query('q') q?: string,
+    @Query('status') statusRaw?: string,
+    @Query('page') pageStr?: string,
+    @Query('limit') limitStr?: string,
+  ): Promise<Order[] | { items: Order[]; total: number }> {
+    const page =
+      pageStr !== undefined && pageStr !== ''
+        ? parseInt(pageStr, 10)
+        : Number.NaN;
+    const limit =
+      limitStr !== undefined && limitStr !== ''
+        ? parseInt(limitStr, 10)
+        : Number.NaN;
+    if (
+      Number.isFinite(page) &&
+      Number.isFinite(limit) &&
+      page >= 1 &&
+      limit >= 1 &&
+      limit <= 200
+    ) {
+      const st = statusRaw?.trim();
+      const status: OrderStatus | undefined =
+        st === 'pending'
+          ? OrderStatus.PENDING
+          : st === 'confirmed'
+            ? OrderStatus.CONFIRMED
+            : st === 'shipped'
+              ? OrderStatus.SHIPPED
+              : st === 'delivered'
+                ? OrderStatus.DELIVERED
+                : st === 'cancelled'
+                  ? OrderStatus.CANCELLED
+                  : undefined;
+      return this.ordersService.findStaffPage({
+        email: email?.trim() || undefined,
+        q: q?.trim() || undefined,
+        status,
+        page,
+        limit,
+      });
+    }
     if (email) return this.ordersService.findByCustomerEmail(email);
     return this.ordersService.findAll();
+  }
+
+  @Get('trashed')
+  @Permissions(PERMISSIONS.ORDERS_WRITE)
+  @ApiOperation({ summary: 'Đơn đã lưu trữ (xóa tạm)' })
+  async listTrashed(
+    @Query('page') pageStr?: string,
+    @Query('limit') limitStr?: string,
+    @Query('q') q?: string,
+  ): Promise<{ items: Order[]; total: number }> {
+    const page =
+      pageStr !== undefined && pageStr !== ''
+        ? parseInt(pageStr, 10)
+        : undefined;
+    const limit =
+      limitStr !== undefined && limitStr !== ''
+        ? parseInt(limitStr, 10)
+        : undefined;
+    return this.ordersService.listTrashed({
+      page,
+      limit,
+      q: q?.trim() || undefined,
+    });
   }
 
   @Get('customer/:customerId')
@@ -171,10 +239,29 @@ export class OrdersController {
     return this.ordersService.reopenCancelled(id, body.actor);
   }
 
+  @Post(':id/restore')
+  @Permissions(PERMISSIONS.ORDERS_WRITE)
+  @ApiOperation({ summary: 'Khôi phục đơn từ thùng rác (lưu trữ)' })
+  async restore(@Param('id', ParseIntPipe) id: number): Promise<Order> {
+    return this.ordersService.restore(id);
+  }
+
+  @Delete(':id/permanent')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Permissions(PERMISSIONS.ORDERS_WRITE)
+  @ApiOperation({
+    summary: 'Xóa vĩnh viễn đơn (chỉ khi đang trong thùng rác)',
+  })
+  async purgeTrashed(@Param('id', ParseIntPipe) id: number): Promise<void> {
+    return this.ordersService.purgeTrashed(id);
+  }
+
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @Permissions(PERMISSIONS.ORDERS_WRITE)
-  @ApiOperation({ summary: 'Delete an order (admin)' })
+  @ApiOperation({
+    summary: 'Lưu trữ đơn (xóa tạm) — chỉ đơn đã huỷ hoặc đã giao',
+  })
   async delete(@Param('id', ParseIntPipe) id: number): Promise<void> {
     return this.ordersService.delete(id);
   }

@@ -7,18 +7,16 @@ import {
   Body,
   Param,
   ParseIntPipe,
+  Query,
   UseGuards,
   Req,
   UnauthorizedException,
   ForbiddenException,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import type { Request } from 'express';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiHeader,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiHeader } from '@nestjs/swagger';
 import {
   UsersService,
   type ChangePasswordDto,
@@ -42,6 +40,8 @@ export type PublicUser = {
   address?: string;
   isActive: boolean;
   roles: Array<{ code: string; name: string }>;
+  /** Có giá trị khi tài khoản đang trong thùng rác (chỉ admin thấy qua API thùng rác). */
+  deletedAt?: Date | null;
 };
 
 export type LoginUser = PublicUser & { permissions: string[] };
@@ -63,6 +63,7 @@ function toPublicUser(user: User): PublicUser {
     address: user.address,
     isActive: user.isActive,
     roles,
+    deletedAt: user.deletedAt ?? null,
   };
 }
 
@@ -112,11 +113,63 @@ export class UsersController {
 
   @Get()
   @Permissions(PERMISSIONS.USERS_MANAGE)
-  @ApiOperation({ summary: 'Get all users' })
-  @ApiResponse({ status: 200, description: 'Return all users' })
-  async findAll(): Promise<PublicUser[]> {
+  @ApiOperation({
+    summary: 'Get all users (hoặc ?q=&page=&limit= phân trang + tìm nhanh)',
+  })
+  @ApiResponse({ status: 200, description: 'Return all users or paged' })
+  async findAll(
+    @Query('q') q?: string,
+    @Query('page') pageStr?: string,
+    @Query('limit') limitStr?: string,
+  ): Promise<PublicUser[] | { items: PublicUser[]; total: number }> {
+    const page =
+      pageStr !== undefined && pageStr !== ''
+        ? parseInt(pageStr, 10)
+        : Number.NaN;
+    const limit =
+      limitStr !== undefined && limitStr !== ''
+        ? parseInt(limitStr, 10)
+        : Number.NaN;
+    if (
+      Number.isFinite(page) &&
+      Number.isFinite(limit) &&
+      page >= 1 &&
+      limit >= 1 &&
+      limit <= 200
+    ) {
+      const res = await this.usersService.findPage({
+        q: q?.trim() || undefined,
+        page,
+        limit,
+      });
+      return { items: res.items.map(toPublicUser), total: res.total };
+    }
     const users = await this.usersService.findAll();
     return users.map(toPublicUser);
+  }
+
+  @Get('trashed')
+  @Permissions(PERMISSIONS.USERS_MANAGE)
+  @ApiOperation({ summary: 'Tài khoản đã xóa tạm' })
+  async listTrashed(
+    @Query('page') pageStr?: string,
+    @Query('limit') limitStr?: string,
+    @Query('q') q?: string,
+  ): Promise<{ items: PublicUser[]; total: number }> {
+    const page =
+      pageStr !== undefined && pageStr !== ''
+        ? parseInt(pageStr, 10)
+        : undefined;
+    const limit =
+      limitStr !== undefined && limitStr !== ''
+        ? parseInt(limitStr, 10)
+        : undefined;
+    const res = await this.usersService.listTrashed({
+      page,
+      limit,
+      q: q?.trim() || undefined,
+    });
+    return { items: res.items.map(toPublicUser), total: res.total };
   }
 
   @Get('email/:email')
@@ -134,6 +187,16 @@ export class UsersController {
   @ApiResponse({ status: 200, description: 'Return users with role' })
   async findByRoleCode(@Param('code') code: string): Promise<PublicUser[]> {
     const users = await this.usersService.findByRoleCode(code);
+    return users.map(toPublicUser);
+  }
+
+  /** Đại lý B2B (role `customer`) — đọc được với `products.read` (cùng quyền menu Đại lý & Cửa hàng). */
+  @Get('dealers')
+  @Permissions(PERMISSIONS.PRODUCTS_READ)
+  @ApiOperation({ summary: 'Danh sách tài khoản đại lý (role customer)' })
+  @ApiResponse({ status: 200, description: 'Return dealer users' })
+  async listDealers(): Promise<PublicUser[]> {
+    const users = await this.usersService.findByRoleCode('customer');
     return users.map(toPublicUser);
   }
 
@@ -218,7 +281,9 @@ export class UsersController {
 
   @Put(':id')
   @Permissions(PERMISSIONS.USERS_MANAGE)
-  @ApiOperation({ summary: 'Update a user (body.roleCodes thay thế toàn bộ role)' })
+  @ApiOperation({
+    summary: 'Update a user (body.roleCodes thay thế toàn bộ role)',
+  })
   @ApiResponse({ status: 200, description: 'User updated' })
   async update(
     @Param('id', ParseIntPipe) id: number,
@@ -228,15 +293,36 @@ export class UsersController {
     return toPublicUser(user);
   }
 
+  @Post(':id/restore')
+  @Permissions(PERMISSIONS.USERS_MANAGE)
+  @ApiOperation({ summary: 'Khôi phục tài khoản từ thùng rác' })
+  async restore(@Param('id', ParseIntPipe) id: number): Promise<PublicUser> {
+    const user = await this.usersService.restore(id);
+    return toPublicUser(user);
+  }
+
+  @Delete(':id/permanent')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Permissions(PERMISSIONS.USERS_MANAGE)
+  @ApiOperation({
+    summary: 'Xóa vĩnh viễn tài khoản (chỉ khi đang trong thùng rác)',
+  })
+  async purgeTrashed(@Param('id', ParseIntPipe) id: number): Promise<void> {
+    return this.usersService.purgeTrashed(id);
+  }
+
   @Delete(':id')
   @Permissions(PERMISSIONS.USERS_MANAGE)
-  @ApiOperation({ summary: 'Delete a user' })
-  @ApiResponse({ status: 200, description: 'User deleted' })
+  @ApiOperation({ summary: 'Xóa tạm tài khoản' })
+  @ApiResponse({ status: 200, description: 'User moved to trash' })
   async delete(@Param('id', ParseIntPipe) id: number): Promise<void> {
     return this.usersService.delete(id);
   }
 
-  private async assertSelfOrManage(req: Request, targetUserId: number): Promise<void> {
+  private async assertSelfOrManage(
+    req: Request,
+    targetUserId: number,
+  ): Promise<void> {
     const actor = parseXUserId(req);
     if (actor === null) {
       throw new UnauthorizedException(

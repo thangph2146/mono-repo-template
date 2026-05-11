@@ -13,7 +13,6 @@ import {
   Search,
   RefreshCw,
   Truck,
-  CheckCircle2,
   OctagonX,
   PackagePlus,
   CircleCheckBig,

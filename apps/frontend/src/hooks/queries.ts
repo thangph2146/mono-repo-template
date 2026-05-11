@@ -46,9 +46,9 @@ export const queryKeys = {
 
 /** Trang chủ / xem nhanh: toàn bộ SP đang bán (không phân trang). */
 export const useProducts = (): UseQueryResult<Product[], Error> =>
-  useQuery({
+  useQuery<Product[], Error>({
     queryKey: ["products", "active-all"],
-    queryFn: async () => {
+    queryFn: async (): Promise<Product[]> => {
       const res = await api.products.list({ activeOnly: true });
       return Array.isArray(res) ? res : res.items;
     },
@@ -92,7 +92,10 @@ export const useProductBySku = (sku: string | null | undefined) =>
 export const useCategories = (activeOnly = false) =>
   useQuery<Category[], Error>({
     queryKey: queryKeys.categories(activeOnly),
-    queryFn: () => api.categories.list({ activeOnly }),
+    queryFn: async (): Promise<Category[]> => {
+      const res = await api.categories.list({ activeOnly });
+      return Array.isArray(res) ? res : res.items;
+    },
   });
 
 export const useCategoryBySlug = (slug: string | null | undefined) =>
@@ -105,7 +108,10 @@ export const useCategoryBySlug = (slug: string | null | undefined) =>
 export const useOrders = (email?: string) =>
   useQuery<Order[], Error>({
     queryKey: queryKeys.orders(email),
-    queryFn: () => api.orders.list({ email }),
+    queryFn: async (): Promise<Order[]> => {
+      const res = await api.orders.list({ email });
+      return Array.isArray(res) ? res : res.items;
+    },
     enabled: !!email?.trim(),
   });
 

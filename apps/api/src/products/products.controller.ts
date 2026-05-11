@@ -70,11 +70,7 @@ export class ProductsController {
       brand: brand?.trim() || undefined,
       brandEmpty: brandEmpty === 'true',
       isActive:
-        isActive === 'true'
-          ? true
-          : isActive === 'false'
-            ? false
-            : undefined,
+        isActive === 'true' ? true : isActive === 'false' ? false : undefined,
       q: q?.trim() || undefined,
       stock:
         stockN !== undefined && Number.isFinite(stockN) ? stockN : undefined,
@@ -124,6 +120,29 @@ export class ProductsController {
     return this.productsService.findByCategory(category);
   }
 
+  @Get('trashed')
+  @Permissions(PERMISSIONS.PRODUCTS_WRITE)
+  @ApiOperation({ summary: 'Sản phẩm đã xóa tạm (thùng rác)' })
+  async listTrashed(
+    @Query('page') pageStr?: string,
+    @Query('limit') limitStr?: string,
+    @Query('q') q?: string,
+  ): Promise<{ items: Product[]; total: number }> {
+    const page =
+      pageStr !== undefined && pageStr !== ''
+        ? parseInt(pageStr, 10)
+        : undefined;
+    const limit =
+      limitStr !== undefined && limitStr !== ''
+        ? parseInt(limitStr, 10)
+        : undefined;
+    return this.productsService.listTrashed({
+      page,
+      limit,
+      q: q?.trim() || undefined,
+    });
+  }
+
   @Get(':id')
   @Public()
   @ApiOperation({ summary: 'Get product by id' })
@@ -161,10 +180,27 @@ export class ProductsController {
     return this.productsService.adjustStock(id, dto);
   }
 
+  @Post(':id/restore')
+  @Permissions(PERMISSIONS.PRODUCTS_WRITE)
+  @ApiOperation({ summary: 'Khôi phục sản phẩm từ thùng rác (xóa tạm)' })
+  async restore(@Param('id', ParseIntPipe) id: number): Promise<Product> {
+    return this.productsService.restore(id);
+  }
+
+  @Delete(':id/permanent')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Permissions(PERMISSIONS.PRODUCTS_WRITE)
+  @ApiOperation({
+    summary: 'Xóa vĩnh viễn sản phẩm (chỉ khi đang trong thùng rác)',
+  })
+  async purgeTrashed(@Param('id', ParseIntPipe) id: number): Promise<void> {
+    return this.productsService.purgeTrashed(id);
+  }
+
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @Permissions(PERMISSIONS.PRODUCTS_WRITE)
-  @ApiOperation({ summary: 'Delete a product' })
+  @ApiOperation({ summary: 'Xóa tạm sản phẩm (đưa vào thùng rác)' })
   async delete(@Param('id', ParseIntPipe) id: number): Promise<void> {
     return this.productsService.delete(id);
   }

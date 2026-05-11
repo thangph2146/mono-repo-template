@@ -1,5 +1,30 @@
 import { cn } from "../lib/utils";
 
+/** Tailwind không quét `gap-${n}` — phải map đủ chuỗi literal. */
+const STACK_GAP_CLASS = {
+  0: "gap-0",
+  1: "gap-1",
+  2: "gap-2",
+  3: "gap-3",
+  4: "gap-4",
+  5: "gap-5",
+  6: "gap-6",
+  8: "gap-8",
+  10: "gap-10",
+  12: "gap-12",
+} as const;
+
+const GRID_GAP_CLASS = {
+  0: "gap-0",
+  1: "gap-1",
+  2: "gap-2",
+  3: "gap-3",
+  4: "gap-4",
+  5: "gap-5",
+  6: "gap-6",
+  8: "gap-8",
+} as const;
+
 // ── Page shell ───────────────────────────────────────────────
 export function Page({
   children,
@@ -25,7 +50,7 @@ export function PageContent({
   return (
     <div
       className={cn(
-        "flex-1 flex flex-col p-6 md:p-16 space-y-12",
+        "flex-1 flex flex-col p-4 sm:p-6 md:p-12 lg:p-16 space-y-8 md:space-y-12",
         className,
       )}
     >
@@ -128,7 +153,7 @@ export function Stack({
       className={cn(
         "flex",
         direction === "row" ? "flex-row" : "flex-col",
-        `gap-${gap}`,
+        STACK_GAP_CLASS[gap],
         align &&
         {
           start: "items-start",
@@ -176,7 +201,7 @@ export function Grid({
   };
   return (
     <div
-      className={cn("grid", colsClass[cols], `gap-${gap}`, className)}
+      className={cn("grid", colsClass[cols], GRID_GAP_CLASS[gap], className)}
       {...props}
     >
       {children}

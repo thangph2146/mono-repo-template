@@ -16,25 +16,36 @@ import {
   type ChangePasswordInput,
   type CreateCategoryInput,
   type CreateProductInput,
+  type CreateUserInput,
   type Order,
   type OrderStatus,
   type Product,
   type ProductListParams,
+  type RbacPermission,
+  type RbacRole,
   type UpdateCategoryInput,
   type UpdateProductInput,
   type UpdateProfileInput,
+  type UpdateUserInput,
   type User,
 } from "@/lib/api";
 
 export const queryKeys = {
   products: () => ["products"] as const,
+  productsTrashed: () => ["products", "trashed"] as const,
   product: (id: number) => ["products", id] as const,
   categories: () => ["categories"] as const,
+  categoriesTrashed: () => ["categories", "trashed"] as const,
   categoryUsage: () => ["categories", "usage"] as const,
   category: (id: number) => ["categories", id] as const,
   orders: () => ["orders"] as const,
+  ordersTrashed: () => ["orders", "trashed"] as const,
   order: (id: number) => ["orders", id] as const,
   staffProfile: (id: number) => ["users", "staff-profile", id] as const,
+  staffUserList: () => ["users", "staff-list"] as const,
+  usersTrashed: () => ["users", "trashed"] as const,
+  dealers: () => ["users", "dealers"] as const,
+  rbacCatalog: () => ["rbac", "catalog"] as const,
 };
 
 export type ProductsListData = { items: Product[]; total: number };
@@ -105,15 +116,114 @@ export const useDeleteProduct = (): UseMutationResult<void, Error, number> => {
     mutationFn: (id) => api.products.remove(id),
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: queryKeys.products() });
+      void qc.invalidateQueries({ queryKey: queryKeys.productsTrashed() });
       void qc.invalidateQueries({ queryKey: queryKeys.categoryUsage() });
     },
   });
 };
 
-export const useCategories = () =>
+export const useTrashedProducts = (opts?: {
+  enabled?: boolean;
+  listParams?: { page?: number; limit?: number; q?: string };
+}): UseQueryResult<ProductsListData, Error> =>
+  useQuery({
+    queryKey: [...queryKeys.productsTrashed(), opts?.listParams ?? null] as const,
+    queryFn: async () => {
+      const lp = opts?.listParams;
+      const res = await api.products.listTrashed({
+        page: lp?.page ?? 1,
+        limit: lp?.limit ?? 20,
+        q: lp?.q,
+      });
+      return { items: res.items, total: res.total };
+    },
+    enabled: opts?.enabled ?? true,
+  });
+
+export const useRestoreProduct = (): UseMutationResult<
+  Product,
+  Error,
+  number
+> => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id) => api.products.restore(id),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: queryKeys.products() });
+      void qc.invalidateQueries({ queryKey: queryKeys.productsTrashed() });
+      void qc.invalidateQueries({ queryKey: queryKeys.categoryUsage() });
+    },
+  });
+};
+
+export const usePurgeTrashedProduct = (): UseMutationResult<
+  void,
+  Error,
+  number
+> => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id) => api.products.purgeTrashed(id),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: queryKeys.products() });
+      void qc.invalidateQueries({ queryKey: queryKeys.productsTrashed() });
+      void qc.invalidateQueries({ queryKey: queryKeys.categoryUsage() });
+    },
+  });
+};
+
+export const useCategories = (opts?: { enabled?: boolean }) =>
   useQuery<Category[], Error>({
     queryKey: queryKeys.categories(),
-    queryFn: () => api.categories.list(),
+    queryFn: async () => {
+      const res = await api.categories.list();
+      return Array.isArray(res) ? res : res.items;
+    },
+    enabled: opts?.enabled ?? true,
+  });
+
+export type CategoriesListData = { items: Category[]; total: number };
+
+export const useCategoriesAdmin = (opts?: {
+  enabled?: boolean;
+  listParams?: { q?: string; page?: number; limit?: number };
+}): UseQueryResult<CategoriesListData, Error> =>
+  useQuery({
+    queryKey: [
+      ...queryKeys.categories(),
+      "admin",
+      opts?.listParams ?? null,
+    ] as const,
+    queryFn: async () => {
+      const res = await api.categories.list({
+        q: opts?.listParams?.q,
+        page: opts?.listParams?.page,
+        limit: opts?.listParams?.limit,
+      });
+      if (Array.isArray(res)) {
+        return { items: res, total: res.length };
+      }
+      return { items: res.items, total: res.total };
+    },
+    enabled: opts?.enabled ?? true,
+  });
+
+export const useTrashedCategories = (opts?: {
+  enabled?: boolean;
+  listParams?: { page?: number; limit?: number; q?: string };
+}): UseQueryResult<CategoriesListData, Error> =>
+  useQuery({
+    queryKey: [...queryKeys.categoriesTrashed(), opts?.listParams ?? null] as const,
+    queryFn: async () => {
+      const lp = opts?.listParams;
+      const res = await api.categories.listTrashed({
+        page: lp?.page ?? 1,
+        limit: lp?.limit ?? 15,
+        q: lp?.q,
+      });
+      return { items: res.items, total: res.total };
+    },
+    enabled: opts?.enabled ?? true,
   });
 
 export const useCategoryUsage = () =>
@@ -122,10 +232,84 @@ export const useCategoryUsage = () =>
     queryFn: () => api.categories.usage(),
   });
 
-export const useOrders = (opts?: { enabled?: boolean }) =>
-  useQuery<Order[], Error>({
-    queryKey: queryKeys.orders(),
-    queryFn: () => api.orders.list(),
+export type OrdersListData = { items: Order[]; total: number };
+
+export const useOrders = (opts?: {
+  enabled?: boolean;
+  listParams?: {
+    q?: string;
+    email?: string;
+    status?: OrderStatus;
+    page?: number;
+    limit?: number;
+  };
+}): UseQueryResult<OrdersListData, Error> =>
+  useQuery({
+    queryKey: [...queryKeys.orders(), opts?.listParams ?? null] as const,
+    queryFn: async () => {
+      const res = await api.orders.list(opts?.listParams);
+      if (Array.isArray(res)) {
+        return { items: res, total: res.length };
+      }
+      return { items: res.items, total: res.total };
+    },
+    enabled: opts?.enabled ?? true,
+  });
+
+export const useTrashedOrders = (opts?: {
+  enabled?: boolean;
+  listParams?: { page?: number; limit?: number; q?: string };
+}): UseQueryResult<OrdersListData, Error> =>
+  useQuery({
+    queryKey: [...queryKeys.ordersTrashed(), opts?.listParams ?? null] as const,
+    queryFn: async () => {
+      const lp = opts?.listParams;
+      const res = await api.orders.listTrashed({
+        page: lp?.page ?? 1,
+        limit: lp?.limit ?? 20,
+        q: lp?.q,
+      });
+      return { items: res.items, total: res.total };
+    },
+    enabled: opts?.enabled ?? true,
+  });
+
+/** Đếm đơn theo trạng thái (song song, mỗi trạng thái 1 request nhẹ). */
+export type OrderStatusTabKey =
+  | "ALL"
+  | "pending"
+  | "confirmed"
+  | "shipped"
+  | "delivered"
+  | "cancelled";
+
+export const useOrderStatusCounts = (opts?: { enabled?: boolean }) =>
+  useQuery<Record<OrderStatusTabKey, number>, Error>({
+    queryKey: ["orders", "status-counts"] as const,
+    queryFn: async () => {
+      const statuses: Array<
+        "pending" | "confirmed" | "shipped" | "delivered" | "cancelled"
+      > = ["pending", "confirmed", "shipped", "delivered", "cancelled"];
+      const parts = await Promise.all(
+        statuses.map(async (s) => {
+          const r = await api.orders.list({ status: s, page: 1, limit: 1 });
+          const n = Array.isArray(r) ? r.length : r.total;
+          return [s, n] as const;
+        }),
+      );
+      const allRes = await api.orders.list({ page: 1, limit: 1 });
+      const all = Array.isArray(allRes) ? allRes.length : allRes.total;
+      const base: Record<OrderStatusTabKey, number> = {
+        ALL: all,
+        pending: 0,
+        confirmed: 0,
+        shipped: 0,
+        delivered: 0,
+        cancelled: 0,
+      };
+      for (const [s, n] of parts) base[s] = n;
+      return base;
+    },
     enabled: opts?.enabled ?? true,
   });
 
@@ -146,6 +330,7 @@ export const useCreateCategory = (): UseMutationResult<
     mutationFn: (input) => api.categories.create(input),
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: queryKeys.categories() });
+      void qc.invalidateQueries({ queryKey: queryKeys.categoriesTrashed() });
       void qc.invalidateQueries({ queryKey: queryKeys.categoryUsage() });
     },
   });
@@ -173,6 +358,39 @@ export const useDeleteCategory = (): UseMutationResult<void, Error, number> => {
     mutationFn: (id) => api.categories.remove(id),
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: queryKeys.categories() });
+      void qc.invalidateQueries({ queryKey: queryKeys.categoriesTrashed() });
+      void qc.invalidateQueries({ queryKey: queryKeys.categoryUsage() });
+    },
+  });
+};
+
+export const useRestoreCategory = (): UseMutationResult<
+  Category,
+  Error,
+  number
+> => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id) => api.categories.restore(id),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: queryKeys.categories() });
+      void qc.invalidateQueries({ queryKey: queryKeys.categoriesTrashed() });
+      void qc.invalidateQueries({ queryKey: queryKeys.categoryUsage() });
+    },
+  });
+};
+
+export const usePurgeTrashedCategory = (): UseMutationResult<
+  void,
+  Error,
+  number
+> => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id) => api.categories.purgeTrashed(id),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: queryKeys.categories() });
+      void qc.invalidateQueries({ queryKey: queryKeys.categoriesTrashed() });
       void qc.invalidateQueries({ queryKey: queryKeys.categoryUsage() });
     },
   });
@@ -188,6 +406,7 @@ export const useConfirmShipped = (): UseMutationResult<
     mutationFn: ({ id, actor }) => api.orders.confirmShipped(id, actor),
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: queryKeys.orders() });
+      void qc.invalidateQueries({ queryKey: queryKeys.ordersTrashed() });
     },
   });
 };
@@ -202,6 +421,7 @@ export const useConfirmDelivered = (): UseMutationResult<
     mutationFn: ({ id, actor }) => api.orders.confirmDelivered(id, actor),
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: queryKeys.orders() });
+      void qc.invalidateQueries({ queryKey: queryKeys.ordersTrashed() });
       void qc.invalidateQueries({ queryKey: queryKeys.products() });
     },
   });
@@ -217,6 +437,7 @@ export const useCancelOrder = (): UseMutationResult<
     mutationFn: ({ id, actor }) => api.orders.cancel(id, actor),
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: queryKeys.orders() });
+      void qc.invalidateQueries({ queryKey: queryKeys.ordersTrashed() });
       void qc.invalidateQueries({ queryKey: queryKeys.products() });
     },
   });
@@ -232,6 +453,7 @@ export const useReopenCancelledOrder = (): UseMutationResult<
     mutationFn: ({ id, actor }) => api.orders.reopenFromCancelled(id, actor),
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: queryKeys.orders() });
+      void qc.invalidateQueries({ queryKey: queryKeys.ordersTrashed() });
       void qc.invalidateQueries({ queryKey: queryKeys.products() });
     },
   });
@@ -248,6 +470,7 @@ export const useAssignOrderShipper = (): UseMutationResult<
       api.orders.assignShipper(id, shipperUserId),
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: queryKeys.orders() });
+      void qc.invalidateQueries({ queryKey: queryKeys.ordersTrashed() });
     },
   });
 };
@@ -263,7 +486,44 @@ export const useUpdateOrderStatus = (): UseMutationResult<
       api.orders.updateStatus(id, status, actor),
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: queryKeys.orders() });
+      void qc.invalidateQueries({ queryKey: queryKeys.ordersTrashed() });
       void qc.invalidateQueries({ queryKey: queryKeys.products() });
+    },
+  });
+};
+
+export const useArchiveOrder = (): UseMutationResult<void, Error, number> => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id) => api.orders.remove(id),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: queryKeys.orders() });
+      void qc.invalidateQueries({ queryKey: queryKeys.ordersTrashed() });
+      void qc.invalidateQueries({ queryKey: ["orders", "status-counts"] });
+    },
+  });
+};
+
+export const useRestoreOrder = (): UseMutationResult<Order, Error, number> => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id) => api.orders.restore(id),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: queryKeys.orders() });
+      void qc.invalidateQueries({ queryKey: queryKeys.ordersTrashed() });
+      void qc.invalidateQueries({ queryKey: ["orders", "status-counts"] });
+    },
+  });
+};
+
+export const usePurgeTrashedOrder = (): UseMutationResult<void, Error, number> => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id) => api.orders.purgeTrashed(id),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: queryKeys.orders() });
+      void qc.invalidateQueries({ queryKey: queryKeys.ordersTrashed() });
+      void qc.invalidateQueries({ queryKey: ["orders", "status-counts"] });
     },
   });
 };
@@ -296,5 +556,141 @@ export const useChangeStaffPassword = (): UseMutationResult<
 > => {
   return useMutation({
     mutationFn: ({ id, input }) => api.users.changePassword(id, input),
+  });
+};
+
+export type RbacCatalog = { permissions: RbacPermission[]; roles: RbacRole[] };
+
+export const useRbacCatalog = (opts?: { enabled?: boolean }) =>
+  useQuery<RbacCatalog, Error>({
+    queryKey: queryKeys.rbacCatalog(),
+    queryFn: async () => {
+      const [permissions, roles] = await Promise.all([
+        api.rbac.listPermissions(),
+        api.rbac.listRoles(),
+      ]);
+      return { permissions, roles };
+    },
+    enabled: opts?.enabled ?? true,
+  });
+
+export type UsersListData = { items: User[]; total: number };
+
+export const useStaffUserList = (opts?: {
+  enabled?: boolean;
+  listParams?: { q?: string; page?: number; limit?: number };
+}): UseQueryResult<UsersListData, Error> =>
+  useQuery({
+    queryKey: [...queryKeys.staffUserList(), opts?.listParams ?? null] as const,
+    queryFn: async () => {
+      const res = await api.users.list({
+        q: opts?.listParams?.q,
+        page: opts?.listParams?.page,
+        limit: opts?.listParams?.limit,
+      });
+      if (Array.isArray(res)) {
+        return { items: res, total: res.length };
+      }
+      return { items: res.items, total: res.total };
+    },
+    enabled: opts?.enabled ?? true,
+  });
+
+/** Tài khoản đại lý (role customer) — API `/users/dealers` (products.read). */
+export const useDealerUsers = (opts?: {
+  enabled?: boolean;
+}): UseQueryResult<User[], Error> =>
+  useQuery({
+    queryKey: queryKeys.dealers(),
+    queryFn: () => api.users.listDealers(),
+    enabled: opts?.enabled ?? true,
+  });
+
+export const useTrashedStaffUsers = (opts?: {
+  enabled?: boolean;
+  listParams?: { page?: number; limit?: number; q?: string };
+}): UseQueryResult<UsersListData, Error> =>
+  useQuery({
+    queryKey: [...queryKeys.usersTrashed(), opts?.listParams ?? null] as const,
+    queryFn: async () => {
+      const lp = opts?.listParams;
+      const res = await api.users.listTrashed({
+        page: lp?.page ?? 1,
+        limit: lp?.limit ?? 25,
+        q: lp?.q,
+      });
+      return { items: res.items, total: res.total };
+    },
+    enabled: opts?.enabled ?? true,
+  });
+
+export const useCreateStaffUser = (): UseMutationResult<
+  User,
+  Error,
+  CreateUserInput
+> => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (input) => api.users.create(input),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: queryKeys.staffUserList() });
+      void qc.invalidateQueries({ queryKey: queryKeys.usersTrashed() });
+      void qc.invalidateQueries({ queryKey: queryKeys.dealers() });
+    },
+  });
+};
+
+export const useUpdateStaffUser = (): UseMutationResult<
+  User,
+  Error,
+  { id: number; input: UpdateUserInput }
+> => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, input }) => api.users.update(id, input),
+    onSuccess: (u) => {
+      void qc.invalidateQueries({ queryKey: queryKeys.staffUserList() });
+      void qc.invalidateQueries({ queryKey: queryKeys.usersTrashed() });
+      void qc.invalidateQueries({ queryKey: queryKeys.dealers() });
+      qc.setQueryData(queryKeys.staffProfile(u.id), u);
+    },
+  });
+};
+
+export const useDeleteStaffUser = (): UseMutationResult<void, Error, number> => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id) => api.users.remove(id),
+    onSuccess: (_, id) => {
+      void qc.invalidateQueries({ queryKey: queryKeys.staffUserList() });
+      void qc.invalidateQueries({ queryKey: queryKeys.usersTrashed() });
+      void qc.invalidateQueries({ queryKey: queryKeys.dealers() });
+      qc.removeQueries({ queryKey: queryKeys.staffProfile(id) });
+    },
+  });
+};
+
+export const useRestoreStaffUser = (): UseMutationResult<User, Error, number> => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id) => api.users.restore(id),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: queryKeys.staffUserList() });
+      void qc.invalidateQueries({ queryKey: queryKeys.usersTrashed() });
+      void qc.invalidateQueries({ queryKey: queryKeys.dealers() });
+    },
+  });
+};
+
+export const usePurgeTrashedStaffUser = (): UseMutationResult<void, Error, number> => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id) => api.users.purgeTrashed(id),
+    onSuccess: (_, id) => {
+      void qc.invalidateQueries({ queryKey: queryKeys.staffUserList() });
+      void qc.invalidateQueries({ queryKey: queryKeys.usersTrashed() });
+      void qc.invalidateQueries({ queryKey: queryKeys.dealers() });
+      qc.removeQueries({ queryKey: queryKeys.staffProfile(id) });
+    },
   });
 };

@@ -1,4 +1,10 @@
-import { Collection, Entity, OneToMany, Property, Unique } from '@mikro-orm/core';
+import {
+  Collection,
+  Entity,
+  OneToMany,
+  Property,
+  Unique,
+} from '@mikro-orm/core';
 import { BaseEntity } from './base.entity';
 import { RolePermissionLink } from './role-permission-link.entity';
 import { UserRoleLink } from './user-role-link.entity';

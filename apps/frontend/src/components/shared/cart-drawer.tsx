@@ -26,7 +26,16 @@ import { useCart } from "@/hooks/use-cart";
 import { formatVND } from "@/lib/format";
 
 export function CartDrawer() {
-  const { lines, unitCount, grandTotal, setQuantity, remove, clear } = useCart();
+  const {
+    lines,
+    unitCount,
+    subtotal,
+    promoDiscount,
+    grandTotal,
+    setQuantity,
+    remove,
+    clear,
+  } = useCart();
   const [open, setOpen] = useState(false);
   const isEmpty = lines.length === 0;
 
@@ -135,7 +144,7 @@ export function CartDrawer() {
                     </Badge>
                     {line.isWholesale && (
                       <Badge className="text-[10px] px-1.5 py-0 bg-primary/10 text-primary border-primary/20 font-bold">
-                        Sỉ
+                        KM
                       </Badge>
                     )}
                   </div>
@@ -194,11 +203,27 @@ export function CartDrawer() {
 
         {!isEmpty && (
           <SheetFooter className="border-t border-outline-variant px-6 py-5 space-y-3 flex-col sm:flex-col">
-            <div className="flex justify-between text-base font-semibold">
-              <span className="text-on-surface-variant">Tạm tính</span>
-              <span className="font-black text-primary text-xl">
-                {formatVND(grandTotal)}
-              </span>
+            <div className="space-y-1.5 text-sm">
+              <div className="flex justify-between text-on-surface-variant">
+                <span>Tạm tính</span>
+                <span className="font-semibold tabular-nums text-foreground">
+                  {formatVND(subtotal)}
+                </span>
+              </div>
+              {promoDiscount > 0 && (
+                <div className="flex justify-between text-primary">
+                  <span>Mã khuyến mãi</span>
+                  <span className="font-semibold tabular-nums">
+                    −{formatVND(promoDiscount)}
+                  </span>
+                </div>
+              )}
+              <div className="flex justify-between text-base font-semibold border-t border-outline-variant/60 pt-2">
+                <span className="text-on-surface-variant">Ước tính thanh toán</span>
+                <span className="font-black text-primary text-xl tabular-nums">
+                  {formatVND(grandTotal)}
+                </span>
+              </div>
             </div>
             <p className="text-xs text-muted-foreground">
               Thanh toán khi nhận hàng (COD). Phí vận chuyển sẽ được tính khi

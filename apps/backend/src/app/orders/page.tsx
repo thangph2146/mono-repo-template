@@ -5,7 +5,7 @@ import type {
   ColumnFiltersState,
   OnChangeFn,
 } from "@tanstack/react-table";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@ui/components/button";
 import { Input } from "@ui/components/input";
@@ -20,12 +20,23 @@ import {
   RotateCcw,
   XCircle,
   ShieldCheck,
+  ArchiveRestore,
+  Archive,
+  FilterX,
+  Loader2,
+  Layers,
+  Trash2,
 } from "lucide-react";
 import { ApiError, type Order, type OrderStatus } from "@/lib/api";
 import { useAuth } from "@/providers/auth-provider";
 import { canUserAccess, PERMISSION_CODES } from "@workspace/api-client";
 import {
   useOrders,
+  useOrderStatusCounts,
+  useTrashedOrders,
+  useArchiveOrder,
+  usePurgeTrashedOrder,
+  useRestoreOrder,
   useDispatchShippers,
   useAssignOrderShipper,
   useConfirmShipped,
@@ -33,6 +44,18 @@ import {
   useCancelOrder,
   useReopenCancelledOrder,
 } from "@/hooks/queries";
+import { useDebouncedValue } from "@/hooks/use-debounced-value";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@ui/components/alert-dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@ui/components/tabs";
 import { formatVND, formatDate } from "@/lib/format";
 import {
   getOrderSubRows,
@@ -40,6 +63,7 @@ import {
   type OrderTreeRow,
 } from "@/lib/admin-orders-tree";
 import { AdminDataTable } from "@/components/admin-data-table";
+import { AdminTablePaginationFooter } from "@/components/admin-table-pagination-footer";
 
 type FilterKey =
   | "ALL"
@@ -74,48 +98,117 @@ const STATUS_LABEL: Record<OrderStatus, string> = {
 
 export default function AdminOrdersPage() {
   const { user } = useAuth();
+  const canReadOrders = user
+    ? canUserAccess(user, PERMISSION_CODES.ORDERS_READ)
+    : false;
   const canWriteOrders = user
     ? canUserAccess(user, PERMISSION_CODES.ORDERS_WRITE)
     : false;
-  const { data, isLoading, error, refetch, isFetching } = useOrders();
-  const confirmShipped = useConfirmShipped();
-  const confirmDelivered = useConfirmDelivered();
-  const cancelOrder = useCancelOrder();
-  const reopenCancelled = useReopenCancelledOrder();
-  const { data: shippers = [] } = useDispatchShippers({
-    enabled: canWriteOrders,
-  });
-  const assignShipperMutation = useAssignOrderShipper();
-
-  const orders = useMemo(() => data ?? [], [data]);
+  const [mainTab, setMainTab] = useState<"list" | "trash">("list");
+  const [listPage, setListPage] = useState(1);
+  const [listPageSize, setListPageSize] = useState(20);
+  const [globalFilter, setGlobalFilter] = useState("");
+  const debouncedQ = useDebouncedValue(globalFilter, 350);
+  const [trashPage, setTrashPage] = useState(1);
+  const [trashPageSize, setTrashPageSize] = useState(20);
+  const [trashGlobalFilter, setTrashGlobalFilter] = useState("");
+  const debouncedTrashQ = useDebouncedValue(trashGlobalFilter, 350);
 
   const [statusFilter, setStatusFilter] = useState<FilterKey>("ALL");
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [actorRole, setActorRole] = useState("warehouse");
   const [actorName, setActorName] = useState("");
 
+  const { data: statusCounts } = useOrderStatusCounts({
+    enabled: canReadOrders,
+  });
+
+  const ordersListParams = useMemo(
+    () => ({
+      q: debouncedQ.trim() || undefined,
+      page: listPage,
+      limit: listPageSize,
+      status: statusFilter === "ALL" ? undefined : statusFilter,
+    }),
+    [debouncedQ, listPage, listPageSize, statusFilter],
+  );
+
+  const { data, isLoading, error, refetch, isFetching } = useOrders({
+    enabled: canReadOrders && mainTab === "list",
+    listParams: ordersListParams,
+  });
+
+  const trashListParams = useMemo(
+    () => ({
+      page: trashPage,
+      limit: trashPageSize,
+      q: debouncedTrashQ.trim() || undefined,
+    }),
+    [trashPage, trashPageSize, debouncedTrashQ],
+  );
+
+  const {
+    data: trashedData,
+    isLoading: trashedLoading,
+    error: trashedError,
+  } = useTrashedOrders({
+    enabled: canWriteOrders && mainTab === "trash",
+    listParams: trashListParams,
+  });
+  const trashedOrders = trashedData?.items ?? [];
+  const trashTotal = trashedData?.total ?? 0;
+
+  const confirmShipped = useConfirmShipped();
+  const confirmDelivered = useConfirmDelivered();
+  const cancelOrder = useCancelOrder();
+  const reopenCancelled = useReopenCancelledOrder();
+  const archiveOrder = useArchiveOrder();
+  const restoreOrder = useRestoreOrder();
+  const purgeTrashedOrder = usePurgeTrashedOrder();
+  const { data: shippers = [] } = useDispatchShippers({
+    enabled: canWriteOrders,
+  });
+  const assignShipperMutation = useAssignOrderShipper();
+
+  const orders = useMemo(() => data?.items ?? [], [data?.items]);
+  const totalList = data?.total ?? 0;
+
+  const [archiveTarget, setArchiveTarget] = useState<Order | null>(null);
+  const [restoreTarget, setRestoreTarget] = useState<Order | null>(null);
+  const [purgeTarget, setPurgeTarget] = useState<Order | null>(null);
+
+  useEffect(() => {
+    setListPage(1);
+  }, [debouncedQ, statusFilter, listPageSize]);
+
+  useEffect(() => {
+    setTrashPage(1);
+  }, [debouncedTrashQ, mainTab, trashPageSize]);
+
+  useEffect(() => {
+    if (!canWriteOrders && mainTab === "trash") setMainTab("list");
+  }, [canWriteOrders, mainTab]);
+
   const applyStatusTab = useCallback((key: FilterKey): void => {
     setStatusFilter(key);
-    setColumnFilters((prev) => {
-      const rest = prev.filter((f) => f.id !== "filterStatus");
-      if (key === "ALL") return rest;
-      return [...rest, { id: "filterStatus", value: key }];
-    });
+  }, []);
+
+  const clearListFilters = useCallback((): void => {
+    setColumnFilters([]);
+    setGlobalFilter("");
+    setListPage(1);
+  }, []);
+
+  const clearTrashFilters = useCallback((): void => {
+    setTrashGlobalFilter("");
+    setTrashPage(1);
   }, []);
 
   const handleColumnFiltersChange = useCallback<OnChangeFn<ColumnFiltersState>>(
     (updater) => {
-      setColumnFilters((prev) => {
-        const next =
-          typeof updater === "function" ? updater(prev) : updater;
-        const st = next.find((f) => f.id === "filterStatus")?.value;
-        if (st != null && String(st) !== "") {
-          setStatusFilter(String(st) as FilterKey);
-        } else {
-          setStatusFilter("ALL");
-        }
-        return next;
-      });
+      setColumnFilters((prev) =>
+        typeof updater === "function" ? updater(prev) : updater,
+      );
     },
     [],
   );
@@ -217,16 +310,123 @@ export default function AdminOrdersPage() {
     );
   };
 
-  const filtered = useMemo(
-    () =>
-      orders.filter((o) => {
-        const matchStatus = statusFilter === "ALL" || o.status === statusFilter;
-        return matchStatus;
-      }),
-    [orders, statusFilter],
+  const confirmPurgeTrashedOrder = (): void => {
+    if (!purgeTarget) return;
+    const o = purgeTarget;
+    toast.promise(
+      purgeTrashedOrder.mutateAsync(o.id).then(() => setPurgeTarget(null)),
+      {
+        loading: `Đang xóa vĩnh viễn ${o.orderNumber}…`,
+        success: `Đã xóa vĩnh viễn ${o.orderNumber}`,
+        error: (err: unknown) =>
+          err instanceof ApiError ? err.message : "Không xóa vĩnh viễn được",
+      },
+    );
+  };
+
+  const trashOrderColumns: ColumnDef<Order>[] = [
+    {
+      accessorKey: "orderNumber",
+      header: "Mã đơn",
+      enableColumnFilter: false,
+      cell: ({ getValue }) => (
+        <span className="font-mono text-xs">{String(getValue())}</span>
+      ),
+    },
+    {
+      id: "customer",
+      header: "Khách",
+      enableColumnFilter: false,
+      cell: ({ row }) => (
+        <div>
+          <div className="text-sm font-medium">{row.original.customerName}</div>
+          <div className="text-xs text-muted-foreground">
+            {row.original.customerEmail}
+          </div>
+        </div>
+      ),
+    },
+    {
+      accessorKey: "status",
+      header: "Trạng thái",
+      enableColumnFilter: false,
+      cell: ({ row }) => getStatusBadge(row.original.status),
+    },
+    {
+      accessorKey: "deletedAt",
+      header: "Lưu trữ lúc",
+      enableColumnFilter: false,
+      cell: ({ getValue }) => {
+        const v = getValue() as string | null | undefined;
+        return (
+          <span className="text-xs text-muted-foreground">
+            {v ? new Date(v).toLocaleString("vi-VN") : "—"}
+          </span>
+        );
+      },
+    },
+    {
+      id: "actions",
+      header: "Thao tác",
+      enableColumnFilter: false,
+      enableSorting: false,
+      meta: { disableColumnFilter: true },
+      cell: ({ row }) => (
+        <div className="flex flex-wrap justify-end gap-1">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="h-8 gap-1 rounded-lg"
+            onClick={() => setRestoreTarget(row.original)}
+            disabled={restoreOrder.isPending || purgeTrashedOrder.isPending}
+          >
+            <ArchiveRestore className="size-3.5" />
+            Khôi phục
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="h-8 gap-1 rounded-lg border-destructive/40 text-destructive hover:bg-destructive/10"
+            onClick={() => setPurgeTarget(row.original)}
+            disabled={restoreOrder.isPending || purgeTrashedOrder.isPending}
+          >
+            <Trash2 className="size-3.5" />
+            Xóa hẳn
+          </Button>
+        </div>
+      ),
+    },
+  ];
+
+  const trashPaginationFooter = (
+    <AdminTablePaginationFooter
+      page={trashPage}
+      pageSize={trashPageSize}
+      total={trashTotal}
+      isLoading={trashedLoading}
+      onPageChange={setTrashPage}
+      onPageSizeChange={setTrashPageSize}
+      emptySummary="Không có đơn trong thùng rác"
+      itemLabel="đơn"
+    />
   );
 
-  const treeRows = useMemo(() => ordersToTreeRows(filtered), [filtered]);
+  const listPaginationFooter = (
+    <AdminTablePaginationFooter
+      page={listPage}
+      pageSize={listPageSize}
+      total={totalList}
+      isLoading={isLoading}
+      onPageChange={setListPage}
+      onPageSizeChange={setListPageSize}
+      emptySummary="Không có đơn"
+      itemLabel="đơn"
+    />
+  );
+
+  const treeRows = useMemo(() => ordersToTreeRows(orders), [orders]);
 
   const orderColumns: ColumnDef<OrderTreeRow>[] = [
     {
@@ -274,6 +474,7 @@ export default function AdminOrdersPage() {
         return row.getValue(id) === v;
       },
       meta: {
+        disableColumnFilter: true,
         filterVariant: "select",
         selectOptions: STATUS_FILTERS.filter((s) => s.key !== "ALL").map(
           (s) => ({
@@ -321,6 +522,33 @@ export default function AdminOrdersPage() {
         );
       },
       meta: { filterPlaceholder: "Lọc địa chỉ…" },
+    },
+    {
+      accessorKey: "giftNote",
+      header: "Quà kèm / Shipper",
+      enableColumnFilter: false,
+      cell: ({ row, getValue }) => {
+        const r = row.original;
+        const t = String(getValue() ?? "").trim();
+        if (r.rowKind === "order") {
+          return (
+            <span className="text-muted-foreground text-xs">—</span>
+          );
+        }
+        if (!t) {
+          return (
+            <span className="text-muted-foreground text-xs">—</span>
+          );
+        }
+        return (
+          <span
+            className="line-clamp-3 max-w-[260px] text-xs font-medium leading-snug text-amber-950 dark:text-amber-100"
+            title={t}
+          >
+            {t}
+          </span>
+        );
+      },
     },
     {
       id: "shipperAssign",
@@ -456,24 +684,37 @@ export default function AdminOrdersPage() {
                 Đã huỷ
               </span>
             )}
+            {canWriteOrders &&
+              (order.status === "delivered" ||
+                order.status === "cancelled") && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="rounded-lg text-muted-foreground"
+                  onClick={() => setArchiveTarget(order)}
+                  disabled={archiveOrder.isPending}
+                >
+                  <Archive className="mr-2 size-4" />
+                  Lưu trữ
+                </Button>
+              )}
           </div>
         );
       },
     },
   ];
 
-  const counts = useMemo(() => {
-    const base: Record<FilterKey, number> = {
-      ALL: orders.length,
+  const counts = useMemo((): Record<FilterKey, number> => {
+    const empty: Record<FilterKey, number> = {
+      ALL: 0,
       pending: 0,
       confirmed: 0,
       shipped: 0,
       delivered: 0,
       cancelled: 0,
     };
-    for (const o of orders) base[o.status as FilterKey]++;
-    return base;
-  }, [orders]);
+    return { ...empty, ...(statusCounts ?? {}) };
+  }, [statusCounts]);
 
   return (
     <div className="space-y-8">
@@ -547,6 +788,35 @@ export default function AdminOrdersPage() {
         </div>
       )}
 
+      <Tabs
+        value={mainTab}
+        onValueChange={(v) => {
+          if (v === "list" || v === "trash") setMainTab(v);
+        }}
+        className="space-y-6"
+      >
+        <TabsList className="h-auto min-h-9 flex-wrap gap-1 rounded-xl p-1">
+          <TabsTrigger value="list" className="gap-2 rounded-lg">
+            <Layers className="size-4" />
+            Đơn hàng
+          </TabsTrigger>
+          {canWriteOrders ? (
+            <TabsTrigger value="trash" className="gap-2 rounded-lg">
+              <ArchiveRestore className="size-4" />
+              Thùng rác
+              {trashedData != null && trashedData.total > 0 ? (
+                <Badge
+                  variant="secondary"
+                  className="px-1.5 py-0 text-[10px] tabular-nums"
+                >
+                  {trashedData.total}
+                </Badge>
+              ) : null}
+            </TabsTrigger>
+          ) : null}
+        </TabsList>
+
+        <TabsContent value="list" className="mt-0 space-y-6">
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
         {STATUS_FILTERS.map((f) => (
           <Button
@@ -591,8 +861,9 @@ export default function AdminOrdersPage() {
 
       <p className="text-sm text-on-surface-variant">
         Bảng: cây <span className="font-semibold">đơn → dòng hàng</span>. Chip trạng
-        thái và ô lọc cột « Trạng thái » luôn đồng bộ; thêm lọc/tìm nhanh trên tập
-        đã chọn.
+        thái lọc trên server kèm phân trang (chọn số đơn/trang ở cuối bảng). Ô tìm
+        nhanh gọi API (mã đơn, email, tên khách). «Lưu trữ» chỉ cho đơn đã giao
+        hoặc đã huỷ.
       </p>
 
       {error && (
@@ -614,19 +885,26 @@ export default function AdminOrdersPage() {
           isLoading={isLoading}
           emptyLabel="Không có đơn phù hợp chip / bộ lọc."
           defaultExpandedAll={false}
+          manualFiltering
           columnFilters={columnFilters}
           onColumnFiltersChange={handleColumnFiltersChange}
-          getGlobalFilterText={(r) =>
-            [
-              r.orderNumber,
-              r.customerName,
-              r.customerPhone,
-              r.shipNote,
-              r.paymentLabel,
-              r.filterStatus,
-            ].join(" ")
+          globalFilter={globalFilter}
+          onGlobalFilterChange={setGlobalFilter}
+          globalFilterPlaceholder="Tìm nhanh (API): mã đơn, email, tên khách…"
+          filterToolbarExtra={
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="h-9 gap-1.5 rounded-lg"
+              onClick={clearListFilters}
+            >
+              <FilterX className="size-4" />
+              Xóa bộ lọc
+            </Button>
           }
-          globalFilterPlaceholder="Tìm mã đơn, khách, SĐT, địa chỉ…"
+          csvExport={{ fileName: "don-hang.csv" }}
+          footer={listPaginationFooter}
           getRowClassName={(row) =>
             row.original.rowKind === "order"
               ? row.original.order.status === "pending"
@@ -640,6 +918,55 @@ export default function AdminOrdersPage() {
           }
         />
       )}
+        </TabsContent>
+
+        {canWriteOrders ? (
+          <TabsContent value="trash" className="mt-0 space-y-4">
+            {trashedError ? (
+              <div className="rounded-2xl border border-destructive/20 bg-destructive/5 py-12 text-center">
+                <p className="text-lg font-bold text-destructive">
+                  Không tải được thùng rác
+                </p>
+                <p className="mt-1 text-sm text-on-surface-variant">
+                  {trashedError.message}
+                </p>
+              </div>
+            ) : (
+              <>
+                <p className="text-sm text-on-surface-variant">
+                  Đơn lưu trữ không hiển thị cho khách và không xuất hiện trong
+                  danh sách chính.
+                </p>
+                <AdminDataTable<Order>
+                  data={trashedOrders}
+                  columns={trashOrderColumns}
+                  isLoading={trashedLoading}
+                  emptyLabel="Thùng rác trống hoặc không khớp tìm kiếm."
+                  defaultExpandedAll={false}
+                  manualFiltering
+                  globalFilter={trashGlobalFilter}
+                  onGlobalFilterChange={setTrashGlobalFilter}
+                  globalFilterPlaceholder="Tìm theo mã đơn, email, tên khách (API)…"
+                  filterToolbarExtra={
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="h-9 gap-1.5 rounded-lg"
+                      onClick={clearTrashFilters}
+                    >
+                      <FilterX className="size-4" />
+                      Xóa bộ lọc
+                    </Button>
+                  }
+                  csvExport={{ fileName: "don-hang-thung-rac.csv" }}
+                  footer={trashPaginationFooter}
+                />
+              </>
+            )}
+          </TabsContent>
+        ) : null}
+      </Tabs>
 
       <div className="bg-primary/5 rounded-2xl p-6 border border-primary/20 flex gap-4 items-start">
         <AlertCircle className="w-6 h-6 text-primary shrink-0 mt-0.5" />
@@ -660,6 +987,154 @@ export default function AdminOrdersPage() {
           </p>
         </div>
       </div>
+
+      <AlertDialog
+        open={archiveTarget != null}
+        onOpenChange={(o) => {
+          if (!o) setArchiveTarget(null);
+        }}
+      >
+        <AlertDialogContent className="rounded-2xl sm:max-w-[450px]">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Lưu trữ đơn (xóa tạm)?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {archiveTarget ? (
+                <>
+                  Đơn{" "}
+                  <strong className="text-foreground">
+                    {archiveTarget.orderNumber}
+                  </strong>{" "}
+                  sẽ ẩn khỏi danh sách và storefront. Chỉ đơn đã giao hoặc đã
+                  huỷ mới lưu trữ được.
+                </>
+              ) : null}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="rounded-xl">Huỷ</AlertDialogCancel>
+            <AlertDialogAction
+              className="rounded-xl bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={(e) => {
+                e.preventDefault();
+                if (!archiveTarget) return;
+                const o = archiveTarget;
+                toast.promise(
+                  archiveOrder.mutateAsync(o.id).then(() => setArchiveTarget(null)),
+                  {
+                    loading: `Đang lưu trữ ${o.orderNumber}…`,
+                    success: `Đã lưu trữ ${o.orderNumber}`,
+                    error: (err: unknown) =>
+                      err instanceof ApiError
+                        ? err.message
+                        : "Không lưu trữ được",
+                  },
+                );
+              }}
+              disabled={archiveOrder.isPending}
+            >
+              {archiveOrder.isPending ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                "Lưu trữ"
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog
+        open={purgeTarget != null}
+        onOpenChange={(o) => {
+          if (!o) setPurgeTarget(null);
+        }}
+      >
+        <AlertDialogContent className="rounded-2xl sm:max-w-[450px]">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Xóa vĩnh viễn đơn hàng?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {purgeTarget ? (
+                <>
+                  Đơn{" "}
+                  <strong className="text-foreground">
+                    {purgeTarget.orderNumber}
+                  </strong>{" "}
+                  sẽ bị xoá khỏi cơ sở dữ liệu. Không thể hoàn tác.
+                </>
+              ) : null}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="rounded-xl">Huỷ</AlertDialogCancel>
+            <AlertDialogAction
+              className="rounded-xl bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={(e) => {
+                e.preventDefault();
+                confirmPurgeTrashedOrder();
+              }}
+              disabled={purgeTrashedOrder.isPending}
+            >
+              {purgeTrashedOrder.isPending ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                "Xóa vĩnh viễn"
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog
+        open={restoreTarget != null}
+        onOpenChange={(o) => {
+          if (!o) setRestoreTarget(null);
+        }}
+      >
+        <AlertDialogContent className="rounded-2xl sm:max-w-[450px]">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Khôi phục đơn?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {restoreTarget ? (
+                <>
+                  Đưa{" "}
+                  <strong className="text-foreground">
+                    {restoreTarget.orderNumber}
+                  </strong>{" "}
+                  trở lại danh sách đơn hàng.
+                </>
+              ) : null}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="rounded-xl">Huỷ</AlertDialogCancel>
+            <AlertDialogAction
+              className="rounded-xl"
+              onClick={(e) => {
+                e.preventDefault();
+                if (!restoreTarget) return;
+                const o = restoreTarget;
+                toast.promise(
+                  restoreOrder.mutateAsync(o.id).then(() => setRestoreTarget(null)),
+                  {
+                    loading: `Đang khôi phục ${o.orderNumber}…`,
+                    success: `Đã khôi phục ${o.orderNumber}`,
+                    error: (err: unknown) =>
+                      err instanceof ApiError
+                        ? err.message
+                        : "Không khôi phục được",
+                  },
+                );
+              }}
+              disabled={restoreOrder.isPending}
+            >
+              {restoreOrder.isPending ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                "Khôi phục"
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

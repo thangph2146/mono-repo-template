@@ -27,6 +27,8 @@ export interface User extends AuditFields {
   address?: string | null;
   roles: UserRoleRef[];
   isActive: boolean;
+  /** Thùng rác admin — optional vì API danh sách chính không trả bản ghi đã xóa. */
+  deletedAt?: Iso8601 | null;
 }
 
 /** Kết quả đăng nhập: user kèm union quyền hiệu lực (từ mọi role). */
@@ -44,7 +46,7 @@ export interface UserCartPayload {
   lines: Array<Record<string, unknown>>;
 }
 
-export type CreateUserInput = Omit<User, keyof AuditFields> & {
+export type CreateUserInput = Omit<User, keyof AuditFields | 'roles'> & {
   password: string;
   /** Gán role theo mã (vd: admin, customer); thay thế toàn bộ khi update. */
   roleCodes?: string[];
@@ -90,7 +92,7 @@ export interface ProductListParams {
   stockBand?: "ok" | "low" | "out";
   /** Lọc theo đơn vị tính (`unitTypes[].type` hoặc `unit`). */
   unitType?: string;
-  /** Kiểu mua: sỉ (có giá sỉ) / lẻ (có đơn vị chỉ lẻ). */
+  /** Kiểu mua: có giá khuyến mãi (wholesale) / chỉ giá ban đầu (retail). */
   purchaseMode?: "si" | "le";
   /** Cùng `limit` → API trả `{ items, total }` thay vì mảng. */
   page?: number;
@@ -112,7 +114,11 @@ export interface Product extends AuditFields {
   unitTypes?: ProductUnitType[] | null;
   images?: string[] | null;
   coupons?: string[] | null;
+  /** Ghi chú quà / KM cho shipper (kho), ví dụ điều kiện tặng kèm. */
+  fulfillmentNote?: string | null;
   isActive: boolean;
+  /** Có giá trị khi sản phẩm đang trong thùng rác (xóa tạm). */
+  deletedAt?: Iso8601 | null;
 }
 
 /** Kết quả phân trang từ GET /products?page=&limit= */
@@ -131,6 +137,7 @@ export interface Category extends AuditFields {
   icon?: string | null;
   sortOrder: number;
   isActive: boolean;
+  deletedAt?: Iso8601 | null;
 }
 
 export type CreateCategoryInput = Omit<Category, keyof AuditFields>;
@@ -161,6 +168,12 @@ export interface OrderItem {
   totalPrice: number;
   qtyPerUnit?: number;
   image?: string;
+  /** Bản chụp ghi chú quà kèm từ sản phẩm lúc đặt hàng. */
+  giftNote?: string;
+  /** Giá ban đầu (retail) theo đơn vị tại thời điểm đặt — không đổi khi catalog cập nhật. */
+  listUnitPrice?: number;
+  /** Nhãn đơn vị tại thời điểm đặt. */
+  unitLabel?: string;
 }
 
 /** User được gán làm shipper cho đơn (populate từ API). */
@@ -190,9 +203,13 @@ export interface Order extends AuditFields {
   deliveredBy?: string | null;
   deliveredAt?: Iso8601 | null;
   cancelledAt?: Iso8601 | null;
+  deletedAt?: Iso8601 | null;
 }
 
-/** Item the storefront sends; server tra giá theo product/unit. */
+/**
+ * Item storefront gửi lên; server gộp trùng (cùng product + đơn vị), tính giá
+ * theo catalog tại thời điểm đặt và lưu bản chụp vào `Order.items` (không đổi sau này).
+ */
 export interface CreateOrderItemInput {
   productId: number;
   quantity: number;
@@ -217,4 +234,21 @@ export interface HealthStatus {
   service: string;
   uptime: number;
   timestamp: Iso8601;
+}
+
+/** GET /rbac/permissions */
+export interface RbacPermission {
+  id: number;
+  code: string;
+  name: string;
+  description: string | null;
+}
+
+/** GET /rbac/roles — mỗi role kèm danh sách mã quyền (đã sort). */
+export interface RbacRole {
+  id: number;
+  code: string;
+  name: string;
+  description: string | null;
+  permissions: string[];
 }

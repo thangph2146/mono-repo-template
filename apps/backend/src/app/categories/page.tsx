@@ -1,7 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import type { ColumnDef } from "@tanstack/react-table";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import type { ColumnDef, ColumnFiltersState, OnChangeFn } from "@tanstack/react-table";
 import { toast } from "sonner";
 import { Button } from "@ui/components/button";
 import { Input } from "@ui/components/input";
@@ -18,24 +18,50 @@ import {
   DialogTrigger,
 } from "@ui/components/dialog";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@ui/components/alert-dialog";
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@ui/components/select";
-import { Plus, Pencil, Trash2, Tags, AlertCircle } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@ui/components/tabs";
+import {
+  ArchiveRestore,
+  FilterX,
+  Loader2,
+  Plus,
+  Pencil,
+  Tags,
+  Trash2,
+  AlertCircle,
+  Layers,
+} from "lucide-react";
 import { AdminDataTable } from "@/components/admin-data-table";
+import { AdminTablePaginationFooter } from "@/components/admin-table-pagination-footer";
 import { type Category, ApiError } from "@/lib/api";
 import { useAuth } from "@/providers/auth-provider";
 import { canUserAccess, PERMISSION_CODES } from "@workspace/api-client";
 import {
-  useCategories,
+  useCategoriesAdmin,
   useCategoryUsage,
   useCreateCategory,
   useDeleteCategory,
+  usePurgeTrashedCategory,
+  useRestoreCategory,
+  useTrashedCategories,
   useUpdateCategory,
 } from "@/hooks/queries";
+import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import {
   CATEGORY_ICON_OPTIONS,
   resolveCategoryIcon,
@@ -76,22 +102,80 @@ export default function CategoriesPage() {
   const canWriteCategories = user
     ? canUserAccess(user, PERMISSION_CODES.CATEGORIES_WRITE)
     : false;
-  const { data: categoriesData, isLoading: loading, error } = useCategories();
   const { data: usageData } = useCategoryUsage();
   const createMutation = useCreateCategory();
   const updateMutation = useUpdateCategory();
   const deleteMutation = useDeleteCategory();
+  const restoreMutation = useRestoreCategory();
+  const purgeTrashedMutation = usePurgeTrashedCategory();
 
-  const categories = useMemo(() => categoriesData ?? [], [categoriesData]);
   const usageMap = useMemo(() => {
     const map = new Map<string, number>();
     for (const u of usageData ?? []) map.set(u.slug, u.productCount);
     return map;
   }, [usageData]);
 
+  const [mainTab, setMainTab] = useState<"list" | "trash">("list");
+  const [page, setPage] = useState(1);
+  const [listPageSize, setListPageSize] = useState(15);
+  const [globalFilter, setGlobalFilter] = useState("");
+  const debouncedQ = useDebouncedValue(globalFilter, 350);
+  const [trashPage, setTrashPage] = useState(1);
+  const [trashPageSize, setTrashPageSize] = useState(15);
+  const [trashGlobalFilter, setTrashGlobalFilter] = useState("");
+  const debouncedTrashQ = useDebouncedValue(trashGlobalFilter, 350);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+
+  const listParams = useMemo(
+    () => ({
+      q: debouncedQ.trim() || undefined,
+      page,
+      limit: listPageSize,
+    }),
+    [debouncedQ, page, listPageSize],
+  );
+
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedQ, listPageSize]);
+
+  useEffect(() => {
+    setTrashPage(1);
+  }, [debouncedTrashQ, mainTab, trashPageSize]);
+
+  const { data, isLoading: loading, error } = useCategoriesAdmin({
+    listParams,
+  });
+  const categories = useMemo(() => data?.items ?? [], [data?.items]);
+  const total = data?.total ?? 0;
+
+  const trashListParams = useMemo(
+    () => ({
+      page: trashPage,
+      limit: trashPageSize,
+      q: debouncedTrashQ.trim() || undefined,
+    }),
+    [trashPage, trashPageSize, debouncedTrashQ],
+  );
+
+  const { data: trashedData, isLoading: trashedLoading, error: trashedError } =
+    useTrashedCategories({
+      enabled: mainTab === "trash" && canWriteCategories,
+      listParams: trashListParams,
+    });
+  const trashedItems = trashedData?.items ?? [];
+  const trashTotal = trashedData?.total ?? 0;
+
   const [dialogOpen, setDialogOpen] = useState(false);
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
+  const [deleteTarget, setDeleteTarget] = useState<Category | null>(null);
+  const [restoreTarget, setRestoreTarget] = useState<Category | null>(null);
+  const [purgeTarget, setPurgeTarget] = useState<Category | null>(null);
   const submitting = createMutation.isPending || updateMutation.isPending;
+
+  useEffect(() => {
+    if (!canWriteCategories && mainTab === "trash") setMainTab("list");
+  }, [canWriteCategories, mainTab]);
 
   const tableRows = useMemo<CategoryRow[]>(
     () =>
@@ -151,7 +235,7 @@ export default function CategoriesPage() {
     }
   };
 
-  const handleDelete = async (c: Category): Promise<void> => {
+  const requestDelete = (c: Category): void => {
     const inUse = usageMap.get(c.slug) ?? 0;
     if (inUse > 0) {
       toast.error(
@@ -159,145 +243,300 @@ export default function CategoriesPage() {
       );
       return;
     }
-    if (!confirm(`Xoá danh mục "${c.name}"?`)) return;
-    try {
-      await deleteMutation.mutateAsync(c.id);
-      toast.success(`Đã xoá danh mục "${c.name}"`);
-    } catch (err) {
-      const message =
-        err instanceof ApiError ? err.message : "Không thể xoá danh mục";
-      toast.error(message);
-    }
+    setDeleteTarget(c);
   };
 
-  const columns: ColumnDef<CategoryRow>[] = [
-    {
-      accessorKey: "name",
-      header: "Tên",
-      meta: { filterPlaceholder: "Lọc tên" },
-    },
-    {
-      accessorKey: "slug",
-      header: "Slug",
-      meta: { filterPlaceholder: "Lọc slug" },
-    },
-    {
-      accessorKey: "description",
-      header: "Mô tả",
-      cell: ({ getValue }) => (getValue() as string | null) || "—",
-      meta: { filterPlaceholder: "Lọc mô tả" },
-    },
-    {
-      id: "icon",
-      accessorFn: (r) => r.icon ?? "Package2",
-      header: "Icon",
-      cell: ({ row }) => {
-        const I = resolveCategoryIcon(row.original.icon);
-        return <I className="size-4 text-primary shrink-0" />;
+  const confirmDelete = (): void => {
+    if (!deleteTarget) return;
+    const c = deleteTarget;
+    toast.promise(
+      deleteMutation.mutateAsync(c.id).then(() => setDeleteTarget(null)),
+      {
+        loading: `Đang xóa tạm «${c.name}»...`,
+        success: `Đã đưa «${c.name}» vào thùng rác`,
+        error: (err: unknown) =>
+          err instanceof ApiError ? err.message : "Không xóa được danh mục",
       },
-      filterFn: (row, id, v) => {
-        if (v == null || v === "") return true;
-        return String(row.getValue(id)) === String(v);
+    );
+  };
+
+  const confirmRestore = (): void => {
+    if (!restoreTarget) return;
+    const c = restoreTarget;
+    toast.promise(
+      restoreMutation.mutateAsync(c.id).then(() => setRestoreTarget(null)),
+      {
+        loading: `Đang khôi phục «${c.name}»...`,
+        success: `Đã khôi phục «${c.name}»`,
+        error: (err: unknown) =>
+          err instanceof ApiError ? err.message : "Không khôi phục được",
       },
-      meta: {
-        filterVariant: "select",
-        filterLabel: "Icon (Lucide)",
-        selectOptions: CATEGORY_ICON_OPTIONS.map((name) => ({
-          value: name,
-          label: name,
-        })),
+    );
+  };
+
+  const confirmPurgeTrashed = (): void => {
+    if (!purgeTarget) return;
+    const c = purgeTarget;
+    toast.promise(
+      purgeTrashedMutation.mutateAsync(c.id).then(() => setPurgeTarget(null)),
+      {
+        loading: `Đang xóa vĩnh viễn «${c.name}»...`,
+        success: `Đã xóa vĩnh viễn «${c.name}»`,
+        error: (err: unknown) =>
+          err instanceof ApiError ? err.message : "Không xóa vĩnh viễn được",
       },
+    );
+  };
+
+  const clearAllFilters = useCallback((): void => {
+    setColumnFilters([]);
+    setGlobalFilter("");
+    setPage(1);
+  }, []);
+
+  const clearTrashFilters = useCallback((): void => {
+    setTrashGlobalFilter("");
+    setTrashPage(1);
+  }, []);
+
+  const handleColumnFiltersChange = useCallback<OnChangeFn<ColumnFiltersState>>(
+    (updater) => {
+      setColumnFilters((prev) =>
+        typeof updater === "function" ? updater(prev) : updater,
+      );
     },
-    {
-      accessorKey: "sortOrder",
-      header: "Thứ tự",
-      filterFn: (row, id, v) => {
-        if (v == null || v === "") return true;
-        return Number(row.getValue(id)) === Number(v);
+    [],
+  );
+
+  const columns: ColumnDef<CategoryRow>[] = useMemo(
+    () => [
+      {
+        accessorKey: "name",
+        header: "Tên",
+        meta: { filterPlaceholder: "Lọc tên" },
       },
-      meta: { filterVariant: "number", filterPlaceholder: "Bằng…" },
-    },
-    {
-      id: "isActive",
-      accessorFn: (r) => (r.isActive ? "true" : "false"),
-      header: "Trạng thái",
-      cell: ({ row }) =>
-        row.original.isActive ? (
-          <Badge className="text-xs">Đang dùng</Badge>
-        ) : (
-          <Badge variant="outline" className="text-xs">
-            Ẩn
-          </Badge>
+      {
+        accessorKey: "slug",
+        header: "Slug",
+        meta: { filterPlaceholder: "Lọc slug" },
+      },
+      {
+        accessorKey: "description",
+        header: "Mô tả",
+        cell: ({ getValue }) => (getValue() as string | null) || "—",
+        meta: { filterPlaceholder: "Lọc mô tả" },
+      },
+      {
+        id: "icon",
+        accessorFn: (r) => r.icon ?? "Package2",
+        header: "Icon",
+        cell: ({ row }) => {
+          const I = resolveCategoryIcon(row.original.icon);
+          return <I className="size-4 text-primary shrink-0" />;
+        },
+        filterFn: (row, id, v) => {
+          if (v == null || v === "") return true;
+          return String(row.getValue(id)) === String(v);
+        },
+        meta: {
+          filterVariant: "select",
+          filterLabel: "Icon (Lucide)",
+          selectOptions: CATEGORY_ICON_OPTIONS.map((name) => ({
+            value: name,
+            label: name,
+          })),
+        },
+      },
+      {
+        accessorKey: "sortOrder",
+        header: "Thứ tự",
+        filterFn: (row, id, v) => {
+          if (v == null || v === "") return true;
+          return Number(row.getValue(id)) === Number(v);
+        },
+        meta: { filterVariant: "number", filterPlaceholder: "Bằng…" },
+      },
+      {
+        id: "isActive",
+        accessorFn: (r) => (r.isActive ? "true" : "false"),
+        header: "Trạng thái",
+        cell: ({ row }) =>
+          row.original.isActive ? (
+            <Badge className="text-xs">Đang dùng</Badge>
+          ) : (
+            <Badge variant="outline" className="text-xs">
+              Ẩn
+            </Badge>
+          ),
+        filterFn: (row, id, v) => {
+          if (v == null || v === "") return true;
+          return row.getValue(id) === v;
+        },
+        meta: {
+          filterVariant: "select",
+          selectOptions: [
+            { value: "true", label: "Đang dùng" },
+            { value: "false", label: "Ẩn" },
+          ],
+        },
+      },
+      {
+        accessorKey: "productCount",
+        header: "Số SP",
+        filterFn: (row, id, v) => {
+          if (v == null || v === "") return true;
+          return Number(row.getValue(id)) === Number(v);
+        },
+        meta: { filterVariant: "number", filterPlaceholder: "Số SP = …" },
+      },
+      {
+        id: "actions",
+        header: "Thao tác",
+        enableColumnFilter: false,
+        enableSorting: false,
+        meta: { disableColumnFilter: true },
+        cell: ({ row }) => {
+          const c = row.original;
+          const usage = c.productCount;
+          if (!canWriteCategories) return null;
+          return (
+            <div className="flex flex-wrap gap-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 rounded-lg"
+                onClick={() => openEdit(c)}
+              >
+                <Pencil className="w-4 h-4 mr-1" /> Sửa
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 rounded-lg text-destructive hover:bg-destructive/10"
+                onClick={() => requestDelete(c)}
+                disabled={usage > 0}
+              >
+                <Trash2 className="w-4 h-4" />
+              </Button>
+            </div>
+          );
+        },
+      },
+    ],
+    [canWriteCategories],
+  );
+
+  const trashColumns = useMemo<ColumnDef<Category>[]>(
+    () => [
+      {
+        accessorKey: "slug",
+        header: "Slug",
+        enableColumnFilter: false,
+        cell: ({ getValue }) => (
+          <span className="font-mono text-xs">{String(getValue())}</span>
         ),
-      filterFn: (row, id, v) => {
-        if (v == null || v === "") return true;
-        return row.getValue(id) === v;
       },
-      meta: {
-        filterVariant: "select",
-        selectOptions: [
-          { value: "true", label: "Đang dùng" },
-          { value: "false", label: "Ẩn" },
-        ],
+      {
+        accessorKey: "name",
+        header: "Tên",
+        enableColumnFilter: false,
+        cell: ({ getValue }) => (
+          <span className="font-medium">{String(getValue())}</span>
+        ),
       },
-    },
-    {
-      accessorKey: "productCount",
-      header: "Số SP",
-      filterFn: (row, id, v) => {
-        if (v == null || v === "") return true;
-        return Number(row.getValue(id)) === Number(v);
+      {
+        accessorKey: "deletedAt",
+        header: "Xóa lúc",
+        enableColumnFilter: false,
+        cell: ({ getValue }) => {
+          const v = getValue() as string | null | undefined;
+          return (
+            <span className="text-xs text-muted-foreground">
+              {v ? new Date(v).toLocaleString("vi-VN") : "—"}
+            </span>
+          );
+        },
       },
-      meta: { filterVariant: "number", filterPlaceholder: "Số SP = …" },
-    },
-    {
-      id: "actions",
-      header: "Thao tác",
-      enableColumnFilter: false,
-      enableSorting: false,
-      meta: { disableColumnFilter: true },
-      cell: ({ row }) => {
-        const c = row.original;
-        const usage = c.productCount;
-        if (!canWriteCategories) return null;
-        return (
-          <div className="flex flex-wrap gap-1">
+      {
+        id: "actions",
+        header: "Thao tác",
+        enableColumnFilter: false,
+        enableSorting: false,
+        meta: { disableColumnFilter: true },
+        cell: ({ row }) => (
+          <div className="flex flex-wrap justify-end gap-1">
             <Button
-              variant="ghost"
+              type="button"
+              variant="outline"
               size="sm"
-              className="h-8 rounded-lg"
-              onClick={() => openEdit(c)}
+              className="h-8 gap-1 rounded-lg"
+              onClick={() => setRestoreTarget(row.original)}
+              disabled={
+                restoreMutation.isPending || purgeTrashedMutation.isPending
+              }
             >
-              <Pencil className="w-4 h-4 mr-1" /> Sửa
+              <ArchiveRestore className="size-3.5" />
+              Khôi phục
             </Button>
             <Button
-              variant="ghost"
+              type="button"
+              variant="outline"
               size="sm"
-              className="h-8 rounded-lg text-destructive hover:bg-destructive/10"
-              onClick={() => void handleDelete(c)}
-              disabled={usage > 0}
+              className="h-8 gap-1 rounded-lg border-destructive/40 text-destructive hover:bg-destructive/10"
+              onClick={() => setPurgeTarget(row.original)}
+              disabled={
+                restoreMutation.isPending || purgeTrashedMutation.isPending
+              }
             >
-              <Trash2 className="w-4 h-4" />
+              <Trash2 className="size-3.5" />
+              Xóa hẳn
             </Button>
           </div>
-        );
+        ),
       },
-    },
-  ];
+    ],
+    [restoreMutation.isPending, purgeTrashedMutation.isPending],
+  );
+
+  const trashPaginationFooter = (
+    <AdminTablePaginationFooter
+      page={trashPage}
+      pageSize={trashPageSize}
+      total={trashTotal}
+      isLoading={trashedLoading}
+      onPageChange={setTrashPage}
+      onPageSizeChange={setTrashPageSize}
+      emptySummary="Không có mục trong thùng rác"
+      itemLabel="danh mục"
+    />
+  );
+
+  const paginationFooter = (
+    <AdminTablePaginationFooter
+      page={page}
+      pageSize={listPageSize}
+      total={total}
+      isLoading={loading}
+      onPageChange={setPage}
+      onPageSizeChange={setListPageSize}
+      emptySummary="Không có danh mục"
+      itemLabel="danh mục"
+    />
+  );
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-4xl font-extrabold text-foreground flex items-center gap-3">
+          <h1 className="flex items-center gap-3 text-4xl font-extrabold text-foreground">
             <Tags className="size-9 text-primary" />
             Loại sản phẩm
           </h1>
-          <p className="text-on-surface-variant font-medium mt-1">
+          <p className="mt-1 font-medium text-on-surface-variant">
             Quản lý danh mục dùng chung cho cả storefront và quản trị viên
           </p>
           {user && !canWriteCategories && (
-            <p className="text-sm text-amber-800 dark:text-amber-200/90 mt-2 font-medium">
+            <p className="mt-2 text-sm font-medium text-amber-800 dark:text-amber-200/90">
               Chỉ xem: cần quyền{" "}
               <span className="font-mono">categories.write</span> để thêm/sửa/xoá.
             </p>
@@ -309,11 +548,11 @@ export default function CategoriesPage() {
               render={
                 <Button
                   onClick={openCreate}
-                  className="flex items-center gap-2 shadow-md h-12 px-6 rounded-xl font-bold"
+                  className="flex h-12 items-center gap-2 rounded-xl px-6 font-bold shadow-md"
                 />
               }
             >
-              <Plus className="w-5 h-5" /> Thêm danh mục
+              <Plus className="h-5 w-5" /> Thêm danh mục
             </DialogTrigger>
           )}
           <DialogContent className="sm:max-w-[560px]">
@@ -327,7 +566,7 @@ export default function CategoriesPage() {
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-2">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="space-y-2 sm:col-span-2">
                   <Label htmlFor="cat-name">Tên hiển thị</Label>
                   <Input
@@ -408,9 +647,9 @@ export default function CategoriesPage() {
                     }
                   />
                 </div>
-                <div className="flex items-center justify-between sm:col-span-2 rounded-xl border border-outline-variant px-4 py-3">
+                <div className="flex items-center justify-between rounded-xl border border-outline-variant px-4 py-3 sm:col-span-2">
                   <div>
-                    <p className="font-semibold text-sm">Đang hoạt động</p>
+                    <p className="text-sm font-semibold">Đang hoạt động</p>
                     <p className="text-xs text-on-surface-variant">
                       Khi tắt, danh mục sẽ ẩn khỏi storefront nhưng giữ lại
                       tham chiếu sản phẩm.
@@ -446,43 +685,259 @@ export default function CategoriesPage() {
         </Dialog>
       </div>
 
-      <p className="text-sm text-on-surface-variant">
-        Tổng{" "}
-        <span className="font-bold text-foreground">{categories.length}</span>{" "}
-        danh mục — bảng dùng chung: sắp xếp cột, lọc theo từng trường, tìm nhanh.
-      </p>
+      <Tabs
+        value={mainTab}
+        onValueChange={(v) => {
+          if (v === "list" || v === "trash") setMainTab(v);
+        }}
+        className="space-y-6"
+      >
+        <TabsList className="h-auto min-h-9 flex-wrap gap-1 rounded-xl p-1">
+          <TabsTrigger value="list" className="gap-2 rounded-lg">
+            <Layers className="size-4" />
+            Danh sách
+          </TabsTrigger>
+          {canWriteCategories ? (
+            <TabsTrigger value="trash" className="gap-2 rounded-lg">
+              <ArchiveRestore className="size-4" />
+              Thùng rác
+              {trashedData != null && trashedData.total > 0 ? (
+                <Badge
+                  variant="secondary"
+                  className="px-1.5 py-0 text-[10px] tabular-nums"
+                >
+                  {trashedData.total}
+                </Badge>
+              ) : null}
+            </TabsTrigger>
+          ) : null}
+        </TabsList>
 
-      {error && (
-        <div className="text-center py-12 bg-destructive/5 border border-destructive/20 rounded-2xl">
-          <AlertCircle className="w-10 h-10 mx-auto text-destructive mb-2" />
-          <p className="text-lg font-bold text-destructive">
-            Không tải được danh mục
+        <TabsContent value="list" className="mt-0 space-y-4">
+          <p className="text-sm text-on-surface-variant">
+            Tìm nhanh và lọc cột gọi API phân trang (chọn số dòng/trang ở cuối bảng).
+            Cột
+            «Số SP» lấy từ thống kê toàn hệ thống.
+            {canWriteCategories ? (
+              <>
+                {" "}
+                Xóa là <span className="font-semibold">xóa tạm</span> (không còn
+                SP tham chiếu).
+              </>
+            ) : null}
           </p>
-          <p className="text-sm text-on-surface-variant mt-1">
-            {error.message}
-          </p>
-        </div>
-      )}
 
-      {!error && (
-        <AdminDataTable<CategoryRow>
-          data={tableRows}
-          columns={columns}
-          isLoading={loading}
-          emptyLabel={
-            canWriteCategories
-              ? 'Chưa có danh mục — bấm "Thêm danh mục".'
-              : "Chưa có dữ liệu hoặc không khớp bộ lọc."
-          }
-          defaultExpandedAll={false}
-          getGlobalFilterText={(r) =>
-            [r.name, r.slug, r.description ?? "", r.icon ?? "", String(r.sortOrder)]
-              .join(" ")
-              .toLowerCase()
-          }
-          globalFilterPlaceholder="Tìm nhanh tên, slug, mô tả…"
-        />
-      )}
+          {error && (
+            <div className="rounded-2xl border border-destructive/20 bg-destructive/5 py-12 text-center">
+              <AlertCircle className="mx-auto mb-2 h-10 w-10 text-destructive" />
+              <p className="text-lg font-bold text-destructive">
+                Không tải được danh mục
+              </p>
+              <p className="mt-1 text-sm text-on-surface-variant">
+                {error.message}
+              </p>
+            </div>
+          )}
+
+          {!error && (
+            <AdminDataTable<CategoryRow>
+              data={tableRows}
+              columns={columns}
+              isLoading={loading}
+              emptyLabel={
+                canWriteCategories
+                  ? 'Chưa có danh mục — bấm "Thêm danh mục".'
+                  : "Chưa có dữ liệu hoặc không khớp bộ lọc."
+              }
+              defaultExpandedAll={false}
+              manualFiltering
+              columnFilters={columnFilters}
+              onColumnFiltersChange={handleColumnFiltersChange}
+              globalFilter={globalFilter}
+              onGlobalFilterChange={setGlobalFilter}
+              globalFilterPlaceholder="Tìm theo tên, slug, mô tả (API)…"
+              filterToolbarExtra={
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="h-9 gap-1.5 rounded-lg"
+                  onClick={clearAllFilters}
+                >
+                  <FilterX className="size-4" />
+                  Xóa bộ lọc
+                </Button>
+              }
+              csvExport={{ fileName: "danh-muc-dang-hoat-dong.csv" }}
+              footer={paginationFooter}
+            />
+          )}
+        </TabsContent>
+
+        {canWriteCategories ? (
+          <TabsContent value="trash" className="mt-0 space-y-4">
+            {trashedError ? (
+              <div className="rounded-2xl border border-destructive/20 bg-destructive/5 py-12 text-center">
+                <p className="text-lg font-bold text-destructive">
+                  Không tải được thùng rác
+                </p>
+                <p className="mt-1 text-sm text-on-surface-variant">
+                  {trashedError.message}
+                </p>
+              </div>
+            ) : (
+              <>
+                <p className="text-sm text-on-surface-variant">
+                  Danh mục trong thùng rác không hiển thị trên storefront.
+                </p>
+                <AdminDataTable<Category>
+                  data={trashedItems}
+                  columns={trashColumns}
+                  isLoading={trashedLoading}
+                  emptyLabel="Thùng rác trống hoặc không khớp tìm kiếm."
+                  defaultExpandedAll={false}
+                  manualFiltering
+                  globalFilter={trashGlobalFilter}
+                  onGlobalFilterChange={setTrashGlobalFilter}
+                  globalFilterPlaceholder="Tìm theo tên, slug, mô tả (API)…"
+                  filterToolbarExtra={
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="h-9 gap-1.5 rounded-lg"
+                      onClick={clearTrashFilters}
+                    >
+                      <FilterX className="size-4" />
+                      Xóa bộ lọc
+                    </Button>
+                  }
+                  csvExport={{ fileName: "danh-muc-thung-rac.csv" }}
+                  footer={trashPaginationFooter}
+                />
+              </>
+            )}
+          </TabsContent>
+        ) : null}
+      </Tabs>
+
+      <AlertDialog
+        open={deleteTarget != null}
+        onOpenChange={(o) => {
+          if (!o) setDeleteTarget(null);
+        }}
+      >
+        <AlertDialogContent className="rounded-2xl sm:max-w-[450px]">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Đưa danh mục vào thùng rác?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {deleteTarget ? (
+                <>
+                  <strong className="text-foreground">{deleteTarget.name}</strong>{" "}
+                  (slug <span className="font-mono">{deleteTarget.slug}</span>) sẽ
+                  ẩn khỏi hệ thống cho đến khi khôi phục.
+                </>
+              ) : null}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="rounded-xl">Huỷ</AlertDialogCancel>
+            <AlertDialogAction
+              className="rounded-xl bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={(e) => {
+                e.preventDefault();
+                confirmDelete();
+              }}
+              disabled={deleteMutation.isPending}
+            >
+              {deleteMutation.isPending ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                "Xóa tạm"
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog
+        open={purgeTarget != null}
+        onOpenChange={(o) => {
+          if (!o) setPurgeTarget(null);
+        }}
+      >
+        <AlertDialogContent className="rounded-2xl sm:max-w-[450px]">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Xóa vĩnh viễn danh mục?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {purgeTarget ? (
+                <>
+                  <strong className="text-foreground">{purgeTarget.name}</strong>{" "}
+                  (slug <span className="font-mono">{purgeTarget.slug}</span>) sẽ bị
+                  xoá khỏi cơ sở dữ liệu. Không thể hoàn tác. API từ chối nếu còn sản
+                  phẩm đang hoạt động dùng slug này.
+                </>
+              ) : null}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="rounded-xl">Huỷ</AlertDialogCancel>
+            <AlertDialogAction
+              className="rounded-xl bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={(e) => {
+                e.preventDefault();
+                confirmPurgeTrashed();
+              }}
+              disabled={purgeTrashedMutation.isPending}
+            >
+              {purgeTrashedMutation.isPending ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                "Xóa vĩnh viễn"
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog
+        open={restoreTarget != null}
+        onOpenChange={(o) => {
+          if (!o) setRestoreTarget(null);
+        }}
+      >
+        <AlertDialogContent className="rounded-2xl sm:max-w-[450px]">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Khôi phục danh mục?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {restoreTarget ? (
+                <>
+                  Đưa{" "}
+                  <strong className="text-foreground">{restoreTarget.name}</strong>{" "}
+                  trở lại danh sách đang hoạt động.
+                </>
+              ) : null}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="rounded-xl">Huỷ</AlertDialogCancel>
+            <AlertDialogAction
+              className="rounded-xl"
+              onClick={(e) => {
+                e.preventDefault();
+                confirmRestore();
+              }}
+              disabled={restoreMutation.isPending}
+            >
+              {restoreMutation.isPending ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                "Khôi phục"
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

@@ -1,4 +1,5 @@
 export * from './types';
+export { effectiveLineUnitPrice } from './unit-pricing';
 export {
   PERMISSION_CODES,
   STAFF_ADMIN_ROLE_CODES,
@@ -15,4 +16,5 @@ export type { AdjustStockInput } from './resources/products';
 export { UsersApi } from './resources/users';
 export { OrdersApi } from './resources/orders';
 export { CategoriesApi } from './resources/categories';
+export { RbacApi } from './resources/rbac';
 export { StoreSyncSdk, createStoreSyncSdk, DEFAULT_API_URL } from './sdk';

@@ -15,7 +15,9 @@ export function registerDevHttpLogging(
   }
 
   const expressApp = app.getHttpAdapter().getInstance() as {
-    use: (fn: (req: Request, res: Response, next: NextFunction) => void) => void;
+    use: (
+      fn: (req: Request, res: Response, next: NextFunction) => void,
+    ) => void;
   };
 
   expressApp.use((req: Request, res: Response, next: NextFunction) => {

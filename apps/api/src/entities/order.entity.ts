@@ -44,6 +44,12 @@ export interface OrderItem {
   totalPrice: number;
   qtyPerUnit?: number;
   image?: string;
+  /** Bản chụp `Product.fulfillmentNote` lúc đặt hàng — shipper đối chiếu quà kèm. */
+  giftNote?: string;
+  /** Giá ban đầu (retail) theo đơn vị — cố định lúc đặt; không đổi khi sản phẩm chỉnh giá sau. */
+  listUnitPrice?: number;
+  /** Nhãn đơn vị lúc đặt (vd "Thùng 24 lon"). */
+  unitLabel?: string;
 }
 
 @Entity({ tableName: 'orders' })
@@ -122,4 +128,8 @@ export class Order extends BaseEntity {
 
   @Property({ type: 'datetime', nullable: true })
   cancelledAt?: Date;
+
+  /** Lưu trữ admin (ẩn khỏi danh sách chính / storefront). */
+  @Property({ type: 'datetime', nullable: true })
+  deletedAt?: Date | null;
 }

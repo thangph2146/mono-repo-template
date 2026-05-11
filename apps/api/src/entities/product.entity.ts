@@ -55,6 +55,17 @@ export class Product extends BaseEntity {
   @Property({ type: 'json', nullable: true })
   coupons?: string[];
 
+  /**
+   * Hướng dẫn quà tặng / KM cho kho & shipper (không thay thế logic tự động).
+   * Ví dụ: "Mua ≥5 thùng: tặng 1 ly (SKU quà: LY-CC, giá trị kê 0đ)."
+   */
+  @Property({ type: 'text', nullable: true })
+  fulfillmentNote?: string;
+
   @Property({ default: true })
   isActive: boolean = true;
+
+  /** Xóa mềm: có giá trị → ẩn khỏi kho & storefront; `null` → đang hoạt động. */
+  @Property({ type: 'datetime', nullable: true })
+  deletedAt?: Date | null;
 }

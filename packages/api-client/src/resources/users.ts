@@ -10,17 +10,52 @@ import type {
   UserCredentials,
 } from '../types';
 
+export type UserListOptions = {
+  q?: string;
+  page?: number;
+  limit?: number;
+};
+
 export class UsersApi {
   constructor(private readonly http: ApiClient) {}
 
-  list(): Promise<User[]> {
-    return this.http.get<User[]>('/users');
+  list(
+    options?: UserListOptions,
+  ): Promise<User[] | { items: User[]; total: number }> {
+    const p = new URLSearchParams();
+    if (options?.q?.trim()) p.set('q', options.q.trim());
+    if (options?.page != null) p.set('page', String(options.page));
+    if (options?.limit != null) p.set('limit', String(options.limit));
+    const qs = p.toString();
+    return this.http.get<User[] | { items: User[]; total: number }>(
+      `/users${qs ? `?${qs}` : ''}`,
+    );
+  }
+
+  listTrashed(options?: {
+    page?: number;
+    limit?: number;
+    q?: string;
+  }): Promise<{ items: User[]; total: number }> {
+    const p = new URLSearchParams();
+    if (options?.q?.trim()) p.set('q', options.q.trim());
+    if (options?.page != null) p.set('page', String(options.page));
+    if (options?.limit != null) p.set('limit', String(options.limit));
+    const qs = p.toString();
+    return this.http.get<{ items: User[]; total: number }>(
+      `/users/trashed${qs ? `?${qs}` : ''}`,
+    );
   }
 
   byRoleCode(roleCode: string): Promise<User[]> {
     return this.http.get<User[]>(
       `/users/by-role/${encodeURIComponent(roleCode)}`,
     );
+  }
+
+  /** Đại lý (role customer) — yêu cầu `products.read`. */
+  listDealers(): Promise<User[]> {
+    return this.http.get<User[]>('/users/dealers');
   }
 
   byEmail(email: string): Promise<User | null> {
@@ -52,8 +87,17 @@ export class UsersApi {
     );
   }
 
+  restore(id: number): Promise<User> {
+    return this.http.post<User>(`/users/${id}/restore`, {});
+  }
+
   remove(id: number): Promise<void> {
     return this.http.delete<void>(`/users/${id}`);
+  }
+
+  /** Xóa vĩnh viễn (chỉ tài khoản đang trong thùng rác). */
+  purgeTrashed(id: number): Promise<void> {
+    return this.http.delete<void>(`/users/${id}/permanent`);
   }
 
   login(credentials: UserCredentials): Promise<AuthUser | null> {

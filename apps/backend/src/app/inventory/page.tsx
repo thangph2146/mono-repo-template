@@ -6,7 +6,13 @@ import type {
   ColumnFiltersState,
   OnChangeFn,
 } from "@tanstack/react-table";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
 import {
   Controller,
   useFieldArray,
@@ -34,7 +40,19 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@ui/components/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@ui/components/alert-dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@ui/components/tabs";
 import { Label } from "@ui/components/label";
+import { Switch } from "@ui/components/switch";
 import {
   Select,
   SelectContent,
@@ -45,18 +63,18 @@ import {
 import { ScrollArea } from "@ui/components/scroll-area";
 import {
   AlertTriangle,
-  ChevronLeft,
-  ChevronRight,
+  ArchiveRestore,
   FilterX,
   ImageIcon,
   Layers,
+  Loader2,
   Minus,
   Pencil,
   Plus,
   Trash2,
   Upload,
 } from "lucide-react";
-import { ApiError, type Category, type Product } from "@/lib/api";
+import { ApiError, type Product, type ProductUnitType } from "@/lib/api";
 import { useAuth } from "@/providers/auth-provider";
 import { canUserAccess, PERMISSION_CODES } from "@workspace/api-client";
 import {
@@ -66,10 +84,14 @@ import {
   useCreateProduct,
   useDeleteProduct,
   useProducts,
+  usePurgeTrashedProduct,
+  useRestoreProduct,
+  useTrashedProducts,
   useUpdateProduct,
 } from "@/hooks/queries";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { formatVND } from "@/lib/format";
+import { unitSellingAndListPrice } from "@/lib/product-price";
 import {
   getProductSubRows,
   productsToTreeRows,
@@ -81,6 +103,7 @@ import {
   inventoryHasLineOnlyFilter,
 } from "@/lib/inventory-api-filters";
 import { AdminDataTable } from "@/components/admin-data-table";
+import { AdminTablePaginationFooter } from "@/components/admin-table-pagination-footer";
 import { resolveCategoryIcon } from "@/lib/category-icons";
 import {
   defaultProductForm,
@@ -145,7 +168,111 @@ function InventoryImagePreview({ value }: { value: string }) {
   );
 }
 
-const PAGE_SIZE = 20;
+function UnitRowSaleHint(
+  unit: Pick<
+    ProductUnitType,
+    | "type"
+    | "label"
+    | "retailPrice"
+    | "wholesalePrice"
+    | "minWholesaleQty"
+    | "qtyPerUnit"
+  >,
+): ReactNode {
+  const retail = Math.max(0, Math.floor(Number(unit.retailPrice) || 0));
+  const rawW = unit.wholesalePrice;
+  const wholesale =
+    rawW === null || rawW === undefined || !Number.isFinite(Number(rawW))
+      ? null
+      : Math.floor(Number(rawW));
+  const minQ = Math.max(0, Math.floor(Number(unit.minWholesaleQty) || 0));
+  const unitWord = String(unit.type).trim() || "đơn vị";
+
+  const rowUnit: ProductUnitType = {
+    type: unit.type,
+    label: unit.label,
+    retailPrice: retail,
+    wholesalePrice: wholesale,
+    minWholesaleQty: minQ,
+    qtyPerUnit: Math.max(1, Math.floor(Number(unit.qtyPerUnit) || 1)),
+  };
+
+  if (wholesale === null || wholesale <= 0 || wholesale >= retail) {
+    return (
+      <p className="text-[10px] text-muted-foreground sm:col-span-12 -mt-1">
+        Trên cửa hàng: <strong>{formatVND(retail)}</strong>
+        <span className="font-normal"> (chỉ giá ban đầu — chưa nhập giá KM thấp hơn)</span>
+      </p>
+    );
+  }
+
+  const { current: priceWhenEligible, list: listWhenEligible } =
+    unitSellingAndListPrice(rowUnit, minQ <= 0 ? 1 : minQ);
+  const hasThreshold = minQ > 0;
+  const belowQty = hasThreshold && minQ > 1 ? minQ - 1 : null;
+  const { current: priceBelow } =
+    belowQty != null
+      ? unitSellingAndListPrice(rowUnit, belowQty)
+      : { current: retail };
+
+  return (
+    <div className="text-[10px] text-muted-foreground sm:col-span-12 -mt-1 space-y-1">
+      {hasThreshold ? (
+        <p>
+          <span className="font-semibold text-foreground">Điều kiện SL:</span> đặt{" "}
+          <strong className="text-foreground">≥ {minQ}</strong>{" "}
+          <span className="font-mono">{unitWord}</span> (cùng dòng này, cùng sản phẩm)
+          → giá{" "}
+          <strong className="text-destructive">{formatVND(priceWhenEligible)}</strong>
+          {listWhenEligible != null && (
+            <>
+              {" "}
+              <span className="line-through opacity-70">
+                {formatVND(listWhenEligible)}
+              </span>
+            </>
+          )}
+          {belowQty != null ? (
+            <>
+              ; dưới <strong>{minQ}</strong> <span className="font-mono">{unitWord}</span>{" "}
+              (vd. {belowQty}) → <strong>{formatVND(priceBelow)}</strong> (giá ban đầu).
+            </>
+          ) : (
+            <> — từ 1 {unitWord} trở lên đã áp giá khuyến mãi.</>
+          )}
+        </p>
+      ) : (
+        <p>
+          <span className="font-semibold text-foreground">Điều kiện SL:</span>{" "}
+          <strong>SL tối thiểu = 0</strong> — áp giá khuyến mãi ngay từ{" "}
+          <strong>1 {unitWord}</strong> trở lên.
+        </p>
+      )}
+      <p>
+        Trên cửa hàng (khi đủ điều kiện):{" "}
+        {listWhenEligible != null && listWhenEligible > priceWhenEligible ? (
+          <>
+            <span className="line-through opacity-70">
+              {formatVND(listWhenEligible)}
+            </span>{" "}
+            <strong className="text-destructive">{formatVND(priceWhenEligible)}</strong>
+            <Badge
+              variant="outline"
+              className="ml-1.5 align-middle text-[9px] py-0 font-bold"
+            >
+              Sale
+            </Badge>
+          </>
+        ) : (
+          <>
+            <strong>{formatVND(priceWhenEligible)}</strong>
+            <span className="font-normal"> (giá ban đầu)</span>
+          </>
+        )}
+      </p>
+    </div>
+  );
+}
 
 const INVENTORY_PRODUCT_FORM_ID = "inventory-product-dialog-form";
 
@@ -162,6 +289,11 @@ export default function InventoryPage() {
     for (const u of usageData ?? []) m.set(u.slug, u.productCount);
     return m;
   }, [usageData]);
+  const categoryNameBySlug = useMemo(() => {
+    const m = new Map<string, string>();
+    for (const c of categories) m.set(c.slug, c.name);
+    return m;
+  }, [categories]);
 
   const [categoryFilter, setCategoryFilter] = useState("ALL");
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -185,18 +317,19 @@ export default function InventoryPage() {
   );
 
   const [page, setPage] = useState(1);
+  const [listPageSize, setListPageSize] = useState(20);
 
   useEffect(() => {
     setPage(1);
-  }, [filterSignature]);
+  }, [filterSignature, listPageSize]);
 
   const productListParams = useMemo(
     () => ({
       ...productListParamsBase,
       page,
-      limit: PAGE_SIZE,
+      limit: listPageSize,
     }),
-    [productListParamsBase, page],
+    [productListParamsBase, page, listPageSize],
   );
 
   const { data, isLoading, error } = useProducts({
@@ -204,7 +337,6 @@ export default function InventoryPage() {
   });
   const inventory = useMemo(() => data?.items ?? [], [data?.items]);
   const totalProducts = data?.total ?? 0;
-  const totalPages = Math.max(1, Math.ceil(totalProducts / PAGE_SIZE));
 
   const clearAllFilters = (): void => {
     setCategoryFilter("ALL");
@@ -212,6 +344,11 @@ export default function InventoryPage() {
     setGlobalFilter("");
     setPage(1);
   };
+
+  const clearTrashFilters = useCallback((): void => {
+    setTrashGlobalFilter("");
+    setTrashPage(1);
+  }, []);
 
   /** Tab danh mục và ô « Lọc theo cột → Danh mục » dùng chung state gọi API. */
   const applyCategoryTab = useCallback((group: string): void => {
@@ -243,7 +380,37 @@ export default function InventoryPage() {
   const createProduct = useCreateProduct();
   const updateProduct = useUpdateProduct();
   const deleteProduct = useDeleteProduct();
+  const restoreProduct = useRestoreProduct();
+  const purgeTrashedProduct = usePurgeTrashedProduct();
   const adjustStock = useAdjustStock();
+
+  const [mainTab, setMainTab] = useState<"inventory" | "trash">("inventory");
+  const [deleteTarget, setDeleteTarget] = useState<Product | null>(null);
+  const [restoreTarget, setRestoreTarget] = useState<Product | null>(null);
+  const [purgeTarget, setPurgeTarget] = useState<Product | null>(null);
+  const [trashPage, setTrashPage] = useState(1);
+  const [trashPageSize, setTrashPageSize] = useState(20);
+  const [trashGlobalFilter, setTrashGlobalFilter] = useState("");
+  const debouncedTrashQ = useDebouncedValue(trashGlobalFilter, 350);
+
+  useEffect(() => {
+    setTrashPage(1);
+  }, [debouncedTrashQ, mainTab, trashPageSize]);
+
+  const trashListParams = useMemo(
+    () => ({
+      page: trashPage,
+      limit: trashPageSize,
+      q: debouncedTrashQ.trim() || undefined,
+    }),
+    [trashPage, trashPageSize, debouncedTrashQ],
+  );
+
+  const { data: trashedData, isLoading: trashedLoading, error: trashedError } =
+    useTrashedProducts({
+      enabled: mainTab === "trash" && canWriteProducts,
+      listParams: trashListParams,
+    });
 
   const defaultCategory = categories[0]?.slug ?? "thuc-pham";
 
@@ -254,15 +421,30 @@ export default function InventoryPage() {
 
   const { control, register, handleSubmit, reset, formState, watch, setValue } =
     form;
-  const { fields, append, remove } = useFieldArray<
-    ProductFormValues,
-    "unitTypes"
-  >({
+  const { fields, append, remove } = useFieldArray({
     control,
     name: "unitTypes",
   });
 
   const imageList = watch("images") ?? [];
+  const watchedUnitTypes = watch("unitTypes");
+  const couponRows = watch("coupons") ?? [""];
+
+  const appendCouponRow = (): void => {
+    setValue("coupons", [...couponRows, ""], {
+      shouldValidate: true,
+      shouldDirty: true,
+    });
+  };
+
+  const removeCouponRow = (idx: number): void => {
+    if (couponRows.length <= 1) return;
+    setValue(
+      "coupons",
+      couponRows.filter((_, i) => i !== idx),
+      { shouldValidate: true, shouldDirty: true },
+    );
+  };
   const appendImage = (): void => {
     setValue("images", [...imageList, ""]);
   };
@@ -363,15 +545,130 @@ export default function InventoryPage() {
     }
   };
 
-  const handleDelete = (product: Product): void => {
-    if (!confirm(`Xoá sản phẩm "${product.name}" khỏi kho?`)) return;
-    toast.promise(deleteProduct.mutateAsync(product.id), {
-      loading: `Đang xoá ${product.name}...`,
-      success: `Đã xoá ${product.name}`,
-      error: (err: unknown) =>
-        err instanceof ApiError ? err.message : "Xoá sản phẩm thất bại",
-    });
+  const requestDeleteProduct = (product: Product): void => {
+    setDeleteTarget(product);
   };
+
+  const requestRestoreProduct = (product: Product): void => {
+    setRestoreTarget(product);
+  };
+
+  const confirmDeleteProduct = (): void => {
+    if (!deleteTarget) return;
+    const p = deleteTarget;
+    toast.promise(
+      deleteProduct.mutateAsync(p.id).then(() => setDeleteTarget(null)),
+      {
+        loading: `Đang đưa «${p.name}» vào thùng rác...`,
+        success: `Đã xóa tạm «${p.name}»`,
+        error: (err: unknown) =>
+          err instanceof ApiError ? err.message : "Không xóa được sản phẩm",
+      },
+    );
+  };
+
+  const confirmRestoreProduct = (): void => {
+    if (!restoreTarget) return;
+    const p = restoreTarget;
+    toast.promise(
+      restoreProduct.mutateAsync(p.id).then(() => setRestoreTarget(null)),
+      {
+        loading: `Đang khôi phục «${p.name}»...`,
+        success: `Đã khôi phục «${p.name}» vào kho`,
+        error: (err: unknown) =>
+          err instanceof ApiError ? err.message : "Không khôi phục được",
+      },
+    );
+  };
+
+  const confirmPurgeProduct = (): void => {
+    if (!purgeTarget) return;
+    const p = purgeTarget;
+    toast.promise(
+      purgeTrashedProduct.mutateAsync(p.id).then(() => setPurgeTarget(null)),
+      {
+        loading: `Đang xóa vĩnh viễn «${p.name}»...`,
+        success: `Đã xóa vĩnh viễn «${p.name}»`,
+        error: (err: unknown) =>
+          err instanceof ApiError ? err.message : "Không xóa vĩnh viễn được",
+      },
+    );
+  };
+
+  const trashProductColumns: ColumnDef<Product>[] = [
+    {
+      accessorKey: "sku",
+      header: "SKU",
+      enableColumnFilter: false,
+      cell: ({ getValue }) => (
+        <span className="font-mono text-xs">{String(getValue())}</span>
+      ),
+    },
+    {
+      accessorKey: "name",
+      header: "Tên",
+      enableColumnFilter: false,
+      cell: ({ getValue }) => (
+        <span className="max-w-[200px] truncate font-medium block">
+          {String(getValue())}
+        </span>
+      ),
+    },
+    {
+      accessorKey: "category",
+      header: "Danh mục",
+      enableColumnFilter: false,
+      cell: ({ row }) =>
+        categoryNameBySlug.get(row.original.category) ??
+        row.original.category,
+    },
+    {
+      accessorKey: "deletedAt",
+      header: "Xóa lúc",
+      enableColumnFilter: false,
+      cell: ({ getValue }) => {
+        const v = getValue() as string | null | undefined;
+        return (
+          <span className="text-muted-foreground text-xs">
+            {v ? new Date(v).toLocaleString("vi-VN") : "—"}
+          </span>
+        );
+      },
+    },
+    {
+      id: "actions",
+      header: "Thao tác",
+      enableColumnFilter: false,
+      enableSorting: false,
+      meta: { disableColumnFilter: true },
+      cell: ({ row }) => (
+        <div className="flex flex-wrap justify-end gap-1">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="h-8 gap-1 rounded-lg"
+            onClick={() => requestRestoreProduct(row.original)}
+            disabled={restoreProduct.isPending || purgeTrashedProduct.isPending}
+          >
+            <ArchiveRestore className="size-3.5" />
+            Khôi phục
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="h-8 gap-1 rounded-lg border-destructive/40 text-destructive hover:bg-destructive/10"
+            onClick={() => setPurgeTarget(row.original)}
+            disabled={restoreProduct.isPending || purgeTrashedProduct.isPending}
+          >
+            <Trash2 className="size-3.5" />
+            Xóa hẳn
+          </Button>
+        </div>
+      ),
+    },
+  ];
 
   const handleAdjust = (product: Product, delta: number): void => {
     toast.promise(
@@ -462,6 +759,34 @@ export default function InventoryPage() {
       },
     },
     {
+      id: "couponTags",
+      header: "Tag / ưu đãi",
+      enableColumnFilter: false,
+      cell: ({ row }) => {
+        const r = row.original;
+        if (r.rowKind === "unit") {
+          return <span className="text-muted-foreground">—</span>;
+        }
+        const tags = r.product.coupons ?? [];
+        if (tags.length === 0) {
+          return <span className="text-muted-foreground text-xs">—</span>;
+        }
+        return (
+          <div className="flex max-w-[220px] flex-wrap gap-1">
+            {tags.map((t) => (
+              <Badge
+                key={t}
+                variant="secondary"
+                className="border-destructive/25 bg-destructive/10 text-[10px] font-semibold text-destructive"
+              >
+                {t}
+              </Badge>
+            ))}
+          </div>
+        );
+      },
+    },
+    {
       accessorKey: "stock",
       header: "Tồn",
       filterFn: (row, id, v) => {
@@ -477,12 +802,43 @@ export default function InventoryPage() {
     },
     {
       accessorKey: "retailPrice",
-      header: "Giá lẻ",
+      header: "Giá trên shop",
       filterFn: (row, id, v) => {
         if (v == null || v === "") return true;
         return Number(row.getValue(id)) === Number(v);
       },
-      cell: ({ getValue }) => formatVND(Number(getValue())),
+      cell: ({ row, getValue }) => {
+        const r = row.original;
+        if (r.rowKind === "unit") {
+          const min = Math.max(0, Math.floor(r.unitRow.minWholesaleQty ?? 0));
+          const previewQty = min > 0 ? min : 1;
+          const { current, list } = unitSellingAndListPrice(
+            r.unitRow,
+            previewQty,
+          );
+          return (
+            <div className="flex flex-col gap-0.5 text-sm tabular-nums">
+              {list != null && (
+                <span className="text-xs text-muted-foreground line-through">
+                  {formatVND(list)}
+                </span>
+              )}
+              <span className="font-medium">
+                {formatVND(current)}
+                {list != null && (
+                  <Badge
+                    variant="outline"
+                    className="ml-1.5 align-middle text-[9px] font-bold py-0"
+                  >
+                    Sale
+                  </Badge>
+                )}
+              </span>
+            </div>
+          );
+        }
+        return formatVND(Number(getValue()));
+      },
       meta: { filterVariant: "number", filterPlaceholder: "Giá = …" },
     },
     {
@@ -580,7 +936,7 @@ export default function InventoryPage() {
                   variant="ghost"
                   size="sm"
                   className="h-8 rounded-lg text-destructive"
-                  onClick={() => handleDelete(item)}
+                  onClick={() => requestDeleteProduct(item)}
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                 </Button>
@@ -612,6 +968,39 @@ export default function InventoryPage() {
     createProduct.isPending ||
     updateProduct.isPending;
 
+  const trashedItems = trashedData?.items ?? [];
+  const trashTotal = trashedData?.total ?? 0;
+
+  const trashInventoryPaginationFooter = (
+    <AdminTablePaginationFooter
+      page={trashPage}
+      pageSize={trashPageSize}
+      total={trashTotal}
+      isLoading={trashedLoading}
+      onPageChange={setTrashPage}
+      onPageSizeChange={setTrashPageSize}
+      emptySummary="Không có sản phẩm trong thùng rác"
+      itemLabel="sản phẩm"
+    />
+  );
+
+  const inventoryPaginationFooter = (
+    <AdminTablePaginationFooter
+      page={page}
+      pageSize={listPageSize}
+      total={totalProducts}
+      isLoading={isLoading}
+      onPageChange={setPage}
+      onPageSizeChange={setListPageSize}
+      emptySummary="Không có sản phẩm"
+      itemLabel="sản phẩm"
+    />
+  );
+
+  useEffect(() => {
+    if (!canWriteProducts && mainTab === "trash") setMainTab("inventory");
+  }, [canWriteProducts, mainTab]);
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -642,19 +1031,26 @@ export default function InventoryPage() {
       </div>
 
       <Dialog open={dialogOpen} onOpenChange={onDialogOpenChange}>
-        <DialogContent className="flex flex-col gap-0 overflow-hidden p-0 sm:max-w-[90vw]">
-          <div className="shrink-0 space-y-1.5 px-4 pt-4 pr-12">
+        <DialogContent className="sm:max-w-7xl flex-col gap-0 p-0">
+          <div className="w-full min-w-0 shrink-0 space-y-1.5 px-4 pt-4 pr-12">
             <DialogHeader>
               <DialogTitle className="text-2xl font-extrabold">
                 {editingId != null ? "Sửa sản phẩm" : "Thêm sản phẩm"}
               </DialogTitle>
               <DialogDescription>
-                Khai báo SKU, danh mục, ảnh và các đơn vị tính (thùng/can/chai...).
-                Mỗi đơn vị tính có giá sỉ &amp; giá lẻ riêng.
+                SKU, danh mục, xuất xứ, tag trên cửa hàng, ảnh và đơn vị tính với
+                giá ban đầu và giá khuyến mãi. Mỗi sản phẩm có bảng giá theo từng loại
+                hàng riêng —{" "}
+                <span className="font-medium">
+                  không gộp điều kiện KM giữa các sản phẩm
+                </span>
+                . Khi đặt đủ &quot;SL tối thiểu (KM)&quot; trên một dòng đơn vị, giá
+                áp dụng là giá khuyến mãi của đúng dòng đó (khác với mã coupon nhập
+                tay ở bước thanh toán).
               </DialogDescription>
             </DialogHeader>
           </div>
-          <ScrollArea className="min-h-0 flex-1 max-h-[70vh] overflow-y-auto">
+          <ScrollArea className="min-h-0 w-full min-w-0 flex-1 max-h-[70vh] overflow-y-auto">
             <form
               id={INVENTORY_PRODUCT_FORM_ID}
               onSubmit={handleSubmit(onValidSubmit)}
@@ -696,6 +1092,14 @@ export default function InventoryPage() {
                   id="pbrand"
                   {...register("brand")}
                   placeholder="VD: Coca-Cola"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="porigin">Xuất xứ</Label>
+                <Input
+                  id="porigin"
+                  {...register("origin")}
+                  placeholder="VD: Việt Nam"
                 />
               </div>
               <div className="space-y-2">
@@ -756,6 +1160,26 @@ export default function InventoryPage() {
                     {formState.errors.unit?.message}
                   </p>
                 )}
+              </div>
+              <div className="sm:col-span-2 flex flex-col gap-2 rounded-xl border border-outline-variant/60 bg-muted/20 p-4 sm:flex-row sm:items-center sm:justify-between">
+                <div className="space-y-1">
+                  <Label htmlFor="p-active">Còn bán trên cửa hàng</Label>
+                  <p className="text-xs text-muted-foreground">
+                    Tắt để ẩn khỏi catalog; vẫn quản lý trong kho admin.
+                  </p>
+                </div>
+                <Controller
+                  name="isActive"
+                  control={control}
+                  render={({ field }) => (
+                    <Switch
+                      id="p-active"
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                      disabled={!canWriteProducts}
+                    />
+                  )}
+                />
               </div>
               <div className="sm:col-span-2">
                 <Card className="gap-0">
@@ -880,6 +1304,75 @@ export default function InventoryPage() {
                   placeholder="Tóm tắt hàng hoá, ghi chú..."
                 />
               </div>
+              <div className="sm:col-span-2 space-y-2">
+                <Label>Tag / ưu đãi (cửa hàng)</Label>
+                <p className="text-xs text-muted-foreground">
+                  Badge đỏ cạnh tên sản phẩm trên storefront (trường{" "}
+                  <span className="font-mono text-[11px]">coupons</span>).
+                </p>
+                <div className="space-y-2">
+                  {couponRows.map((_, cidx) => (
+                    <div key={cidx} className="flex gap-2 items-start">
+                      <Input
+                        {...register(`coupons.${cidx}`)}
+                        placeholder="VD: Freeship, Giảm 10%"
+                        className="rounded-lg"
+                        aria-invalid={!!formState.errors.coupons?.[cidx]}
+                      />
+                      {canWriteProducts && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="h-10 w-10 shrink-0 text-destructive hover:bg-destructive/10"
+                          onClick={() => removeCouponRow(cidx)}
+                          disabled={couponRows.length <= 1}
+                          aria-label="Xóa tag"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
+                  ))}
+                  {canWriteProducts && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="rounded-lg gap-1"
+                      onClick={() => appendCouponRow()}
+                    >
+                      <Plus className="h-4 w-4" />
+                      Thêm tag
+                    </Button>
+                  )}
+                </div>
+              </div>
+              <div className="sm:col-span-2 space-y-2 rounded-xl border border-dashed border-amber-500/35 bg-amber-500/[0.06] p-4 dark:bg-amber-500/10">
+                <Label htmlFor="p-fulfill">
+                  Quà tặng / ghi chú giao hàng (shipper &amp; kho)
+                </Label>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  Viết rõ điều kiện (vd: từ 5 thùng), tên quà, SKU quà nếu có
+                  hàng trong kho, và giá trị kê trên phiếu (vd: 0đ). Nội dung
+                  được chụp vào từng dòng đơn khi khách đặt — shipper mở màn{" "}
+                  <span className="font-medium">Đơn hàng</span> sẽ thấy cột
+                  tương ứng.
+                </p>
+                <Textarea
+                  id="p-fulfill"
+                  {...register("fulfillmentNote")}
+                  rows={4}
+                  placeholder='Ví dụ: "Mua ≥5 thùng (đơn vị thùng) → tặng 1 ly (SKU: LY-CC). Giá trị quà kê 0đ. Chỉ giao quà khi đủ 5 thùng cùng SKU."'
+                  className="rounded-lg text-sm"
+                  aria-invalid={!!formState.errors.fulfillmentNote}
+                />
+                {fieldError(formState.errors.fulfillmentNote) && (
+                  <p className="text-xs text-destructive">
+                    {formState.errors.fulfillmentNote?.message}
+                  </p>
+                )}
+              </div>
             </div>
 
             <div className="border border-outline-variant rounded-xl p-4 space-y-3 bg-muted/10">
@@ -889,7 +1382,10 @@ export default function InventoryPage() {
                     Đơn vị tính &amp; giá theo loại hàng
                   </p>
                   <p className="text-xs text-on-surface-variant">
-                    Mỗi đơn vị có số lượng quy đổi, giá sỉ và giá lẻ riêng.
+                    Giá ban đầu và giá khuyến mãi; để trống giá khuyến mãi nếu chỉ
+                    dùng một mức. &quot;SL tối thiểu (KM)&quot; là số lượng theo{" "}
+                    <em>đúng loại hàng này</em> của <em>đúng sản phẩm này</em> để áp
+                    giá KM; khách đổi số lượng trên giỏ thì giá cập nhật tự động.
                   </p>
                 </div>
                 {canWriteProducts && (
@@ -953,7 +1449,7 @@ export default function InventoryPage() {
                     />
                   </div>
                   <div className="space-y-1 sm:col-span-2">
-                    <Label className="text-xs">Giá lẻ</Label>
+                    <Label className="text-xs">Giá ban đầu</Label>
                     <Input
                       type="number"
                       min={0}
@@ -962,7 +1458,12 @@ export default function InventoryPage() {
                     />
                   </div>
                   <div className="space-y-1 sm:col-span-2">
-                    <Label className="text-xs">Giá sỉ</Label>
+                    <Label className="text-xs">Giá khuyến mãi (tuỳ chọn)</Label>
+                    <p className="text-[10px] text-muted-foreground leading-snug">
+                      Chỉ áp khi đủ{" "}
+                      <span className="font-semibold text-foreground">SL tối thiểu (KM)</span>{" "}
+                      bên phải (theo cùng loại <span className="font-mono">{String(watchedUnitTypes?.[idx]?.type ?? "").trim() || "…"}</span>).
+                    </p>
                     <Controller
                       name={`unitTypes.${idx}.wholesalePrice`}
                       control={control}
@@ -987,7 +1488,12 @@ export default function InventoryPage() {
                     />
                   </div>
                   <div className="space-y-1 sm:col-span-1">
-                    <Label className="text-xs">Min sỉ</Label>
+                    <Label className="text-xs leading-tight">
+                      SL tối thiểu (KM)
+                    </Label>
+                    <p className="text-[9px] text-muted-foreground leading-tight">
+                      Số lượng tối thiểu theo loại này để áp giá KM (0 = từ 1 là áp).
+                    </p>
                     <Input
                       type="number"
                       min={0}
@@ -1009,6 +1515,9 @@ export default function InventoryPage() {
                       </Button>
                     )}
                   </div>
+                  {watchedUnitTypes?.[idx] != null && (
+                    <UnitRowSaleHint {...watchedUnitTypes[idx]!} />
+                  )}
                 </div>
               ))}
             </div>
@@ -1039,129 +1548,303 @@ export default function InventoryPage() {
         </DialogContent>
       </Dialog>
 
-      <div className="flex gap-2 flex-wrap">
-        {categoryTabs.map((cat) => {
-          const Icon = cat.icon;
-          const active = categoryFilter === cat.group;
-          const count =
-            cat.group === "ALL"
-              ? [...usageMap.values()].reduce((a, b) => a + b, 0)
-              : (usageMap.get(cat.group) ?? 0);
-          return (
-            <button
-              key={cat.group}
-              type="button"
-              onClick={() => applyCategoryTab(cat.group)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm border transition-all ${
-                active
-                  ? "bg-primary text-primary-foreground border-primary shadow-md"
-                  : "bg-background border-outline-variant text-on-surface-variant hover:bg-muted"
-              }`}
-            >
-              <Icon className="w-4 h-4" />
-              {cat.key}
-              <Badge
-                className={`text-[10px] px-1.5 py-0 ml-0.5 ${active ? "bg-white/20 text-white" : "bg-muted text-muted-foreground"}`}
-              >
-                {count}
-              </Badge>
-            </button>
-          );
-        })}
-      </div>
+      <Tabs
+        value={mainTab}
+        onValueChange={(v) => {
+          if (v === "inventory" || v === "trash") setMainTab(v);
+        }}
+        className="space-y-6"
+      >
+        <TabsList className="h-auto min-h-9 flex-wrap gap-1 rounded-xl p-1">
+          <TabsTrigger value="inventory" className="rounded-lg gap-2">
+            <Layers className="size-4" />
+            Kho hàng
+          </TabsTrigger>
+          {canWriteProducts ? (
+            <TabsTrigger value="trash" className="rounded-lg gap-2">
+              <ArchiveRestore className="size-4" />
+              Thùng rác
+              {trashedData != null && trashedData.total > 0 ? (
+                <Badge
+                  variant="secondary"
+                  className="px-1.5 py-0 text-[10px] tabular-nums"
+                >
+                  {trashedData.total}
+                </Badge>
+              ) : null}
+            </TabsTrigger>
+          ) : null}
+        </TabsList>
 
-      <p className="text-sm text-on-surface-variant">
-        Dòng <span className="font-semibold">sản phẩm</span> mở rộng thành cây{" "}
-        <span className="font-semibold">đơn vị tính</span> (bấm mũi tên để mở).
-        Tab danh mục và ô lọc « Danh mục » luôn đồng bộ; cùng ô lọc / tìm nhanh gọi
-        API (phân trang {PAGE_SIZE} SP/trang); badge tab là tổng SP trong DB theo
-        danh mục.
-      </p>
-
-      {error && (
-        <div className="text-center py-12 bg-destructive/5 border border-destructive/20 rounded-2xl">
-          <p className="text-lg font-bold text-destructive">
-            Không tải được dữ liệu kho
-          </p>
-          <p className="text-sm text-on-surface-variant mt-1">
-            {error.message}
-          </p>
-        </div>
-      )}
-
-      {!error && (
-        <>
-          <AdminDataTable<ProductTreeRow>
-            data={treeRows}
-            columns={inventoryColumns}
-            getSubRows={lineOnly ? undefined : getProductSubRows}
-            isLoading={isLoading}
-            emptyLabel="Không có sản phẩm phù hợp bộ lọc."
-            defaultExpandedAll={false}
-            manualFiltering
-            columnFilters={columnFilters}
-            onColumnFiltersChange={handleColumnFiltersChange}
-            globalFilter={globalFilter}
-            onGlobalFilterChange={setGlobalFilter}
-            globalFilterPlaceholder="Tìm nhanh (API): SKU, tên, danh mục, brand…"
-            filterToolbarExtra={
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="h-9 rounded-lg gap-1.5"
-                onClick={clearAllFilters}
-              >
-                <FilterX className="size-4" />
-                Xóa bộ lọc
-              </Button>
-            }
-            getRowClassName={(row) =>
-              row.original.rowKind === "product"
-                ? row.original.product.stock <= 0
-                  ? "bg-destructive/5"
-                  : row.original.product.stock < 50
-                    ? "bg-warning/5"
-                    : undefined
-                : undefined
-            }
-          />
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <p className="text-sm text-muted-foreground">
-              {totalProducts === 0
-                ? "Không có sản phẩm"
-                : `Hiển thị ${(page - 1) * PAGE_SIZE + 1}–${Math.min(page * PAGE_SIZE, totalProducts)} / ${totalProducts} sản phẩm`}
-            </p>
-            <div className="flex items-center gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="h-9 rounded-lg"
-                disabled={page <= 1 || isLoading}
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-              >
-                <ChevronLeft className="size-4" />
-                Trước
-              </Button>
-              <span className="text-sm tabular-nums px-2">
-                Trang {page} / {totalPages}
-              </span>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="h-9 rounded-lg"
-                disabled={page >= totalPages || isLoading}
-                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              >
-                Sau
-                <ChevronRight className="size-4" />
-              </Button>
-            </div>
+        <TabsContent value="inventory" className="mt-0 space-y-6">
+          <div className="flex flex-wrap gap-2">
+            {categoryTabs.map((cat) => {
+              const Icon = cat.icon;
+              const active = categoryFilter === cat.group;
+              const count =
+                cat.group === "ALL"
+                  ? [...usageMap.values()].reduce((a, b) => a + b, 0)
+                  : (usageMap.get(cat.group) ?? 0);
+              return (
+                <button
+                  key={cat.group}
+                  type="button"
+                  onClick={() => applyCategoryTab(cat.group)}
+                  className={`flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-bold transition-all ${
+                    active
+                      ? "border-primary bg-primary text-primary-foreground shadow-md"
+                      : "border-outline-variant bg-background text-on-surface-variant hover:bg-muted"
+                  }`}
+                >
+                  <Icon className="h-4 w-4" />
+                  {cat.key}
+                  <Badge
+                    className={`ml-0.5 px-1.5 py-0 text-[10px] ${active ? "bg-white/20 text-white" : "bg-muted text-muted-foreground"}`}
+                  >
+                    {count}
+                  </Badge>
+                </button>
+              );
+            })}
           </div>
-        </>
-      )}
+
+          <p className="text-sm text-on-surface-variant">
+            Dòng <span className="font-semibold">sản phẩm</span> mở rộng thành
+            cây <span className="font-semibold">đơn vị tính</span> (bấm mũi tên để
+            mở). Tab danh mục và ô lọc « Danh mục » luôn đồng bộ; cùng ô lọc / tìm
+            nhanh gọi API (phân trang, chọn số SP/trang ở cuối bảng); badge tab là
+            tổng SP
+            trong DB theo danh mục.
+            {canWriteProducts ? (
+              <>
+                {" "}
+                Xóa sản phẩm là{" "}
+                <span className="font-semibold">xóa tạm</span> — khôi phục ở tab
+                Thùng rác.
+              </>
+            ) : null}
+          </p>
+
+          {error && (
+            <div className="rounded-2xl border border-destructive/20 bg-destructive/5 py-12 text-center">
+              <p className="text-lg font-bold text-destructive">
+                Không tải được dữ liệu kho
+              </p>
+              <p className="mt-1 text-sm text-on-surface-variant">
+                {error.message}
+              </p>
+            </div>
+          )}
+
+          {!error && (
+            <>
+              <AdminDataTable<ProductTreeRow>
+                data={treeRows}
+                columns={inventoryColumns}
+                getSubRows={lineOnly ? undefined : getProductSubRows}
+                isLoading={isLoading}
+                emptyLabel="Không có sản phẩm phù hợp bộ lọc."
+                defaultExpandedAll={false}
+                manualFiltering
+                columnFilters={columnFilters}
+                onColumnFiltersChange={handleColumnFiltersChange}
+                globalFilter={globalFilter}
+                onGlobalFilterChange={setGlobalFilter}
+                globalFilterPlaceholder="Tìm nhanh (API): SKU, tên, danh mục, brand…"
+                filterToolbarExtra={
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="h-9 gap-1.5 rounded-lg"
+                    onClick={clearAllFilters}
+                  >
+                    <FilterX className="size-4" />
+                    Xóa bộ lọc
+                  </Button>
+                }
+                csvExport={{ fileName: "kho-san-pham.csv" }}
+                getRowClassName={(row) =>
+                  row.original.rowKind === "product"
+                    ? row.original.product.stock <= 0
+                      ? "bg-destructive/5"
+                      : row.original.product.stock < 50
+                        ? "bg-warning/5"
+                        : undefined
+                    : undefined
+                }
+                footer={inventoryPaginationFooter}
+              />
+            </>
+          )}
+        </TabsContent>
+
+        {canWriteProducts ? (
+          <TabsContent value="trash" className="mt-0 space-y-4">
+            {trashedError ? (
+              <div className="rounded-2xl border border-destructive/20 bg-destructive/5 py-12 text-center">
+                <p className="text-lg font-bold text-destructive">
+                  Không tải được thùng rác
+                </p>
+                <p className="mt-1 text-sm text-on-surface-variant">
+                  {trashedError.message}
+                </p>
+              </div>
+            ) : (
+              <>
+                <p className="text-sm text-on-surface-variant">
+                  Sản phẩm trong thùng rác không hiển thị ở kho chính và không bán
+                  được. Khôi phục để đưa lại danh sách đang hoạt động.
+                </p>
+                <AdminDataTable<Product>
+                  data={trashedItems}
+                  columns={trashProductColumns}
+                  isLoading={trashedLoading}
+                  emptyLabel="Thùng rác trống hoặc không khớp tìm kiếm."
+                  defaultExpandedAll={false}
+                  manualFiltering
+                  globalFilter={trashGlobalFilter}
+                  onGlobalFilterChange={setTrashGlobalFilter}
+                  globalFilterPlaceholder="Tìm theo SKU, tên, slug danh mục (API)…"
+                  filterToolbarExtra={
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="h-9 gap-1.5 rounded-lg"
+                      onClick={clearTrashFilters}
+                    >
+                      <FilterX className="size-4" />
+                      Xóa bộ lọc
+                    </Button>
+                  }
+                  csvExport={{ fileName: "kho-thung-rac.csv" }}
+                  footer={trashInventoryPaginationFooter}
+                />
+              </>
+            )}
+          </TabsContent>
+        ) : null}
+      </Tabs>
+
+      <AlertDialog
+        open={deleteTarget != null}
+        onOpenChange={(o) => {
+          if (!o) setDeleteTarget(null);
+        }}
+      >
+        <AlertDialogContent className="rounded-2xl sm:max-w-[450px]">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Đưa sản phẩm vào thùng rác?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {deleteTarget ? (
+                <>
+                  Sản phẩm{" "}
+                  <strong className="text-foreground">{deleteTarget.name}</strong>{" "}
+                  (SKU <span className="font-mono">{deleteTarget.sku}</span>) sẽ
+                  ẩn khỏi kho chính. Bạn có thể khôi phục sau trong tab Thùng rác.
+                </>
+              ) : null}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="rounded-xl">Huỷ</AlertDialogCancel>
+            <AlertDialogAction
+              className="rounded-xl bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={(e) => {
+                e.preventDefault();
+                confirmDeleteProduct();
+              }}
+              disabled={deleteProduct.isPending}
+            >
+              {deleteProduct.isPending ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                "Xóa tạm"
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog
+        open={purgeTarget != null}
+        onOpenChange={(o) => {
+          if (!o) setPurgeTarget(null);
+        }}
+      >
+        <AlertDialogContent className="rounded-2xl sm:max-w-[450px]">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Xóa vĩnh viễn sản phẩm?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {purgeTarget ? (
+                <>
+                  <strong className="text-foreground">{purgeTarget.name}</strong>{" "}
+                  (SKU <span className="font-mono">{purgeTarget.sku}</span>) sẽ bị
+                  xoá khỏi cơ sở dữ liệu. Thao tác không thể hoàn tác.
+                </>
+              ) : null}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="rounded-xl">Huỷ</AlertDialogCancel>
+            <AlertDialogAction
+              className="rounded-xl bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={(e) => {
+                e.preventDefault();
+                confirmPurgeProduct();
+              }}
+              disabled={purgeTrashedProduct.isPending}
+            >
+              {purgeTrashedProduct.isPending ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                "Xóa vĩnh viễn"
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog
+        open={restoreTarget != null}
+        onOpenChange={(o) => {
+          if (!o) setRestoreTarget(null);
+        }}
+      >
+        <AlertDialogContent className="rounded-2xl sm:max-w-[450px]">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Khôi phục sản phẩm?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {restoreTarget ? (
+                <>
+                  Đưa{" "}
+                  <strong className="text-foreground">{restoreTarget.name}</strong>{" "}
+                  (SKU <span className="font-mono">{restoreTarget.sku}</span>) trở
+                  lại kho hàng đang hoạt động.
+                </>
+              ) : null}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="rounded-xl">Huỷ</AlertDialogCancel>
+            <AlertDialogAction
+              className="rounded-xl"
+              onClick={(e) => {
+                e.preventDefault();
+                confirmRestoreProduct();
+              }}
+              disabled={restoreProduct.isPending}
+            >
+              {restoreProduct.isPending ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                "Khôi phục"
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

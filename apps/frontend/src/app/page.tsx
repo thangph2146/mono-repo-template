@@ -31,9 +31,8 @@ const PLACEHOLDER_IMAGE =
   "https://images.unsplash.com/photo-1604719312566-8912e9227c6a?w=600";
 
 /**
- * Pick the best per-unit price for the homepage cards. Wholesale (giá sỉ)
- * usually wins, so we surface that price along with the matching label so the
- * card matches what the catalog shows.
+ * Pick the best per-unit price for the homepage cards. Giá khuyến mãi (wholesale)
+ * thường được ưu tiên hiển thị cùng nhãn khớp catalog.
  */
 function pickPrimaryPrice(p: Product): {
   price: number;
@@ -354,7 +353,7 @@ export default function Home() {
                 <div className="space-y-4 pt-4">
                   {[
                     "Hàng chính hãng 100%",
-                    "Giá sỉ cấp 1 tốt nhất thị trường",
+                    "Mức giá khuyến mãi cạnh tranh nhất thị trường",
                     "Hỗ trợ đổi trả trong 7 ngày",
                     "Chiết khấu thêm cho đơn hàng lớn"
                   ].map((item, i) => (
@@ -436,7 +435,7 @@ export default function Home() {
                 cùng StoreSync B2B?
               </Heading>
               <Text variant="lead" align="center" className="text-primary-foreground/90 max-w-4xl mx-auto font-medium leading-relaxed">
-                Đăng ký tài khoản đại lý ngay hôm nay để nhận bảng báo giá sỉ độc quyền và ưu đãi miễn phí vận chuyển cho đơn hàng đầu tiên.
+                Đăng ký tài khoản đại lý ngay hôm nay để nhận bảng báo giá khuyến mãi độc quyền và ưu đãi miễn phí vận chuyển cho đơn hàng đầu tiên.
               </Text>
               <div className="flex flex-col sm:flex-row gap-8 justify-center pt-8">
                 <Link href="/register">

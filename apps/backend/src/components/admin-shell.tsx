@@ -3,9 +3,15 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Bell, PanelLeftClose, PanelLeft } from "lucide-react";
+import { Bell, Menu, PanelLeftClose, PanelLeft } from "lucide-react";
 import { Button } from "@ui/components/button";
-import { Sidebar } from "@/components/sidebar";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@ui/components/sheet";
+import { MobileSidebarPanel, Sidebar } from "@/components/sidebar";
 import { TextSizeToggle } from "@ui/components/text-size-toggle";
 import { canAccessStaffAdmin } from "@workspace/api-client";
 import { useAuth, useClientReady } from "@/providers/auth-provider";
@@ -13,6 +19,7 @@ import {
   ADMIN_SESSION_EVENT,
   clearAdminSession,
 } from "@/lib/auth-session";
+import { isAuthPath } from "@/lib/auth-routes";
 
 const SIDEBAR_COLLAPSED_KEY = "admin-sidebar-collapsed";
 
@@ -28,13 +35,22 @@ function roleSummary(user: { roles: { code: string; name: string }[] }): string 
   return user.roles.map((r) => r.name).join(" · ");
 }
 
+function AuthLoadingScreen({ message }: { message: string }) {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-muted/30 text-muted-foreground text-sm">
+      {message}
+    </div>
+  );
+}
+
 export function AdminShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const clientReady = useClientReady();
   const { user } = useAuth();
-  const isLogin = pathname === "/login";
+  const onAuthRoute = isAuthPath(pathname);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const skipSidebarPersist = useRef(true);
 
   useEffect(() => {
@@ -58,7 +74,21 @@ export function AdminShell({ children }: { children: ReactNode }) {
   }, [sidebarCollapsed]);
 
   useEffect(() => {
-    if (!clientReady || isLogin) return;
+    if (!clientReady) return;
+
+    if (onAuthRoute) {
+      if (user && canAccessStaffAdmin(user)) {
+        router.replace("/");
+        return;
+      }
+      if (user && !canAccessStaffAdmin(user)) {
+        clearAdminSession();
+        window.dispatchEvent(new Event(ADMIN_SESSION_EVENT));
+        router.replace("/login?reason=staff_only");
+      }
+      return;
+    }
+
     if (!user) {
       router.replace("/login");
       return;
@@ -68,38 +98,63 @@ export function AdminShell({ children }: { children: ReactNode }) {
       window.dispatchEvent(new Event(ADMIN_SESSION_EVENT));
       router.replace("/login?reason=staff_only");
     }
-  }, [clientReady, isLogin, user, router]);
+  }, [clientReady, onAuthRoute, user, router]);
 
-  if (isLogin) {
+  if (onAuthRoute) {
+    if (!clientReady) {
+      return <AuthLoadingScreen message="Đang tải…" />;
+    }
+    if (user && canAccessStaffAdmin(user)) {
+      return <AuthLoadingScreen message="Đang chuyển về bảng điều khiển…" />;
+    }
     return <>{children}</>;
   }
 
   if (!clientReady || !user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background text-muted-foreground text-sm">
-        Đang tải…
-      </div>
-    );
+    return <AuthLoadingScreen message="Đang tải…" />;
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex font-sans w-full">
+    <div className="flex min-h-screen w-full flex-col bg-background font-sans text-foreground md:flex-row">
+      <Sheet open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
+        <SheetContent
+          side="left"
+          showCloseButton
+          className="flex w-[min(100vw,20rem)] flex-col border-sidebar-border bg-sidebar p-0 text-sidebar-foreground sm:max-w-sm"
+        >
+          <SheetHeader className="sr-only">
+            <SheetTitle>Menu điều hướng</SheetTitle>
+          </SheetHeader>
+          <MobileSidebarPanel onNavigate={() => setMobileNavOpen(false)} />
+        </SheetContent>
+      </Sheet>
+
       <Sidebar
         collapsed={sidebarCollapsed}
         onToggleCollapsed={() => setSidebarCollapsed((c) => !c)}
       />
 
-      <div className="flex-1 flex flex-col min-w-0">
-        <header className="h-16 bg-surface border-b border-border flex items-center justify-between px-6 sticky top-0 z-10 backdrop-blur-sm bg-surface/80">
-          <div className="flex items-center gap-2 min-w-0">
-            <h2 className="text-xl font-bold md:hidden text-primary shrink-0">
+      <div className="flex min-w-0 flex-1 flex-col">
+        <header className="sticky top-0 z-10 flex h-14 shrink-0 items-center justify-between border-b border-border bg-surface/80 px-3 backdrop-blur-sm sm:h-16 sm:px-6">
+          <div className="flex min-w-0 items-center gap-1 sm:gap-2">
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="shrink-0 rounded-lg text-muted-foreground hover:text-primary md:hidden"
+              onClick={() => setMobileNavOpen(true)}
+              aria-label="Mở menu điều hướng"
+            >
+              <Menu className="size-6" />
+            </Button>
+            <h2 className="shrink-0 truncate text-lg font-bold text-primary sm:text-xl md:hidden">
               B2B Admin
             </h2>
             <Button
               type="button"
               variant="ghost"
               size="icon"
-              className="hidden md:inline-flex text-muted-foreground hover:text-primary shrink-0 rounded-lg"
+              className="hidden shrink-0 rounded-lg text-muted-foreground hover:text-primary md:inline-flex"
               onClick={() => setSidebarCollapsed((c) => !c)}
               aria-label={sidebarCollapsed ? "Mở sidebar" : "Thu gọn sidebar"}
               title={sidebarCollapsed ? "Mở sidebar" : "Thu gọn sidebar"}
@@ -112,7 +167,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
             </Button>
           </div>
           <div className="flex-1" />
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             <TextSizeToggle />
             <Button
               variant="ghost"
@@ -142,7 +197,9 @@ export function AdminShell({ children }: { children: ReactNode }) {
             </Link>
           </div>
         </header>
-        <main className="flex-1 p-6 overflow-y-auto bg-muted/20">{children}</main>
+        <main className="flex-1 overflow-y-auto bg-muted/20 p-4 sm:p-6">
+          {children}
+        </main>
       </div>
     </div>
   );

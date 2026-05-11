@@ -2,6 +2,7 @@
 
 import { useCallback, useSyncExternalStore } from "react";
 import { applyPromoCode, type PromoResult } from "@workspace/promo-codes";
+import { effectiveLineUnitPrice } from "@workspace/api-client";
 import type { Product, ProductUnitType } from "@/lib/api";
 
 const STORAGE_KEY = "storesync_cart_v1";
@@ -14,12 +15,14 @@ export interface CartLine {
   category: string;
   unitType: string;
   unitLabel: string;
-  /** Giá đang áp dụng (sỉ hoặc lẻ theo đơn vị). */
+  /** Giá đang áp dụng theo SL (KM khi đủ minPromoQty). */
   unitPrice: number;
-  /**
-   * Giá niêm yết lẻ theo cùng đơn vị (từ `unit.retailPrice`), để hiển thị tiết kiệm khi mua sỉ.
-   */
-  listUnitPrice?: number;
+  /** Giá ban đầu cùng đơn vị (retail). */
+  listUnitPrice: number;
+  /** Giá KM trên đơn vị (wholesale < retail); null = không có tier KM. */
+  promoUnitPrice: number | null;
+  /** SL tối thiểu để áp promoUnitPrice (minWholesaleQty). */
+  minPromoQty: number;
   qtyPerUnit: number;
   quantity: number;
   isWholesale: boolean;
@@ -33,7 +36,104 @@ interface CartState {
 
 const initialState: CartState = { lines: [], appliedPromoCode: null };
 
-function isCartLine(value: unknown): value is CartLine {
+/** Khóa gộp dòng: cùng sản phẩm + cùng loại đơn vị (trim). */
+export function cartLineKey(productId: number, unitType: string): string {
+  return `${productId}:${String(unitType).trim()}`;
+}
+
+function repriceLine(line: CartLine): CartLine {
+  const retail = Math.max(
+    0,
+    Math.floor(line.listUnitPrice ?? line.unitPrice),
+  );
+  const promoRaw = line.promoUnitPrice;
+  const promo =
+    promoRaw === null || promoRaw === undefined || !Number.isFinite(promoRaw)
+      ? null
+      : Math.floor(promoRaw);
+  const minQ = Math.max(0, Math.floor(line.minPromoQty ?? 0));
+
+  if (promo === null || promo <= 0 || promo >= retail) {
+    return {
+      ...line,
+      listUnitPrice: retail,
+      unitPrice: retail,
+      promoUnitPrice: null,
+      minPromoQty: minQ,
+      isWholesale: false,
+    };
+  }
+
+  const eff = effectiveLineUnitPrice(
+    {
+      retailPrice: retail,
+      wholesalePrice: promo,
+      minWholesaleQty: minQ,
+    },
+    line.quantity,
+  );
+  return {
+    ...line,
+    listUnitPrice: eff.listUnitPrice,
+    unitPrice: eff.unitPrice,
+    promoUnitPrice: promo,
+    minPromoQty: minQ,
+    isWholesale: eff.isSaleActive,
+  };
+}
+
+function mergeDuplicateCartLines(lines: CartLine[]): CartLine[] {
+  const map = new Map<string, CartLine>();
+  for (const l of lines) {
+    const key = cartLineKey(l.productId, l.unitType);
+    const prev = map.get(key);
+    if (!prev) {
+      map.set(
+        key,
+        repriceLine(
+          clamp({
+            ...l,
+            unitType: String(l.unitType).trim(),
+            quantity: Math.max(1, Math.floor(l.quantity)),
+          }),
+        ),
+      );
+    } else {
+      prev.quantity =
+        Math.max(1, prev.quantity) + Math.max(1, Math.floor(l.quantity));
+      prev.unitLabel = l.unitLabel;
+      prev.qtyPerUnit = l.qtyPerUnit;
+      prev.stock = l.stock;
+      prev.promoUnitPrice = l.promoUnitPrice;
+      prev.minPromoQty = l.minPromoQty;
+      prev.listUnitPrice = l.listUnitPrice;
+      if (l.image) prev.image = l.image;
+      map.set(key, repriceLine(clamp(prev)));
+    }
+  }
+  return [...map.values()];
+}
+
+/** Gộp dòng trùng trước khi POST tạo đơn (phòng trùng từ client). */
+export function mergeLinesForCreateOrder(
+  lines: CartLine[],
+): Array<{ productId: number; quantity: number; unitType: string }> {
+  const map = new Map<
+    string,
+    { productId: number; quantity: number; unitType: string }
+  >();
+  for (const l of lines) {
+    const ut = String(l.unitType).trim();
+    const key = cartLineKey(l.productId, ut);
+    const prev = map.get(key);
+    const q = Math.max(1, Math.floor(l.quantity));
+    if (prev) prev.quantity += q;
+    else map.set(key, { productId: l.productId, quantity: q, unitType: ut });
+  }
+  return [...map.values()];
+}
+
+function isCartLineCore(value: unknown): boolean {
   if (!value || typeof value !== "object") return false;
   const o = value as Record<string, unknown>;
   return (
@@ -60,22 +160,55 @@ function normalizeCartState(raw: unknown): CartState {
   const linesIn = Array.isArray(linesRaw) ? linesRaw : [];
   const out: CartLine[] = [];
   for (const item of linesIn) {
-    if (!isCartLine(item)) continue;
+    if (!isCartLineCore(item)) continue;
+    const row = item as Record<string, unknown> & CartLine;
     const listUnitPrice =
-      typeof item.listUnitPrice === "number" && Number.isFinite(item.listUnitPrice)
-        ? item.listUnitPrice
-        : item.unitPrice;
-    out.push({
-      ...item,
+      typeof row.listUnitPrice === "number" && Number.isFinite(row.listUnitPrice)
+        ? Math.max(0, Math.floor(row.listUnitPrice))
+        : Math.max(0, Math.floor(row.unitPrice));
+
+    let promoUnitPrice: number | null = null;
+    if (
+      typeof row.promoUnitPrice === "number" &&
+      Number.isFinite(row.promoUnitPrice)
+    ) {
+      promoUnitPrice = Math.floor(row.promoUnitPrice);
+    } else if (listUnitPrice > Math.floor(row.unitPrice)) {
+      promoUnitPrice = Math.floor(row.unitPrice);
+    }
+
+    let minPromoQty = 0;
+    if (
+      typeof row.minPromoQty === "number" &&
+      Number.isFinite(row.minPromoQty)
+    ) {
+      minPromoQty = Math.max(0, Math.floor(row.minPromoQty));
+    }
+
+    const base: CartLine = {
+      productId: row.productId,
+      sku: row.sku,
+      name: row.name,
+      image: row.image,
+      category: row.category,
+      unitType: String(row.unitType).trim(),
+      unitLabel: row.unitLabel,
+      unitPrice: row.unitPrice,
       listUnitPrice,
-      quantity: Math.max(1, Math.floor(item.quantity)),
-    });
+      promoUnitPrice,
+      minPromoQty,
+      qtyPerUnit: row.qtyPerUnit,
+      quantity: Math.max(1, Math.floor(row.quantity)),
+      isWholesale: row.isWholesale,
+      stock: row.stock,
+    };
+    out.push(repriceLine(clamp(base)));
   }
   let appliedPromoCode: string | null = null;
   if (typeof o.appliedPromoCode === "string" && o.appliedPromoCode.trim()) {
     appliedPromoCode = o.appliedPromoCode.trim().toUpperCase();
   }
-  return { lines: out, appliedPromoCode };
+  return { lines: mergeDuplicateCartLines(out), appliedPromoCode };
 }
 
 const isClient = typeof window !== "undefined";
@@ -135,9 +268,6 @@ if (isClient) {
   snapshot = read();
 }
 
-const cartKey = (productId: number, unitType: string): string =>
-  `${productId}:${unitType}`;
-
 function computeSubtotal(lines: CartLine[]): number {
   return lines.reduce((sum, l) => sum + l.unitPrice * l.quantity, 0);
 }
@@ -146,21 +276,41 @@ const lineFromUnit = (
   product: Product,
   unit: ProductUnitType,
   quantity: number,
-): CartLine => ({
-  productId: product.id,
-  sku: product.sku,
-  name: product.name,
-  image: product.images?.[0],
-  category: product.category,
-  unitType: unit.type,
-  unitLabel: unit.label,
-  unitPrice: unit.wholesalePrice ?? unit.retailPrice,
-  listUnitPrice: unit.retailPrice,
-  qtyPerUnit: unit.qtyPerUnit,
-  quantity,
-  isWholesale: unit.wholesalePrice !== null,
-  stock: product.stock,
-});
+): CartLine => {
+  const retail = Math.max(0, Math.floor(Number(unit.retailPrice) || 0));
+  const rawW = unit.wholesalePrice;
+  const promo =
+    rawW === null || rawW === undefined || !Number.isFinite(Number(rawW))
+      ? null
+      : Math.floor(Number(rawW));
+  const hasPromo = promo !== null && promo > 0 && promo < retail;
+  const minPromoQty = Math.max(0, Math.floor(Number(unit.minWholesaleQty) || 0));
+  const eff = effectiveLineUnitPrice(
+    {
+      retailPrice: retail,
+      wholesalePrice: hasPromo ? promo : null,
+      minWholesaleQty: minPromoQty,
+    },
+    quantity,
+  );
+  return {
+    productId: product.id,
+    sku: product.sku,
+    name: product.name,
+    image: product.images?.[0],
+    category: product.category,
+    unitType: String(unit.type).trim(),
+    unitLabel: unit.label,
+    unitPrice: eff.unitPrice,
+    listUnitPrice: eff.listUnitPrice,
+    promoUnitPrice: hasPromo ? promo : null,
+    minPromoQty,
+    qtyPerUnit: unit.qtyPerUnit,
+    quantity,
+    isWholesale: eff.isSaleActive,
+    stock: product.stock,
+  };
+};
 
 const clamp = (line: CartLine): CartLine => {
   const maxByStock = Math.max(
@@ -180,33 +330,39 @@ export const cartStore = {
   add(product: Product, unit: ProductUnitType, quantity: number): void {
     if (quantity <= 0) return;
     const next = read();
-    const key = cartKey(product.id, unit.type);
+    const key = cartLineKey(product.id, unit.type);
     const existing = next.lines.find(
-      (l) => cartKey(l.productId, l.unitType) === key,
+      (l) => cartLineKey(l.productId, l.unitType) === key,
     );
     if (existing) {
       existing.quantity += quantity;
-      existing.unitPrice = unit.wholesalePrice ?? unit.retailPrice;
-      existing.listUnitPrice = unit.retailPrice;
+      existing.unitLabel = unit.label;
       existing.qtyPerUnit = unit.qtyPerUnit;
       existing.stock = product.stock;
-      existing.isWholesale = unit.wholesalePrice !== null;
-      Object.assign(existing, clamp(existing));
+      const fresh = lineFromUnit(product, unit, existing.quantity);
+      existing.listUnitPrice = fresh.listUnitPrice;
+      existing.promoUnitPrice = fresh.promoUnitPrice;
+      existing.minPromoQty = fresh.minPromoQty;
+      Object.assign(existing, repriceLine(clamp(existing)));
     } else {
-      next.lines.push(clamp(lineFromUnit(product, unit, quantity)));
+      next.lines.push(repriceLine(clamp(lineFromUnit(product, unit, quantity))));
     }
     write(next);
   },
   setQuantity(productId: number, unitType: string, quantity: number): void {
     const next = read();
     const idx = next.lines.findIndex(
-      (l) => cartKey(l.productId, l.unitType) === cartKey(productId, unitType),
+      (l) =>
+        cartLineKey(l.productId, l.unitType) ===
+        cartLineKey(productId, unitType),
     );
     if (idx === -1) return;
     if (quantity <= 0) {
       next.lines.splice(idx, 1);
     } else {
-      const updated = clamp({ ...next.lines[idx]!, quantity });
+      const updated = repriceLine(
+        clamp({ ...next.lines[idx]!, quantity }),
+      );
       next.lines[idx] = updated;
     }
     write(next);
@@ -214,7 +370,9 @@ export const cartStore = {
   remove(productId: number, unitType: string): void {
     const next = read();
     next.lines = next.lines.filter(
-      (l) => cartKey(l.productId, l.unitType) !== cartKey(productId, unitType),
+      (l) =>
+        cartLineKey(l.productId, l.unitType) !==
+        cartLineKey(productId, unitType),
     );
     write(next);
   },
@@ -224,7 +382,14 @@ export const cartStore = {
   applyPromo(raw: string): PromoResult {
     const next = read();
     const subtotal = computeSubtotal(next.lines);
-    const result = applyPromoCode(subtotal, raw);
+    const cartLines = next.lines.map((l) => ({
+      unitType: l.unitType,
+      quantity: l.quantity,
+    }));
+    const result = applyPromoCode(subtotal, raw, {
+      cartLines,
+      preAppliedDiscount: 0,
+    });
     if (!result.ok) return result;
     next.appliedPromoCode = result.normalizedCode;
     write(next);
@@ -241,16 +406,16 @@ export interface CartSummary {
   lines: CartLine[];
   itemCount: number;
   unitCount: number;
-  /** Tạm tính theo giá đang áp dụng (sỉ/lẻ). */
+  /** Tạm tính theo giá đang áp dụng (KM theo đơn vị + SL). */
   subtotal: number;
-  /** So với giá lẻ cùng đơn vị (chỉ hiển thị khi > 0). */
+  /** So với giá ban đầu cùng đơn vị (chỉ hiển thị khi > 0). */
   wholesaleSavings: number;
   appliedPromoCode: string | null;
   promoDiscount: number;
   promoLabel: string | null;
   /** Mã đang lưu nhưng không đủ điều kiện sau khi đổi giỏ. */
   promoError: string | null;
-  /** Thành tiền tạm (sau mã KM, trước phí ship). */
+  /** Thành tiền tạm (sau mã coupon nếu có; KM đơn vị đã nằm trong tạm tính). */
   grandTotal: number;
   /** Mã gửi lên API khi đặt hàng (chỉ khi hợp lệ). */
   couponCodeForOrder: string | undefined;
@@ -297,9 +462,17 @@ export function useCart(): CartSummary {
     return sum + Math.max(0, list - l.unitPrice) * l.quantity;
   }, 0);
 
+  const cartLines = lines.map((l) => ({
+    unitType: l.unitType,
+    quantity: l.quantity,
+  }));
+
   const appliedPromoCode = state.appliedPromoCode;
   const promoEval = appliedPromoCode
-    ? applyPromoCode(subtotal, appliedPromoCode)
+    ? applyPromoCode(subtotal, appliedPromoCode, {
+        cartLines,
+        preAppliedDiscount: 0,
+      })
     : null;
   const promoDiscount = promoEval?.ok === true ? promoEval.discount : 0;
   const promoLabel = promoEval?.ok === true ? promoEval.label : null;

@@ -29,8 +29,34 @@ export class CategoriesController {
   @Get()
   @Public()
   @ApiOperation({ summary: 'List categories' })
-  @ApiResponse({ status: 200, description: 'Return all categories' })
-  async findAll(@Query('active') active?: string): Promise<Category[]> {
+  @ApiResponse({ status: 200, description: 'Return all categories or paged' })
+  async findAll(
+    @Query('active') active?: string,
+    @Query('q') q?: string,
+    @Query('page') pageStr?: string,
+    @Query('limit') limitStr?: string,
+  ): Promise<Category[] | { items: Category[]; total: number }> {
+    const page =
+      pageStr !== undefined && pageStr !== ''
+        ? parseInt(pageStr, 10)
+        : Number.NaN;
+    const limit =
+      limitStr !== undefined && limitStr !== ''
+        ? parseInt(limitStr, 10)
+        : Number.NaN;
+    if (
+      Number.isFinite(page) &&
+      Number.isFinite(limit) &&
+      page >= 1 &&
+      limit >= 1 &&
+      limit <= 200
+    ) {
+      return this.categoriesService.findPage({
+        q: q?.trim() || undefined,
+        page,
+        limit,
+      });
+    }
     if (active === 'true') return this.categoriesService.findActive();
     return this.categoriesService.findAll();
   }
@@ -40,6 +66,29 @@ export class CategoriesController {
   @ApiOperation({ summary: 'Get product count per category slug' })
   async usage(): Promise<CategoryUsage[]> {
     return this.categoriesService.usageStats();
+  }
+
+  @Get('trashed')
+  @Permissions(PERMISSIONS.CATEGORIES_WRITE)
+  @ApiOperation({ summary: 'Danh mục đã xóa tạm' })
+  async listTrashed(
+    @Query('page') pageStr?: string,
+    @Query('limit') limitStr?: string,
+    @Query('q') q?: string,
+  ): Promise<{ items: Category[]; total: number }> {
+    const page =
+      pageStr !== undefined && pageStr !== ''
+        ? parseInt(pageStr, 10)
+        : undefined;
+    const limit =
+      limitStr !== undefined && limitStr !== ''
+        ? parseInt(limitStr, 10)
+        : undefined;
+    return this.categoriesService.listTrashed({
+      page,
+      limit,
+      q: q?.trim() || undefined,
+    });
   }
 
   @Get('slug/:slug')
@@ -53,7 +102,7 @@ export class CategoriesController {
   @Public()
   @ApiOperation({ summary: 'Get category by id' })
   async findOne(@Param('id', ParseIntPipe) id: number): Promise<Category> {
-    return this.categoriesService.findOne(id);
+    return this.categoriesService.findOnePublished(id);
   }
 
   @Post()
@@ -74,10 +123,27 @@ export class CategoriesController {
     return this.categoriesService.update(id, data);
   }
 
+  @Post(':id/restore')
+  @Permissions(PERMISSIONS.CATEGORIES_WRITE)
+  @ApiOperation({ summary: 'Khôi phục danh mục từ thùng rác' })
+  async restore(@Param('id', ParseIntPipe) id: number): Promise<Category> {
+    return this.categoriesService.restore(id);
+  }
+
+  @Delete(':id/permanent')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Permissions(PERMISSIONS.CATEGORIES_WRITE)
+  @ApiOperation({
+    summary: 'Xóa vĩnh viễn danh mục (chỉ khi đang trong thùng rác)',
+  })
+  async purgeTrashed(@Param('id', ParseIntPipe) id: number): Promise<void> {
+    return this.categoriesService.purgeTrashed(id);
+  }
+
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @Permissions(PERMISSIONS.CATEGORIES_WRITE)
-  @ApiOperation({ summary: 'Delete category' })
+  @ApiOperation({ summary: 'Xóa tạm danh mục' })
   async delete(@Param('id', ParseIntPipe) id: number): Promise<void> {
     return this.categoriesService.delete(id);
   }

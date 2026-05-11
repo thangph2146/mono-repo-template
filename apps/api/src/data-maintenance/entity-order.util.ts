@@ -18,6 +18,8 @@ export function sortEntityMetasForImport(
   }
 
   for (const m of metas) {
+    /** Mỗi entity cha (target) chỉ tính một cạnh — vd. Order có 2 FK tới User vẫn là một ràng buộc "sau User". */
+    const parentTargets = new Set<string>();
     for (const rel of Object.values(m.relations)) {
       if (rel.kind !== ReferenceKind.MANY_TO_ONE) {
         continue;
@@ -26,6 +28,9 @@ export function sortEntityMetasForImport(
       if (!targetName || !inScope.has(targetName)) {
         continue;
       }
+      parentTargets.add(targetName);
+    }
+    for (const targetName of parentTargets) {
       indegree.set(m.className, (indegree.get(m.className) ?? 0) + 1);
       dependents.get(targetName)!.add(m.className);
     }

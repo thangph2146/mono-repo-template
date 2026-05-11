@@ -40,6 +40,15 @@ async function bootstrap() {
     origin: corsOrigins,
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    /** GET/POST từ admin (3001) gửi X-User-Id / X-Backup-Secret → trình duyệt bắt buộc preflight. */
+    allowedHeaders: [
+      'Content-Type',
+      'Accept',
+      'Origin',
+      'X-Requested-With',
+      'X-User-Id',
+      'X-Backup-Secret',
+    ],
   });
 
   app.enableShutdownHooks();

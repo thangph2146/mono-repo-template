@@ -8,8 +8,14 @@ import { Input } from "@ui/components/input";
 import { Label } from "@ui/components/label";
 import { Textarea } from "@ui/components/textarea";
 import { Badge } from "@ui/components/badge";
-import { KeyRound, Loader2, Save, Shield, UserCircle } from "lucide-react";
+import Link from "next/link";
+import { KeyRound, Loader2, MapPin, Save, Shield, UserCircle } from "lucide-react";
 import { useAuth } from "@/providers/auth-provider";
+import {
+  canUserAccess,
+  PERMISSION_CODES,
+} from "@workspace/api-client";
+import { permissionLabelVi } from "@/lib/permission-labels";
 import {
   useChangeStaffPassword,
   useStaffProfile,
@@ -20,6 +26,10 @@ import { patchAdminSessionProfile } from "@/lib/auth-session";
 
 export default function AdminProfilePage() {
   const { user: sessionUser } = useAuth();
+  const canSeeRbacPage =
+    sessionUser != null &&
+    (canUserAccess(sessionUser, PERMISSION_CODES.RBAC_READ) ||
+      canUserAccess(sessionUser, PERMISSION_CODES.USERS_MANAGE));
   const userId = sessionUser?.id;
   const { data: profile, isLoading, isError, error } = useStaffProfile(userId);
   const updateProfile = useUpdateStaffProfile();
@@ -182,6 +192,53 @@ export default function AdminProfilePage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg font-semibold">
             <Shield className="size-5 text-primary" />
+            Quyền hiệu lực (phiên đăng nhập)
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <p className="text-xs text-muted-foreground">
+            Hợp quyền từ mọi vai trò được gán. Mã kỹ thuật hiển thị kèm để đối chiếu với API / ma trận RBAC.
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {(sessionUser.permissions ?? []).length === 0 ? (
+              <span className="text-sm text-muted-foreground">Chưa có dữ liệu quyền.</span>
+            ) : (
+              sessionUser.permissions.map((code) => (
+                <Badge
+                  key={code}
+                  variant="outline"
+                  className="font-normal text-xs max-w-full whitespace-normal text-left h-auto py-1.5"
+                  title={code}
+                >
+                  <span className="block font-medium">
+                    {permissionLabelVi(code)}
+                  </span>
+                  {permissionLabelVi(code) !== code ? (
+                    <span className="block font-mono text-[10px] text-muted-foreground mt-0.5">
+                      {code}
+                    </span>
+                  ) : null}
+                </Badge>
+              ))
+            )}
+          </div>
+          {canSeeRbacPage ? (
+            <p className="text-xs">
+              <Link
+                href="/staff"
+                className="text-primary font-medium underline-offset-4 hover:underline"
+              >
+                Mở trang nhân sự & ma trận phân quyền
+              </Link>
+            </p>
+          ) : null}
+        </CardContent>
+      </Card>
+
+      <Card className="border-border shadow-sm">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-lg font-semibold">
+            <MapPin className="size-5 text-primary" />
             Thông tin liên hệ & địa chỉ
           </CardTitle>
         </CardHeader>

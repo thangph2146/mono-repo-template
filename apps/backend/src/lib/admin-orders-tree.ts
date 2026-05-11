@@ -13,6 +13,8 @@ export type OrderTreeRow =
       createdAt: string;
       paymentLabel: string;
       shipNote: string;
+      /** Luôn rỗng ở dòng đơn — dùng chung cột với dòng mặt hàng. */
+      giftNote: string;
       order: Order;
       subRows?: OrderTreeRow[];
     }
@@ -30,6 +32,7 @@ export type OrderTreeRow =
       createdAt: string;
       paymentLabel: string;
       shipNote: string;
+      giftNote: string;
       orderId: number;
       item: OrderItem;
     };
@@ -54,6 +57,7 @@ export function ordersToTreeRows(orders: Order[]): OrderTreeRow[] {
     createdAt: o.createdAt,
     paymentLabel: `${o.paymentMethod} · ${o.paymentStatus === "paid" ? "Đã thu" : "Chưa thu"}`,
     shipNote: o.shippingAddress ?? "",
+    giftNote: "",
     order: o,
     subRows: o.items.map((it, i) => ({
       rowKind: "line",
@@ -69,6 +73,7 @@ export function ordersToTreeRows(orders: Order[]): OrderTreeRow[] {
       createdAt: "",
       paymentLabel: formatUnitPrice(it),
       shipNote: "",
+      giftNote: (it.giftNote ?? "").trim(),
       orderId: o.id,
       item: it,
     })),
@@ -76,5 +81,14 @@ export function ordersToTreeRows(orders: Order[]): OrderTreeRow[] {
 }
 
 function formatUnitPrice(it: OrderItem): string {
-  return `${it.unitPrice.toLocaleString("vi-VN")} đ / ĐG`;
+  const u = Number(it.unitPrice);
+  const list =
+    it.listUnitPrice != null && Number.isFinite(Number(it.listUnitPrice))
+      ? Number(it.listUnitPrice)
+      : null;
+  const base = `${u.toLocaleString("vi-VN")} đ / ĐG (lúc đặt)`;
+  if (list != null && list > u) {
+    return `${list.toLocaleString("vi-VN")} đ → ${base}`;
+  }
+  return base;
 }

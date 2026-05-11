@@ -26,6 +26,7 @@ import {
 } from "@ui/components/collapsible";
 import { cn } from "@ui/lib/utils";
 import { readAdminSession } from "@/lib/auth-session";
+import { DEFAULT_API_URL } from "@workspace/api-client";
 import {
   Database,
   Download,
@@ -43,10 +44,7 @@ import {
 const SECRET_KEY = "storesync_backup_admin_secret";
 
 function apiBase(): string {
-  return (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3002/api").replace(
-    /\/$/,
-    "",
-  );
+  return (process.env.NEXT_PUBLIC_API_URL ?? DEFAULT_API_URL).replace(/\/$/, "");
 }
 
 export default function DataBackupPage() {
@@ -86,8 +84,30 @@ export default function DataBackupPage() {
     const a = document.createElement("a");
     a.href = url;
     a.download = filename;
+    a.rel = "noopener";
+    document.body.appendChild(a);
     a.click();
+    a.remove();
     URL.revokeObjectURL(url);
+  };
+
+  const toastFetchError = async (res: Response): Promise<void> => {
+    const t = await res.text();
+    const msg = t.length > 280 ? `${t.slice(0, 280)}…` : t;
+    if (res.status === 401) {
+      toast.error(
+        "API từ chối: thiếu hoặc sai X-User-Id — hãy đăng nhập lại admin.",
+      );
+      return;
+    }
+    if (res.status === 403) {
+      toast.error(
+        msg ||
+          "Không đủ quyền (data.maintenance hoặc X-Backup-Secret không khớp).",
+      );
+      return;
+    }
+    toast.error(msg || `Lỗi ${res.status}`);
   };
 
   const exportJson = async (): Promise<void> => {
@@ -97,12 +117,16 @@ export default function DataBackupPage() {
         headers: authHeaders(),
       });
       if (!res.ok) {
-        toast.error(await res.text());
+        await toastFetchError(res);
         return;
       }
       const blob = await res.blob();
       downloadBlob(blob, "storesync-backup.json");
       toast.success("Đã tải storesync-backup.json — kiểm tra thư mục Tải xuống.");
+    } catch (e) {
+      toast.error(
+        e instanceof Error ? e.message : "Lỗi mạng — kiểm tra API đang chạy.",
+      );
     } finally {
       setExporting(null);
     }
@@ -115,12 +139,16 @@ export default function DataBackupPage() {
         headers: authHeaders(),
       });
       if (!res.ok) {
-        toast.error(await res.text());
+        await toastFetchError(res);
         return;
       }
       const blob = await res.blob();
       downloadBlob(blob, "storesync-backup.xlsx");
       toast.success("Đã tải storesync-backup.xlsx — kiểm tra thư mục Tải xuống.");
+    } catch (e) {
+      toast.error(
+        e instanceof Error ? e.message : "Lỗi mạng — kiểm tra API đang chạy.",
+      );
     } finally {
       setExporting(null);
     }
@@ -144,11 +172,15 @@ export default function DataBackupPage() {
         body: JSON.stringify(body),
       });
       if (!res.ok) {
-        toast.error(await res.text());
+        await toastFetchError(res);
         return;
       }
       const data = (await res.json()) as { inserted: number };
       toast.success(`Import JSON xong — ${data.inserted} bản ghi.`);
+    } catch (e) {
+      toast.error(
+        e instanceof Error ? e.message : "Lỗi mạng — kiểm tra API đang chạy.",
+      );
     } finally {
       setImporting(null);
     }
@@ -166,11 +198,15 @@ export default function DataBackupPage() {
         body: fd,
       });
       if (!res.ok) {
-        toast.error(await res.text());
+        await toastFetchError(res);
         return;
       }
       const data = (await res.json()) as { inserted: number };
       toast.success(`Import Excel xong — ${data.inserted} bản ghi.`);
+    } catch (e) {
+      toast.error(
+        e instanceof Error ? e.message : "Lỗi mạng — kiểm tra API đang chạy.",
+      );
     } finally {
       setImporting(null);
     }
@@ -206,6 +242,18 @@ export default function DataBackupPage() {
             </p>
           </div>
         </div>
+
+        {readAdminSession() == null ? (
+          <Alert variant="destructive" className="border-destructive/40">
+            <AlertTitle>Chưa đăng nhập admin</AlertTitle>
+            <AlertDescription>
+              Export và import cần header{" "}
+              <code className="rounded bg-muted px-1 text-xs">X-User-Id</code> — hãy đăng nhập
+              tài khoản có quyền{" "}
+              <code className="rounded bg-muted px-1 text-xs">data.maintenance</code>.
+            </AlertDescription>
+          </Alert>
+        ) : null}
 
         <Alert className="border-primary/25 bg-primary/[0.04]">
           <FolderDown className="size-4 text-primary" />
@@ -356,15 +404,20 @@ export default function DataBackupPage() {
       <Collapsible open={advancedOpen} onOpenChange={setAdvancedOpen}>
         <Card className="py-0">
           <CollapsibleTrigger
-            render={<Button variant="ghost" className="h-auto w-full justify-between p-4 hover:bg-muted/50" />}
+            className={cn(
+              "flex w-full items-center justify-between gap-3 p-4 text-left",
+              "rounded-none border-0 bg-transparent hover:bg-muted/50",
+              "cursor-pointer font-semibold text-foreground",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+            )}
           >
-            <span className="flex items-center gap-2 font-semibold">
-              <KeyRound className="size-5 text-primary" />
+            <span className="flex items-center gap-2">
+              <KeyRound className="size-5 shrink-0 text-primary" />
               Cài đặt nâng cao — X-Backup-Secret (tuỳ chọn)
             </span>
             <ChevronDown
               className={cn(
-                "size-5 text-muted-foreground transition-transform",
+                "size-5 shrink-0 text-muted-foreground transition-transform",
                 advancedOpen && "rotate-180",
               )}
             />

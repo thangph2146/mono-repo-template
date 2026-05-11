@@ -35,4 +35,8 @@ export class User extends BaseEntity {
 
   @OneToMany(() => UserRoleLink, (link) => link.user, { orphanRemoval: true })
   userRoleLinks = new Collection<UserRoleLink>(this);
+
+  /** Xóa tạm — không đăng nhập được khi có giá trị. */
+  @Property({ type: 'datetime', nullable: true })
+  deletedAt?: Date | null;
 }

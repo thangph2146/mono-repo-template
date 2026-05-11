@@ -9,7 +9,7 @@ type ProductWideCardProps = {
   name: string;
   /** Giá đang bán (ưu đãi) */
   price: string;
-  /** Giá gốc / niêm yết — gạch ngang khi có giảm */
+  /** Giá ban đầu — gạch ngang khi có giá khuyến mãi thấp hơn */
   listPrice?: string;
   sold: string;
   image: string;

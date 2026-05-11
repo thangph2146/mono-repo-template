@@ -6,6 +6,7 @@ import {
 import { InjectRepository } from '@mikro-orm/nestjs';
 import {
   EntityRepository,
+  type FilterQuery,
   type RequiredEntityData,
   UniqueConstraintViolationException,
 } from '@mikro-orm/core';
@@ -25,21 +26,85 @@ export class CategoriesService {
     private readonly productRepository: EntityRepository<Product>,
   ) {}
 
+  private static visible(): FilterQuery<Category> {
+    return { deletedAt: null };
+  }
+
   async findAll(): Promise<Category[]> {
-    return this.categoryRepository.findAll({
+    return this.categoryRepository.find(CategoriesService.visible(), {
       orderBy: { sortOrder: 'asc', name: 'asc' },
     });
   }
 
   async findActive(): Promise<Category[]> {
     return this.categoryRepository.find(
-      { isActive: true },
+      { isActive: true, deletedAt: null },
       { orderBy: { sortOrder: 'asc', name: 'asc' } },
     );
   }
 
-  async findOne(id: number): Promise<Category> {
-    const category = await this.categoryRepository.findOne({ id });
+  async findPage(opts: {
+    q?: string;
+    page: number;
+    limit: number;
+  }): Promise<{ items: Category[]; total: number }> {
+    const page = Math.max(1, opts.page);
+    const limit = Math.min(200, Math.max(1, opts.limit));
+    const offset = (page - 1) * limit;
+    const q = opts.q?.trim();
+    const where: FilterQuery<Category> = { deletedAt: null };
+    if (q) {
+      const like = `%${q}%`;
+      where.$or = [
+        { name: { $like: like } },
+        { slug: { $like: like } },
+        { description: { $like: like } },
+      ];
+    }
+    const [items, total] = await this.categoryRepository.findAndCount(where, {
+      orderBy: { sortOrder: 'asc', name: 'asc' },
+      limit,
+      offset,
+    });
+    return { items, total };
+  }
+
+  async listTrashed(opts?: {
+    page?: number;
+    limit?: number;
+    q?: string;
+  }): Promise<{ items: Category[]; total: number }> {
+    const page = Math.max(1, opts?.page ?? 1);
+    const limit = Math.min(200, Math.max(1, opts?.limit ?? 20));
+    const offset = (page - 1) * limit;
+    const where: FilterQuery<Category> = { deletedAt: { $ne: null } };
+    const q = opts?.q?.trim();
+    if (q) {
+      const like = `%${q}%`;
+      where.$or = [
+        { name: { $like: like } },
+        { slug: { $like: like } },
+        { description: { $like: like } },
+      ];
+    }
+    const [items, total] = await this.categoryRepository.findAndCount(where, {
+      orderBy: { updatedAt: 'desc' },
+      limit,
+      offset,
+    });
+    return { items, total };
+  }
+
+  /** Bản ghi bất kỳ (kể cả thùng rác) — nội bộ cập nhật / khôi phục. */
+  async findById(id: number): Promise<Category | null> {
+    return this.categoryRepository.findOne({ id });
+  }
+
+  async findOnePublished(id: number): Promise<Category> {
+    const category = await this.categoryRepository.findOne({
+      id,
+      deletedAt: null,
+    });
     if (!category) {
       throw new NotFoundException(`Category with id ${id} not found`);
     }
@@ -47,7 +112,10 @@ export class CategoriesService {
   }
 
   async findBySlug(slug: string): Promise<Category> {
-    const category = await this.categoryRepository.findOne({ slug });
+    const category = await this.categoryRepository.findOne({
+      slug,
+      deletedAt: null,
+    });
     if (!category) {
       throw new NotFoundException(`Category with slug "${slug}" not found`);
     }
@@ -59,10 +127,24 @@ export class CategoriesService {
     if (!payload.name || !payload.slug) {
       throw new ConflictException('Category name and slug are required');
     }
-    try {
-      const category = this.categoryRepository.create(
-        payload as RequiredEntityData<Category>,
+    const existing = await this.categoryRepository.findOne({
+      slug: payload.slug,
+    });
+    if (existing) {
+      if (existing.deletedAt == null) {
+        throw new ConflictException(
+          `Category with slug "${payload.slug}" already exists`,
+        );
+      }
+      throw new ConflictException(
+        `Slug "${payload.slug}" đang ở thùng rác — khôi phục hoặc đổi slug.`,
       );
+    }
+    try {
+      const category = this.categoryRepository.create({
+        ...payload,
+        deletedAt: null,
+      } as RequiredEntityData<Category>);
       await this.categoryRepository
         .getEntityManager()
         .persistAndFlush(category);
@@ -78,7 +160,10 @@ export class CategoriesService {
   }
 
   async update(id: number, data: Partial<Category>): Promise<Category> {
-    const category = await this.findOne(id);
+    const category = await this.findById(id);
+    if (!category) {
+      throw new NotFoundException(`Category with id ${id} not found`);
+    }
     const previousSlug = category.slug;
     const payload = this.normalize(data);
 
@@ -107,24 +192,82 @@ export class CategoriesService {
   }
 
   async delete(id: number): Promise<void> {
-    const category = await this.findOne(id);
+    const category = await this.findById(id);
+    if (!category || category.deletedAt != null) {
+      throw new NotFoundException(`Category with id ${id} not found`);
+    }
     const inUse = await this.productRepository.count({
       category: category.slug,
+      deletedAt: null,
     });
     if (inUse > 0) {
       throw new ConflictException(
         `Cannot delete category "${category.slug}" because ${inUse} product(s) still reference it`,
       );
     }
+    category.deletedAt = new Date();
+    await this.categoryRepository.getEntityManager().flush();
+  }
+
+  async restore(id: number): Promise<Category> {
+    const category = await this.categoryRepository.findOne({
+      id,
+      deletedAt: { $ne: null },
+    });
+    if (!category) {
+      throw new NotFoundException(
+        `No trashed category with id ${id} (or already restored)`,
+      );
+    }
+    const clash = await this.categoryRepository.findOne({
+      slug: category.slug,
+      deletedAt: null,
+    });
+    if (clash && clash.id !== category.id) {
+      throw new ConflictException(
+        `Slug "${category.slug}" đã được dùng bởi danh mục khác — đổi slug trước khi khôi phục.`,
+      );
+    }
+    category.deletedAt = null;
+    await this.categoryRepository.getEntityManager().flush();
+    return category;
+  }
+
+  /** Xóa hẳn danh mục đang ở thùng rác (không thể hoàn tác). */
+  async purgeTrashed(id: number): Promise<void> {
+    const category = await this.categoryRepository.findOne({
+      id,
+      deletedAt: { $ne: null },
+    });
+    if (!category) {
+      throw new NotFoundException(
+        `Không có danh mục id ${id} trong thùng rác — chỉ xóa vĩnh viễn bản đã xóa tạm.`,
+      );
+    }
+    const inUse = await this.productRepository.count({
+      category: category.slug,
+      deletedAt: null,
+    });
+    if (inUse > 0) {
+      throw new ConflictException(
+        `Không xóa vĩnh viễn: còn ${inUse} sản phẩm đang hoạt động dùng slug "${category.slug}".`,
+      );
+    }
     await this.categoryRepository.getEntityManager().removeAndFlush(category);
   }
 
   async usageStats(): Promise<CategoryUsage[]> {
-    const categories = await this.categoryRepository.findAll();
+    const categories = await this.categoryRepository.find(
+      CategoriesService.visible(),
+      { orderBy: { sortOrder: 'asc', name: 'asc' } },
+    );
     const usage = await Promise.all(
       categories.map(async (c) => ({
         slug: c.slug,
-        productCount: await this.productRepository.count({ category: c.slug }),
+        productCount: await this.productRepository.count({
+          category: c.slug,
+          deletedAt: null,
+        }),
       })),
     );
     return usage;

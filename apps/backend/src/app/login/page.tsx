@@ -12,19 +12,16 @@ import {
   DEV_DEMO_ACCOUNTS,
   isDevDemoLoginEnabled,
 } from "@/lib/dev-demo-accounts";
+import { ADMIN_LOGIN_PANEL_CLASS } from "@/lib/admin-ui";
 
 export default function AdminLoginPage() {
   const router = useRouter();
-  const { login, user } = useAuth();
+  const { login } = useAuth();
   const clientReady = useClientReady();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const staffOnlyToastRef = useRef(false);
-
-  useEffect(() => {
-    if (clientReady && user) router.replace("/");
-  }, [clientReady, user, router]);
 
   useEffect(() => {
     if (!clientReady || staffOnlyToastRef.current) return;
@@ -37,14 +34,6 @@ export default function AdminLoginPage() {
     );
     router.replace("/login", { scroll: false });
   }, [clientReady, router]);
-
-  if (!clientReady || user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-muted/30 text-muted-foreground text-sm">
-        {!clientReady ? "Đang tải…" : "Đang chuyển…"}
-      </div>
-    );
-  }
 
   const runLogin = async (e: string, p: string) => {
     setBusy(true);
@@ -76,7 +65,7 @@ export default function AdminLoginPage() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-muted/30 p-4">
-      <div className="w-full max-w-3xl rounded-xl border border-border bg-card p-8 shadow-sm">
+      <div className={ADMIN_LOGIN_PANEL_CLASS}>
         <div className="flex flex-col items-center gap-2 mb-8">
           <div className="bg-primary/10 p-3 rounded-xl">
             <ShieldCheck className="size-10 text-primary" />
@@ -169,13 +158,16 @@ export default function AdminLoginPage() {
           API (ví dụ chỉ xem kho nếu không có{" "}
           <span className="font-mono">products.write</span>).
         </p>
+        <p className="mt-4 text-center text-sm text-muted-foreground">
+          Chưa có tài khoản nội bộ?{" "}
+          <Link
+            href="/register"
+            className="font-medium text-primary underline-offset-4 hover:underline"
+          >
+            Xem hướng dẫn cấp quyền
+          </Link>
+        </p>
       </div>
-      <Link
-        href="/"
-        className="mt-6 text-sm text-muted-foreground hover:text-primary"
-      >
-        ← Về trang chủ admin
-      </Link>
     </div>
   );
 }

@@ -79,8 +79,10 @@ function PromoField({ className }: { className?: string }) {
         </Button>
       </div>
       <p className="text-[11px] leading-relaxed text-muted-foreground">
-        Mã demo: {PROMO_CODE_EXAMPLES.join(" · ")}. Giảm được tính trên tạm tính
-        sau giá sỉ; hệ thống kiểm tra lại khi đặt hàng.
+        Mã demo: {PROMO_CODE_EXAMPLES.join(" · ")}. Giá khuyến mãi theo{" "}
+        <strong>từng sản phẩm / từng đơn vị</strong> (SL tối thiểu trên kho) tự cập nhật
+        khi đổi số lượng — không gộp chương trình giữa các SP; khác hoàn toàn với mã
+        nhập tay bên dưới.
       </p>
       {appliedPromoCode && promoDiscount > 0 && promoLabel && (
         <div className="flex items-center justify-between rounded-xl border border-success/25 bg-success/5 px-3 py-2 text-sm">
@@ -107,13 +109,8 @@ function PromoField({ className }: { className?: string }) {
 }
 
 export function CartOrderSummary({ variant = "cart-aside" }: CartOrderSummaryProps) {
-  const {
-    unitCount,
-    subtotal,
-    wholesaleSavings,
-    promoDiscount,
-    grandTotal,
-  } = useCart();
+  const { unitCount, subtotal, wholesaleSavings, promoDiscount, grandTotal } =
+    useCart();
 
   return (
     <div
@@ -128,7 +125,7 @@ export function CartOrderSummary({ variant = "cart-aside" }: CartOrderSummaryPro
           Tổng đơn hàng
         </h2>
         <p className="text-xs text-on-surface-variant">
-          {unitCount} đơn vị trong giỏ — giá theo bảng sỉ/lẻ từng dòng.
+          {unitCount} đơn vị trong giỏ — giá theo bảng giá ban đầu / khuyến mãi từng dòng.
         </p>
       </div>
 
@@ -156,7 +153,7 @@ export function CartOrderSummary({ variant = "cart-aside" }: CartOrderSummaryPro
       </dl>
       {wholesaleSavings > 0 && (
         <div className="rounded-xl border border-success/20 bg-success/5 px-3 py-2.5 text-xs leading-relaxed text-success">
-          <strong>Tiết kiệm giá sỉ:</strong> so với giá lẻ cùng quy cách, tạm tính đã
+          <strong>Tiết kiệm từ giá khuyến mãi:</strong> so với giá ban đầu cùng quy cách, tạm tính đã
           thấp hơn{" "}
           <span className="font-black tabular-nums">
             {formatVND(wholesaleSavings)}

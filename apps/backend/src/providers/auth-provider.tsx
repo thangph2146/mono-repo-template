@@ -4,9 +4,7 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
-  useState,
   useSyncExternalStore,
   type ReactNode,
 } from "react";
@@ -98,9 +96,9 @@ export function useAuth(): AuthContextValue {
   return ctx;
 }
 
-/** Tránh flash / hydration: chỉ sau mount mới coi session là đáng tin. */
+const noopSubscribe = () => () => {};
+
+/** Tránh flash / hydration: server `false`, client `true` (không dùng setState trong effect). */
 export function useClientReady(): boolean {
-  const [ready, setReady] = useState(false);
-  useEffect(() => setReady(true), []);
-  return ready;
+  return useSyncExternalStore(noopSubscribe, () => true, () => false);
 }

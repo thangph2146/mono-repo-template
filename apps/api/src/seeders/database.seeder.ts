@@ -38,7 +38,9 @@ export class DatabaseSeeder extends Seeder {
       const hasUrl = Boolean(process.env.DATABASE_URL);
       console.log(
         '[DatabaseSeeder] DATABASE_URL: %s | DB_CLIENT=%s',
-        hasUrl ? 'đã set' : 'chưa set → API/CLI dùng mặc định (thường là postgresql localhost)',
+        hasUrl
+          ? 'đã set'
+          : 'chưa set → API/CLI dùng mặc định (thường là postgresql localhost)',
         process.env.DB_CLIENT ?? '(infer)',
       );
     }
@@ -75,7 +77,11 @@ export class DatabaseSeeder extends Seeder {
     ];
     for (const p of permDefs) {
       if (!(await em.findOne(Permission, { code: p.code }))) {
-        em.create(Permission, { code: p.code, name: p.name }, { partial: true });
+        em.create(
+          Permission,
+          { code: p.code, name: p.name },
+          { partial: true },
+        );
       }
     }
     await em.flush();
@@ -181,9 +187,7 @@ export class DatabaseSeeder extends Seeder {
     for (const role of roles) {
       const exists = await em.findOne(UserRoleLink, { user, role });
       if (exists) continue;
-      em.persist(
-        em.create(UserRoleLink, { user, role }, { partial: true }),
-      );
+      em.persist(em.create(UserRoleLink, { user, role }, { partial: true }));
     }
   }
 
@@ -225,7 +229,8 @@ export class DatabaseSeeder extends Seeder {
     ];
     for (const u of users) {
       if (await em.findOne(User, { email: u.email })) continue;
-      const { roleCodes: _rc, ...userFields } = u;
+      const { roleCodes, ...userFields } = u;
+      void roleCodes;
       em.create(
         User,
         {
@@ -286,13 +291,19 @@ export class DatabaseSeeder extends Seeder {
   }
 
   private async seedSampleOrders(em: EntityManager): Promise<void> {
-    const cust = await em.findOne(User, { email: 'khach-demo@storesync.local' });
+    const cust = await em.findOne(User, {
+      email: 'khach-demo@storesync.local',
+    });
     const coffee = await em.findOne(Product, { sku: 'SP-COFFEE-01' });
     const noodle = await em.findOne(Product, { sku: 'SP-NOODLE-01' });
     const coke = await em.findOne(Product, { sku: 'SP-COKE-01' });
     if (!cust || !coffee || !noodle || !coke) return;
 
-    const orderNumbers = ['ORD-SEED-001', 'ORD-SEED-002', 'ORD-SEED-003'] as const;
+    const orderNumbers = [
+      'ORD-SEED-001',
+      'ORD-SEED-002',
+      'ORD-SEED-003',
+    ] as const;
 
     if (!(await em.findOne(Order, { orderNumber: orderNumbers[0] }))) {
       const items1: OrderItem[] = [
@@ -562,7 +573,8 @@ export class DatabaseSeeder extends Seeder {
       {
         sku: 'SP-PEPSI-01',
         name: 'Pepsi chai 1.5L',
-        description: 'Nước ngọt có gas Pepsi, chai 1.5L, tiện dùng cho gia đình.',
+        description:
+          'Nước ngọt có gas Pepsi, chai 1.5L, tiện dùng cho gia đình.',
         category: 'do-uong',
         brand: 'Pepsi',
         origin: 'Việt Nam',
@@ -667,7 +679,8 @@ export class DatabaseSeeder extends Seeder {
       {
         sku: 'SP-RICE-01',
         name: 'Gạo ST25 bao 5kg',
-        description: 'Gạo ST25 hạt dài, dẻo thơm, thương hiệu Việt 3 năm liền top thế giới.',
+        description:
+          'Gạo ST25 hạt dài, dẻo thơm, thương hiệu Việt 3 năm liền top thế giới.',
         category: 'thuc-pham',
         brand: 'ST25',
         origin: 'Sóc Trăng',
@@ -744,7 +757,8 @@ export class DatabaseSeeder extends Seeder {
       {
         sku: 'SP-FISH-CAN-01',
         name: 'Cá hộp 3 cô gái 155g',
-        description: 'Cá hộp sốt cà thương hiệu 3 cô gái, hộp 155g, bảo quản dễ dàng.',
+        description:
+          'Cá hộp sốt cà thương hiệu 3 cô gái, hộp 155g, bảo quản dễ dàng.',
         category: 'thuc-pham',
         brand: '3 cô gái',
         origin: 'Thái Lan',
@@ -1134,7 +1148,11 @@ export class DatabaseSeeder extends Seeder {
         });
         continue;
       }
-      em.create(Product, { ...data, images, isActive: true }, { partial: true });
+      em.create(
+        Product,
+        { ...data, images, isActive: true },
+        { partial: true },
+      );
     }
   }
 }

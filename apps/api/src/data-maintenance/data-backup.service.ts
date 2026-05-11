@@ -65,8 +65,8 @@ export class DataBackupService {
             ? { populate: ['permissionLinks'] as const }
             : {};
       const rows = await em.find(EntityClass, {}, findOpts);
-      entities[meta.className] = rows.map((row) =>
-        serialize(row, {}) as Record<string, unknown>,
+      entities[meta.className] = rows.map(
+        (row) => serialize(row, {}) as Record<string, unknown>,
       );
     }
 
@@ -102,7 +102,9 @@ export class DataBackupService {
 
     const orderedMetas = sortEntityMetasForImport(this.resolveSqlMetas());
 
-    const missingInFile = orderedMetas.filter((m) => !(m.className in entityPayload));
+    const missingInFile = orderedMetas.filter(
+      (m) => !(m.className in entityPayload),
+    );
     if (missingInFile.length > 0) {
       this.logger.warn(
         `Import: file thiếu entity so với schema hiện tại (coi như bảng trống): ${missingInFile.map((m) => m.className).join(', ')}`,
@@ -130,7 +132,7 @@ export class DataBackupService {
           }
           for (const plain of rows) {
             const data = this.stripRelationObjects(meta, {
-              ...(plain as Record<string, unknown>),
+              ...plain,
             });
             await tx.insert(meta.class as EntityName<object>, data);
             inserted++;
@@ -190,7 +192,12 @@ export class DataBackupService {
       }
       const key = rel.name;
       const v = out[key];
-      if (v !== null && v !== undefined && typeof v === 'object' && !Array.isArray(v)) {
+      if (
+        v !== null &&
+        v !== undefined &&
+        typeof v === 'object' &&
+        !Array.isArray(v)
+      ) {
         delete out[key];
       }
     }

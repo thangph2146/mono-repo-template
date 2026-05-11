@@ -168,7 +168,34 @@ function OrderCard({ order }: { order: Order }) {
                   {item.name}
                 </Link>
                 <p className="text-sm text-muted-foreground">
-                  SKU: {item.sku} · Số lượng: {item.quantity} {item.unitType}
+                  SKU: {item.sku} · SL: {item.quantity}{" "}
+                  {item.unitLabel?.trim()
+                    ? `${item.unitLabel} (${item.unitType})`
+                    : item.unitType}
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Đơn giá lúc đặt:{" "}
+                  {item.listUnitPrice != null &&
+                  Number(item.listUnitPrice) > Number(item.unitPrice) ? (
+                    <>
+                      <span className="line-through opacity-80">
+                        {formatVND(Number(item.listUnitPrice))}
+                      </span>{" "}
+                      <span className="font-semibold text-foreground">
+                        {formatVND(Number(item.unitPrice))}
+                      </span>
+                      {" / "}
+                      {item.unitLabel ?? item.unitType}
+                    </>
+                  ) : (
+                    <>
+                      <span className="font-semibold text-foreground">
+                        {formatVND(Number(item.unitPrice))}
+                      </span>
+                      {" / "}
+                      {item.unitLabel ?? item.unitType}
+                    </>
+                  )}
                 </p>
               </div>
               <p className="font-black text-primary">{formatVND(item.totalPrice)}</p>

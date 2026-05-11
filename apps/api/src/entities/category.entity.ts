@@ -28,4 +28,8 @@ export class Category extends BaseEntity {
 
   @Property({ default: true })
   isActive: boolean = true;
+
+  /** Xóa tạm (thùng rác admin); null = đang hiển thị. */
+  @Property({ type: 'datetime', nullable: true })
+  deletedAt?: Date | null;
 }

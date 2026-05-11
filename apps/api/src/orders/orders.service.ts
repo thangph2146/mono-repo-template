@@ -6,7 +6,11 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@mikro-orm/nestjs';
-import { EntityRepository, type RequiredEntityData } from '@mikro-orm/core';
+import {
+  EntityRepository,
+  type FilterQuery,
+  type RequiredEntityData,
+} from '@mikro-orm/core';
 import {
   Order,
   OrderItem,
@@ -18,6 +22,36 @@ import {
 } from '../entities';
 import { applyPromoCode } from '@workspace/promo-codes';
 import { UsersService } from '../users/users.service';
+
+/** Giá một dòng theo retail / wholesale + SL tối thiểu KM (khớp storefront). */
+function effectiveLineUnitPrice(
+  unit: {
+    retailPrice: number;
+    wholesalePrice: number | null;
+    minWholesaleQty: number;
+  },
+  quantity: number,
+): { unitPrice: number; listUnitPrice: number; isSaleActive: boolean } {
+  const retail = Math.max(0, Math.floor(Number(unit.retailPrice) || 0));
+  const rawW = unit.wholesalePrice;
+  const wholesaleNum =
+    rawW === null || rawW === undefined || !Number.isFinite(Number(rawW))
+      ? null
+      : Math.floor(Number(rawW));
+  const minQ = Math.max(0, Math.floor(Number(unit.minWholesaleQty) || 0));
+  const q = Math.max(1, Math.floor(quantity));
+
+  if (wholesaleNum === null || wholesaleNum <= 0 || wholesaleNum >= retail) {
+    return { unitPrice: retail, listUnitPrice: retail, isSaleActive: false };
+  }
+
+  const eligible = minQ <= 0 ? true : q >= minQ;
+  return {
+    unitPrice: eligible ? wholesaleNum : retail,
+    listUnitPrice: retail,
+    isSaleActive: eligible,
+  };
+}
 
 export interface CreateOrderItemDto {
   productId: number;
@@ -60,15 +94,78 @@ export class OrdersService {
   ) {}
 
   async findAll(): Promise<Order[]> {
-    return this.orderRepository.findAll({
+    return this.orderRepository.find(
+      { deletedAt: null },
+      {
+        populate: [...ORDER_POPULATE],
+        orderBy: { createdAt: 'desc' },
+      },
+    );
+  }
+
+  async findStaffPage(opts: {
+    email?: string;
+    q?: string;
+    status?: OrderStatus;
+    page: number;
+    limit: number;
+  }): Promise<{ items: Order[]; total: number }> {
+    const page = Math.max(1, opts.page);
+    const limit = Math.min(200, Math.max(1, opts.limit));
+    const offset = (page - 1) * limit;
+    const where: FilterQuery<Order> = { deletedAt: null };
+    if (opts.email?.trim()) {
+      where.customerEmail = opts.email.trim();
+    }
+    if (opts.status != null) {
+      where.status = opts.status;
+    }
+    if (opts.q?.trim()) {
+      const q = `%${opts.q.trim()}%`;
+      where.$or = [
+        { orderNumber: { $like: q } },
+        { customerEmail: { $like: q } },
+        { customerName: { $like: q } },
+      ];
+    }
+    const [items, total] = await this.orderRepository.findAndCount(where, {
       populate: [...ORDER_POPULATE],
       orderBy: { createdAt: 'desc' },
+      limit,
+      offset,
     });
+    return { items, total };
+  }
+
+  async listTrashed(opts?: {
+    page?: number;
+    limit?: number;
+    q?: string;
+  }): Promise<{ items: Order[]; total: number }> {
+    const page = Math.max(1, opts?.page ?? 1);
+    const limit = Math.min(200, Math.max(1, opts?.limit ?? 20));
+    const offset = (page - 1) * limit;
+    const where: FilterQuery<Order> = { deletedAt: { $ne: null } };
+    if (opts?.q?.trim()) {
+      const q = `%${opts.q.trim()}%`;
+      where.$or = [
+        { orderNumber: { $like: q } },
+        { customerEmail: { $like: q } },
+        { customerName: { $like: q } },
+      ];
+    }
+    const [items, total] = await this.orderRepository.findAndCount(where, {
+      populate: [...ORDER_POPULATE],
+      orderBy: { updatedAt: 'desc' },
+      limit,
+      offset,
+    });
+    return { items, total };
   }
 
   async findOne(id: number): Promise<Order> {
     const order = await this.orderRepository.findOne(
-      { id },
+      { id, deletedAt: null },
       { populate: [...ORDER_POPULATE] },
     );
     if (!order) {
@@ -79,23 +176,38 @@ export class OrdersService {
 
   async findByCustomer(customerId: number): Promise<Order[]> {
     return this.orderRepository.find(
-      { customer: customerId },
+      { customer: customerId, deletedAt: null },
       { populate: [...ORDER_POPULATE], orderBy: { createdAt: 'desc' } },
     );
   }
 
   async findByCustomerEmail(email: string): Promise<Order[]> {
     return this.orderRepository.find(
-      { customerEmail: email },
+      { customerEmail: email, deletedAt: null },
       { populate: [...ORDER_POPULATE], orderBy: { createdAt: 'desc' } },
     );
   }
 
   async findByStatus(status: OrderStatus): Promise<Order[]> {
     return this.orderRepository.find(
-      { status },
+      { status, deletedAt: null },
       { populate: [...ORDER_POPULATE], orderBy: { createdAt: 'desc' } },
     );
+  }
+
+  async restore(id: number): Promise<Order> {
+    const order = await this.orderRepository.findOne(
+      { id, deletedAt: { $ne: null } },
+      { populate: [...ORDER_POPULATE] },
+    );
+    if (!order) {
+      throw new NotFoundException(
+        `No trashed order with id ${id} (or already visible)`,
+      );
+    }
+    order.deletedAt = null;
+    await this.orderRepository.getEntityManager().flush();
+    return order;
   }
 
   /** Danh sách user có role `shipper` — admin/manager gán đơn (orders.write). */
@@ -146,19 +258,46 @@ export class OrdersService {
       .some((l) => l.role?.code?.trim().toLowerCase() === c);
   }
 
+  /** Gộp các dòng trùng (cùng sản phẩm + cùng loại đơn vị) — cộng dồn số lượng. */
+  private mergeCreateOrderItems(
+    items: CreateOrderItemDto[],
+  ): CreateOrderItemDto[] {
+    const map = new Map<string, CreateOrderItemDto>();
+    for (const raw of items) {
+      const unitType = String(raw.unitType ?? '').trim();
+      const k = `${raw.productId}:${unitType}`;
+      const prev = map.get(k);
+      const qty = Math.max(0, Math.floor(Number(raw.quantity) || 0));
+      if (qty <= 0) continue;
+      if (prev) {
+        prev.quantity += qty;
+      } else {
+        map.set(k, {
+          productId: raw.productId,
+          unitType,
+          quantity: qty,
+        });
+      }
+    }
+    return [...map.values()];
+  }
+
   /**
-   * Tạo đơn từ giỏ hàng. Server tự tra giá theo product/unit để chống tampering.
-   * Tồn kho được giữ chỗ ngay khi đơn ở trạng thái PENDING.
+   * Tạo đơn từ giỏ hàng. Server gộp dòng trùng, tra giá theo product/unit **tại
+   * thời điểm đặt** và ghi vào JSON `items` — sau này đổi giá catalog không làm
+   * đổi đơn đã lưu.
    */
   async create(dto: CreateOrderDto): Promise<Order> {
-    if (!dto.items || dto.items.length === 0) {
+    const mergedItems = this.mergeCreateOrderItems(dto.items ?? []);
+    if (mergedItems.length === 0) {
       throw new BadRequestException('Order must contain at least one item');
     }
 
     const em = this.orderRepository.getEntityManager();
-    const productIds = Array.from(new Set(dto.items.map((i) => i.productId)));
+    const productIds = Array.from(new Set(mergedItems.map((i) => i.productId)));
     const products = await this.productRepository.find({
       id: { $in: productIds },
+      deletedAt: null,
     });
     const productMap = new Map<number, Product>();
     for (const p of products) productMap.set(p.id, p);
@@ -166,7 +305,7 @@ export class OrdersService {
     const items: OrderItem[] = [];
     let subtotal = 0;
 
-    for (const dtoItem of dto.items) {
+    for (const dtoItem of mergedItems) {
       const product = productMap.get(dtoItem.productId);
       if (!product) {
         throw new NotFoundException(
@@ -180,7 +319,9 @@ export class OrdersService {
       }
 
       const unit = this.resolveUnit(product, dtoItem.unitType);
-      const unitPrice = unit.wholesalePrice ?? unit.retailPrice;
+      const eff = effectiveLineUnitPrice(unit, dtoItem.quantity);
+      const listUnitPrice = eff.listUnitPrice;
+      const unitPrice = eff.unitPrice;
       const totalPrice = unitPrice * dtoItem.quantity;
       const requiredStock = unit.qtyPerUnit * dtoItem.quantity;
 
@@ -192,6 +333,7 @@ export class OrdersService {
 
       product.stock -= requiredStock;
       subtotal += totalPrice;
+      const giftNote = product.fulfillmentNote?.trim();
       items.push({
         productId: product.id,
         sku: product.sku,
@@ -202,18 +344,29 @@ export class OrdersService {
         totalPrice,
         qtyPerUnit: unit.qtyPerUnit,
         image: product.images?.[0],
+        listUnitPrice,
+        unitLabel: unit.label,
+        ...(giftNote ? { giftNote } : {}),
       });
     }
 
-    const rawCoupon = dto.couponCode?.trim();
+    const cartLinesForPromo = mergedItems.map((i) => ({
+      unitType: i.unitType,
+      quantity: i.quantity,
+    }));
     let discountAmount = 0;
+
+    const rawCoupon = dto.couponCode?.trim();
     let couponCode: string | undefined;
     if (rawCoupon) {
-      const promo = applyPromoCode(subtotal, rawCoupon);
+      const promo = applyPromoCode(subtotal, rawCoupon, {
+        cartLines: cartLinesForPromo,
+        preAppliedDiscount: 0,
+      });
       if (!promo.ok) {
         throw new BadRequestException(promo.message);
       }
-      discountAmount = promo.discount;
+      discountAmount += promo.discount;
       couponCode = promo.normalizedCode;
     }
 
@@ -329,7 +482,8 @@ export class OrdersService {
    * Đơn đã huỷ (tồn đã hoàn) → về `pending`: trừ tồn lại như lúc tạo đơn.
    * Xóa dấu vết giao/huỷ; thanh toán về chưa thu.
    */
-  async reopenCancelled(id: number, _actor?: string): Promise<Order> {
+  async reopenCancelled(id: number, actor?: string): Promise<Order> {
+    void actor;
     const order = await this.findOne(id);
     if (order.status !== OrderStatus.CANCELLED) {
       throw new ConflictException(
@@ -346,6 +500,7 @@ export class OrdersService {
     const productIds = Array.from(new Set(items.map((i) => i.productId)));
     const products = await this.productRepository.find({
       id: { $in: productIds },
+      deletedAt: null,
     });
     const map = new Map(products.map((p) => [p.id, p]));
 
@@ -397,7 +552,24 @@ export class OrdersService {
       order.status !== OrderStatus.CANCELLED &&
       order.status !== OrderStatus.DELIVERED
     ) {
-      await this.restoreStock(order);
+      throw new BadRequestException(
+        'Chỉ có thể lưu trữ (xóa tạm) đơn đã huỷ hoặc đã giao xong.',
+      );
+    }
+    order.deletedAt = new Date();
+    await this.orderRepository.getEntityManager().flush();
+  }
+
+  /** Xóa hẳn đơn đang ở thùng rác (không thể hoàn tác). */
+  async purgeTrashed(id: number): Promise<void> {
+    const order = await this.orderRepository.findOne({
+      id,
+      deletedAt: { $ne: null },
+    });
+    if (!order) {
+      throw new NotFoundException(
+        `Không có đơn id ${id} trong thùng rác — chỉ xóa vĩnh viễn đơn đã lưu trữ.`,
+      );
     }
     await this.orderRepository.getEntityManager().removeAndFlush(order);
   }
@@ -407,7 +579,7 @@ export class OrdersService {
    */
   private orderItemsArray(order: Order): OrderItem[] {
     const raw = order.items as unknown;
-    if (Array.isArray(raw)) return raw;
+    if (Array.isArray(raw)) return raw as OrderItem[];
     if (typeof raw === 'string') {
       const t = raw.trim();
       if (!t) return [];
@@ -425,7 +597,10 @@ export class OrdersService {
     const items = this.orderItemsArray(order);
     if (!items.length) return;
     const ids = items.map((i) => i.productId);
-    const products = await this.productRepository.find({ id: { $in: ids } });
+    const products = await this.productRepository.find({
+      id: { $in: ids },
+      deletedAt: null,
+    });
     const map = new Map(products.map((p) => [p.id, p]));
     for (const item of items) {
       const product = map.get(item.productId);

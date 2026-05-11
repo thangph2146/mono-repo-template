@@ -42,7 +42,7 @@ export function CartLineItem({
       <div className="min-w-0 flex-grow text-center sm:text-left">
         <Badge className="mb-2 border-primary/20 bg-primary/10 px-2 py-0 text-[10px] font-bold uppercase tracking-wide text-primary">
           {line.unitLabel}
-          {line.isWholesale ? " · Sỉ" : " · Lẻ"}
+          {line.isWholesale ? " · Khuyến mãi" : " · Ban đầu"}
         </Badge>
         <h3 className="line-clamp-2 text-lg font-bold leading-tight">{line.name}</h3>
         <div className="mt-2 flex flex-wrap items-center justify-center gap-2 sm:justify-start sm:gap-3">

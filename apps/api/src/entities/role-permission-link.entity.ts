@@ -1,4 +1,4 @@
-import { Entity, ManyToOne, Property, Unique } from '@mikro-orm/core';
+import { Entity, ManyToOne, Unique } from '@mikro-orm/core';
 import { BaseEntity } from './base.entity';
 import { Permission } from './permission.entity';
 import { Role } from './role.entity';

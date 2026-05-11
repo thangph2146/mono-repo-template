@@ -57,15 +57,21 @@ export function ProductDetail({
   const allImages = product.images ?? [];
   const [activeImage, setActiveImage] = useState<string | undefined>(allImages[0]);
 
-  const isWholesale = selectedUnit.wholesalePrice !== null;
-  const { current: unitPrice, list: listPrice } =
-    unitSellingAndListPrice(selectedUnit);
-  const minQty = selectedUnit.minWholesaleQty > 0 ? selectedUnit.minWholesaleQty : 1;
+  /** Luôn cho đặt từ 1; `minWholesaleQty` chỉ là ngưỡng áp giá KM. */
+  const minPurchaseQty = 1;
+  const minPromoQty =
+    selectedUnit.minWholesaleQty > 0 ? selectedUnit.minWholesaleQty : 1;
   const maxQty = Math.max(
     1,
     Math.floor(product.stock / Math.max(selectedUnit.qtyPerUnit, 1)),
   );
-  const [qty, setQty] = useState(minQty);
+  const [qty, setQty] = useState(1);
+
+  const isWholesale = selectedUnit.wholesalePrice !== null;
+  const { current: unitPrice, list: listPrice } = unitSellingAndListPrice(
+    selectedUnit,
+    qty,
+  );
 
   const totalUnits = qty * Math.max(selectedUnit.qtyPerUnit, 1);
   const totalPrice = unitPrice * qty;
@@ -73,12 +79,14 @@ export function ProductDetail({
   const outOfStock = maxQty <= 0 || qty > maxQty;
 
   const handleQtyChange = (delta: number) => {
-    setQty((prev) => Math.max(minQty, Math.min(prev + delta, maxQty)));
+    setQty((prev) =>
+      Math.max(minPurchaseQty, Math.min(prev + delta, maxQty)),
+    );
   };
 
   const handleUnitChange = (u: ProductUnitType) => {
     setSelectedUnit(u);
-    setQty(u.minWholesaleQty > 0 ? u.minWholesaleQty : 1);
+    setQty(1);
   };
 
   const handleAddToCart = () => {
@@ -161,7 +169,8 @@ export function ProductDetail({
                 {units.map((u) => {
                   const active = selectedUnit.type === u.type;
                   const isSi = u.wholesalePrice !== null;
-                  const { current, list } = unitSellingAndListPrice(u);
+                  const previewQty = active ? qty : 1;
+                  const { current, list } = unitSellingAndListPrice(u, previewQty);
                   return (
                     <Button
                       key={u.type}
@@ -182,7 +191,9 @@ export function ProductDetail({
                           <span className="line-through opacity-70">{formatVND(list)}</span>
                         )}
                         <span>{formatVND(current)}</span>
-                        {isSi && <span className="ml-0.5 opacity-70">• Sỉ</span>}
+                        {isSi && (
+                          <span className="ml-0.5 opacity-70">• Khuyến mãi</span>
+                        )}
                       </span>
                     </Button>
                   );
@@ -201,18 +212,29 @@ export function ProductDetail({
               <p className="text-4xl font-black text-primary">{formatVND(unitPrice)}</p>
               <p className="text-base text-muted-foreground mb-1">/ {selectedUnit.label}</p>
               {isWholesale && (
-                <Badge className="mb-1 bg-primary/10 text-primary border-primary/20 font-bold">
-                  Giá Sỉ
+                <Badge
+                  className={
+                    listPrice != null
+                      ? "mb-1 bg-primary/10 text-primary border-primary/20 font-bold"
+                      : "mb-1 bg-secondary/10 text-secondary-foreground border-secondary/20 font-bold"
+                  }
+                >
+                  {listPrice != null ? "Giá KM (đủ SL)" : "Giá ban đầu"}
                 </Badge>
               )}
             </div>
-            {isWholesale && minQty > 1 && (
+            {isWholesale && minPromoQty > 1 && (
               <p className="text-sm text-on-surface-variant font-medium">
-                Tối thiểu{" "}
+                Từ{" "}
                 <span className="font-black text-primary">
-                  {minQty} {selectedUnit.type}
+                  {minPromoQty} {selectedUnit.type}
                 </span>{" "}
-                để được giá sỉ
+                trở lên mới áp giá khuyến mãi; mua ít hơn vẫn được (giá ban đầu).
+                {qty < minPromoQty && (
+                  <span className="block text-xs mt-1 text-muted-foreground">
+                    Đang chọn {qty}: giá ban đầu — có thể đặt 1.
+                  </span>
+                )}
               </p>
             )}
             {totalPrice > 0 && (
@@ -240,7 +262,7 @@ export function ProductDetail({
                   size="icon"
                   className="h-12 w-12 rounded-none border-r border-outline-variant"
                   onClick={() => handleQtyChange(-1)}
-                  disabled={qty <= minQty}
+                  disabled={qty <= minPurchaseQty}
                 >
                   <Minus className="w-4 h-4" />
                 </Button>

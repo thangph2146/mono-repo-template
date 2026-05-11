@@ -147,7 +147,8 @@ export function Text({
       className={cn(
         textVariantMap[variant][textSize],
         alignStyles[align],
-        maxWidth && "max-w-lg mx-auto",
+        maxWidth &&
+          "w-full max-w-lg md:max-w-2xl mx-auto px-4 sm:px-0",
         className,
       )}
       {...props}

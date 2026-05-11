@@ -15,8 +15,8 @@ import {
   type Row,
   type SortingState,
 } from "@tanstack/react-table";
-import { ChevronDown, ChevronRight } from "lucide-react";
-import { useMemo, useState, type ReactNode } from "react";
+import { ChevronDown, ChevronRight, Download } from "lucide-react";
+import { useCallback, useMemo, useState, type ReactNode } from "react";
 import { Button } from "@ui/components/button";
 import { Input } from "@ui/components/input";
 import {
@@ -36,6 +36,12 @@ import {
 } from "@ui/components/table";
 import { cn } from "@ui/lib/utils";
 import "@/components/admin-data-table/table-meta";
+import { buildCsvFromColumns } from "@/lib/build-table-csv";
+import { downloadCsvFile } from "@/lib/export-csv";
+import {
+  csvBaseToXlsxFilename,
+  downloadXlsxFile,
+} from "@/lib/export-xlsx";
 
 const ALL_SELECT = "__all__";
 
@@ -57,8 +63,14 @@ export type AdminDataTableProps<TData> = {
   onColumnFiltersChange?: OnChangeFn<ColumnFiltersState>;
   globalFilter?: string;
   onGlobalFilterChange?: OnChangeFn<string>;
-  /** Nút / nhóm tùy chọn cạnh khu vực lọc (vd. “Xóa bộ lọc”) */
+  /** Nút / nhóm tùy chọn cạnh ô tìm nhanh (vd. “Xóa bộ lọc”) */
   filterToolbarExtra?: ReactNode;
+  /** Phân trang / tóm tắt ngay dưới bảng */
+  footer?: ReactNode;
+  /**
+   * Hiện nút xuất CSV + Excel (dữ liệu đúng mảng `data` hiện tại — thường là một trang/lớp đã lọc).
+   */
+  csvExport?: boolean | { fileName?: string; sheetName?: string };
 };
 
 function includesText(a: unknown, q: string): boolean {
@@ -93,6 +105,8 @@ export function AdminDataTable<TData>({
   globalFilter: globalFilterControlled,
   onGlobalFilterChange,
   filterToolbarExtra,
+  footer,
+  csvExport,
 }: AdminDataTableProps<TData>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFiltersInternal, setColumnFiltersInternal] =
@@ -105,6 +119,42 @@ export function AdminDataTable<TData>({
   const setGlobalFilter = onGlobalFilterChange ?? setGlobalFilterInternal;
   const showGlobalFilter =
     getGlobalFilterText != null || onGlobalFilterChange != null;
+  const csvExportEnabled = Boolean(csvExport);
+  const exportFileNameProp =
+    typeof csvExport === "object" && csvExport != null
+      ? csvExport.fileName?.trim()
+      : undefined;
+  const exportSheetNameProp =
+    typeof csvExport === "object" && csvExport != null
+      ? csvExport.sheetName?.trim()
+      : undefined;
+  const resolvedCsvFileName = useMemo(() => {
+    if (exportFileNameProp) {
+      return exportFileNameProp.toLowerCase().endsWith(".csv")
+        ? exportFileNameProp
+        : `${exportFileNameProp}.csv`;
+    }
+    return `xuat-bang-${new Date().toISOString().slice(0, 10)}.csv`;
+  }, [exportFileNameProp]);
+  const resolvedXlsxFileName = useMemo(
+    () => csvBaseToXlsxFilename(resolvedCsvFileName),
+    [resolvedCsvFileName],
+  );
+
+  const handleCsvExport = useCallback(() => {
+    const { headers, rows } = buildCsvFromColumns(data, columns);
+    downloadCsvFile(resolvedCsvFileName, headers, rows);
+  }, [columns, data, resolvedCsvFileName]);
+
+  const handleXlsxExport = useCallback(() => {
+    const { headers, rows } = buildCsvFromColumns(data, columns);
+    void downloadXlsxFile(
+      resolvedXlsxFileName,
+      headers,
+      rows,
+      exportSheetNameProp || "Dữ liệu",
+    );
+  }, [columns, data, exportSheetNameProp, resolvedXlsxFileName]);
   const [expanded, setExpanded] = useState<ExpandedState>(
     defaultExpandedAll ? true : {},
   );
@@ -282,26 +332,64 @@ export function AdminDataTable<TData>({
     <div className="space-y-3">
       {(showGlobalFilter ||
         filterableHeaders.length > 0 ||
-        filterToolbarExtra) && (
-        <div className="rounded-lg border border-border bg-card p-4 space-y-4">
-          {filterToolbarExtra ? (
-            <div className="flex flex-wrap justify-end gap-2">
-              {filterToolbarExtra}
+        filterToolbarExtra ||
+        csvExportEnabled) && (
+        <div className="rounded-lg border border-border bg-card p-3 sm:p-4 space-y-4">
+          {showGlobalFilter || filterToolbarExtra || csvExportEnabled ? (
+            <div className="flex flex-wrap items-end gap-3">
+              {showGlobalFilter ? (
+                <div className="flex min-w-[min(100%,18rem)] flex-1 flex-col gap-1.5">
+                  <label className="text-xs font-semibold text-muted-foreground">
+                    Tìm nhanh
+                  </label>
+                  <Input
+                    placeholder={globalFilterPlaceholder}
+                    value={globalFilter}
+                    onChange={(e) => setGlobalFilter(e.target.value)}
+                    className="bg-background rounded-lg w-full"
+                  />
+                </div>
+              ) : null}
+              <div className="flex flex-wrap items-end gap-2 shrink-0">
+                {csvExportEnabled ? (
+                  <div className="flex flex-col gap-1.5">
+                    <span className="text-xs font-semibold text-muted-foreground">
+                      Xuất file
+                    </span>
+                    <div className="flex flex-wrap gap-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="h-9 gap-1.5 rounded-lg"
+                        disabled={data.length === 0}
+                        onClick={handleCsvExport}
+                        title="CSV: cột phân tách bằng ; + UTF-16 LE (Excel VN)"
+                      >
+                        <Download className="size-4" />
+                        CSV
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="h-9 gap-1.5 rounded-lg"
+                        disabled={data.length === 0}
+                        onClick={handleXlsxExport}
+                        title="Excel: cột rộng theo nội dung, Unicode chuẩn"
+                      >
+                        <Download className="size-4" />
+                        Excel
+                      </Button>
+                    </div>
+                  </div>
+                ) : null}
+                {filterToolbarExtra ? (
+                  <div className="flex flex-wrap gap-2">{filterToolbarExtra}</div>
+                ) : null}
+              </div>
             </div>
           ) : null}
-          {showGlobalFilter && (
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-semibold text-muted-foreground">
-                Tìm nhanh
-              </label>
-              <Input
-                placeholder={globalFilterPlaceholder}
-                value={globalFilter}
-                onChange={(e) => setGlobalFilter(e.target.value)}
-                className="bg-background rounded-lg max-w-3xl"
-              />
-            </div>
-          )}
           {filterableHeaders.length > 0 && (
             <div className="space-y-2">
               <p className="text-xs font-semibold text-muted-foreground">
@@ -328,8 +416,9 @@ export function AdminDataTable<TData>({
         </div>
       )}
 
-      <div className="rounded-lg border border-border bg-card overflow-hidden py-4">
-        <Table className="text-sm">
+      <div className="rounded-lg border border-border bg-card overflow-hidden">
+        <div className="overflow-x-auto py-3 sm:py-4">
+        <Table className="text-sm min-w-[640px] sm:min-w-0">
           <TableHeader>
             {headerGroups.map((hg) => (
               <TableRow key={hg.id} className="hover:bg-transparent">
@@ -409,7 +498,13 @@ export function AdminDataTable<TData>({
             )}
           </TableBody>
         </Table>
+        </div>
       </div>
+      {footer ? (
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border bg-card px-3 py-3 sm:px-4">
+          {footer}
+        </div>
+      ) : null}
     </div>
   );
 }

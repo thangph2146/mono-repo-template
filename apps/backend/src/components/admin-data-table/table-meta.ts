@@ -10,6 +10,8 @@ declare module "@tanstack/react-table" {
     selectOptions?: { value: string; label: string }[];
     /** Không hiển thị ô lọc dưới header (vd. cột nút) */
     disableColumnFilter?: boolean;
+    /** Bỏ qua khi xuất CSV (cột thao tác, icon, …) */
+    excludeFromExport?: boolean;
   }
 }
 

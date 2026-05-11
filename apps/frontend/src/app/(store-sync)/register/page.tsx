@@ -7,6 +7,7 @@ import { Label } from "@ui/components/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@ui/components/card";
 import { Store, Phone, Lock, User, MapPin } from "lucide-react";
 import { Container, Page, PageContent } from "@ui/components/layout";
+import { STORE_AUTH_FORM_CARD_CLASS } from "@/lib/store-ui";
 import { toast } from "sonner";
 
 export default function RegisterPage() {
@@ -16,14 +17,14 @@ export default function RegisterPage() {
         <section>
           <Container max="8xl" className="px-4 md:px-8">
             <div className="w-full min-h-[calc(100vh-220px)] py-6 md:py-10 grid place-items-center">
-              <Card className="w-[min(100%,28rem)] min-w-[22rem] border-border shadow-level-2">
+              <Card className={STORE_AUTH_FORM_CARD_CLASS}>
                 <CardHeader className="space-y-2 text-center pb-6">
                   <div className="mx-auto bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mb-2">
                     <Store className="text-primary w-8 h-8" />
                   </div>
                   <CardTitle className="text-3xl font-bold text-foreground">Đăng ký Đại lý</CardTitle>
                   <CardDescription className="text-base text-muted-foreground">
-                    Tạo tài khoản để nhận báo giá sỉ và ưu đãi nhập hàng
+                    Tạo tài khoản để nhận báo giá khuyến mãi và ưu đãi nhập hàng
                   </CardDescription>
                 </CardHeader>
 

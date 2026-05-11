@@ -23,6 +23,7 @@ export type {
   AssignedShipperRef,
   AuthUser,
   ChangePasswordInput,
+  CreateUserInput,
   Product,
   ProductListParams,
   ProductUnitType,
@@ -30,6 +31,8 @@ export type {
   UpdateProductInput,
   Order,
   OrderItem,
+  RbacPermission,
+  RbacRole,
   User,
   UserRoleRef,
   OrderStatus,
@@ -42,5 +45,6 @@ export type {
   PaymentMethod,
   PaymentStatus,
   UpdateProfileInput,
+  UpdateUserInput,
 } from "@workspace/api-client";
 export { ApiError } from "@workspace/api-client";

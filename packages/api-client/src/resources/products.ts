@@ -97,4 +97,33 @@ export class ProductsApi {
   remove(id: number): Promise<void> {
     return this.http.delete<void>(`/products/${id}`);
   }
+
+  /** Danh sách sản phẩm đã xóa tạm (cần quyền ghi kho). */
+  listTrashed(params?: {
+    page?: number;
+    limit?: number;
+    q?: string;
+  }): Promise<ProductPagedResponse> {
+    const sp = new URLSearchParams();
+    if (params?.q?.trim()) sp.set('q', params.q.trim());
+    if (params?.page !== undefined && Number.isFinite(params.page)) {
+      sp.set('page', String(params.page));
+    }
+    if (params?.limit !== undefined && Number.isFinite(params.limit)) {
+      sp.set('limit', String(params.limit));
+    }
+    const qs = sp.toString();
+    return this.http.get<ProductPagedResponse>(
+      `/products/trashed${qs ? `?${qs}` : ''}`,
+    );
+  }
+
+  restore(id: number): Promise<Product> {
+    return this.http.post<Product>(`/products/${id}/restore`, {});
+  }
+
+  /** Xóa vĩnh viễn (chỉ bản ghi đang trong thùng rác). */
+  purgeTrashed(id: number): Promise<void> {
+    return this.http.delete<void>(`/products/${id}/permanent`);
+  }
 }

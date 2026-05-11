@@ -12,7 +12,10 @@ import { PERMISSIONS } from '../auth/permissions.constants';
 @Controller('rbac')
 @UseGuards(PermissionsGuard)
 @Permissions(PERMISSIONS.RBAC_READ)
-@ApiHeader({ name: 'X-User-Id', description: 'ID user đang thao tác (sau đăng nhập)' })
+@ApiHeader({
+  name: 'X-User-Id',
+  description: 'ID user đang thao tác (sau đăng nhập)',
+})
 export class RbacController {
   constructor(
     @InjectRepository(Permission)
@@ -24,7 +27,12 @@ export class RbacController {
   @Get('permissions')
   @ApiOperation({ summary: 'Danh sách mã quyền trong hệ thống' })
   async listPermissions(): Promise<
-    Array<{ id: number; code: string; name: string; description: string | null }>
+    Array<{
+      id: number;
+      code: string;
+      name: string;
+      description: string | null;
+    }>
   > {
     const rows = await this.permRepo.findAll({ orderBy: { code: 'asc' } });
     return rows.map((p) => ({

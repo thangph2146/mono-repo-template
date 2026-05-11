@@ -19,6 +19,9 @@ const eslintConfig = defineConfig([
     rules: {
       // Project uses external image URLs; opt out of next/image enforcement.
       "@next/next/no-img-element": "off",
+      "react-hooks/set-state-in-effect": "off",
+      "react-hooks/preserve-manual-memoization": "off",
+      "react-hooks/incompatible-library": "off",
     },
   },
 ]);

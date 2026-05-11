@@ -76,9 +76,14 @@ export const productFormSchema = z.object({
   sku: z.string().min(1, "Mã SKU bắt buộc"),
   name: z.string().min(1, "Tên sản phẩm bắt buộc"),
   brand: z.string(),
+  origin: z.string(),
   category: z.string().min(1, "Chọn danh mục"),
   unit: z.string().min(1, "Đơn vị quy chuẩn bắt buộc"),
   description: z.string(),
+  /** Tag hiển thị trên cửa hàng (cùng trường `coupons` trong API). */
+  coupons: z.array(z.string().max(64, "Mỗi tag tối đa 64 ký tự")),
+  /** Hướng dẫn quà kèm / KM cho shipper & kho (trường `fulfillmentNote`). */
+  fulfillmentNote: z.string().max(2000, "Tối đa 2000 ký tự"),
   /** URL hoặc data URL base64 (ảnh từ máy), tối đa ~5MB mỗi ảnh. */
   images: z
     .array(z.string())
@@ -118,12 +123,15 @@ export const defaultProductForm = (
   sku: "",
   name: "",
   brand: "",
+  origin: "",
   category: categorySlug,
   unit: "thùng",
   description: "",
   images: [""],
   stock: 0,
   isActive: true,
+  coupons: [""],
+  fulfillmentNote: "",
   unitTypes: [defaultUnitRow()],
 });
 
@@ -131,6 +139,7 @@ export const productToFormValues = (p: Product): ProductFormValues => ({
   sku: p.sku,
   name: p.name,
   brand: p.brand ?? "",
+  origin: p.origin ?? "",
   category: p.category,
   unit: p.unit ?? "thùng",
   description: p.description ?? "",
@@ -140,6 +149,11 @@ export const productToFormValues = (p: Product): ProductFormValues => ({
       : [""],
   stock: p.stock,
   isActive: p.isActive ?? true,
+  coupons:
+    p.coupons && p.coupons.length > 0
+      ? p.coupons.map((c) => (typeof c === "string" ? c : String(c)))
+      : [""],
+  fulfillmentNote: p.fulfillmentNote ?? "",
   unitTypes:
     p.unitTypes && p.unitTypes.length > 0
       ? p.unitTypes.map((u) => ({
@@ -167,10 +181,14 @@ export const formValuesToCreatePayload = (
   const baseUnit = unitTypes[0];
   const retailPrice = baseUnit?.retailPrice ?? 0;
   const wholesalePrice = baseUnit?.wholesalePrice ?? retailPrice;
+  const couponList = values.coupons
+    .map((c) => c.trim())
+    .filter((c) => c.length > 0);
   return {
     sku: values.sku.trim(),
     name: values.name.trim(),
     brand: values.brand.trim() || null,
+    origin: values.origin.trim() || null,
     category: values.category,
     unit: values.unit.trim(),
     description: values.description.trim() || null,
@@ -182,6 +200,8 @@ export const formValuesToCreatePayload = (
     retailPrice,
     wholesalePrice,
     unitTypes,
+    coupons: couponList.length > 0 ? couponList : null,
+    fulfillmentNote: values.fulfillmentNote.trim() || null,
     isActive: values.isActive,
   };
 };

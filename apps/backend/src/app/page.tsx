@@ -34,7 +34,7 @@ export default function AdminDashboardPage() {
     [productsResource.data],
   );
   const orders = useMemo(
-    () => ordersResource.data ?? [],
+    () => ordersResource.data?.items ?? [],
     [ordersResource.data],
   );
 

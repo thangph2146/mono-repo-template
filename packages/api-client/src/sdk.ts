@@ -2,6 +2,7 @@ import { ApiClient, type ApiClientOptions } from './client';
 import { CategoriesApi } from './resources/categories';
 import { OrdersApi } from './resources/orders';
 import { ProductsApi } from './resources/products';
+import { RbacApi } from './resources/rbac';
 import { UsersApi } from './resources/users';
 import type { HealthStatus } from './types';
 
@@ -25,6 +26,7 @@ export class StoreSyncSdk {
   readonly users: UsersApi;
   readonly orders: OrdersApi;
   readonly categories: CategoriesApi;
+  readonly rbac: RbacApi;
 
   constructor(options: ApiClientOptions) {
     this.http = new ApiClient(options);
@@ -32,6 +34,7 @@ export class StoreSyncSdk {
     this.users = new UsersApi(this.http);
     this.orders = new OrdersApi(this.http);
     this.categories = new CategoriesApi(this.http);
+    this.rbac = new RbacApi(this.http);
   }
 
   health(): Promise<HealthStatus> {

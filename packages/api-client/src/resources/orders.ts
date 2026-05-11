@@ -8,16 +8,58 @@ import type {
   UpdateOrderInput,
 } from '../types';
 
+export type OrderListOptions = {
+  email?: string;
+  q?: string;
+  status?: OrderStatus;
+  page?: number;
+  limit?: number;
+};
+
 export class OrdersApi {
   constructor(private readonly http: ApiClient) {}
 
-  list(options?: { email?: string }): Promise<Order[]> {
-    const query = options?.email
-      ? `?email=${encodeURIComponent(options.email)}`
-      : '';
+  list(options?: OrderListOptions): Promise<Order[] | { items: Order[]; total: number }> {
+    const p = new URLSearchParams();
+    if (options?.email?.trim()) p.set('email', options.email.trim());
+    if (options?.q?.trim()) p.set('q', options.q.trim());
+    if (options?.status != null) p.set('status', options.status);
+    if (options?.page != null) p.set('page', String(options.page));
+    if (options?.limit != null) p.set('limit', String(options.limit));
+    const qs = p.toString();
     return this.http
-      .get<Order[]>(`/orders${query}`)
-      .then((rows) => rows.map(normalizeOrder));
+      .get<Order[] | { items: Order[]; total: number }>(
+        `/orders${qs ? `?${qs}` : ''}`,
+      )
+      .then((res) => {
+        if (Array.isArray(res)) {
+          return res.map(normalizeOrder);
+        }
+        return {
+          items: res.items.map(normalizeOrder),
+          total: res.total,
+        };
+      });
+  }
+
+  listTrashed(options?: {
+    page?: number;
+    limit?: number;
+    q?: string;
+  }): Promise<{ items: Order[]; total: number }> {
+    const p = new URLSearchParams();
+    if (options?.q?.trim()) p.set('q', options.q.trim());
+    if (options?.page != null) p.set('page', String(options.page));
+    if (options?.limit != null) p.set('limit', String(options.limit));
+    const qs = p.toString();
+    return this.http
+      .get<{ items: Order[]; total: number }>(
+        `/orders/trashed${qs ? `?${qs}` : ''}`,
+      )
+      .then((res) => ({
+        items: res.items.map(normalizeOrder),
+        total: res.total,
+      }));
   }
 
   byStatus(status: OrderStatus): Promise<Order[]> {
@@ -103,7 +145,18 @@ export class OrdersApi {
       .then((o) => normalizeOrder(o));
   }
 
+  restore(id: number): Promise<Order> {
+    return this.http
+      .post<Order>(`/orders/${id}/restore`, {})
+      .then((o) => normalizeOrder(o));
+  }
+
   remove(id: number): Promise<void> {
     return this.http.delete<void>(`/orders/${id}`);
+  }
+
+  /** Xóa vĩnh viễn (chỉ đơn đang trong thùng rác). */
+  purgeTrashed(id: number): Promise<void> {
+    return this.http.delete<void>(`/orders/${id}/permanent`);
   }
 }
