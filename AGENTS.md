@@ -1,0 +1,35 @@
+# AGENTS Quick Guide (store-sync)
+
+Tài liệu này là **entry point ngắn gọn** cho agent. Chi tiết đầy đủ nằm trong `docs/ai/`.
+
+## Đọc trước khi sửa
+
+1. `docs/ai/README.md`
+2. `docs/ai/MICROSERVICE_SYSTEM_MAP.md`
+3. `docs/ai/AGENTS_GUIDE.md`
+4. `apps/frontend/.graphify/SUMMARY_FOR_AI.md`
+5. `apps/backend/.graphify/SUMMARY_FOR_AI.md`
+6. `apps/api/.graphify/SUMMARY_FOR_AI.md`
+
+Lưu ý: chỉ mở `apps/*/.graphify/context.json` khi cần trích đoạn cụ thể (file lớn, nhúng full source).
+
+## Lệnh chuẩn bắt buộc
+
+```bash
+pnpm check
+```
+
+Nếu có thay đổi kiến trúc/module/routes và đã cập nhật `context.json`:
+
+```bash
+pnpm check:full
+```
+
+## Nguyên tắc microservice
+
+- Không import chéo source giữa các app trong `apps/*`.
+- Frontend/Backend giao tiếp với API qua HTTP + `@workspace/api-client`.
+- Logic dùng chung đặt ở `packages/*` (vd `@workspace/promo-codes`).
+- Ranh giới được kiểm soát bởi:
+  - `packages/eslint-config/service-boundaries.js`
+  - `scripts/verify-service-boundaries.mjs`

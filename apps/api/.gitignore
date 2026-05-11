@@ -3,6 +3,9 @@
 /node_modules
 /build
 
+# Graphify cache (local only)
+.graphify/cache/
+
 # Logs
 logs
 *.log

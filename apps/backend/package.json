@@ -8,6 +8,7 @@
     "kill": "node ../../scripts/kill-ports.mjs 3001",
     "build": "next build",
     "start": "next start",
+    "typecheck": "tsc --noEmit",
     "lint": "eslint"
   },
   "dependencies": {
@@ -32,6 +33,7 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@workspace/eslint-config": "workspace:*",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",

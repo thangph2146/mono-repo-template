@@ -191,7 +191,7 @@ export default function CategoriesPage() {
     setDialogOpen(true);
   };
 
-  const openEdit = (c: Category) => {
+  const openEdit = useCallback((c: Category) => {
     setForm({
       id: c.id,
       name: c.name,
@@ -202,7 +202,7 @@ export default function CategoriesPage() {
       isActive: c.isActive,
     });
     setDialogOpen(true);
-  };
+  }, []);
 
   const handleSave = async (): Promise<void> => {
     if (!form.name.trim()) {
@@ -235,7 +235,7 @@ export default function CategoriesPage() {
     }
   };
 
-  const requestDelete = (c: Category): void => {
+  const requestDelete = useCallback((c: Category): void => {
     const inUse = usageMap.get(c.slug) ?? 0;
     if (inUse > 0) {
       toast.error(
@@ -244,7 +244,7 @@ export default function CategoriesPage() {
       return;
     }
     setDeleteTarget(c);
-  };
+  }, [usageMap]);
 
   const confirmDelete = (): void => {
     if (!deleteTarget) return;
@@ -423,7 +423,7 @@ export default function CategoriesPage() {
         },
       },
     ],
-    [canWriteCategories],
+    [canWriteCategories, openEdit, requestDelete],
   );
 
   const trashColumns = useMemo<ColumnDef<Category>[]>(

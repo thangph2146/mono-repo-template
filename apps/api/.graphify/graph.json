@@ -1,0 +1,2059 @@
+{
+  "nodes": [
+    {
+      "id": "dir_src",
+      "label": "src/",
+      "path": "src",
+      "color": "#ff9d00",
+      "size": 28,
+      "community": "root",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_app_controller_spec_ts",
+      "label": "app.controller.spec.ts",
+      "path": "src/app.controller.spec.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_app_controller_ts",
+      "label": "app.controller.ts",
+      "path": "src/app.controller.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_app_module_ts",
+      "label": "app.module.ts",
+      "path": "src/app.module.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_app_service_ts",
+      "label": "app.service.ts",
+      "path": "src/app.service.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_auth",
+      "label": "auth/",
+      "path": "src/auth",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_auth_auth_module_ts",
+      "label": "auth.module.ts",
+      "path": "src/auth/auth.module.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/auth",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_auth_decorators",
+      "label": "decorators/",
+      "path": "src/auth/decorators",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/auth",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_auth_decorators_public_decorator_ts",
+      "label": "public.decorator.ts",
+      "path": "src/auth/decorators/public.decorator.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/auth/decorators",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_auth_guards",
+      "label": "guards/",
+      "path": "src/auth/guards",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/auth",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_auth_guards_permissions_guard_ts",
+      "label": "permissions.guard.ts",
+      "path": "src/auth/guards/permissions.guard.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/auth/guards",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_auth_permissions_constants_ts",
+      "label": "permissions.constants.ts",
+      "path": "src/auth/permissions.constants.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/auth",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_auth_rbac_service_ts",
+      "label": "rbac.service.ts",
+      "path": "src/auth/rbac.service.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/auth",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_auth_request_user_util_ts",
+      "label": "request-user.util.ts",
+      "path": "src/auth/request-user.util.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/auth",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_categories",
+      "label": "categories/",
+      "path": "src/categories",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_categories_categories_controller_ts",
+      "label": "categories.controller.ts",
+      "path": "src/categories/categories.controller.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/categories",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_categories_categories_module_ts",
+      "label": "categories.module.ts",
+      "path": "src/categories/categories.module.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/categories",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_categories_categories_service_ts",
+      "label": "categories.service.ts",
+      "path": "src/categories/categories.service.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/categories",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_common",
+      "label": "common/",
+      "path": "src/common",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "dir_src_common_logger",
+      "label": "logger/",
+      "path": "src/common/logger",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/common",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_common_logger_app_logger_service_ts",
+      "label": "app-logger.service.ts",
+      "path": "src/common/logger/app-logger.service.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/common/logger",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_common_logger_dev_http_logging_ts",
+      "label": "dev-http-logging.ts",
+      "path": "src/common/logger/dev-http-logging.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/common/logger",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_common_logger_index_ts",
+      "label": "index.ts",
+      "path": "src/common/logger/index.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/common/logger",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_common_logger_logger_module_ts",
+      "label": "logger.module.ts",
+      "path": "src/common/logger/logger.module.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/common/logger",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_config",
+      "label": "config/",
+      "path": "src/config",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_config_database_config_ts",
+      "label": "database.config.ts",
+      "path": "src/config/database.config.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/config",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_data_maintenance",
+      "label": "data-maintenance/",
+      "path": "src/data-maintenance",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_data_maintenance_backup_secret_guard_ts",
+      "label": "backup-secret.guard.ts",
+      "path": "src/data-maintenance/backup-secret.guard.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/data-maintenance",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_data_maintenance_data_backup_service_ts",
+      "label": "data-backup.service.ts",
+      "path": "src/data-maintenance/data-backup.service.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/data-maintenance",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_data_maintenance_data_excel_service_ts",
+      "label": "data-excel.service.ts",
+      "path": "src/data-maintenance/data-excel.service.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/data-maintenance",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_data_maintenance_data_maintenance_controller_ts",
+      "label": "data-maintenance.controller.ts",
+      "path": "src/data-maintenance/data-maintenance.controller.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/data-maintenance",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_data_maintenance_data_maintenance_module_ts",
+      "label": "data-maintenance.module.ts",
+      "path": "src/data-maintenance/data-maintenance.module.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/data-maintenance",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_data_maintenance_entity_order_util_ts",
+      "label": "entity-order.util.ts",
+      "path": "src/data-maintenance/entity-order.util.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/data-maintenance",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_entities",
+      "label": "entities/",
+      "path": "src/entities",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_entities_base_entity_ts",
+      "label": "base.entity.ts",
+      "path": "src/entities/base.entity.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/entities",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_entities_category_entity_ts",
+      "label": "category.entity.ts",
+      "path": "src/entities/category.entity.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/entities",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_entities_index_ts",
+      "label": "index.ts",
+      "path": "src/entities/index.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/entities",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_entities_order_entity_ts",
+      "label": "order.entity.ts",
+      "path": "src/entities/order.entity.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/entities",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_entities_permission_entity_ts",
+      "label": "permission.entity.ts",
+      "path": "src/entities/permission.entity.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/entities",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_entities_product_entity_ts",
+      "label": "product.entity.ts",
+      "path": "src/entities/product.entity.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/entities",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_entities_promo_code_entity_ts",
+      "label": "promo-code.entity.ts",
+      "path": "src/entities/promo-code.entity.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/entities",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_entities_registry_ts",
+      "label": "registry.ts",
+      "path": "src/entities/registry.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/entities",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_entities_role_permission_link_entity_ts",
+      "label": "role-permission-link.entity.ts",
+      "path": "src/entities/role-permission-link.entity.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/entities",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_entities_role_entity_ts",
+      "label": "role.entity.ts",
+      "path": "src/entities/role.entity.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/entities",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_entities_user_role_link_entity_ts",
+      "label": "user-role-link.entity.ts",
+      "path": "src/entities/user-role-link.entity.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/entities",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_entities_user_entity_ts",
+      "label": "user.entity.ts",
+      "path": "src/entities/user.entity.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/entities",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_main_ts",
+      "label": "main.ts",
+      "path": "src/main.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_migrations",
+      "label": "migrations/",
+      "path": "src/migrations",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_migrations__gitkeep",
+      "label": ".gitkeep",
+      "path": "src/migrations/.gitkeep",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/migrations",
+      "type": "file",
+      "client": false
+    },
+    {
+      "id": "file_src_migrations__snapshot_storesync_json",
+      "label": ".snapshot-storesync.json",
+      "path": "src/migrations/.snapshot-storesync.json",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/migrations",
+      "type": "json",
+      "client": false
+    },
+    {
+      "id": "file_src_migrations_migration20260508180000_ts",
+      "label": "Migration20260508180000.ts",
+      "path": "src/migrations/Migration20260508180000.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/migrations",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_migrations_migration20260508180500_ts",
+      "label": "Migration20260508180500.ts",
+      "path": "src/migrations/Migration20260508180500.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/migrations",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_migrations_migration20260508190000_ts",
+      "label": "Migration20260508190000.ts",
+      "path": "src/migrations/Migration20260508190000.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/migrations",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_migrations_migration20260508203000_ts",
+      "label": "Migration20260508203000.ts",
+      "path": "src/migrations/Migration20260508203000.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/migrations",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_migrations_migration20260508204000_ts",
+      "label": "Migration20260508204000.ts",
+      "path": "src/migrations/Migration20260508204000.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/migrations",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_migrations_migration20260510120000_ts",
+      "label": "Migration20260510120000.ts",
+      "path": "src/migrations/Migration20260510120000.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/migrations",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_migrations_migration20260511120000_ts",
+      "label": "Migration20260511120000.ts",
+      "path": "src/migrations/Migration20260511120000.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/migrations",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_migrations_migration20260511140000_ts",
+      "label": "Migration20260511140000.ts",
+      "path": "src/migrations/Migration20260511140000.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/migrations",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_migrations_migration20260511180000_ts",
+      "label": "Migration20260511180000.ts",
+      "path": "src/migrations/Migration20260511180000.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/migrations",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_migrations_migration20260511203000_ts",
+      "label": "Migration20260511203000.ts",
+      "path": "src/migrations/Migration20260511203000.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/migrations",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_migrations_migration20260512140000_ts",
+      "label": "Migration20260512140000.ts",
+      "path": "src/migrations/Migration20260512140000.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/migrations",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_orders",
+      "label": "orders/",
+      "path": "src/orders",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_orders_orders_controller_ts",
+      "label": "orders.controller.ts",
+      "path": "src/orders/orders.controller.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/orders",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_orders_orders_module_ts",
+      "label": "orders.module.ts",
+      "path": "src/orders/orders.module.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/orders",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_orders_orders_service_ts",
+      "label": "orders.service.ts",
+      "path": "src/orders/orders.service.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/orders",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_products",
+      "label": "products/",
+      "path": "src/products",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_products_products_controller_ts",
+      "label": "products.controller.ts",
+      "path": "src/products/products.controller.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/products",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_products_products_module_ts",
+      "label": "products.module.ts",
+      "path": "src/products/products.module.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/products",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_products_products_service_ts",
+      "label": "products.service.ts",
+      "path": "src/products/products.service.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/products",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_promo_codes",
+      "label": "promo-codes/",
+      "path": "src/promo-codes",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_promo_codes_promo_codes_controller_ts",
+      "label": "promo-codes.controller.ts",
+      "path": "src/promo-codes/promo-codes.controller.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/promo-codes",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_promo_codes_promo_codes_dto_ts",
+      "label": "promo-codes.dto.ts",
+      "path": "src/promo-codes/promo-codes.dto.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/promo-codes",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_promo_codes_promo_codes_module_ts",
+      "label": "promo-codes.module.ts",
+      "path": "src/promo-codes/promo-codes.module.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/promo-codes",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_promo_codes_promo_codes_service_ts",
+      "label": "promo-codes.service.ts",
+      "path": "src/promo-codes/promo-codes.service.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/promo-codes",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_rbac",
+      "label": "rbac/",
+      "path": "src/rbac",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_rbac_rbac_controller_ts",
+      "label": "rbac.controller.ts",
+      "path": "src/rbac/rbac.controller.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/rbac",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_rbac_rbac_module_ts",
+      "label": "rbac.module.ts",
+      "path": "src/rbac/rbac.module.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/rbac",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_seeders",
+      "label": "seeders/",
+      "path": "src/seeders",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_seeders_database_seeder_ts",
+      "label": "database.seeder.ts",
+      "path": "src/seeders/database.seeder.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/seeders",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_users",
+      "label": "users/",
+      "path": "src/users",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_users_users_controller_ts",
+      "label": "users.controller.ts",
+      "path": "src/users/users.controller.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/users",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_users_users_module_ts",
+      "label": "users.module.ts",
+      "path": "src/users/users.module.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/users",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_users_users_service_ts",
+      "label": "users.service.ts",
+      "path": "src/users/users.service.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/users",
+      "type": "ts",
+      "client": false
+    }
+  ],
+  "links": [
+    {
+      "source": "dir_src",
+      "target": "file_src_app_controller_spec_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "file_src_app_controller_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "file_src_app_module_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "file_src_app_service_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_auth",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_auth",
+      "target": "file_src_auth_auth_module_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_auth",
+      "target": "dir_src_auth_decorators",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_auth_decorators",
+      "target": "file_src_auth_decorators_public_decorator_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_auth",
+      "target": "dir_src_auth_guards",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_auth_guards",
+      "target": "file_src_auth_guards_permissions_guard_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_auth",
+      "target": "file_src_auth_permissions_constants_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_auth",
+      "target": "file_src_auth_rbac_service_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_auth",
+      "target": "file_src_auth_request_user_util_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_categories",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_categories",
+      "target": "file_src_categories_categories_controller_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_categories",
+      "target": "file_src_categories_categories_module_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_categories",
+      "target": "file_src_categories_categories_service_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_common",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_common",
+      "target": "dir_src_common_logger",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_common_logger",
+      "target": "file_src_common_logger_app_logger_service_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_common_logger",
+      "target": "file_src_common_logger_dev_http_logging_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_common_logger",
+      "target": "file_src_common_logger_index_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_common_logger",
+      "target": "file_src_common_logger_logger_module_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_config",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_config",
+      "target": "file_src_config_database_config_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_data_maintenance",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_data_maintenance",
+      "target": "file_src_data_maintenance_backup_secret_guard_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_data_maintenance",
+      "target": "file_src_data_maintenance_data_backup_service_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_data_maintenance",
+      "target": "file_src_data_maintenance_data_excel_service_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_data_maintenance",
+      "target": "file_src_data_maintenance_data_maintenance_controller_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_data_maintenance",
+      "target": "file_src_data_maintenance_data_maintenance_module_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_data_maintenance",
+      "target": "file_src_data_maintenance_entity_order_util_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_entities",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_entities",
+      "target": "file_src_entities_base_entity_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_entities",
+      "target": "file_src_entities_category_entity_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_entities",
+      "target": "file_src_entities_index_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_entities",
+      "target": "file_src_entities_order_entity_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_entities",
+      "target": "file_src_entities_permission_entity_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_entities",
+      "target": "file_src_entities_product_entity_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_entities",
+      "target": "file_src_entities_promo_code_entity_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_entities",
+      "target": "file_src_entities_registry_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_entities",
+      "target": "file_src_entities_role_permission_link_entity_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_entities",
+      "target": "file_src_entities_role_entity_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_entities",
+      "target": "file_src_entities_user_role_link_entity_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_entities",
+      "target": "file_src_entities_user_entity_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "file_src_main_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_migrations",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_migrations",
+      "target": "file_src_migrations__gitkeep",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_migrations",
+      "target": "file_src_migrations__snapshot_storesync_json",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_migrations",
+      "target": "file_src_migrations_migration20260508180000_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_migrations",
+      "target": "file_src_migrations_migration20260508180500_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_migrations",
+      "target": "file_src_migrations_migration20260508190000_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_migrations",
+      "target": "file_src_migrations_migration20260508203000_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_migrations",
+      "target": "file_src_migrations_migration20260508204000_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_migrations",
+      "target": "file_src_migrations_migration20260510120000_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_migrations",
+      "target": "file_src_migrations_migration20260511120000_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_migrations",
+      "target": "file_src_migrations_migration20260511140000_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_migrations",
+      "target": "file_src_migrations_migration20260511180000_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_migrations",
+      "target": "file_src_migrations_migration20260511203000_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_migrations",
+      "target": "file_src_migrations_migration20260512140000_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_orders",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_orders",
+      "target": "file_src_orders_orders_controller_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_orders",
+      "target": "file_src_orders_orders_module_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_orders",
+      "target": "file_src_orders_orders_service_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_products",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_products",
+      "target": "file_src_products_products_controller_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_products",
+      "target": "file_src_products_products_module_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_products",
+      "target": "file_src_products_products_service_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_promo_codes",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_promo_codes",
+      "target": "file_src_promo_codes_promo_codes_controller_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_promo_codes",
+      "target": "file_src_promo_codes_promo_codes_dto_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_promo_codes",
+      "target": "file_src_promo_codes_promo_codes_module_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_promo_codes",
+      "target": "file_src_promo_codes_promo_codes_service_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_rbac",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_rbac",
+      "target": "file_src_rbac_rbac_controller_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_rbac",
+      "target": "file_src_rbac_rbac_module_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_seeders",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_seeders",
+      "target": "file_src_seeders_database_seeder_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_users",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_users",
+      "target": "file_src_users_users_controller_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_users",
+      "target": "file_src_users_users_module_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_users",
+      "target": "file_src_users_users_service_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "file_src_app_controller_spec_ts",
+      "target": "file_src_app_controller_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_controller_spec_ts",
+      "target": "file_src_app_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_controller_ts",
+      "target": "file_src_app_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_module_ts",
+      "target": "file_src_app_controller_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_module_ts",
+      "target": "file_src_app_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_module_ts",
+      "target": "file_src_rbac_rbac_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_module_ts",
+      "target": "file_src_config_database_config_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_module_ts",
+      "target": "dir_src_entities",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_module_ts",
+      "target": "file_src_products_products_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_module_ts",
+      "target": "file_src_orders_orders_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_module_ts",
+      "target": "file_src_users_users_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_module_ts",
+      "target": "file_src_categories_categories_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_module_ts",
+      "target": "file_src_data_maintenance_data_maintenance_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_module_ts",
+      "target": "file_src_promo_codes_promo_codes_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_module_ts",
+      "target": "dir_src_common_logger",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_auth_auth_module_ts",
+      "target": "file_src_auth_rbac_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_auth_auth_module_ts",
+      "target": "file_src_auth_guards_permissions_guard_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_auth_guards_permissions_guard_ts",
+      "target": "file_src_auth_decorators_public_decorator_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_auth_guards_permissions_guard_ts",
+      "target": "file_src_auth_rbac_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_auth_guards_permissions_guard_ts",
+      "target": "file_src_auth_request_user_util_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_auth_rbac_service_ts",
+      "target": "file_src_entities_user_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_categories_categories_controller_ts",
+      "target": "dir_src_entities",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_categories_categories_controller_ts",
+      "target": "file_src_categories_categories_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_categories_categories_controller_ts",
+      "target": "file_src_auth_guards_permissions_guard_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_categories_categories_controller_ts",
+      "target": "file_src_auth_decorators_public_decorator_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_categories_categories_controller_ts",
+      "target": "file_src_auth_permissions_constants_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_categories_categories_module_ts",
+      "target": "file_src_auth_auth_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_categories_categories_module_ts",
+      "target": "dir_src_entities",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_categories_categories_module_ts",
+      "target": "file_src_categories_categories_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_categories_categories_module_ts",
+      "target": "file_src_categories_categories_controller_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_categories_categories_service_ts",
+      "target": "dir_src_entities",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_common_logger_dev_http_logging_ts",
+      "target": "file_src_common_logger_app_logger_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_common_logger_index_ts",
+      "target": "file_src_common_logger_app_logger_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_common_logger_index_ts",
+      "target": "file_src_common_logger_logger_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_common_logger_index_ts",
+      "target": "file_src_common_logger_dev_http_logging_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_common_logger_logger_module_ts",
+      "target": "file_src_common_logger_app_logger_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_data_maintenance_data_backup_service_ts",
+      "target": "file_src_data_maintenance_entity_order_util_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_data_maintenance_data_backup_service_ts",
+      "target": "file_src_entities_registry_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_data_maintenance_data_excel_service_ts",
+      "target": "file_src_entities_registry_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_data_maintenance_data_excel_service_ts",
+      "target": "file_src_data_maintenance_data_backup_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_data_maintenance_data_maintenance_controller_ts",
+      "target": "file_src_data_maintenance_backup_secret_guard_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_data_maintenance_data_maintenance_controller_ts",
+      "target": "file_src_data_maintenance_data_backup_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_data_maintenance_data_maintenance_controller_ts",
+      "target": "file_src_data_maintenance_data_excel_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_data_maintenance_data_maintenance_controller_ts",
+      "target": "file_src_auth_guards_permissions_guard_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_data_maintenance_data_maintenance_controller_ts",
+      "target": "file_src_auth_decorators_public_decorator_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_data_maintenance_data_maintenance_controller_ts",
+      "target": "file_src_auth_permissions_constants_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_data_maintenance_data_maintenance_module_ts",
+      "target": "file_src_auth_auth_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_data_maintenance_data_maintenance_module_ts",
+      "target": "file_src_data_maintenance_backup_secret_guard_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_data_maintenance_data_maintenance_module_ts",
+      "target": "file_src_data_maintenance_data_backup_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_data_maintenance_data_maintenance_module_ts",
+      "target": "file_src_data_maintenance_data_excel_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_data_maintenance_data_maintenance_module_ts",
+      "target": "file_src_data_maintenance_data_maintenance_controller_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_category_entity_ts",
+      "target": "file_src_entities_base_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_index_ts",
+      "target": "file_src_entities_product_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_index_ts",
+      "target": "file_src_entities_category_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_index_ts",
+      "target": "file_src_entities_user_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_index_ts",
+      "target": "file_src_entities_permission_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_index_ts",
+      "target": "file_src_entities_role_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_index_ts",
+      "target": "file_src_entities_role_permission_link_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_index_ts",
+      "target": "file_src_entities_user_role_link_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_index_ts",
+      "target": "file_src_entities_order_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_index_ts",
+      "target": "file_src_entities_promo_code_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_index_ts",
+      "target": "file_src_entities_registry_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_order_entity_ts",
+      "target": "file_src_entities_base_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_order_entity_ts",
+      "target": "file_src_entities_user_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_permission_entity_ts",
+      "target": "file_src_entities_base_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_permission_entity_ts",
+      "target": "file_src_entities_role_permission_link_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_product_entity_ts",
+      "target": "file_src_entities_base_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_promo_code_entity_ts",
+      "target": "file_src_entities_base_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_registry_ts",
+      "target": "file_src_entities_category_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_registry_ts",
+      "target": "file_src_entities_order_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_registry_ts",
+      "target": "file_src_entities_promo_code_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_registry_ts",
+      "target": "file_src_entities_permission_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_registry_ts",
+      "target": "file_src_entities_product_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_registry_ts",
+      "target": "file_src_entities_role_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_registry_ts",
+      "target": "file_src_entities_role_permission_link_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_registry_ts",
+      "target": "file_src_entities_user_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_registry_ts",
+      "target": "file_src_entities_user_role_link_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_role_permission_link_entity_ts",
+      "target": "file_src_entities_base_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_role_permission_link_entity_ts",
+      "target": "file_src_entities_permission_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_role_permission_link_entity_ts",
+      "target": "file_src_entities_role_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_role_entity_ts",
+      "target": "file_src_entities_base_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_role_entity_ts",
+      "target": "file_src_entities_role_permission_link_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_role_entity_ts",
+      "target": "file_src_entities_user_role_link_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_user_role_link_entity_ts",
+      "target": "file_src_entities_base_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_user_role_link_entity_ts",
+      "target": "file_src_entities_role_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_user_role_link_entity_ts",
+      "target": "file_src_entities_user_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_user_entity_ts",
+      "target": "file_src_entities_base_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_user_entity_ts",
+      "target": "file_src_entities_user_role_link_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_main_ts",
+      "target": "file_src_app_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_main_ts",
+      "target": "dir_src_common_logger",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_migrations_migration20260510120000_ts",
+      "target": "file_src_config_database_config_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_migrations_migration20260511120000_ts",
+      "target": "file_src_config_database_config_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_migrations_migration20260511140000_ts",
+      "target": "file_src_config_database_config_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_migrations_migration20260511180000_ts",
+      "target": "file_src_config_database_config_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_migrations_migration20260511203000_ts",
+      "target": "file_src_config_database_config_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_migrations_migration20260512140000_ts",
+      "target": "file_src_config_database_config_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_orders_orders_controller_ts",
+      "target": "file_src_orders_orders_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_orders_orders_controller_ts",
+      "target": "dir_src_entities",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_orders_orders_controller_ts",
+      "target": "file_src_auth_guards_permissions_guard_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_orders_orders_controller_ts",
+      "target": "file_src_auth_decorators_public_decorator_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_orders_orders_controller_ts",
+      "target": "file_src_auth_permissions_constants_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_orders_orders_module_ts",
+      "target": "file_src_auth_auth_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_orders_orders_module_ts",
+      "target": "file_src_users_users_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_orders_orders_module_ts",
+      "target": "file_src_promo_codes_promo_codes_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_orders_orders_module_ts",
+      "target": "dir_src_entities",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_orders_orders_module_ts",
+      "target": "file_src_orders_orders_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_orders_orders_module_ts",
+      "target": "file_src_orders_orders_controller_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_orders_orders_service_ts",
+      "target": "dir_src_entities",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_orders_orders_service_ts",
+      "target": "file_src_users_users_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_orders_orders_service_ts",
+      "target": "file_src_promo_codes_promo_codes_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_products_products_controller_ts",
+      "target": "file_src_products_products_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_products_products_controller_ts",
+      "target": "dir_src_entities",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_products_products_controller_ts",
+      "target": "file_src_auth_guards_permissions_guard_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_products_products_controller_ts",
+      "target": "file_src_auth_decorators_public_decorator_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_products_products_controller_ts",
+      "target": "file_src_auth_permissions_constants_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_products_products_module_ts",
+      "target": "file_src_auth_auth_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_products_products_module_ts",
+      "target": "dir_src_entities",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_products_products_module_ts",
+      "target": "file_src_products_products_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_products_products_module_ts",
+      "target": "file_src_products_products_controller_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_products_products_service_ts",
+      "target": "dir_src_entities",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_promo_codes_promo_codes_controller_ts",
+      "target": "file_src_entities_promo_code_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_promo_codes_promo_codes_controller_ts",
+      "target": "file_src_auth_guards_permissions_guard_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_promo_codes_promo_codes_controller_ts",
+      "target": "file_src_auth_decorators_public_decorator_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_promo_codes_promo_codes_controller_ts",
+      "target": "file_src_auth_permissions_constants_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_promo_codes_promo_codes_controller_ts",
+      "target": "file_src_promo_codes_promo_codes_dto_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_promo_codes_promo_codes_controller_ts",
+      "target": "file_src_promo_codes_promo_codes_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_promo_codes_promo_codes_dto_ts",
+      "target": "file_src_entities_promo_code_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_promo_codes_promo_codes_module_ts",
+      "target": "file_src_auth_auth_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_promo_codes_promo_codes_module_ts",
+      "target": "file_src_entities_promo_code_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_promo_codes_promo_codes_module_ts",
+      "target": "file_src_promo_codes_promo_codes_controller_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_promo_codes_promo_codes_module_ts",
+      "target": "file_src_promo_codes_promo_codes_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_promo_codes_promo_codes_service_ts",
+      "target": "file_src_entities_promo_code_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_promo_codes_promo_codes_service_ts",
+      "target": "file_src_promo_codes_promo_codes_dto_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_rbac_rbac_controller_ts",
+      "target": "file_src_entities_permission_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_rbac_rbac_controller_ts",
+      "target": "file_src_entities_role_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_rbac_rbac_controller_ts",
+      "target": "file_src_auth_guards_permissions_guard_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_rbac_rbac_controller_ts",
+      "target": "file_src_auth_decorators_public_decorator_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_rbac_rbac_controller_ts",
+      "target": "file_src_auth_permissions_constants_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_rbac_rbac_module_ts",
+      "target": "file_src_entities_permission_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_rbac_rbac_module_ts",
+      "target": "file_src_entities_role_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_rbac_rbac_module_ts",
+      "target": "file_src_auth_auth_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_rbac_rbac_module_ts",
+      "target": "file_src_rbac_rbac_controller_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_seeders_database_seeder_ts",
+      "target": "file_src_entities_category_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_seeders_database_seeder_ts",
+      "target": "file_src_entities_order_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_seeders_database_seeder_ts",
+      "target": "file_src_entities_permission_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_seeders_database_seeder_ts",
+      "target": "file_src_entities_product_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_seeders_database_seeder_ts",
+      "target": "file_src_entities_promo_code_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_seeders_database_seeder_ts",
+      "target": "file_src_entities_role_permission_link_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_seeders_database_seeder_ts",
+      "target": "file_src_entities_role_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_seeders_database_seeder_ts",
+      "target": "file_src_entities_user_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_seeders_database_seeder_ts",
+      "target": "file_src_entities_user_role_link_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_users_users_controller_ts",
+      "target": "file_src_users_users_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_users_users_controller_ts",
+      "target": "file_src_entities_user_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_users_users_controller_ts",
+      "target": "file_src_auth_guards_permissions_guard_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_users_users_controller_ts",
+      "target": "file_src_auth_decorators_public_decorator_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_users_users_controller_ts",
+      "target": "file_src_auth_permissions_constants_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_users_users_controller_ts",
+      "target": "file_src_auth_rbac_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_users_users_controller_ts",
+      "target": "file_src_auth_request_user_util_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_users_users_module_ts",
+      "target": "file_src_auth_auth_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_users_users_module_ts",
+      "target": "dir_src_entities",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_users_users_module_ts",
+      "target": "file_src_users_users_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_users_users_module_ts",
+      "target": "file_src_users_users_controller_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_users_users_service_ts",
+      "target": "file_src_entities_user_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_users_users_service_ts",
+      "target": "file_src_entities_role_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_users_users_service_ts",
+      "target": "file_src_entities_user_role_link_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_users_users_service_ts",
+      "target": "file_src_entities_order_entity_ts",
+      "relation": "imports"
+    }
+  ]
+}

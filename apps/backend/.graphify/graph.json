@@ -1,0 +1,1292 @@
+{
+  "nodes": [
+    {
+      "id": "dir_src",
+      "label": "src/",
+      "path": "src",
+      "color": "#ff9d00",
+      "size": 28,
+      "community": "root",
+      "type": "directory"
+    },
+    {
+      "id": "dir_src_app",
+      "label": "app/",
+      "path": "src/app",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "dir_src_app_categories",
+      "label": "categories/",
+      "path": "src/app/categories",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_app_categories_page_tsx",
+      "label": "page.tsx",
+      "path": "src/app/categories/page.tsx",
+      "color": "#00ff41",
+      "size": 14,
+      "community": "src/app/categories",
+      "type": "page",
+      "client": true
+    },
+    {
+      "id": "dir_src_app_data",
+      "label": "data/",
+      "path": "src/app/data",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_app_data_page_tsx",
+      "label": "page.tsx",
+      "path": "src/app/data/page.tsx",
+      "color": "#00ff41",
+      "size": 14,
+      "community": "src/app/data",
+      "type": "page",
+      "client": true
+    },
+    {
+      "id": "dir_src_app_inventory",
+      "label": "inventory/",
+      "path": "src/app/inventory",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_app_inventory_page_tsx",
+      "label": "page.tsx",
+      "path": "src/app/inventory/page.tsx",
+      "color": "#00ff41",
+      "size": 14,
+      "community": "src/app/inventory",
+      "type": "page",
+      "client": true
+    },
+    {
+      "id": "file_src_app_inventory_product_form_ts",
+      "label": "product-form.ts",
+      "path": "src/app/inventory/product-form.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/app/inventory",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_app_layout_tsx",
+      "label": "layout.tsx",
+      "path": "src/app/layout.tsx",
+      "color": "#ff6b35",
+      "size": 20,
+      "community": "src/app",
+      "type": "layout",
+      "client": false
+    },
+    {
+      "id": "file_src_app_loading_tsx",
+      "label": "loading.tsx",
+      "path": "src/app/loading.tsx",
+      "color": "#888800",
+      "size": 10,
+      "community": "src/app",
+      "type": "loading",
+      "client": false
+    },
+    {
+      "id": "dir_src_app_locations",
+      "label": "locations/",
+      "path": "src/app/locations",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_app_locations_page_tsx",
+      "label": "page.tsx",
+      "path": "src/app/locations/page.tsx",
+      "color": "#00ff41",
+      "size": 14,
+      "community": "src/app/locations",
+      "type": "page",
+      "client": true
+    },
+    {
+      "id": "dir_src_app_login",
+      "label": "login/",
+      "path": "src/app/login",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_app_login_page_tsx",
+      "label": "page.tsx",
+      "path": "src/app/login/page.tsx",
+      "color": "#00ff41",
+      "size": 14,
+      "community": "src/app/login",
+      "type": "page",
+      "client": true
+    },
+    {
+      "id": "dir_src_app_orders",
+      "label": "orders/",
+      "path": "src/app/orders",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_app_orders_page_tsx",
+      "label": "page.tsx",
+      "path": "src/app/orders/page.tsx",
+      "color": "#00ff41",
+      "size": 14,
+      "community": "src/app/orders",
+      "type": "page",
+      "client": true
+    },
+    {
+      "id": "file_src_app_page_tsx",
+      "label": "page.tsx",
+      "path": "src/app/page.tsx",
+      "color": "#00ff41",
+      "size": 14,
+      "community": "src/app",
+      "type": "page",
+      "client": true
+    },
+    {
+      "id": "dir_src_app_profile",
+      "label": "profile/",
+      "path": "src/app/profile",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_app_profile_page_tsx",
+      "label": "page.tsx",
+      "path": "src/app/profile/page.tsx",
+      "color": "#00ff41",
+      "size": 14,
+      "community": "src/app/profile",
+      "type": "page",
+      "client": true
+    },
+    {
+      "id": "dir_src_app_promo_codes",
+      "label": "promo-codes/",
+      "path": "src/app/promo-codes",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_app_promo_codes_page_tsx",
+      "label": "page.tsx",
+      "path": "src/app/promo-codes/page.tsx",
+      "color": "#00ff41",
+      "size": 14,
+      "community": "src/app/promo-codes",
+      "type": "page",
+      "client": true
+    },
+    {
+      "id": "dir_src_app_register",
+      "label": "register/",
+      "path": "src/app/register",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_app_register_page_tsx",
+      "label": "page.tsx",
+      "path": "src/app/register/page.tsx",
+      "color": "#00ff41",
+      "size": 14,
+      "community": "src/app/register",
+      "type": "page",
+      "client": true
+    },
+    {
+      "id": "dir_src_app_staff",
+      "label": "staff/",
+      "path": "src/app/staff",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_app_staff_page_tsx",
+      "label": "page.tsx",
+      "path": "src/app/staff/page.tsx",
+      "color": "#00ff41",
+      "size": 14,
+      "community": "src/app/staff",
+      "type": "page",
+      "client": true
+    },
+    {
+      "id": "dir_src_components",
+      "label": "components/",
+      "path": "src/components",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "dir_src_components_admin_data_table",
+      "label": "admin-data-table/",
+      "path": "src/components/admin-data-table",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/components",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_components_admin_data_table_admin_data_table_tsx",
+      "label": "admin-data-table.tsx",
+      "path": "src/components/admin-data-table/admin-data-table.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/components/admin-data-table",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_components_admin_data_table_index_ts",
+      "label": "index.ts",
+      "path": "src/components/admin-data-table/index.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/components/admin-data-table",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_components_admin_data_table_table_meta_ts",
+      "label": "table-meta.ts",
+      "path": "src/components/admin-data-table/table-meta.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/components/admin-data-table",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_components_admin_shell_tsx",
+      "label": "admin-shell.tsx",
+      "path": "src/components/admin-shell.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/components",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_components_admin_table_pagination_footer_tsx",
+      "label": "admin-table-pagination-footer.tsx",
+      "path": "src/components/admin-table-pagination-footer.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/components",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_components_sidebar_tsx",
+      "label": "sidebar.tsx",
+      "path": "src/components/sidebar.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/components",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "dir_src_components_ui",
+      "label": "ui/",
+      "path": "src/components/ui",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/components",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_components_ui_sidebar_tsx",
+      "label": "sidebar.tsx",
+      "path": "src/components/ui/sidebar.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/components/ui",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "dir_src_hooks",
+      "label": "hooks/",
+      "path": "src/hooks",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_hooks_queries_ts",
+      "label": "queries.ts",
+      "path": "src/hooks/queries.ts",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/hooks",
+      "type": "ts",
+      "client": true
+    },
+    {
+      "id": "file_src_hooks_use_debounced_value_ts",
+      "label": "use-debounced-value.ts",
+      "path": "src/hooks/use-debounced-value.ts",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/hooks",
+      "type": "ts",
+      "client": true
+    },
+    {
+      "id": "dir_src_lib",
+      "label": "lib/",
+      "path": "src/lib",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_lib_admin_inventory_tree_ts",
+      "label": "admin-inventory-tree.ts",
+      "path": "src/lib/admin-inventory-tree.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/lib",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_lib_admin_orders_tree_ts",
+      "label": "admin-orders-tree.ts",
+      "path": "src/lib/admin-orders-tree.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/lib",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_lib_admin_ui_ts",
+      "label": "admin-ui.ts",
+      "path": "src/lib/admin-ui.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/lib",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_lib_api_ts",
+      "label": "api.ts",
+      "path": "src/lib/api.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/lib",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_lib_auth_routes_ts",
+      "label": "auth-routes.ts",
+      "path": "src/lib/auth-routes.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/lib",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_lib_auth_session_ts",
+      "label": "auth-session.ts",
+      "path": "src/lib/auth-session.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/lib",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_lib_build_table_csv_ts",
+      "label": "build-table-csv.ts",
+      "path": "src/lib/build-table-csv.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/lib",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_lib_category_icons_ts",
+      "label": "category-icons.ts",
+      "path": "src/lib/category-icons.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/lib",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_lib_dev_demo_accounts_ts",
+      "label": "dev-demo-accounts.ts",
+      "path": "src/lib/dev-demo-accounts.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/lib",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_lib_export_csv_ts",
+      "label": "export-csv.ts",
+      "path": "src/lib/export-csv.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/lib",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_lib_export_xlsx_ts",
+      "label": "export-xlsx.ts",
+      "path": "src/lib/export-xlsx.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/lib",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_lib_format_ts",
+      "label": "format.ts",
+      "path": "src/lib/format.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/lib",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_lib_inventory_api_filters_ts",
+      "label": "inventory-api-filters.ts",
+      "path": "src/lib/inventory-api-filters.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/lib",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_lib_permission_labels_ts",
+      "label": "permission-labels.ts",
+      "path": "src/lib/permission-labels.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/lib",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_lib_product_price_ts",
+      "label": "product-price.ts",
+      "path": "src/lib/product-price.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/lib",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_middleware_ts",
+      "label": "middleware.ts",
+      "path": "src/middleware.ts",
+      "color": "#ff00ff",
+      "size": 16,
+      "community": "src",
+      "type": "middleware",
+      "client": false
+    },
+    {
+      "id": "dir_src_providers",
+      "label": "providers/",
+      "path": "src/providers",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_providers_auth_provider_tsx",
+      "label": "auth-provider.tsx",
+      "path": "src/providers/auth-provider.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/providers",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_providers_query_provider_tsx",
+      "label": "query-provider.tsx",
+      "path": "src/providers/query-provider.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/providers",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "dir_public",
+      "label": "public/",
+      "path": "public",
+      "color": "#ff9d00",
+      "size": 28,
+      "community": "root",
+      "type": "directory"
+    }
+  ],
+  "links": [
+    {
+      "source": "dir_src",
+      "target": "dir_src_app",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app",
+      "target": "dir_src_app_categories",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_categories",
+      "target": "file_src_app_categories_page_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app",
+      "target": "dir_src_app_data",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_data",
+      "target": "file_src_app_data_page_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app",
+      "target": "dir_src_app_inventory",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_inventory",
+      "target": "file_src_app_inventory_page_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_inventory",
+      "target": "file_src_app_inventory_product_form_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app",
+      "target": "file_src_app_layout_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app",
+      "target": "file_src_app_loading_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app",
+      "target": "dir_src_app_locations",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_locations",
+      "target": "file_src_app_locations_page_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app",
+      "target": "dir_src_app_login",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_login",
+      "target": "file_src_app_login_page_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app",
+      "target": "dir_src_app_orders",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_orders",
+      "target": "file_src_app_orders_page_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app",
+      "target": "file_src_app_page_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app",
+      "target": "dir_src_app_profile",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_profile",
+      "target": "file_src_app_profile_page_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app",
+      "target": "dir_src_app_promo_codes",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_promo_codes",
+      "target": "file_src_app_promo_codes_page_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app",
+      "target": "dir_src_app_register",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_register",
+      "target": "file_src_app_register_page_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app",
+      "target": "dir_src_app_staff",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_staff",
+      "target": "file_src_app_staff_page_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_components",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components",
+      "target": "dir_src_components_admin_data_table",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_admin_data_table",
+      "target": "file_src_components_admin_data_table_admin_data_table_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_admin_data_table",
+      "target": "file_src_components_admin_data_table_index_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_admin_data_table",
+      "target": "file_src_components_admin_data_table_table_meta_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components",
+      "target": "file_src_components_admin_shell_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components",
+      "target": "file_src_components_admin_table_pagination_footer_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components",
+      "target": "file_src_components_sidebar_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components",
+      "target": "dir_src_components_ui",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_ui",
+      "target": "file_src_components_ui_sidebar_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_hooks",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_hooks",
+      "target": "file_src_hooks_queries_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_hooks",
+      "target": "file_src_hooks_use_debounced_value_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_lib",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_lib",
+      "target": "file_src_lib_admin_inventory_tree_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_lib",
+      "target": "file_src_lib_admin_orders_tree_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_lib",
+      "target": "file_src_lib_admin_ui_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_lib",
+      "target": "file_src_lib_api_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_lib",
+      "target": "file_src_lib_auth_routes_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_lib",
+      "target": "file_src_lib_auth_session_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_lib",
+      "target": "file_src_lib_build_table_csv_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_lib",
+      "target": "file_src_lib_category_icons_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_lib",
+      "target": "file_src_lib_dev_demo_accounts_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_lib",
+      "target": "file_src_lib_export_csv_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_lib",
+      "target": "file_src_lib_export_xlsx_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_lib",
+      "target": "file_src_lib_format_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_lib",
+      "target": "file_src_lib_inventory_api_filters_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_lib",
+      "target": "file_src_lib_permission_labels_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_lib",
+      "target": "file_src_lib_product_price_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "file_src_middleware_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_providers",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_providers",
+      "target": "file_src_providers_auth_provider_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_providers",
+      "target": "file_src_providers_query_provider_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "file_src_app_layout_tsx",
+      "target": "file_src_app_page_tsx",
+      "relation": "renders"
+    },
+    {
+      "source": "file_src_app_categories_page_tsx",
+      "target": "dir_src_components_admin_data_table",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_categories_page_tsx",
+      "target": "file_src_components_admin_table_pagination_footer_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_categories_page_tsx",
+      "target": "file_src_lib_api_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_categories_page_tsx",
+      "target": "file_src_providers_auth_provider_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_categories_page_tsx",
+      "target": "file_src_hooks_queries_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_categories_page_tsx",
+      "target": "file_src_hooks_use_debounced_value_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_categories_page_tsx",
+      "target": "file_src_lib_category_icons_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_data_page_tsx",
+      "target": "file_src_lib_auth_session_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_inventory_page_tsx",
+      "target": "file_src_lib_api_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_inventory_page_tsx",
+      "target": "file_src_providers_auth_provider_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_inventory_page_tsx",
+      "target": "file_src_hooks_queries_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_inventory_page_tsx",
+      "target": "file_src_hooks_use_debounced_value_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_inventory_page_tsx",
+      "target": "file_src_lib_format_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_inventory_page_tsx",
+      "target": "file_src_lib_product_price_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_inventory_page_tsx",
+      "target": "file_src_lib_admin_inventory_tree_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_inventory_page_tsx",
+      "target": "file_src_lib_inventory_api_filters_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_inventory_page_tsx",
+      "target": "dir_src_components_admin_data_table",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_inventory_page_tsx",
+      "target": "file_src_components_admin_table_pagination_footer_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_inventory_page_tsx",
+      "target": "file_src_lib_category_icons_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_inventory_page_tsx",
+      "target": "file_src_app_inventory_product_form_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_inventory_product_form_ts",
+      "target": "file_src_lib_api_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_layout_tsx",
+      "target": "file_src_providers_query_provider_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_layout_tsx",
+      "target": "file_src_providers_auth_provider_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_layout_tsx",
+      "target": "file_src_components_admin_shell_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_locations_page_tsx",
+      "target": "file_src_lib_api_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_locations_page_tsx",
+      "target": "file_src_hooks_queries_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_locations_page_tsx",
+      "target": "file_src_lib_export_csv_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_locations_page_tsx",
+      "target": "file_src_lib_export_xlsx_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_login_page_tsx",
+      "target": "file_src_providers_auth_provider_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_login_page_tsx",
+      "target": "file_src_lib_dev_demo_accounts_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_login_page_tsx",
+      "target": "file_src_lib_admin_ui_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_orders_page_tsx",
+      "target": "file_src_lib_api_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_orders_page_tsx",
+      "target": "file_src_providers_auth_provider_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_orders_page_tsx",
+      "target": "file_src_hooks_queries_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_orders_page_tsx",
+      "target": "file_src_hooks_use_debounced_value_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_orders_page_tsx",
+      "target": "file_src_lib_format_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_orders_page_tsx",
+      "target": "file_src_lib_admin_orders_tree_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_orders_page_tsx",
+      "target": "dir_src_components_admin_data_table",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_orders_page_tsx",
+      "target": "file_src_components_admin_table_pagination_footer_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_page_tsx",
+      "target": "file_src_hooks_queries_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_page_tsx",
+      "target": "file_src_lib_format_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_page_tsx",
+      "target": "file_src_providers_auth_provider_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_profile_page_tsx",
+      "target": "file_src_providers_auth_provider_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_profile_page_tsx",
+      "target": "file_src_lib_permission_labels_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_profile_page_tsx",
+      "target": "file_src_hooks_queries_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_profile_page_tsx",
+      "target": "file_src_lib_api_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_profile_page_tsx",
+      "target": "file_src_lib_auth_session_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_promo_codes_page_tsx",
+      "target": "dir_src_components_admin_data_table",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_promo_codes_page_tsx",
+      "target": "file_src_components_admin_table_pagination_footer_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_promo_codes_page_tsx",
+      "target": "file_src_hooks_queries_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_promo_codes_page_tsx",
+      "target": "file_src_hooks_use_debounced_value_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_promo_codes_page_tsx",
+      "target": "file_src_providers_auth_provider_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_promo_codes_page_tsx",
+      "target": "file_src_lib_api_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_register_page_tsx",
+      "target": "file_src_lib_admin_ui_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_staff_page_tsx",
+      "target": "dir_src_components_admin_data_table",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_staff_page_tsx",
+      "target": "file_src_components_admin_table_pagination_footer_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_staff_page_tsx",
+      "target": "file_src_lib_api_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_staff_page_tsx",
+      "target": "file_src_lib_export_csv_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_staff_page_tsx",
+      "target": "file_src_lib_export_xlsx_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_staff_page_tsx",
+      "target": "file_src_providers_auth_provider_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_staff_page_tsx",
+      "target": "file_src_hooks_queries_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_staff_page_tsx",
+      "target": "file_src_hooks_use_debounced_value_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_admin_data_table_admin_data_table_tsx",
+      "target": "file_src_lib_build_table_csv_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_admin_data_table_admin_data_table_tsx",
+      "target": "file_src_lib_export_csv_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_admin_data_table_admin_data_table_tsx",
+      "target": "file_src_lib_export_xlsx_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_admin_data_table_index_ts",
+      "target": "file_src_components_admin_data_table_admin_data_table_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_admin_shell_tsx",
+      "target": "file_src_components_sidebar_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_admin_shell_tsx",
+      "target": "file_src_providers_auth_provider_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_admin_shell_tsx",
+      "target": "file_src_lib_auth_session_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_admin_shell_tsx",
+      "target": "file_src_lib_auth_routes_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_sidebar_tsx",
+      "target": "file_src_providers_auth_provider_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_sidebar_tsx",
+      "target": "file_src_lib_api_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_sidebar_tsx",
+      "target": "dir_public",
+      "relation": "assets"
+    },
+    {
+      "source": "file_src_hooks_queries_ts",
+      "target": "file_src_lib_api_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_lib_admin_inventory_tree_ts",
+      "target": "file_src_lib_api_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_lib_admin_orders_tree_ts",
+      "target": "file_src_lib_api_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_lib_api_ts",
+      "target": "file_src_lib_auth_session_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_lib_inventory_api_filters_ts",
+      "target": "file_src_lib_admin_inventory_tree_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_lib_product_price_ts",
+      "target": "file_src_lib_api_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_providers_auth_provider_tsx",
+      "target": "file_src_lib_api_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_providers_auth_provider_tsx",
+      "target": "file_src_lib_auth_session_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_providers_query_provider_tsx",
+      "target": "file_src_lib_api_ts",
+      "relation": "imports"
+    }
+  ]
+}

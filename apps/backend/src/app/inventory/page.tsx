@@ -146,7 +146,6 @@ function InventoryImagePreview({ value }: { value: string }) {
   return (
     <div className="relative aspect-[4/3] w-full overflow-hidden rounded-lg border border-outline-variant bg-muted/40">
       {canTryLoad && !broken && (
-        // eslint-disable-next-line @next/next/no-img-element -- preview URL/data URL trong admin
         <img
           src={trimmed}
           alt=""

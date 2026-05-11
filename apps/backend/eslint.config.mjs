@@ -1,4 +1,5 @@
 import { defineConfig, globalIgnores } from "eslint/config";
+import { nextBackendServiceBoundary } from "@workspace/eslint-config/service-boundaries";
 import nextVitals from "eslint-config-next/core-web-vitals";
 import nextTs from "eslint-config-next/typescript";
 
@@ -12,6 +13,7 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    ".graphify/**",
   ]),
   {
     rules: {
@@ -24,6 +26,7 @@ const eslintConfig = defineConfig([
       "react-hooks/incompatible-library": "off",
     },
   },
+  ...nextBackendServiceBoundary,
 ]);
 
 export default eslintConfig;

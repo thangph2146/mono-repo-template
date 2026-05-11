@@ -1,4 +1,5 @@
 import { defineConfig, globalIgnores } from "eslint/config";
+import { nextFrontendServiceBoundary } from "@workspace/eslint-config/service-boundaries";
 import nextVitals from "eslint-config-next/core-web-vitals";
 import nextTs from "eslint-config-next/typescript";
 
@@ -24,6 +25,7 @@ const eslintConfig = defineConfig([
       "react-hooks/incompatible-library": "off",
     },
   },
+  ...nextFrontendServiceBoundary,
 ]);
 
 export default eslintConfig;

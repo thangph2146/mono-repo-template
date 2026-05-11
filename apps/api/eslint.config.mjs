@@ -1,6 +1,7 @@
 // @ts-check
 import eslint from '@eslint/js';
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
+import { apiServiceBoundary } from '@workspace/eslint-config/service-boundaries';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
@@ -32,4 +33,5 @@ export default tseslint.config(
       "prettier/prettier": ["error", { endOfLine: "auto" }],
     },
   },
+  ...apiServiceBoundary,
 );
