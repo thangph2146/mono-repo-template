@@ -78,7 +78,6 @@ import { ApiError, type Product, type ProductUnitType } from "@/lib/api";
 import { useAuth } from "@/providers/auth-provider";
 import { canUserAccess, PERMISSION_CODES } from "@workspace/api-client";
 import {
-  useAdjustStock,
   useCategories,
   useCategoryUsage,
   useCreateProduct,
@@ -381,7 +380,6 @@ export default function InventoryPage() {
   const deleteProduct = useDeleteProduct();
   const restoreProduct = useRestoreProduct();
   const purgeTrashedProduct = usePurgeTrashedProduct();
-  const adjustStock = useAdjustStock();
 
   const [mainTab, setMainTab] = useState<"inventory" | "trash">("inventory");
   const [deleteTarget, setDeleteTarget] = useState<Product | null>(null);
@@ -428,6 +426,23 @@ export default function InventoryPage() {
   const imageList = watch("images") ?? [];
   const watchedUnitTypes = watch("unitTypes");
   const couponRows = watch("coupons") ?? [""];
+  const watchedBaseStock = Number(watch("stock") ?? 0);
+  const watchedBaseUnit = String(watch("unit") ?? "").trim() || "đơn vị chuẩn";
+  const normalizedBaseStock = Math.max(0, Math.floor(watchedBaseStock || 0));
+  const stockByUnits = useMemo(
+    () =>
+      (watchedUnitTypes ?? []).map((u, idx) => {
+        const unitType = String(u?.type ?? "").trim() || `đơn vị ${idx + 1}`;
+        const qtyPerUnit = Math.max(
+          1,
+          Math.floor(Number(u?.qtyPerUnit ?? 1) || 1),
+        );
+        const availableQty = Math.floor(normalizedBaseStock / qtyPerUnit);
+        const remainderBase = normalizedBaseStock % qtyPerUnit;
+        return { unitType, qtyPerUnit, availableQty, remainderBase };
+      }),
+    [watchedUnitTypes, normalizedBaseStock],
+  );
   const generatedGiftNotePreview = useMemo(() => {
     const giftRules = (watchedUnitTypes ?? [])
       .filter((u) => u?.promoMode === "gift")
@@ -752,21 +767,6 @@ export default function InventoryPage() {
     },
   ];
 
-  const handleAdjust = (product: Product, delta: number): void => {
-    toast.promise(
-      adjustStock.mutateAsync({
-        id: product.id,
-        input: { delta, reason: "manual-adjust" },
-      }),
-      {
-        loading: `${delta > 0 ? "Nhập" : "Xuất"} ${Math.abs(delta)} ${product.unit}...`,
-        success: (p) => `Tồn kho ${p.name}: ${p.stock} ${p.unit}`,
-        error: (err: unknown) =>
-          err instanceof ApiError ? err.message : "Cập nhật tồn kho thất bại",
-      },
-    );
-  };
-
   const baseTreeRows = useMemo(
     () => productsToTreeRows(inventory),
     [inventory],
@@ -988,26 +988,6 @@ export default function InventoryPage() {
               <>
                 <Button
                   variant="outline"
-                  size="icon"
-                  className="h-8 w-8 rounded-lg"
-                  onClick={() => handleAdjust(item, -1)}
-                  disabled={adjustStock.isPending || item.stock <= 0}
-                  aria-label="Xuất 1"
-                >
-                  <Minus className="w-3.5 h-3.5" />
-                </Button>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="h-8 w-8 rounded-lg"
-                  onClick={() => handleAdjust(item, 1)}
-                  disabled={adjustStock.isPending}
-                  aria-label="Nhập 1"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                </Button>
-                <Button
-                  variant="outline"
                   size="sm"
                   className="h-8 gap-1 rounded-lg"
                   onClick={() => openEdit(item)}
@@ -1214,20 +1194,59 @@ export default function InventoryPage() {
                   </p>
                 )}
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="pstock">Tồn kho hiện tại (đơn vị nhỏ nhất)</Label>
-                <Input
-                  id="pstock"
-                  type="number"
-                  min={0}
-                  {...register("stock")}
-                  aria-invalid={!!formState.errors.stock}
-                />
-                {fieldError(formState.errors.stock) && (
-                  <p className="text-xs text-destructive">
-                    {formState.errors.stock?.message}
-                  </p>
-                )}
+              <div className="space-y-2 sm:col-span-2">
+                <Label>Tồn kho theo đơn vị</Label>
+                <div className="rounded-xl border border-outline-variant/60 bg-muted/20 p-3">
+                  <div className="mb-3 space-y-1 rounded-lg border border-outline-variant/40 bg-background p-2.5">
+                    <Label htmlFor="pstock">Số lượng tồn kho (đơn vị chuẩn)</Label>
+                    <Input
+                      id="pstock"
+                      type="number"
+                      min={0}
+                      {...register("stock")}
+                      aria-invalid={!!formState.errors.stock}
+                      className="h-9 text-sm rounded-lg"
+                    />
+                    {fieldError(formState.errors.stock) && (
+                      <p className="text-xs text-destructive">
+                        {formState.errors.stock?.message}
+                      </p>
+                    )}
+                  </div>
+                  {stockByUnits.length > 0 ? (
+                    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                      {stockByUnits.map((u, idx) => {
+                        return (
+                          <div
+                            key={`${u.unitType}-${idx}`}
+                            className="flex items-center justify-between rounded-lg border border-outline-variant/40 bg-background px-2.5 py-1.5 text-xs"
+                          >
+                            <span className="font-medium text-muted-foreground leading-tight">
+                              {u.unitType}
+                              <span className="block text-[10px] opacity-80">
+                                1 {u.unitType} = {u.qtyPerUnit} {watchedBaseUnit}
+                              </span>
+                            </span>
+                            <span className="text-right">
+                              <span className="block font-bold text-foreground">
+                                {u.availableQty.toLocaleString("vi-VN")}
+                              </span>
+                              {u.remainderBase > 0 && (
+                                <span className="block text-[10px] text-muted-foreground">
+                                  dư {u.remainderBase} {watchedBaseUnit}
+                                </span>
+                              )}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <p className="text-xs text-muted-foreground">
+                      Thêm đơn vị tính để hiển thị tồn kho tương ứng.
+                    </p>
+                  )}
+                </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="punit">Đơn vị quy chuẩn</Label>
@@ -1549,16 +1568,23 @@ export default function InventoryPage() {
                       className="h-9 text-sm rounded-lg"
                     />
                   </div>
-                  <div className="space-y-1 sm:col-span-1">
+                  <div className="space-y-1 sm:col-span-2 min-w-0">
                     <Label className="text-xs">Quy đổi</Label>
-                    <Input
-                      type="number"
-                      min={1}
-                      {...register(`unitTypes.${idx}.qtyPerUnit`)}
-                      className="h-9 text-sm rounded-lg"
-                      aria-invalid={
-                        !!formState.errors.unitTypes?.[idx]?.qtyPerUnit
-                      }
+                    <Controller
+                      name={`unitTypes.${idx}.qtyPerUnit`}
+                      control={control}
+                      render={({ field }) => (
+                        <NumberStepperInput
+                          value={field.value}
+                          min={1}
+                          step={1}
+                          className="min-w-[60px] h-9 text-sm rounded-lg"
+                          ariaInvalid={
+                            !!formState.errors.unitTypes?.[idx]?.qtyPerUnit
+                          }
+                          onChange={field.onChange}
+                        />
+                      )}
                     />
                   </div>
                   <div className="space-y-1 sm:col-span-2">
@@ -1582,7 +1608,7 @@ export default function InventoryPage() {
                     </select>
                   </div>
                   {watchedUnitTypes?.[idx]?.promoMode === "price" && (
-                    <div className="space-y-1 sm:col-span-2">
+                    <div className="space-y-1 sm:col-span-3">
                       <Label className="text-xs">Giá khuyến mãi</Label>
                       <p className="text-[10px] text-muted-foreground leading-snug">
                         Chỉ áp khi đủ{" "}
@@ -1729,18 +1755,25 @@ export default function InventoryPage() {
                           </>
                         )}
                       />
-                      <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+                      <div className="grid grid-cols-1 gap-2 sm:grid-cols-4">
                         <Input
                           {...register(`unitTypes.${idx}.giftProductName`)}
                           placeholder="Tên quà"
-                          className="h-9 text-sm rounded-lg sm:col-span-2"
+                          className="h-9 text-sm rounded-lg sm:col-span-3"
                         />
-                        <Input
-                          type="number"
-                          min={1}
-                          {...register(`unitTypes.${idx}.giftQty`)}
-                          placeholder="SL quà"
-                          className="h-9 text-sm rounded-lg"
+                        <Controller
+                          name={`unitTypes.${idx}.giftQty`}
+                          control={control}
+                          render={({ field }) => (
+                            <NumberStepperInput
+                              value={field.value}
+                              min={1}
+                              step={1}
+                              placeholder="SL quà"
+                              className="h-9 text-sm rounded-lg"
+                              onChange={field.onChange}
+                            />
+                          )}
                         />
                       </div>
                       <Input
@@ -1766,7 +1799,7 @@ export default function InventoryPage() {
                       )}
                     </div>
                   )}
-                  <div className="space-y-1 sm:col-span-1">
+                  <div className="space-y-1 sm:col-span-2 min-w-0">
                     <Label className="text-xs leading-tight">
                       SL tối thiểu (KM)
                     </Label>
@@ -1775,11 +1808,18 @@ export default function InventoryPage() {
                         ? "Không áp khuyến mãi: để 0."
                         : "Số lượng tối thiểu để kích hoạt cơ chế KM ở dòng này."}
                     </p>
-                    <Input
-                      type="number"
-                      min={0}
-                      {...register(`unitTypes.${idx}.minWholesaleQty`)}
-                      className="h-9 text-sm rounded-lg"
+                    <Controller
+                      name={`unitTypes.${idx}.minWholesaleQty`}
+                      control={control}
+                      render={({ field }) => (
+                        <NumberStepperInput
+                          value={field.value}
+                          min={0}
+                          step={1}
+                          className="h-9 text-sm rounded-lg"
+                          onChange={field.onChange}
+                        />
+                      )}
                     />
                   </div>
                   <div className="sm:col-span-1 flex justify-end">
@@ -2137,6 +2177,68 @@ export default function InventoryPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+    </div>
+  );
+}
+
+function NumberStepperInput({
+  value,
+  onChange,
+  min,
+  step = 1,
+  placeholder,
+  className,
+  ariaInvalid,
+}: {
+  value: unknown;
+  onChange: (v: number) => void;
+  min: number;
+  step?: number;
+  placeholder?: string;
+  className?: string;
+  ariaInvalid?: boolean;
+}) {
+  const normalized = Number.isFinite(Number(value))
+    ? Math.max(min, Math.floor(Number(value)))
+    : min;
+  return (
+    <div className="flex min-w-0 items-center gap-1">
+      <Button
+        type="button"
+        variant="outline"
+        size="icon"
+        className="h-8 w-8 shrink-0 rounded-lg"
+        onClick={() => onChange(Math.max(min, normalized - step))}
+        disabled={normalized <= min}
+      >
+        <Minus className="h-4 w-4" />
+      </Button>
+      <Input
+        type="number"
+        min={min}
+        value={normalized}
+        onChange={(e) => {
+          const raw = e.target.value;
+          if (raw === "") {
+            onChange(min);
+            return;
+          }
+          const n = Number(raw);
+          onChange(Number.isFinite(n) ? Math.max(min, Math.floor(n)) : min);
+        }}
+        placeholder={placeholder}
+        className={`min-w-0 flex-1 text-center ${className ?? ""}`.trim()}
+        aria-invalid={ariaInvalid}
+      />
+      <Button
+        type="button"
+        variant="outline"
+        size="icon"
+        className="h-8 w-8 shrink-0 rounded-lg"
+        onClick={() => onChange(normalized + step)}
+      >
+        <Plus className="h-4 w-4" />
+      </Button>
     </div>
   );
 }
