@@ -10,6 +10,7 @@ import {
 } from '../entities/order.entity';
 import { Permission } from '../entities/permission.entity';
 import { Product } from '../entities/product.entity';
+import { PromoCode } from '../entities/promo-code.entity';
 import { RolePermissionLink } from '../entities/role-permission-link.entity';
 import { Role } from '../entities/role.entity';
 import { User } from '../entities/user.entity';
@@ -51,6 +52,8 @@ export class DatabaseSeeder extends Seeder {
     await this.seedDemoAccounts(em);
     await this.seedCategories(em);
     await this.seedProducts(em);
+    await em.flush();
+    await this.seedPromoCodes(em);
     await em.flush();
     await this.seedSampleOrders(em);
     await em.flush();
@@ -1153,6 +1156,76 @@ export class DatabaseSeeder extends Seeder {
         { ...data, images, isActive: true },
         { partial: true },
       );
+    }
+  }
+
+  /** Mã giảm giá toàn đơn — khớp `@workspace/promo-codes` built-in. */
+  private async seedPromoCodes(em: EntityManager): Promise<void> {
+    const rows: Array<{
+      code: string;
+      label: string;
+      discountKind: 'fixed' | 'percent';
+      discountFixed: number;
+      discountPercent: number;
+      discountCapVnd: number | null;
+      minOrderSubtotal: number;
+      isActive: boolean;
+      validFrom: Date | null;
+      validUntil: Date | null;
+      usageLimit: number | null;
+      usageCount: number;
+    }> = [
+      {
+        code: 'GIAM50K',
+        label: 'Giảm 50.000đ (GIAM50K)',
+        discountKind: 'fixed',
+        discountFixed: 50_000,
+        discountPercent: 0,
+        discountCapVnd: null,
+        minOrderSubtotal: 200_000,
+        isActive: true,
+        validFrom: null,
+        validUntil: null,
+        usageLimit: null,
+        usageCount: 0,
+      },
+      {
+        code: 'SYNC10',
+        label: 'Giảm 10% (tối đa 200.000đ) — SYNC10',
+        discountKind: 'percent',
+        discountFixed: 0,
+        discountPercent: 10,
+        discountCapVnd: 200_000,
+        minOrderSubtotal: 0,
+        isActive: true,
+        validFrom: null,
+        validUntil: null,
+        usageLimit: null,
+        usageCount: 0,
+      },
+      {
+        code: 'WELCOME30',
+        label: 'Giảm 30.000đ (WELCOME30)',
+        discountKind: 'fixed',
+        discountFixed: 30_000,
+        discountPercent: 0,
+        discountCapVnd: null,
+        minOrderSubtotal: 150_000,
+        isActive: true,
+        validFrom: null,
+        validUntil: null,
+        usageLimit: null,
+        usageCount: 0,
+      },
+    ];
+
+    for (const r of rows) {
+      const exists = await em.findOne(PromoCode, { code: r.code });
+      if (exists) {
+        em.assign(exists, r);
+        continue;
+      }
+      em.create(PromoCode, r, { partial: true });
     }
   }
 }

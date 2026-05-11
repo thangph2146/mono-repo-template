@@ -35,7 +35,7 @@ import {
   useCategoryUsage,
 } from "@/hooks/queries";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
-import { useCart } from "@/hooks/use-cart";
+import { cartLineQuantity, useCart } from "@/hooks/use-cart";
 import { formatVND } from "@/lib/format";
 import {
   getProductUnits,
@@ -590,14 +590,18 @@ function ProductCardWithUnitSelector({
   categoryLabel: string;
   onAddToCart: (product: Product, unit: ProductUnitType, qty: number) => void;
 }) {
+  const cart = useCart();
   const units = useMemo(() => getProductUnits(p), [p]);
   const [selectedUnit, setSelectedUnit] = useState<ProductUnitType>(units[0]!);
   const [quantity, setQuantity] = useState(1);
 
+  const qtyInCart = cartLineQuantity(cart.lines, p.id, selectedUnit.type);
+  const pricingQty = qtyInCart + quantity;
+
   const isWholesale = selectedUnit.wholesalePrice !== null;
   const { current: displayPrice, list: listPrice } = unitSellingAndListPrice(
     selectedUnit,
-    quantity,
+    pricingQty,
   );
 
   const maxQty = Math.max(
@@ -692,9 +696,22 @@ function ProductCardWithUnitSelector({
             {isWholesale && selectedUnit.minWholesaleQty > 0 && (
               <p className="text-xs text-on-surface-variant">
                 Giá KM khi đặt ≥ {selectedUnit.minWholesaleQty} {selectedUnit.type}
-                {quantity < selectedUnit.minWholesaleQty && (
+                {qtyInCart > 0 && (
                   <span className="block text-[10px] mt-0.5 text-muted-foreground">
-                    Đang chọn {quantity}: giá ban đầu — có thể mua 1.
+                    Giỏ: {qtyInCart} · Lần này: {quantity} → tổng xét giá:{" "}
+                    <span className="font-semibold text-foreground">
+                      {pricingQty}
+                    </span>
+                  </span>
+                )}
+                {pricingQty < selectedUnit.minWholesaleQty && (
+                  <span className="block text-[10px] mt-0.5 text-muted-foreground">
+                    Tổng {pricingQty} vẫn chưa đủ điều kiện KM — có thể mua 1.
+                  </span>
+                )}
+                {pricingQty >= selectedUnit.minWholesaleQty && qtyInCart > 0 && (
+                  <span className="block text-[10px] mt-0.5 text-emerald-700 dark:text-emerald-400 font-medium">
+                    Gộp giỏ + lần này đủ điều kiện KM.
                   </span>
                 )}
               </p>

@@ -1,6 +1,7 @@
 import type { EntityClass } from '@mikro-orm/core';
 import { Category } from './category.entity';
 import { Order } from './order.entity';
+import { PromoCode } from './promo-code.entity';
 import { Permission } from './permission.entity';
 import { Product } from './product.entity';
 import { Role } from './role.entity';
@@ -20,5 +21,6 @@ export const PERSISTENT_ENTITY_CLASSES = [
   UserRoleLink,
   Category,
   Product,
+  PromoCode,
   Order,
 ] as const satisfies readonly EntityClass<object>[];

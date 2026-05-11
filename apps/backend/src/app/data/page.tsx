@@ -215,7 +215,7 @@ export default function DataBackupPage() {
   const exportBusy = exporting !== null;
 
   return (
-    <div className="mx-auto max-w-4xl space-y-8 pb-10">
+    <div className="space-y-8 pb-10">
       {/* Tiêu đề + bối cảnh ngay khi mở trang */}
       <header className="space-y-3">
         <div className="flex flex-wrap items-start gap-4">
@@ -402,7 +402,7 @@ export default function DataBackupPage() {
       <Separator />
 
       <Collapsible open={advancedOpen} onOpenChange={setAdvancedOpen}>
-        <Card className="py-0">
+        <Card className="pt-0">
           <CollapsibleTrigger
             className={cn(
               "flex w-full items-center justify-between gap-3 p-4 text-left",

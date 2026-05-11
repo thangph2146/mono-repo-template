@@ -15,6 +15,7 @@ import { OrdersModule } from './orders/orders.module';
 import { UsersModule } from './users/users.module';
 import { CategoriesModule } from './categories/categories.module';
 import { DataMaintenanceModule } from './data-maintenance/data-maintenance.module';
+import { PromoCodesModule } from './promo-codes/promo-codes.module';
 import { LoggerModule } from './common/logger';
 
 @Module({
@@ -40,6 +41,7 @@ import { LoggerModule } from './common/logger';
     UsersModule,
     CategoriesModule,
     DataMaintenanceModule,
+    PromoCodesModule,
     RbacModule,
   ],
   controllers: [AppController],

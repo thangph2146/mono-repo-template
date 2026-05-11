@@ -43,5 +43,9 @@ export type {
   PaymentMethod,
   PaymentStatus,
   UpdateProfileInput,
+  PromoCode,
+  PromoDiscountKind,
+  CreatePromoCodeInput,
+  UpdatePromoCodeInput,
 } from "@workspace/api-client";
 export { ApiError } from "@workspace/api-client";

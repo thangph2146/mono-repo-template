@@ -3,6 +3,7 @@ import { CategoriesApi } from './resources/categories';
 import { OrdersApi } from './resources/orders';
 import { ProductsApi } from './resources/products';
 import { RbacApi } from './resources/rbac';
+import { PromoCodesApi } from './resources/promo-codes';
 import { UsersApi } from './resources/users';
 import type { HealthStatus } from './types';
 
@@ -27,6 +28,7 @@ export class StoreSyncSdk {
   readonly orders: OrdersApi;
   readonly categories: CategoriesApi;
   readonly rbac: RbacApi;
+  readonly promoCodes: PromoCodesApi;
 
   constructor(options: ApiClientOptions) {
     this.http = new ApiClient(options);
@@ -35,6 +37,7 @@ export class StoreSyncSdk {
     this.orders = new OrdersApi(this.http);
     this.categories = new CategoriesApi(this.http);
     this.rbac = new RbacApi(this.http);
+    this.promoCodes = new PromoCodesApi(this.http);
   }
 
   health(): Promise<HealthStatus> {

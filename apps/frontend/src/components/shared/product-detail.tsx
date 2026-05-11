@@ -21,7 +21,7 @@ import type { Product, ProductUnitType } from "@/lib/api";
 import { formatVND } from "@/lib/format";
 import { unitSellingAndListPrice } from "@/lib/product-price";
 import { useCategoryBySlug } from "@/hooks/queries";
-import { useCart } from "@/hooks/use-cart";
+import { cartLineQuantity, useCart } from "@/hooks/use-cart";
 
 type ProductDetailProps = {
   product: Product;
@@ -67,10 +67,17 @@ export function ProductDetail({
   );
   const [qty, setQty] = useState(1);
 
+  const qtyInCart = cartLineQuantity(
+    cart.lines,
+    product.id,
+    selectedUnit.type,
+  );
+  const pricingQty = qtyInCart + qty;
+
   const isWholesale = selectedUnit.wholesalePrice !== null;
   const { current: unitPrice, list: listPrice } = unitSellingAndListPrice(
     selectedUnit,
-    qty,
+    pricingQty,
   );
 
   const totalUnits = qty * Math.max(selectedUnit.qtyPerUnit, 1);
@@ -169,8 +176,12 @@ export function ProductDetail({
                 {units.map((u) => {
                   const active = selectedUnit.type === u.type;
                   const isSi = u.wholesalePrice !== null;
-                  const previewQty = active ? qty : 1;
-                  const { current, list } = unitSellingAndListPrice(u, previewQty);
+                  const inCartU = cartLineQuantity(cart.lines, product.id, u.type);
+                  const previewQty = inCartU + qty;
+                  const { current, list } = unitSellingAndListPrice(
+                    u,
+                    previewQty,
+                  );
                   return (
                     <Button
                       key={u.type}
@@ -223,6 +234,20 @@ export function ProductDetail({
                 </Badge>
               )}
             </div>
+            {qtyInCart > 0 && (
+              <p className="text-xs text-muted-foreground font-medium">
+                Trong giỏ:{" "}
+                <span className="font-bold text-foreground">
+                  {qtyInCart} {selectedUnit.type}
+                </span>
+                {" · "}
+                Đang thêm:{" "}
+                <span className="font-bold text-foreground">{qty}</span>
+                {" → "}
+                Tổng (áp giá):{" "}
+                <span className="font-bold text-primary">{pricingQty}</span>
+              </p>
+            )}
             {isWholesale && minPromoQty > 1 && (
               <p className="text-sm text-on-surface-variant font-medium">
                 Từ{" "}
@@ -230,9 +255,17 @@ export function ProductDetail({
                   {minPromoQty} {selectedUnit.type}
                 </span>{" "}
                 trở lên mới áp giá khuyến mãi; mua ít hơn vẫn được (giá ban đầu).
-                {qty < minPromoQty && (
+                {pricingQty < minPromoQty && (
                   <span className="block text-xs mt-1 text-muted-foreground">
-                    Đang chọn {qty}: giá ban đầu — có thể đặt 1.
+                    Tổng sau khi thêm ({pricingQty}) vẫn chưa đủ điều kiện KM — có
+                    thể đặt từ 1.
+                  </span>
+                )}
+                {pricingQty >= minPromoQty && (
+                  <span className="block text-xs mt-1 text-emerald-700 dark:text-emerald-400">
+                    {qtyInCart > 0
+                      ? `Đủ điều kiện KM khi gộp giỏ (${qtyInCart}) + lần này (${qty}) = ${pricingQty} ${selectedUnit.type}.`
+                      : `Đủ điều kiện KM với ${pricingQty} ${selectedUnit.type}.`}
                   </span>
                 )}
               </p>

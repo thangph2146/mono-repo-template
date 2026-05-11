@@ -1,7 +1,11 @@
 "use client";
 
 import { useCallback, useSyncExternalStore } from "react";
-import { applyPromoCode, type PromoResult } from "@workspace/promo-codes";
+import {
+  applyPromoCodeWithRules,
+  type PromoResult,
+} from "@workspace/promo-codes";
+import { getMergedPromoRules } from "@/lib/promo-rules-registry";
 import { effectiveLineUnitPrice } from "@workspace/api-client";
 import type { Product, ProductUnitType } from "@/lib/api";
 
@@ -39,6 +43,19 @@ const initialState: CartState = { lines: [], appliedPromoCode: null };
 /** Khóa gộp dòng: cùng sản phẩm + cùng loại đơn vị (trim). */
 export function cartLineKey(productId: number, unitType: string): string {
   return `${productId}:${String(unitType).trim()}`;
+}
+
+/** SL trong giỏ (cùng SP + loại đơn vị), để preview giá khi cộng với SL đang chọn trên catalog/CTSP. */
+export function cartLineQuantity(
+  lines: readonly CartLine[],
+  productId: number,
+  unitType: string,
+): number {
+  const key = cartLineKey(productId, unitType);
+  const line = lines.find(
+    (l) => cartLineKey(l.productId, l.unitType) === key,
+  );
+  return line ? Math.max(0, Math.floor(line.quantity)) : 0;
 }
 
 function repriceLine(line: CartLine): CartLine {
@@ -386,10 +403,15 @@ export const cartStore = {
       unitType: l.unitType,
       quantity: l.quantity,
     }));
-    const result = applyPromoCode(subtotal, raw, {
-      cartLines,
-      preAppliedDiscount: 0,
-    });
+    const result = applyPromoCodeWithRules(
+      subtotal,
+      raw,
+      getMergedPromoRules(),
+      {
+        cartLines,
+        preAppliedDiscount: 0,
+      },
+    );
     if (!result.ok) return result;
     next.appliedPromoCode = result.normalizedCode;
     write(next);
@@ -469,10 +491,15 @@ export function useCart(): CartSummary {
 
   const appliedPromoCode = state.appliedPromoCode;
   const promoEval = appliedPromoCode
-    ? applyPromoCode(subtotal, appliedPromoCode, {
-        cartLines,
-        preAppliedDiscount: 0,
-      })
+    ? applyPromoCodeWithRules(
+        subtotal,
+        appliedPromoCode,
+        getMergedPromoRules(),
+        {
+          cartLines,
+          preAppliedDiscount: 0,
+        },
+      )
     : null;
   const promoDiscount = promoEval?.ok === true ? promoEval.discount : 0;
   const promoLabel = promoEval?.ok === true ? promoEval.label : null;

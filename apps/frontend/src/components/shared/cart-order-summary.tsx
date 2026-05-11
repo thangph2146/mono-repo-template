@@ -79,10 +79,10 @@ function PromoField({ className }: { className?: string }) {
         </Button>
       </div>
       <p className="text-[11px] leading-relaxed text-muted-foreground">
-        Mã demo: {PROMO_CODE_EXAMPLES.join(" · ")}. Giá khuyến mãi theo{" "}
-        <strong>từng sản phẩm / từng đơn vị</strong> (SL tối thiểu trên kho) tự cập nhật
-        khi đổi số lượng — không gộp chương trình giữa các SP; khác hoàn toàn với mã
-        nhập tay bên dưới.
+        Mã toàn đơn do kho cấu hình (đồng bộ từ máy chủ). Ví dụ:{" "}
+        {PROMO_CODE_EXAMPLES.join(" · ")}. Giá KM theo{" "}
+        <strong>từng sản phẩm / đơn vị</strong> (SL tối thiểu) tự cập nhật khi đổi số
+        lượng — khác với ô mã bên dưới.
       </p>
       {appliedPromoCode && promoDiscount > 0 && promoLabel && (
         <div className="flex items-center justify-between rounded-xl border border-success/25 bg-success/5 px-3 py-2 text-sm">
@@ -92,9 +92,9 @@ function PromoField({ className }: { className?: string }) {
           </span>
           <Button
             type="button"
-            variant="ghost"
+            variant="destructive"
             size="sm"
-            className="h-8 text-xs text-muted-foreground"
+            className={"rounded-xl"}
             onClick={handleClear}
           >
             Gỡ mã

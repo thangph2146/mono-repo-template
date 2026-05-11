@@ -12,4 +12,6 @@ export {
   PaymentStatus,
 } from './order.entity';
 export type { OrderItem } from './order.entity';
+export { PromoCode } from './promo-code.entity';
+export type { PromoDiscountKind } from './promo-code.entity';
 export { PERSISTENT_ENTITY_CLASSES } from './registry';

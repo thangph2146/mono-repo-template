@@ -10,6 +10,7 @@ import {
   Package,
   Store,
   Tags,
+  TicketPercent,
   LogOut,
   ChevronsLeft,
   ChevronsRight,
@@ -63,6 +64,12 @@ const menuItems: MenuItem[] = [
     label: "Loại sản phẩm",
     icon: Tags,
     permission: PERMISSION_CODES.CATEGORIES_READ,
+  },
+  {
+    href: "/promo-codes",
+    label: "Mã khuyến mãi",
+    icon: TicketPercent,
+    permission: PERMISSION_CODES.PRODUCTS_READ,
   },
   {
     href: "/locations",

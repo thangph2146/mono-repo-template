@@ -15,15 +15,18 @@ import {
   type CategoryUsage,
   type ChangePasswordInput,
   type CreateCategoryInput,
+  type CreatePromoCodeInput,
   type CreateProductInput,
   type CreateUserInput,
   type Order,
   type OrderStatus,
   type Product,
+  type PromoCode,
   type ProductListParams,
   type RbacPermission,
   type RbacRole,
   type UpdateCategoryInput,
+  type UpdatePromoCodeInput,
   type UpdateProductInput,
   type UpdateProfileInput,
   type UpdateUserInput,
@@ -46,6 +49,7 @@ export const queryKeys = {
   usersTrashed: () => ["users", "trashed"] as const,
   dealers: () => ["users", "dealers"] as const,
   rbacCatalog: () => ["rbac", "catalog"] as const,
+  promoCodes: () => ["promo-codes"] as const,
 };
 
 export type ProductsListData = { items: Product[]; total: number };
@@ -691,6 +695,64 @@ export const usePurgeTrashedStaffUser = (): UseMutationResult<void, Error, numbe
       void qc.invalidateQueries({ queryKey: queryKeys.usersTrashed() });
       void qc.invalidateQueries({ queryKey: queryKeys.dealers() });
       qc.removeQueries({ queryKey: queryKeys.staffProfile(id) });
+    },
+  });
+};
+
+export type PromoCodesListParams = {
+  q?: string;
+  page: number;
+  limit: number;
+};
+
+export const usePromoCodesAdmin = (opts: {
+  listParams: PromoCodesListParams;
+}): UseQueryResult<{ items: PromoCode[]; total: number }, Error> =>
+  useQuery({
+    queryKey: [...queryKeys.promoCodes(), opts.listParams] as const,
+    queryFn: async () => {
+      const res = await api.promoCodes.list(opts.listParams);
+      if (Array.isArray(res)) {
+        return { items: res, total: res.length };
+      }
+      return { items: res.items, total: res.total };
+    },
+  });
+
+export const useCreatePromoCode = (): UseMutationResult<
+  PromoCode,
+  Error,
+  CreatePromoCodeInput
+> => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (input) => api.promoCodes.create(input),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: queryKeys.promoCodes() });
+    },
+  });
+};
+
+export const useUpdatePromoCode = (): UseMutationResult<
+  PromoCode,
+  Error,
+  { id: number; input: UpdatePromoCodeInput }
+> => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, input }) => api.promoCodes.update(id, input),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: queryKeys.promoCodes() });
+    },
+  });
+};
+
+export const useDeletePromoCode = (): UseMutationResult<void, Error, number> => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id) => api.promoCodes.remove(id),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: queryKeys.promoCodes() });
     },
   });
 };

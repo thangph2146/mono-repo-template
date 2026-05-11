@@ -9,6 +9,7 @@ import { Toaster } from "sonner";
 import NextTopLoader from "nextjs-toploader";
 import { QueryProvider } from "@/providers/query-provider";
 import { CartSyncBridge } from "@/components/shared/cart-sync-bridge";
+import { PromoRulesSync } from "@/components/shared/promo-rules-sync";
 
 const roboto = Roboto({
   variable: "--font-roboto",
@@ -52,6 +53,7 @@ export default function RootLayout({
         <ThemeProvider>
           <TextSizeProvider>
             <QueryProvider>
+              <PromoRulesSync />
               <CartSyncBridge />
               <Header />
               <main className="flex-1">{children}</main>

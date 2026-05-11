@@ -12,6 +12,9 @@
     "lint": "eslint \"src/**/*.ts\" --max-warnings=0",
     "typecheck": "tsc --noEmit"
   },
+  "dependencies": {
+    "@workspace/promo-codes": "workspace:*"
+  },
   "devDependencies": {
     "@types/node": "^24.0.0",
     "@workspace/eslint-config": "workspace:*",

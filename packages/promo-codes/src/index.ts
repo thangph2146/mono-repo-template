@@ -39,15 +39,123 @@ function discountBasis(
   return Math.max(0, Math.floor(subtotal - Math.max(0, preAppliedDiscount ?? 0)));
 }
 
-/** Gợi ý hiển thị trên form (mã nhập tay). Giá KM theo đơn vị do kho cấu hình — không phải mã. */
-export const PROMO_CODE_EXAMPLES = ['GIAM50K', 'SYNC10', 'WELCOME30'] as const;
+/** Cách tính giảm — khớp cột `discountKind` trên API. */
+export type PromoDiscountKind = 'fixed' | 'percent';
 
 /**
- * Tính số tiền giảm từ mã (VND, số nguyên). Không vượt quá phần còn lại sau `preAppliedDiscount`.
+ * Rule tối giản để áp dụng mã (đủ cho client + server; không chứa usage).
+ * `code` luôn so khớp sau khi trim + uppercase.
  */
-export function applyPromoCode(
+export type PromoRulePublic = {
+  code: string;
+  label: string;
+  discountKind: PromoDiscountKind;
+  /** VND — khi `discountKind === 'fixed'`. */
+  discountFixed: number;
+  /** 0–100 — khi `discountKind === 'percent'`. */
+  discountPercent: number;
+  /** Trần giảm (VND) cho %; `null` = không trần. */
+  discountCapVnd: number | null;
+  /** Tạm tính tối thiểu (VND); `0` = không yêu cầu. */
+  minOrderSubtotal: number;
+};
+
+/** Mặc định khi DB chưa seed — vẫn demo được trên local. */
+export const BUILTIN_PROMO_RULES: readonly PromoRulePublic[] = [
+  {
+    code: 'GIAM50K',
+    label: 'Giảm 50.000đ (GIAM50K)',
+    discountKind: 'fixed',
+    discountFixed: 50_000,
+    discountPercent: 0,
+    discountCapVnd: null,
+    minOrderSubtotal: 200_000,
+  },
+  {
+    code: 'SYNC10',
+    label: 'Giảm 10% (tối đa 200.000đ) — SYNC10',
+    discountKind: 'percent',
+    discountFixed: 0,
+    discountPercent: 10,
+    discountCapVnd: 200_000,
+    minOrderSubtotal: 0,
+  },
+  {
+    code: 'WELCOME30',
+    label: 'Giảm 30.000đ (WELCOME30)',
+    discountKind: 'fixed',
+    discountFixed: 30_000,
+    discountPercent: 0,
+    discountCapVnd: null,
+    minOrderSubtotal: 150_000,
+  },
+] as const;
+
+/** Gợi ý placeholder form — lấy từ bộ mặc định. */
+export const PROMO_CODE_EXAMPLES = BUILTIN_PROMO_RULES.map((r) => r.code);
+
+/** Gộp: rule DB trùng `code` ghi đè rule built-in. */
+export function mergePromoRulesPreferDb(
+  dbRules: readonly PromoRulePublic[],
+): PromoRulePublic[] {
+  const m = new Map<string, PromoRulePublic>();
+  for (const r of BUILTIN_PROMO_RULES) {
+    m.set(r.code.trim().toUpperCase(), { ...r });
+  }
+  for (const r of dbRules) {
+    m.set(r.code.trim().toUpperCase(), { ...r });
+  }
+  return [...m.values()];
+}
+
+function computeDiscountForRule(
+  rule: PromoRulePublic,
+  subtotal: number,
+  basis: number,
+): { discount: number } | { error: string } {
+  const minOrder = Math.max(0, Math.floor(rule.minOrderSubtotal ?? 0));
+  if (subtotal < minOrder) {
+    return {
+      error: `Mã ${rule.code} áp dụng cho đơn từ ${formatMoneyVi(minOrder)}.`,
+    };
+  }
+
+  if (basis <= 0) {
+    return { error: 'Không còn phần tạm tính để áp mã.' };
+  }
+
+  if (rule.discountKind === 'fixed') {
+    const fixed = Math.max(0, Math.floor(rule.discountFixed ?? 0));
+    const discount = Math.min(fixed, basis);
+    if (discount <= 0) {
+      return { error: 'Không còn phần tạm tính để áp mã.' };
+    }
+    return { discount };
+  }
+
+  const pct = Math.max(0, Math.min(100, Math.floor(rule.discountPercent ?? 0)));
+  if (pct <= 0) {
+    return { error: 'Cấu hình mã % không hợp lệ.' };
+  }
+  const raw = Math.floor((basis * pct) / 100);
+  const cap =
+    rule.discountCapVnd != null && Number.isFinite(rule.discountCapVnd)
+      ? Math.max(0, Math.floor(rule.discountCapVnd))
+      : Number.POSITIVE_INFINITY;
+  const discount = Math.min(raw, cap, basis);
+  if (discount <= 0) {
+    return { error: 'Không còn phần tạm tính để áp mã.' };
+  }
+  return { discount };
+}
+
+/**
+ * Tính số tiền giảm từ mã (VND, số nguyên) theo danh sách rule (DB + có thể merge built-in).
+ */
+export function applyPromoCodeWithRules(
   subtotal: number,
   rawCode: string | null | undefined,
+  rules: readonly PromoRulePublic[],
   options?: ApplyPromoOptions,
 ): PromoResult {
   const code = rawCode?.trim().toUpperCase();
@@ -61,72 +169,35 @@ export function applyPromoCode(
   const pre = Math.max(0, Math.floor(options?.preAppliedDiscount ?? 0));
   const basis = discountBasis(subtotal, pre);
 
-  switch (code) {
-    case 'GIAM50K': {
-      const minOrder = 200_000;
-      if (subtotal < minOrder) {
-        return {
-          ok: false,
-          message: `Mã GIAM50K áp dụng cho đơn từ ${formatMoneyVi(minOrder)}.`,
-        };
-      }
-      const discount = Math.min(50_000, basis);
-      if (discount <= 0) {
-        return {
-          ok: false,
-          message: 'Không còn phần tạm tính để áp mã.',
-        };
-      }
-      return {
-        ok: true,
-        discount,
-        normalizedCode: code,
-        label: 'Giảm 50.000đ (GIAM50K)',
-      };
-    }
-    case 'SYNC10': {
-      if (basis <= 0) {
-        return {
-          ok: false,
-          message: 'Không còn phần tạm tính để áp SYNC10.',
-        };
-      }
-      const raw = Math.floor(basis * 0.1);
-      const cap = 200_000;
-      const discount = Math.min(raw, cap, basis);
-      return {
-        ok: true,
-        discount,
-        normalizedCode: code,
-        label: 'Giảm 10% (tối đa 200.000đ) — SYNC10',
-      };
-    }
-    case 'WELCOME30': {
-      const minOrder = 150_000;
-      if (subtotal < minOrder) {
-        return {
-          ok: false,
-          message: `Mã WELCOME30 áp dụng cho đơn từ ${formatMoneyVi(minOrder)}.`,
-        };
-      }
-      const discount = Math.min(30_000, basis);
-      if (discount <= 0) {
-        return {
-          ok: false,
-          message: 'Không còn phần tạm tính để áp mã.',
-        };
-      }
-      return {
-        ok: true,
-        discount,
-        normalizedCode: code,
-        label: 'Giảm 30.000đ (WELCOME30)',
-      };
-    }
-    default:
-      return {
-        ok: false,
-        message: 'Mã không hợp lệ hoặc đã ngừng áp dụng.',
-      };
+  const rule = rules.find((r) => r.code.trim().toUpperCase() === code);
+  if (!rule) {
+    return {
+      ok: false,
+      message: 'Mã không hợp lệ hoặc đã ngừng áp dụng.',
+    };
   }
+
+  const out = computeDiscountForRule(rule, subtotal, basis);
+  if ('error' in out) {
+    return { ok: false, message: out.error };
+  }
+
+  return {
+    ok: true,
+    discount: out.discount,
+    normalizedCode: code,
+    label: rule.label || `Giảm ${formatMoneyVi(out.discount)} (${code})`,
+  };
+}
+
+/**
+ * Tính số tiền giảm — dùng bộ rule mặc định (không gọi API).
+ * @deprecated Ưu tiên `applyPromoCodeWithRules` + rule từ API; giữ để tương thích.
+ */
+export function applyPromoCode(
+  subtotal: number,
+  rawCode: string | null | undefined,
+  options?: ApplyPromoOptions,
+): PromoResult {
+  return applyPromoCodeWithRules(subtotal, rawCode, BUILTIN_PROMO_RULES, options);
 }

@@ -20,8 +20,12 @@ import {
   Product,
   User,
 } from '../entities';
-import { applyPromoCode } from '@workspace/promo-codes';
+import {
+  applyPromoCodeWithRules,
+  mergePromoRulesPreferDb,
+} from '@workspace/promo-codes';
 import { UsersService } from '../users/users.service';
+import { PromoCodesService } from '../promo-codes/promo-codes.service';
 
 /** Giá một dòng theo retail / wholesale + SL tối thiểu KM (khớp storefront). */
 function effectiveLineUnitPrice(
@@ -91,6 +95,7 @@ export class OrdersService {
     @InjectRepository(Product)
     private readonly productRepository: EntityRepository<Product>,
     private readonly usersService: UsersService,
+    private readonly promoCodesService: PromoCodesService,
   ) {}
 
   async findAll(): Promise<Order[]> {
@@ -359,7 +364,9 @@ export class OrdersService {
     const rawCoupon = dto.couponCode?.trim();
     let couponCode: string | undefined;
     if (rawCoupon) {
-      const promo = applyPromoCode(subtotal, rawCoupon, {
+      const dbRules = await this.promoCodesService.getActiveRulesForCheckout();
+      const mergedRules = mergePromoRulesPreferDb(dbRules);
+      const promo = applyPromoCodeWithRules(subtotal, rawCoupon, mergedRules, {
         cartLines: cartLinesForPromo,
         preAppliedDiscount: 0,
       });
@@ -393,6 +400,10 @@ export class OrdersService {
     } as RequiredEntityData<Order>);
 
     await em.persistAndFlush(order);
+    if (couponCode) {
+      await this.promoCodesService.incrementUsageIfTracked(em, couponCode);
+      await em.flush();
+    }
     this.logger.log(
       `Order ${order.orderNumber} created (${items.length} items, subtotal ${subtotal}, discount ${discountAmount}, total ${totalAmount})`,
     );

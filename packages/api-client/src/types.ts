@@ -216,6 +216,42 @@ export interface CreateOrderItemInput {
   unitType: string;
 }
 
+export type PromoDiscountKind = 'fixed' | 'percent';
+
+/** Bản ghi mã KM toàn đơn (admin). */
+export interface PromoCode extends AuditFields {
+  code: string;
+  label: string;
+  discountKind: PromoDiscountKind;
+  discountFixed: number;
+  discountPercent: number;
+  discountCapVnd: number | null;
+  minOrderSubtotal: number;
+  isActive: boolean;
+  validFrom: Iso8601 | null;
+  validUntil: Iso8601 | null;
+  usageLimit: number | null;
+  usageCount: number;
+}
+
+export interface CreatePromoCodeInput {
+  code: string;
+  label: string;
+  discountKind: PromoDiscountKind;
+  discountFixed: number;
+  discountPercent: number;
+  discountCapVnd?: number | null;
+  minOrderSubtotal: number;
+  isActive?: boolean;
+  validFrom?: string | null;
+  validUntil?: string | null;
+  usageLimit?: number | null;
+}
+
+export type UpdatePromoCodeInput = Partial<
+  Omit<CreatePromoCodeInput, 'code'>
+>;
+
 export interface CreateOrderInput {
   customerId?: number | null;
   customerName: string;

@@ -24,7 +24,7 @@ export default function CartPage() {
   return (
     <Page>
       <PageContent className="px-0 md:px-0 py-8 md:py-10 space-y-0">
-        <Container max="6xl" className="px-4 md:px-8 space-y-6">
+        <Container max="8xl" className="px-4 md:px-8 space-y-6">
           <div className="flex items-center justify-between gap-4">
             <div>
               <Button

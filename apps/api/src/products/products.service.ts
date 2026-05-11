@@ -299,10 +299,7 @@ export class ProductsService {
     delete incoming.id;
     delete incoming.createdAt;
     delete incoming.updatedAt;
-    this.productRepository.assign(
-      product,
-      incoming as Partial<Product>,
-    );
+    this.productRepository.assign(product, incoming as Partial<Product>);
     await this.productRepository.getEntityManager().flush();
     return product;
   }

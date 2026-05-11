@@ -17,4 +17,6 @@ export { UsersApi } from './resources/users';
 export { OrdersApi } from './resources/orders';
 export { CategoriesApi } from './resources/categories';
 export { RbacApi } from './resources/rbac';
+export { PromoCodesApi } from './resources/promo-codes';
+export type { PromoCodesListOptions } from './resources/promo-codes';
 export { StoreSyncSdk, createStoreSyncSdk, DEFAULT_API_URL } from './sdk';
