@@ -19,4 +19,9 @@ export { CategoriesApi } from './resources/categories';
 export { RbacApi } from './resources/rbac';
 export { PromoCodesApi } from './resources/promo-codes';
 export type { PromoCodesListOptions } from './resources/promo-codes';
+export {
+  DealerSupportApi,
+  type DealerSupportAdminPayload,
+  type DealerSupportPublicPayload,
+} from './resources/dealer-support';
 export { StoreSyncSdk, createStoreSyncSdk, DEFAULT_API_URL } from './sdk';

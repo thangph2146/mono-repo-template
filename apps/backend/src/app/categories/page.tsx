@@ -36,11 +36,14 @@ import {
 } from "@ui/components/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@ui/components/tabs";
 import {
+  Archive,
   ArchiveRestore,
   FilterX,
+  Info,
   Loader2,
   Plus,
   Pencil,
+  RefreshCw,
   Tags,
   Trash2,
   AlertCircle,
@@ -66,6 +69,7 @@ import {
   CATEGORY_ICON_OPTIONS,
   resolveCategoryIcon,
 } from "@/lib/category-icons";
+import { cn } from "@ui/lib/utils";
 
 interface FormState {
   id?: number;
@@ -143,7 +147,13 @@ export default function CategoriesPage() {
     setTrashPage(1);
   }, [debouncedTrashQ, mainTab, trashPageSize]);
 
-  const { data, isLoading: loading, error } = useCategoriesAdmin({
+  const {
+    data,
+    isLoading: loading,
+    error,
+    refetch,
+    isFetching,
+  } = useCategoriesAdmin({
     listParams,
   });
   const categories = useMemo(() => data?.items ?? [], [data?.items]);
@@ -158,11 +168,16 @@ export default function CategoriesPage() {
     [trashPage, trashPageSize, debouncedTrashQ],
   );
 
-  const { data: trashedData, isLoading: trashedLoading, error: trashedError } =
-    useTrashedCategories({
-      enabled: mainTab === "trash" && canWriteCategories,
-      listParams: trashListParams,
-    });
+  const {
+    data: trashedData,
+    isLoading: trashedLoading,
+    error: trashedError,
+    refetch: refetchTrashedCategories,
+    isFetching: trashedCategoriesFetching,
+  } = useTrashedCategories({
+    enabled: mainTab === "trash" && canWriteCategories,
+    listParams: trashListParams,
+  });
   const trashedItems = trashedData?.items ?? [];
   const trashTotal = trashedData?.total ?? 0;
 
@@ -529,7 +544,7 @@ export default function CategoriesPage() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="flex items-center gap-3 text-4xl font-extrabold text-foreground">
-            <Tags className="size-9 text-primary" />
+            <Tags className="size-9 shrink-0 text-primary" aria-hidden />
             Loại sản phẩm
           </h1>
           <p className="mt-1 font-medium text-on-surface-variant">
@@ -542,19 +557,38 @@ export default function CategoriesPage() {
             </p>
           )}
         </div>
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          {canWriteCategories && (
-            <DialogTrigger
-              render={
-                <Button
-                  onClick={openCreate}
-                  className="flex h-12 items-center gap-2 rounded-xl px-6 font-bold shadow-md"
-                />
-              }
-            >
-              <Plus className="h-5 w-5" /> Thêm danh mục
-            </DialogTrigger>
-          )}
+        <div className="flex flex-wrap items-center gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            className="flex h-12 items-center gap-2 rounded-xl border-outline-variant px-4 font-semibold hover:bg-muted"
+            onClick={() => {
+              void refetch();
+              void refetchTrashedCategories();
+            }}
+          >
+            <RefreshCw
+              className={cn(
+                "size-5",
+                (isFetching || trashedCategoriesFetching) && "animate-spin",
+              )}
+              aria-hidden
+            />
+            Làm mới
+          </Button>
+          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+            {canWriteCategories && (
+              <DialogTrigger
+                render={
+                  <Button
+                    onClick={openCreate}
+                    className="flex h-12 items-center gap-2 rounded-xl px-6 font-bold shadow-md"
+                  />
+                }
+              >
+                <Plus className="size-5" aria-hidden /> Thêm danh mục
+              </DialogTrigger>
+            )}
           <DialogContent className="sm:max-w-[560px]">
             <DialogHeader>
               <DialogTitle className="text-2xl font-extrabold">
@@ -605,7 +639,7 @@ export default function CategoriesPage() {
                       setForm((f) => ({ ...f, icon: v ?? "Package2" }))
                     }
                   >
-                    <SelectTrigger className="rounded-xl">
+                    <SelectTrigger className="w-full rounded-xl">
                       <SelectValue placeholder="Chọn biểu tượng" />
                     </SelectTrigger>
                     <SelectContent>
@@ -683,6 +717,7 @@ export default function CategoriesPage() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+        </div>
       </div>
 
       <Tabs
@@ -693,13 +728,19 @@ export default function CategoriesPage() {
         className="space-y-6"
       >
         <TabsList className="h-auto min-h-9 flex-wrap gap-1 rounded-xl p-1">
-          <TabsTrigger value="list" className="gap-2 rounded-lg">
-            <Layers className="size-4" />
+          <TabsTrigger
+            value="list"
+            className="flex items-center gap-2 rounded-lg px-4 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+          >
+            <Layers className="size-4" aria-hidden />
             Danh sách
           </TabsTrigger>
           {canWriteCategories ? (
-            <TabsTrigger value="trash" className="gap-2 rounded-lg">
-              <ArchiveRestore className="size-4" />
+            <TabsTrigger
+              value="trash"
+              className="flex items-center gap-2 rounded-lg px-4 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+            >
+              <ArchiveRestore className="size-4" aria-hidden />
               Thùng rác
               {trashedData != null && trashedData.total > 0 ? (
                 <Badge
@@ -714,28 +755,33 @@ export default function CategoriesPage() {
         </TabsList>
 
         <TabsContent value="list" className="mt-0 space-y-4">
-          <p className="text-sm text-on-surface-variant">
-            Tìm nhanh và lọc cột gọi API phân trang (chọn số dòng/trang ở cuối bảng).
-            Cột
-            «Số SP» lấy từ thống kê toàn hệ thống.
-            {canWriteCategories ? (
-              <>
-                {" "}
-                Xóa là <span className="font-semibold">xóa tạm</span> (không còn
-                SP tham chiếu).
-              </>
-            ) : null}
-          </p>
+          <div className="rounded-2xl border border-outline-variant bg-surface-container-low p-4 shadow-sm">
+            <p className="flex items-start gap-2 text-sm text-muted-foreground">
+              <Info className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
+              <span className="text-on-surface-variant">
+                Tìm nhanh và lọc cột gọi API phân trang (chọn số dòng/trang ở cuối bảng).
+                Cột «Số SP» lấy từ thống kê toàn hệ thống.
+                {canWriteCategories ? (
+                  <>
+                    {" "}
+                    Xóa là{" "}
+                    <span className="font-semibold text-foreground">xóa tạm</span> (không
+                    còn SP tham chiếu).
+                  </>
+                ) : null}
+              </span>
+            </p>
+          </div>
 
           {error && (
-            <div className="rounded-2xl border border-destructive/20 bg-destructive/5 py-12 text-center">
-              <AlertCircle className="mx-auto mb-2 h-10 w-10 text-destructive" />
-              <p className="text-lg font-bold text-destructive">
-                Không tải được danh mục
-              </p>
-              <p className="mt-1 text-sm text-on-surface-variant">
-                {error.message}
-              </p>
+            <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-4 text-destructive">
+              <div className="flex items-start gap-3">
+                <AlertCircle className="mt-0.5 size-5 shrink-0" aria-hidden />
+                <div>
+                  <p className="font-semibold">Không tải được danh mục</p>
+                  <p className="mt-1 text-sm opacity-90">{error.message}</p>
+                </div>
+              </div>
             </div>
           )}
 
@@ -757,16 +803,31 @@ export default function CategoriesPage() {
               onGlobalFilterChange={setGlobalFilter}
               globalFilterPlaceholder="Tìm theo tên, slug, mô tả (API)…"
               filterToolbarExtra={
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="h-9 gap-1.5 rounded-lg"
-                  onClick={clearAllFilters}
-                >
-                  <FilterX className="size-4" />
-                  Xóa bộ lọc
-                </Button>
+                <div className="flex flex-wrap items-center gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="h-9 gap-2 rounded-lg"
+                    onClick={() => void refetch()}
+                  >
+                    <RefreshCw
+                      className={cn("size-4", isFetching && "animate-spin")}
+                      aria-hidden
+                    />
+                    Làm mới
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="h-9 gap-2 rounded-lg"
+                    onClick={clearAllFilters}
+                  >
+                    <FilterX className="size-4" aria-hidden />
+                    Xóa bộ lọc
+                  </Button>
+                </div>
               }
               csvExport={{ fileName: "danh-muc-dang-hoat-dong.csv" }}
               footer={paginationFooter}
@@ -777,18 +838,24 @@ export default function CategoriesPage() {
         {canWriteCategories ? (
           <TabsContent value="trash" className="mt-0 space-y-4">
             {trashedError ? (
-              <div className="rounded-2xl border border-destructive/20 bg-destructive/5 py-12 text-center">
-                <p className="text-lg font-bold text-destructive">
-                  Không tải được thùng rác
-                </p>
-                <p className="mt-1 text-sm text-on-surface-variant">
-                  {trashedError.message}
-                </p>
+              <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-4 text-destructive">
+                <div className="flex items-start gap-3">
+                  <AlertCircle className="mt-0.5 size-5 shrink-0" aria-hidden />
+                  <div>
+                    <p className="font-semibold">Không tải được thùng rác</p>
+                    <p className="mt-1 text-sm opacity-90">
+                      {trashedError.message}
+                    </p>
+                  </div>
+                </div>
               </div>
             ) : (
               <>
-                <p className="text-sm text-on-surface-variant">
-                  Danh mục trong thùng rác không hiển thị trên storefront.
+                <p className="flex items-start gap-2 text-sm text-on-surface-variant">
+                  <Info className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
+                  <span>
+                    Danh mục trong thùng rác không hiển thị trên storefront.
+                  </span>
                 </p>
                 <AdminDataTable<Category>
                   data={trashedItems}
@@ -801,16 +868,34 @@ export default function CategoriesPage() {
                   onGlobalFilterChange={setTrashGlobalFilter}
                   globalFilterPlaceholder="Tìm theo tên, slug, mô tả (API)…"
                   filterToolbarExtra={
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      className="h-9 gap-1.5 rounded-lg"
-                      onClick={clearTrashFilters}
-                    >
-                      <FilterX className="size-4" />
-                      Xóa bộ lọc
-                    </Button>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="h-9 gap-2 rounded-lg"
+                        onClick={() => void refetchTrashedCategories()}
+                      >
+                        <RefreshCw
+                          className={cn(
+                            "size-4",
+                            trashedCategoriesFetching && "animate-spin",
+                          )}
+                          aria-hidden
+                        />
+                        Làm mới
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="h-9 gap-2 rounded-lg"
+                        onClick={clearTrashFilters}
+                      >
+                        <FilterX className="size-4" aria-hidden />
+                        Xóa bộ lọc
+                      </Button>
+                    </div>
                   }
                   csvExport={{ fileName: "danh-muc-thung-rac.csv" }}
                   footer={trashPaginationFooter}
@@ -829,7 +914,10 @@ export default function CategoriesPage() {
       >
         <AlertDialogContent className="rounded-2xl sm:max-w-[450px]">
           <AlertDialogHeader>
-            <AlertDialogTitle>Đưa danh mục vào thùng rác?</AlertDialogTitle>
+            <AlertDialogTitle className="flex items-center gap-2 text-left">
+              <Archive className="size-5 shrink-0 text-muted-foreground" aria-hidden />
+              Đưa danh mục vào thùng rác?
+            </AlertDialogTitle>
             <AlertDialogDescription>
               {deleteTarget ? (
                 <>
@@ -868,7 +956,10 @@ export default function CategoriesPage() {
       >
         <AlertDialogContent className="rounded-2xl sm:max-w-[450px]">
           <AlertDialogHeader>
-            <AlertDialogTitle>Xóa vĩnh viễn danh mục?</AlertDialogTitle>
+            <AlertDialogTitle className="flex items-center gap-2 text-left text-destructive">
+              <Trash2 className="size-5 shrink-0" aria-hidden />
+              Xóa vĩnh viễn danh mục?
+            </AlertDialogTitle>
             <AlertDialogDescription>
               {purgeTarget ? (
                 <>
@@ -908,7 +999,10 @@ export default function CategoriesPage() {
       >
         <AlertDialogContent className="rounded-2xl sm:max-w-[450px]">
           <AlertDialogHeader>
-            <AlertDialogTitle>Khôi phục danh mục?</AlertDialogTitle>
+            <AlertDialogTitle className="flex items-center gap-2 text-left">
+              <ArchiveRestore className="size-5 shrink-0 text-primary" aria-hidden />
+              Khôi phục danh mục?
+            </AlertDialogTitle>
             <AlertDialogDescription>
               {restoreTarget ? (
                 <>

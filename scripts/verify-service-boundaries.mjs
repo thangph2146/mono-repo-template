@@ -23,6 +23,13 @@ const FORBIDDEN_DEPS = {
     "@ui",
     "@workspace/api-client",
   ],
+  "@workspace/dealer-support": [
+    "@api",
+    "@frontend",
+    "@backend",
+    "@ui",
+    "@workspace/api-client",
+  ],
   "@ui": ["@api", "@frontend", "@backend", "@workspace/api-client"],
 };
 

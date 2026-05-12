@@ -13,6 +13,7 @@ import {
   TicketPercent,
   LogOut,
   Users,
+  Headphones,
 } from "lucide-react";
 import { Button } from "@ui/components/button";
 import { Badge } from "@ui/components/badge";
@@ -66,6 +67,7 @@ const menuItems: MenuItem[] = [
     icon: Tags,
     permission: PERMISSION_CODES.CATEGORIES_READ,
   },
+  // Menu khớp API promo-codes: list cần products.read; thao tác sửa/xóa vẫn chặn bằng products.write trên từng endpoint.
   {
     href: "/promo-codes",
     label: "Mã khuyến mãi",
@@ -77,6 +79,12 @@ const menuItems: MenuItem[] = [
     label: "Đại lý & Cửa hàng",
     icon: Store,
     permission: PERMISSION_CODES.PRODUCTS_READ,
+  },
+  {
+    href: "/support",
+    label: "Hỗ trợ đại lý",
+    icon: Headphones,
+    permission: PERMISSION_CODES.SUPPORT_READ,
   },
   {
     href: "/data",

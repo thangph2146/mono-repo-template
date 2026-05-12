@@ -12,7 +12,11 @@ const basePath = normalizeBasePath(process.env.BACKEND_BASE_PATH);
 const nextConfig: NextConfig = {
   /* config options here */
   reactCompiler: true,
-  transpilePackages: ["@ui", "@workspace/api-client"],
+  transpilePackages: [
+    "@ui",
+    "@workspace/api-client",
+    "@workspace/dealer-support",
+  ],
   ...(basePath ? { basePath } : {}),
 };
 

@@ -11,7 +11,14 @@ import {
   CheckCircle2,
   Clock,
   Users,
+  LayoutDashboard,
+  RefreshCw,
+  AlertCircle,
+  Info,
+  ArrowRight,
+  ShieldOff,
 } from "lucide-react";
+import { cn } from "@ui/lib/utils";
 import { useOrders, useProducts } from "@/hooks/queries";
 import { formatVND } from "@/lib/format";
 import { useAuth } from "@/providers/auth-provider";
@@ -57,30 +64,79 @@ export default function AdminDashboardPage() {
     (canOrders && ordersResource.isLoading);
   const error = productsResource.error ?? ordersResource.error;
   const noOverviewAccess = !canProducts && !canOrders;
+  const dashboardRefreshing =
+    (canProducts && productsResource.isFetching) ||
+    (canOrders && ordersResource.isFetching);
+
+  const refreshDashboard = (): void => {
+    if (canProducts) void productsResource.refetch();
+    if (canOrders) void ordersResource.refetch();
+  };
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-4xl font-extrabold text-foreground tracking-tight">Tổng quan vận hành</h1>
-        <p className="text-lg text-on-surface-variant font-medium mt-1">
-          Theo dõi nhanh tồn kho và đơn hàng theo thời gian thực
-        </p>
+      <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+        <div>
+          <h1 className="flex items-center gap-3 text-4xl font-extrabold tracking-tight text-foreground">
+            <LayoutDashboard className="size-9 shrink-0 text-primary" aria-hidden />
+            Tổng quan vận hành
+          </h1>
+          <p className="mt-1 text-lg font-medium text-on-surface-variant">
+            Theo dõi nhanh tồn kho và đơn hàng theo thời gian thực
+          </p>
+        </div>
+        {!noOverviewAccess ? (
+          <Button
+            type="button"
+            variant="outline"
+            className="flex h-12 items-center gap-2 rounded-xl border-outline-variant px-5 font-semibold hover:bg-muted"
+            onClick={refreshDashboard}
+          >
+            <RefreshCw
+              className={cn("size-5", dashboardRefreshing && "animate-spin")}
+              aria-hidden
+            />
+            Làm mới
+          </Button>
+        ) : null}
       </div>
 
-      {noOverviewAccess && (
-        <div className="rounded-2xl border border-border bg-muted/20 px-6 py-8 text-center text-muted-foreground">
-          <p className="font-medium text-foreground">Không đủ quyền xem tổng quan</p>
-          <p className="text-sm mt-2">
-            Tài khoản cần quyền <span className="font-mono">products.read</span> hoặc{" "}
-            <span className="font-mono">orders.read</span>. Dùng menu bên trái theo quyền được gán.
+      {!noOverviewAccess ? (
+        <div className="rounded-2xl border border-outline-variant bg-surface-container-low p-4 shadow-sm">
+          <p className="flex items-start gap-2 text-sm text-muted-foreground">
+            <Info className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
+            <span className="text-on-surface-variant">
+              Số liệu trên trang này lấy từ danh sách sản phẩm và đơn hàng (theo quyền của
+              bạn). Dùng nút <span className="font-semibold text-foreground">Làm mới</span>{" "}
+              để đồng bộ nhanh với API.
+            </span>
           </p>
+        </div>
+      ) : null}
+
+      {noOverviewAccess && (
+        <div className="rounded-2xl border border-border bg-muted/20 px-6 py-8 text-muted-foreground">
+          <div className="mx-auto flex max-w-md flex-col items-center gap-3 text-center">
+            <ShieldOff className="size-10 text-muted-foreground/80" aria-hidden />
+            <p className="font-semibold text-foreground">Không đủ quyền xem tổng quan</p>
+            <p className="text-sm">
+              Tài khoản cần quyền <span className="font-mono">products.read</span> hoặc{" "}
+              <span className="font-mono">orders.read</span>. Dùng menu bên trái theo quyền
+              được gán.
+            </p>
+          </div>
         </div>
       )}
 
       {error && (
-        <div className="text-center py-12 bg-destructive/5 border border-destructive/20 rounded-2xl">
-          <p className="text-lg font-bold text-destructive">Không tải được dữ liệu</p>
-          <p className="text-sm text-on-surface-variant mt-1">{error.message}</p>
+        <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-4 text-destructive">
+          <div className="flex items-start gap-3">
+            <AlertCircle className="mt-0.5 size-5 shrink-0" aria-hidden />
+            <div>
+              <p className="font-semibold">Không tải được dữ liệu</p>
+              <p className="mt-1 text-sm opacity-90">{error.message}</p>
+            </div>
+          </div>
         </div>
       )}
 
@@ -134,8 +190,12 @@ export default function AdminDashboardPage() {
                 <Row label="Sắp hết (<50)" value={stats.lowStock} accent="warning" />
                 <Row label="Hết hàng" value={stats.outOfStock} accent="destructive" />
                 <Link href="/inventory" className="block pt-2">
-                  <Button variant="outline" className="w-full rounded-xl font-bold">
+                  <Button
+                    variant="outline"
+                    className="w-full gap-2 rounded-xl font-bold"
+                  >
                     Quản lý kho hàng
+                    <ArrowRight className="size-4" aria-hidden />
                   </Button>
                 </Link>
               </CardContent>
@@ -148,14 +208,16 @@ export default function AdminDashboardPage() {
                   Đơn hàng gần đây
                 </CardTitle>
                 <Link href="/orders">
-                  <Button variant="ghost" size="sm" className="font-semibold">
+                  <Button variant="ghost" size="sm" className="gap-1.5 font-semibold">
                     Xem tất cả
+                    <ArrowRight className="size-4" aria-hidden />
                   </Button>
                 </Link>
               </CardHeader>
               <CardContent>
                 {orders.length === 0 ? (
-                  <p className="text-sm text-on-surface-variant text-center py-6">
+                  <p className="flex items-center justify-center gap-2 py-6 text-sm text-on-surface-variant">
+                    <ShoppingBag className="size-4 opacity-60" aria-hidden />
                     Chưa có đơn hàng nào
                   </p>
                 ) : (
@@ -163,15 +225,21 @@ export default function AdminDashboardPage() {
                     {orders.slice(0, 5).map((order) => (
                       <div
                         key={order.id}
-                        className="flex items-center justify-between rounded-xl border border-outline-variant/30 px-4 py-3 hover:bg-muted/20"
+                        className="flex items-center justify-between gap-3 rounded-xl border border-outline-variant/30 px-4 py-3 hover:bg-muted/20"
                       >
-                        <div className="min-w-0">
-                          <p className="font-bold text-primary">{order.orderNumber}</p>
-                          <p className="text-xs text-on-surface-variant truncate">
-                            {order.customerName} · {order.items.length} mặt hàng
-                          </p>
+                        <div className="flex min-w-0 items-start gap-2">
+                          <ShoppingBag
+                            className="mt-0.5 size-4 shrink-0 text-primary/80"
+                            aria-hidden
+                          />
+                          <div className="min-w-0">
+                            <p className="font-bold text-primary">{order.orderNumber}</p>
+                            <p className="truncate text-xs text-on-surface-variant">
+                              {order.customerName} · {order.items.length} mặt hàng
+                            </p>
+                          </div>
                         </div>
-                        <p className="font-black text-sm whitespace-nowrap">
+                        <p className="whitespace-nowrap text-sm font-black">
                           {formatVND(order.totalAmount)}
                         </p>
                       </div>

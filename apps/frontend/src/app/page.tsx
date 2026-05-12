@@ -139,7 +139,7 @@ export default function Home() {
     <Page className="selection:bg-primary/30 scroll-smooth">
       <PageContent className="p-0 md:p-0 space-y-0">
         {/* --- Hero Section --- */}
-        <section className="relative overflow-hidden pt-12 pb-24 md:pt-28 md:pb-40 bg-gradient-to-b from-primary/5 via-background to-background w-full">
+        <section className="relative overflow-hidden pt-12 pb-24 md:pt-28 md:pb-40 w-full">
           <Container max="8xl" className="px-6 md:px-12">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
               <div className="space-y-10 animate-in fade-in slide-in-from-left duration-700">
@@ -207,8 +207,7 @@ export default function Home() {
         </section>
 
         {/* --- Flash Sale Section (data-driven) --- */}
-        <section className="py-24 bg-surface relative overflow-hidden w-full">
-          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] -mr-64 -mt-64"></div>
+        <section className="py-24 relative overflow-hidden w-full">
           <Container max="8xl" className="px-6 md:px-12">
             <div className="flex flex-col md:flex-row justify-between items-end gap-8 mb-16">
               <div className="space-y-6">
@@ -336,7 +335,7 @@ export default function Home() {
         </section>
 
         {/* --- Most Purchased Section (data-driven) --- */}
-        <section className="py-32 bg-surface rounded-none md:rounded-[5rem] mx-0 md:mx-6 border-y md:border border-border shadow-inner w-full md:w-[calc(100%-3rem)]">
+        <section className="py-32 mx-0 md:mx-6 w-full md:w-[calc(100%-3rem)]">
           <Container max="8xl" className="px-6 md:px-12 w-full">
             <div className="flex flex-col lg:flex-row gap-16 items-start min-w-0 w-full">
               <div className="w-full lg:w-[380px] flex-shrink-0 space-y-10">

@@ -4,6 +4,7 @@ import { join } from 'node:path';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { DealerSupportModule } from './dealer-support/dealer-support.module';
 import { RbacModule } from './rbac/rbac.module';
 import {
   getMikroOrmConfig,
@@ -43,6 +44,7 @@ import { LoggerModule } from './common/logger';
     DataMaintenanceModule,
     PromoCodesModule,
     RbacModule,
+    DealerSupportModule,
   ],
   controllers: [AppController],
   providers: [AppService],

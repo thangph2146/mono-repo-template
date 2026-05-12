@@ -62,15 +62,20 @@ import {
 } from "@ui/components/select";
 import { ScrollArea } from "@ui/components/scroll-area";
 import {
+  AlertCircle,
   AlertTriangle,
+  Archive,
   ArchiveRestore,
   FilterX,
   ImageIcon,
+  Info,
   Layers,
   Loader2,
   Minus,
+  Package,
   Pencil,
   Plus,
+  RefreshCw,
   Trash2,
   Upload,
 } from "lucide-react";
@@ -103,6 +108,7 @@ import {
 } from "@/lib/inventory-api-filters";
 import { AdminDataTable } from "@/components/admin-data-table";
 import { AdminTablePaginationFooter } from "@/components/admin-table-pagination-footer";
+import { cn } from "@ui/lib/utils";
 import { resolveCategoryIcon } from "@/lib/category-icons";
 import {
   defaultProductForm,
@@ -330,7 +336,7 @@ export default function InventoryPage() {
     [productListParamsBase, page, listPageSize],
   );
 
-  const { data, isLoading, error } = useProducts({
+  const { data, isLoading, error, refetch, isFetching } = useProducts({
     listParams: productListParams,
   });
   const inventory = useMemo(() => data?.items ?? [], [data?.items]);
@@ -403,11 +409,16 @@ export default function InventoryPage() {
     [trashPage, trashPageSize, debouncedTrashQ],
   );
 
-  const { data: trashedData, isLoading: trashedLoading, error: trashedError } =
-    useTrashedProducts({
-      enabled: mainTab === "trash" && canWriteProducts,
-      listParams: trashListParams,
-    });
+  const {
+    data: trashedData,
+    isLoading: trashedLoading,
+    error: trashedError,
+    refetch: refetchTrashedProducts,
+    isFetching: trashedProductsFetching,
+  } = useTrashedProducts({
+    enabled: mainTab === "trash" && canWriteProducts,
+    listParams: trashListParams,
+  });
 
   const defaultCategory = categories[0]?.slug ?? "thuc-pham";
 
@@ -1065,31 +1076,53 @@ export default function InventoryPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
         <div>
-          <h1 className="text-4xl font-extrabold text-foreground">
+          <h1 className="flex items-center gap-3 text-4xl font-extrabold tracking-tight text-foreground">
+            <Package className="size-9 shrink-0 text-primary" aria-hidden />
             Quản lý Hàng hóa &amp; Kho
           </h1>
-          <p className="text-on-surface-variant font-medium mt-1">
+          <p className="mt-1 font-medium text-on-surface-variant">
             Phân loại danh mục, quản lý đơn vị (thùng / can / chai / lốc / gói)
             và theo dõi tồn kho theo thời gian thực
           </p>
           {user && !canWriteProducts && (
-            <p className="text-sm text-amber-800 dark:text-amber-200/90 mt-2 font-medium">
+            <p className="mt-2 text-sm font-medium text-amber-800 dark:text-amber-200/90">
               Chế độ chỉ xem: tài khoản không có quyền{" "}
               <span className="font-mono">products.write</span> — không thể
               thêm/sửa/xoá hay điều chỉnh tồn.
             </p>
           )}
         </div>
-        {canWriteProducts && (
+        <div className="flex flex-wrap items-center gap-2">
           <Button
-            onClick={openCreate}
-            className="flex items-center gap-2 shadow-md h-12 px-6 rounded-xl font-bold"
+            type="button"
+            variant="outline"
+            className="flex h-12 items-center gap-2 rounded-xl border-outline-variant px-4 font-semibold hover:bg-muted"
+            onClick={() => {
+              void refetch();
+              void refetchTrashedProducts();
+            }}
           >
-            <Plus className="w-5 h-5" /> Thêm sản phẩm mới
+            <RefreshCw
+              className={cn(
+                "size-5",
+                (isFetching || trashedProductsFetching) && "animate-spin",
+              )}
+              aria-hidden
+            />
+            Làm mới
           </Button>
-        )}
+          {canWriteProducts ? (
+            <Button
+              type="button"
+              onClick={openCreate}
+              className="flex h-12 items-center gap-2 rounded-xl px-6 font-bold shadow-md"
+            >
+              <Plus className="size-5" aria-hidden /> Thêm sản phẩm mới
+            </Button>
+          ) : null}
+        </div>
       </div>
 
       <Dialog open={dialogOpen} onOpenChange={onDialogOpenChange}>
@@ -1888,13 +1921,19 @@ export default function InventoryPage() {
         className="space-y-6"
       >
         <TabsList className="h-auto min-h-9 flex-wrap gap-1 rounded-xl p-1">
-          <TabsTrigger value="inventory" className="rounded-lg gap-2">
-            <Layers className="size-4" />
+          <TabsTrigger
+            value="inventory"
+            className="flex items-center gap-2 rounded-lg px-4 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+          >
+            <Layers className="size-4" aria-hidden />
             Kho hàng
           </TabsTrigger>
           {canWriteProducts ? (
-            <TabsTrigger value="trash" className="rounded-lg gap-2">
-              <ArchiveRestore className="size-4" />
+            <TabsTrigger
+              value="trash"
+              className="flex items-center gap-2 rounded-lg px-4 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+            >
+              <ArchiveRestore className="size-4" aria-hidden />
               Thùng rác
               {trashedData != null && trashedData.total > 0 ? (
                 <Badge
@@ -1940,31 +1979,37 @@ export default function InventoryPage() {
             })}
           </div>
 
-          <p className="text-sm text-on-surface-variant">
-            Dòng <span className="font-semibold">sản phẩm</span> mở rộng thành
-            cây <span className="font-semibold">đơn vị tính</span> (bấm mũi tên để
-            mở). Tab danh mục và ô lọc « Danh mục » luôn đồng bộ; cùng ô lọc / tìm
-            nhanh gọi API (phân trang, chọn số SP/trang ở cuối bảng); badge tab là
-            tổng SP
-            trong DB theo danh mục.
-            {canWriteProducts ? (
-              <>
-                {" "}
-                Xóa sản phẩm là{" "}
-                <span className="font-semibold">xóa tạm</span> — khôi phục ở tab
-                Thùng rác.
-              </>
-            ) : null}
-          </p>
+          <div className="rounded-2xl border border-outline-variant bg-surface-container-low p-4 shadow-sm">
+            <p className="flex items-start gap-2 text-sm text-muted-foreground">
+              <Info className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
+              <span className="text-on-surface-variant">
+                Dòng <span className="font-semibold text-foreground">sản phẩm</span>{" "}
+                mở rộng thành cây{" "}
+                <span className="font-semibold text-foreground">đơn vị tính</span>{" "}
+                (bấm mũi tên để mở). Tab danh mục và ô lọc « Danh mục » luôn đồng bộ;
+                ô lọc / tìm nhanh gọi API (phân trang ở cuối bảng); badge tab là tổng
+                SP trong DB theo danh mục.
+                {canWriteProducts ? (
+                  <>
+                    {" "}
+                    Xóa sản phẩm là{" "}
+                    <span className="font-semibold text-foreground">xóa tạm</span> —
+                    khôi phục ở tab Thùng rác.
+                  </>
+                ) : null}
+              </span>
+            </p>
+          </div>
 
           {error && (
-            <div className="rounded-2xl border border-destructive/20 bg-destructive/5 py-12 text-center">
-              <p className="text-lg font-bold text-destructive">
-                Không tải được dữ liệu kho
-              </p>
-              <p className="mt-1 text-sm text-on-surface-variant">
-                {error.message}
-              </p>
+            <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-4 text-destructive">
+              <div className="flex items-start gap-3">
+                <AlertCircle className="mt-0.5 size-5 shrink-0" aria-hidden />
+                <div>
+                  <p className="font-semibold">Không tải được dữ liệu kho</p>
+                  <p className="mt-1 text-sm opacity-90">{error.message}</p>
+                </div>
+              </div>
             </div>
           )}
 
@@ -1984,16 +2029,31 @@ export default function InventoryPage() {
                 onGlobalFilterChange={setGlobalFilter}
                 globalFilterPlaceholder="Tìm nhanh (API): SKU, tên, danh mục, brand…"
                 filterToolbarExtra={
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    className="h-9 gap-1.5 rounded-lg"
-                    onClick={clearAllFilters}
-                  >
-                    <FilterX className="size-4" />
-                    Xóa bộ lọc
-                  </Button>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="h-9 gap-2 rounded-lg"
+                      onClick={() => void refetch()}
+                    >
+                      <RefreshCw
+                        className={cn("size-4", isFetching && "animate-spin")}
+                        aria-hidden
+                      />
+                      Làm mới
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="h-9 gap-2 rounded-lg"
+                      onClick={clearAllFilters}
+                    >
+                      <FilterX className="size-4" aria-hidden />
+                      Xóa bộ lọc
+                    </Button>
+                  </div>
                 }
                 csvExport={{ fileName: "kho-san-pham.csv" }}
                 getRowClassName={(row) =>
@@ -2014,19 +2074,25 @@ export default function InventoryPage() {
         {canWriteProducts ? (
           <TabsContent value="trash" className="mt-0 space-y-4">
             {trashedError ? (
-              <div className="rounded-2xl border border-destructive/20 bg-destructive/5 py-12 text-center">
-                <p className="text-lg font-bold text-destructive">
-                  Không tải được thùng rác
-                </p>
-                <p className="mt-1 text-sm text-on-surface-variant">
-                  {trashedError.message}
-                </p>
+              <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-4 text-destructive">
+                <div className="flex items-start gap-3">
+                  <AlertCircle className="mt-0.5 size-5 shrink-0" aria-hidden />
+                  <div>
+                    <p className="font-semibold">Không tải được thùng rác</p>
+                    <p className="mt-1 text-sm opacity-90">
+                      {trashedError.message}
+                    </p>
+                  </div>
+                </div>
               </div>
             ) : (
               <>
-                <p className="text-sm text-on-surface-variant">
-                  Sản phẩm trong thùng rác không hiển thị ở kho chính và không bán
-                  được. Khôi phục để đưa lại danh sách đang hoạt động.
+                <p className="flex items-start gap-2 text-sm text-on-surface-variant">
+                  <Info className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
+                  <span>
+                    Sản phẩm trong thùng rác không hiển thị ở kho chính và không bán
+                    được. Khôi phục để đưa lại danh sách đang hoạt động.
+                  </span>
                 </p>
                 <AdminDataTable<Product>
                   data={trashedItems}
@@ -2039,16 +2105,34 @@ export default function InventoryPage() {
                   onGlobalFilterChange={setTrashGlobalFilter}
                   globalFilterPlaceholder="Tìm theo SKU, tên, slug danh mục (API)…"
                   filterToolbarExtra={
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      className="h-9 gap-1.5 rounded-lg"
-                      onClick={clearTrashFilters}
-                    >
-                      <FilterX className="size-4" />
-                      Xóa bộ lọc
-                    </Button>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="h-9 gap-2 rounded-lg"
+                        onClick={() => void refetchTrashedProducts()}
+                      >
+                        <RefreshCw
+                          className={cn(
+                            "size-4",
+                            trashedProductsFetching && "animate-spin",
+                          )}
+                          aria-hidden
+                        />
+                        Làm mới
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="h-9 gap-2 rounded-lg"
+                        onClick={clearTrashFilters}
+                      >
+                        <FilterX className="size-4" aria-hidden />
+                        Xóa bộ lọc
+                      </Button>
+                    </div>
                   }
                   csvExport={{ fileName: "kho-thung-rac.csv" }}
                   footer={trashInventoryPaginationFooter}
@@ -2067,7 +2151,10 @@ export default function InventoryPage() {
       >
         <AlertDialogContent className="rounded-2xl sm:max-w-[450px]">
           <AlertDialogHeader>
-            <AlertDialogTitle>Đưa sản phẩm vào thùng rác?</AlertDialogTitle>
+            <AlertDialogTitle className="flex items-center gap-2 text-left">
+              <Archive className="size-5 shrink-0 text-muted-foreground" aria-hidden />
+              Đưa sản phẩm vào thùng rác?
+            </AlertDialogTitle>
             <AlertDialogDescription>
               {deleteTarget ? (
                 <>
@@ -2107,7 +2194,10 @@ export default function InventoryPage() {
       >
         <AlertDialogContent className="rounded-2xl sm:max-w-[450px]">
           <AlertDialogHeader>
-            <AlertDialogTitle>Xóa vĩnh viễn sản phẩm?</AlertDialogTitle>
+            <AlertDialogTitle className="flex items-center gap-2 text-left text-destructive">
+              <Trash2 className="size-5 shrink-0" aria-hidden />
+              Xóa vĩnh viễn sản phẩm?
+            </AlertDialogTitle>
             <AlertDialogDescription>
               {purgeTarget ? (
                 <>
@@ -2146,7 +2236,10 @@ export default function InventoryPage() {
       >
         <AlertDialogContent className="rounded-2xl sm:max-w-[450px]">
           <AlertDialogHeader>
-            <AlertDialogTitle>Khôi phục sản phẩm?</AlertDialogTitle>
+            <AlertDialogTitle className="flex items-center gap-2 text-left">
+              <ArchiveRestore className="size-5 shrink-0 text-primary" aria-hidden />
+              Khôi phục sản phẩm?
+            </AlertDialogTitle>
             <AlertDialogDescription>
               {restoreTarget ? (
                 <>

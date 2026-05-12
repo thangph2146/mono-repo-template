@@ -32,6 +32,14 @@ import {
   type UpdateUserInput,
   type User,
 } from "@/lib/api";
+import type {
+  DealerSupportAdminPayload,
+  DealerSupportPublicPayload,
+} from "@workspace/api-client";
+import {
+  computeDealerSupportDiff,
+  getDealerSupportPublicPayload,
+} from "@workspace/dealer-support";
 
 export const queryKeys = {
   products: () => ["products"] as const,
@@ -50,6 +58,7 @@ export const queryKeys = {
   dealers: () => ["users", "dealers"] as const,
   rbacCatalog: () => ["rbac", "catalog"] as const,
   promoCodes: () => ["promo-codes"] as const,
+  dealerSupportAdmin: () => ["dealer-support", "admin"] as const,
 };
 
 export type ProductsListData = { items: Product[]; total: number };
@@ -762,6 +771,56 @@ export const useDeletePromoCode = (): UseMutationResult<void, Error, number> => 
     mutationFn: (id) => api.promoCodes.remove(id),
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: queryKeys.promoCodes() });
+    },
+  });
+};
+
+export const useDealerSupportAdmin = (opts?: {
+  enabled?: boolean;
+}): UseQueryResult<DealerSupportAdminPayload, Error> =>
+  useQuery({
+    queryKey: queryKeys.dealerSupportAdmin(),
+    queryFn: () => api.dealerSupport.adminGet(),
+    enabled: opts?.enabled ?? true,
+  });
+
+export const useSaveDealerSupport = (): UseMutationResult<
+  DealerSupportPublicPayload,
+  Error,
+  DealerSupportPublicPayload
+> => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (merged) => api.dealerSupport.adminPut(merged),
+    onSuccess: (merged) => {
+      const defaults = getDealerSupportPublicPayload();
+      const overrides = computeDealerSupportDiff(defaults, merged);
+      qc.setQueryData<DealerSupportAdminPayload>(queryKeys.dealerSupportAdmin(), {
+        defaults,
+        overrides: { ...overrides },
+        merged,
+      });
+      void qc.invalidateQueries({ queryKey: queryKeys.dealerSupportAdmin() });
+    },
+  });
+};
+
+export const useResetDealerSupport = (): UseMutationResult<
+  DealerSupportPublicPayload,
+  Error,
+  void
+> => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: () => api.dealerSupport.adminReset(),
+    onSuccess: (merged) => {
+      const defaults = getDealerSupportPublicPayload();
+      qc.setQueryData<DealerSupportAdminPayload>(queryKeys.dealerSupportAdmin(), {
+        defaults,
+        overrides: {},
+        merged,
+      });
+      void qc.invalidateQueries({ queryKey: queryKeys.dealerSupportAdmin() });
     },
   });
 };

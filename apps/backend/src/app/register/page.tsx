@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft, ShieldCheck, UserPlus } from "lucide-react";
+import { ArrowLeft, Headphones, ShieldCheck, UserPlus } from "lucide-react";
 import { buttonVariants } from "@ui/components/button";
 import { cn } from "@ui/lib/utils";
 import {
@@ -12,7 +12,15 @@ import {
   CardTitle,
 } from "@ui/components/card";
 import { ADMIN_INFO_CARD_CLASS } from "@/lib/admin-ui";
+import {
+  DEALER_SUPPORT_HOTLINE,
+  DEALER_SUPPORT_REGISTER_HINT,
+  DEALER_SUPPORT_TITLE,
+} from "@workspace/dealer-support";
 
+const STOREFRONT_BASE = (
+  process.env.NEXT_PUBLIC_STOREFRONT_URL ?? "http://localhost:3000"
+).replace(/\/$/, "");
 export default function AdminRegisterInfoPage() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-muted/30 p-4">
@@ -34,9 +42,24 @@ export default function AdminRegisterInfoPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6 pt-2">
-          <div className="rounded-lg border border-border bg-muted/40 px-4 py-3 text-sm text-muted-foreground space-y-2">
+          <div className="space-y-3 rounded-lg border border-border bg-muted/40 px-4 py-3 text-sm text-muted-foreground">
             <p className="flex gap-2">
-              <ShieldCheck className="size-4 text-primary shrink-0 mt-0.5" />
+              <Headphones className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
+              <span>
+                <span className="font-semibold text-foreground">{DEALER_SUPPORT_TITLE}</span>{" "}
+                ({STOREFRONT_BASE}
+                /support): {DEALER_SUPPORT_REGISTER_HINT} Tổng đài{" "}
+                <a
+                  href={DEALER_SUPPORT_HOTLINE.telHref}
+                  className="font-mono font-semibold text-foreground underline-offset-2 hover:underline"
+                >
+                  {DEALER_SUPPORT_HOTLINE.display}
+                </a>
+                .
+              </span>
+            </p>
+            <p className="flex gap-2">
+              <ShieldCheck className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
               <span>
                 Người có quyền{" "}
                 <span className="font-mono text-xs text-foreground">

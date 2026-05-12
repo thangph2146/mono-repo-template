@@ -18,6 +18,10 @@ export const PERMISSIONS = {
   USERS_CART_OWN: 'users.cart_own',
   RBAC_READ: 'rbac.read',
   DATA_MAINTENANCE: 'data.maintenance',
+  /** Trang tham khảo « Trung tâm hỗ trợ đại lý » trên cổng admin (đồng bộ nội dung với cửa hàng). */
+  SUPPORT_READ: 'support.read',
+  /** Sửa nội dung hiển thị trang /support trên cửa hàng (ghi đè lên mặc định package). */
+  SUPPORT_WRITE: 'support.write',
 } as const;
 
 export type PermissionCode = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];
@@ -35,4 +39,6 @@ export const ALL_SEED_PERMISSION_CODES: readonly PermissionCode[] = [
   PERMISSIONS.USERS_CART_OWN,
   PERMISSIONS.RBAC_READ,
   PERMISSIONS.DATA_MAINTENANCE,
+  PERMISSIONS.SUPPORT_READ,
+  PERMISSIONS.SUPPORT_WRITE,
 ];

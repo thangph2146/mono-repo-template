@@ -77,6 +77,8 @@ export class DatabaseSeeder extends Seeder {
       { code: 'users.cart_own', name: 'Giỏ hàng của tôi' },
       { code: 'rbac.read', name: 'Xem role & quyền' },
       { code: 'data.maintenance', name: 'Sao lưu / import dữ liệu' },
+      { code: 'support.read', name: 'Xem trang hỗ trợ đại lý' },
+      { code: 'support.write', name: 'Sửa nội dung hỗ trợ đại lý (cửa hàng)' },
     ];
     for (const p of permDefs) {
       if (!(await em.findOne(Permission, { code: p.code }))) {
@@ -145,6 +147,8 @@ export class DatabaseSeeder extends Seeder {
       'users.cart_own',
       'rbac.read',
       'data.maintenance',
+      'support.read',
+      'support.write',
     ]);
     await linkRolePerms('manager', [
       'products.read',
@@ -155,6 +159,8 @@ export class DatabaseSeeder extends Seeder {
       'orders.write',
       'orders.checkout',
       'rbac.read',
+      'support.read',
+      'support.write',
     ]);
     await linkRolePerms('sales', [
       'products.read',
@@ -162,12 +168,14 @@ export class DatabaseSeeder extends Seeder {
       'orders.read',
       'orders.write',
       'orders.checkout',
+      'support.read',
     ]);
     await linkRolePerms('shipper', [
       'products.read',
       'categories.read',
       'orders.read',
       'orders.write',
+      'support.read',
     ]);
     await linkRolePerms('customer', [
       'products.read',

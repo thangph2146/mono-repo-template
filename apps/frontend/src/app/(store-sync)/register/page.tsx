@@ -5,10 +5,15 @@ import { Button } from "@ui/components/button";
 import { Input } from "@ui/components/input";
 import { Label } from "@ui/components/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@ui/components/card";
-import { Store, Phone, Lock, User, MapPin } from "lucide-react";
-import { Container, Page, PageContent } from "@ui/components/layout";
+import { Headphones, Store, Phone, Lock, User, MapPin } from "lucide-react";
+import { Container, PageContent } from "@ui/components/layout";
 import { STORE_AUTH_FORM_CARD_CLASS } from "@/lib/store-ui";
 import { toast } from "sonner";
+import {
+  DEALER_SUPPORT_HOTLINE,
+  DEALER_SUPPORT_REGISTER_HINT,
+  DEALER_SUPPORT_TITLE,
+} from "@workspace/dealer-support";
 
 export default function RegisterPage() {
   return (
@@ -24,6 +29,24 @@ export default function RegisterPage() {
                   <CardDescription className="text-base text-muted-foreground">
                     Tạo tài khoản để nhận báo giá khuyến mãi và ưu đãi nhập hàng
                   </CardDescription>
+                  <div className="rounded-xl border border-primary/20 bg-primary/5 p-3 text-left text-sm text-muted-foreground">
+                    <p className="flex gap-2">
+                      <Headphones className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
+                      <span>
+                        {DEALER_SUPPORT_REGISTER_HINT}{" "}
+                        <Link href="/support" className="font-semibold text-primary hover:underline">
+                          {DEALER_SUPPORT_TITLE}
+                        </Link>
+                        {" — "}
+                        <a
+                          href={DEALER_SUPPORT_HOTLINE.telHref}
+                          className="font-mono font-semibold text-foreground underline-offset-2 hover:underline"
+                        >
+                          {DEALER_SUPPORT_HOTLINE.display}
+                        </a>
+                      </span>
+                    </p>
+                  </div>
                 </CardHeader>
 
                 <CardContent className="space-y-4">

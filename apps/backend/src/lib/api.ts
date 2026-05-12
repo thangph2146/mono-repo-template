@@ -50,5 +50,7 @@ export type {
   PromoDiscountKind,
   CreatePromoCodeInput,
   UpdatePromoCodeInput,
+  DealerSupportAdminPayload,
+  DealerSupportPublicPayload,
 } from "@workspace/api-client";
 export { ApiError } from "@workspace/api-client";

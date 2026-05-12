@@ -1,96 +1,166 @@
+import Link from "next/link";
+
+/** Nội dung lấy từ API theo từng request — tránh cache RSC sau khi admin chỉnh DB. */
+export const dynamic = "force-dynamic";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@ui/components/card";
-import { Button } from "@ui/components/button";
+import { buttonVariants } from "@ui/components/button";
 import { Phone, MessageCircle, User, Clock, ShieldCheck, HelpCircle } from "lucide-react";
 import { Container, Page, PageContent } from "@ui/components/layout";
+import { cn } from "@ui/lib/utils";
+import { DEFAULT_API_URL } from "@workspace/api-client";
+import type { DealerSupportPublicPayload } from "@workspace/dealer-support";
+import { getDealerSupportPublicPayload } from "@workspace/dealer-support";
 
-export default function SupportPage() {
+async function loadDealerSupportPayload(): Promise<DealerSupportPublicPayload> {
+  const base = (process.env.NEXT_PUBLIC_API_URL ?? DEFAULT_API_URL).replace(/\/$/, "");
+  try {
+    const res = await fetch(`${base}/public/dealer-support`, {
+      cache: "no-store",
+      headers: { Accept: "application/json" },
+    });
+    if (!res.ok) {
+      return getDealerSupportPublicPayload();
+    }
+    const json: unknown = await res.json();
+    if (!json || typeof json !== "object" || Array.isArray(json)) {
+      return getDealerSupportPublicPayload();
+    }
+    return json as DealerSupportPublicPayload;
+  } catch {
+    return getDealerSupportPublicPayload();
+  }
+}
+
+export default async function SupportPage() {
+  const p = await loadDealerSupportPayload();
+  const zaloOaUrl =
+    process.env.NEXT_PUBLIC_ZALO_OA_URL?.trim() || p.zalo.oaUrl;
+
   return (
     <Page>
-      <PageContent className="px-0 md:px-0 py-8 md:py-10 space-y-0">
+      <PageContent className="space-y-0 px-0 py-8 md:px-0 md:py-10">
         <section>
-          <Container max="8xl" className="px-4 md:px-8 space-y-10">
-            <div className="text-center space-y-3 max-w-3xl mx-auto">
-              <h1 className="text-3xl sm:text-4xl font-bold text-foreground tracking-tight">
-                Trung tâm hỗ trợ đại lý
+          <Container max="8xl" className="space-y-10 px-4 md:px-8">
+            <div className="mx-auto max-w-3xl space-y-3 text-center">
+              <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+                {p.title}
               </h1>
-              <p className="text-lg text-muted-foreground">
-                StoreSync đồng hành cùng bạn xuyên suốt quá trình nhập hàng
-              </p>
+              <p className="text-lg text-muted-foreground">{p.subtitle}</p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-              <Card className="border-outline-variant shadow-lg hover:shadow-xl transition-all duration-300 rounded-[2rem] overflow-hidden group">
-                <CardHeader className="text-center pb-4 pt-10">
-                  <div className="mx-auto bg-primary/10 w-28 h-28 rounded-3xl flex items-center justify-center mb-6 transition-transform group-hover:rotate-6 group-hover:scale-110 duration-300">
-                    <Phone className="text-primary w-14 h-14" />
+            <div className="grid grid-cols-1 gap-10 md:grid-cols-2">
+              <Card className="group overflow-hidden rounded-[2rem] border-outline-variant shadow-lg transition-all duration-300 hover:shadow-xl">
+                <CardHeader className="pb-4 pt-10 text-center">
+                  <div className="mx-auto mb-6 flex h-28 w-28 items-center justify-center rounded-3xl bg-primary/10 transition-transform duration-300 group-hover:rotate-6 group-hover:scale-110">
+                    <Phone className="h-14 w-14 text-primary" aria-hidden />
                   </div>
-                  <CardTitle className="text-3xl font-black text-foreground">Gọi tổng đài</CardTitle>
-                  <CardDescription className="text-xl font-medium text-muted-foreground mt-2">Hỗ trợ trực tiếp 24/7 từ nhân viên</CardDescription>
+                  <CardTitle className="text-3xl font-black text-foreground">
+                    {p.hotline.cardTitle}
+                  </CardTitle>
+                  <CardDescription className="mt-2 text-xl font-medium text-muted-foreground">
+                    {p.hotline.cardDescription}
+                  </CardDescription>
                 </CardHeader>
                 <CardContent className="flex flex-col items-center gap-6 p-10 pt-4">
-                  <div className="bg-surface w-full p-6 rounded-2xl border border-outline-variant/30 text-center shadow-inner">
-                    <p className="text-4xl font-black text-primary tracking-tighter">1900 1500</p>
-                    <p className="text-sm font-bold text-muted-foreground mt-2 flex items-center justify-center gap-2">
-                      <Clock className="w-4 h-4" />
-                      Làm việc từ 7h00 - 22h00
+                  <div className="w-full rounded-2xl border border-outline-variant/30 bg-surface p-6 text-center shadow-inner">
+                    <a
+                      href={p.hotline.telHref}
+                      className="text-4xl font-black tracking-tighter text-primary hover:underline"
+                    >
+                      {p.hotline.display}
+                    </a>
+                    <p className="mt-2 flex items-center justify-center gap-2 text-sm font-bold text-muted-foreground">
+                      <Clock className="h-4 w-4 shrink-0" aria-hidden />
+                      {p.hotline.hoursLine}
                     </p>
                   </div>
-                  <Button size="lg" className="w-full h-20 text-2xl font-black rounded-2xl shadow-xl bg-primary text-primary-foreground hover:bg-primary/90 active:scale-95 transition-all flex gap-3">
-                    <Phone className="w-7 h-7" />
-                    BẤM ĐỂ GỌI NGAY
-                  </Button>
+                  <a
+                    href={p.hotline.telHref}
+                    className={cn(
+                      buttonVariants({ size: "lg" }),
+                      "h-20 w-full gap-3 rounded-2xl text-2xl font-black shadow-xl transition-all active:scale-95",
+                    )}
+                  >
+                    <Phone className="h-7 w-7 shrink-0" aria-hidden />
+                    {p.hotline.ctaLabel}
+                  </a>
                 </CardContent>
               </Card>
 
-              <Card className="border-outline-variant shadow-lg hover:shadow-xl transition-all duration-300 rounded-[2rem] overflow-hidden group">
-                <CardHeader className="text-center pb-4 pt-10">
-                  <div className="mx-auto bg-emerald-500/10 w-28 h-28 rounded-3xl flex items-center justify-center mb-6 transition-transform group-hover:-rotate-6 group-hover:scale-110 duration-300">
-                    <MessageCircle className="text-emerald-600 w-14 h-14" />
+              <Card className="group overflow-hidden rounded-[2rem] border-outline-variant shadow-lg transition-all duration-300 hover:shadow-xl">
+                <CardHeader className="pb-4 pt-10 text-center">
+                  <div className="mx-auto mb-6 flex h-28 w-28 items-center justify-center rounded-3xl bg-emerald-500/10 transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-110">
+                    <MessageCircle className="h-14 w-14 text-emerald-600" aria-hidden />
                   </div>
-                  <CardTitle className="text-3xl font-black text-foreground">Nhắn tin Zalo</CardTitle>
-                  <CardDescription className="text-xl font-medium text-muted-foreground mt-2">Gửi hình ảnh sự cố hoặc đơn hàng</CardDescription>
+                  <CardTitle className="text-3xl font-black text-foreground">
+                    {p.zalo.cardTitle}
+                  </CardTitle>
+                  <CardDescription className="mt-2 text-xl font-medium text-muted-foreground">
+                    {p.zalo.cardDescription}
+                  </CardDescription>
                 </CardHeader>
                 <CardContent className="flex flex-col items-center gap-6 p-10 pt-4">
-                  <div className="bg-surface w-full p-6 rounded-2xl border border-outline-variant/30 text-center shadow-inner">
-                    <p className="text-3xl font-black text-emerald-600 uppercase tracking-tight">Zalo OA StoreSync</p>
-                    <p className="text-sm font-bold text-muted-foreground mt-2 flex items-center justify-center gap-2">
-                      <ShieldCheck className="w-4 h-4" />
-                      Phản hồi nhanh trong 5 phút
+                  <div className="w-full rounded-2xl border border-outline-variant/30 bg-surface p-6 text-center shadow-inner">
+                    <p className="text-2xl font-black uppercase tracking-tight text-emerald-600">
+                      {p.zalo.handleLine}
+                    </p>
+                    <p className="mt-2 flex items-center justify-center gap-2 text-sm font-bold text-muted-foreground">
+                      <ShieldCheck className="h-4 w-4 shrink-0" aria-hidden />
+                      {p.zalo.responseNote}
                     </p>
                   </div>
-                  <Button size="lg" className="w-full h-20 text-2xl font-black rounded-2xl bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm active:scale-95 transition-all flex gap-3">
-                    <MessageCircle className="w-7 h-7" />
-                    MỞ CHAT ZALO
-                  </Button>
+                  <a
+                    href={zaloOaUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={cn(
+                      buttonVariants({ size: "lg" }),
+                      "h-20 w-full gap-3 rounded-2xl bg-emerald-600 text-2xl font-black text-white shadow-sm transition-all hover:bg-emerald-700 active:scale-95",
+                    )}
+                  >
+                    <MessageCircle className="h-7 w-7 shrink-0" aria-hidden />
+                    {p.zalo.ctaLabel}
+                  </a>
                 </CardContent>
               </Card>
             </div>
 
-            <div className="mt-16 bg-surface rounded-[2.5rem] p-10 border border-outline-variant/50 shadow-sm relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full -mr-32 -mt-32 blur-3xl"></div>
-              <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-10">
-                <div className="flex flex-col sm:flex-row items-center gap-8 text-center sm:text-left">
-                  <div className="w-32 h-32 bg-primary/10 rounded-full flex items-center justify-center border-4 border-white shadow-xl overflow-hidden">
-                    <div className="w-full h-full bg-primary/20 flex items-center justify-center">
-                      <User className="w-16 h-16 text-primary" />
-                    </div>
+            <div className="relative mt-16 overflow-hidden rounded-[2.5rem] border border-outline-variant/50 bg-surface p-10 shadow-sm">
+              <div className="absolute -right-32 -top-32 h-64 w-64 rounded-full bg-primary/5 blur-3xl" />
+              <div className="relative z-10 flex flex-col items-center justify-between gap-10 lg:flex-row">
+                <div className="flex flex-col items-center gap-8 text-center sm:flex-row sm:text-left">
+                  <div className="flex h-32 w-32 shrink-0 items-center justify-center overflow-hidden rounded-full border-4 border-white bg-primary/10 shadow-xl">
+                    <User className="h-16 w-16 text-primary" aria-hidden />
                   </div>
                   <div className="space-y-2">
-                    <h2 className="text-3xl font-black text-foreground leading-tight">Nhân viên phụ trách khu vực</h2>
-                    <div className="flex flex-col gap-1">
-                      <p className="text-2xl font-bold text-primary">Nguyễn Văn A</p>
-                      <p className="text-lg font-medium text-muted-foreground">Phụ trách Đại lý khu vực Quận 1, TP.HCM</p>
-                    </div>
+                    <h2 className="text-3xl font-black leading-tight text-foreground">
+                      {p.accountManager.sectionTitle}
+                    </h2>
+                    <p className="text-base text-muted-foreground">{p.accountManager.leadLine}</p>
+                    <p className="text-lg font-bold text-primary">
+                      {p.accountManager.namePlaceholder}
+                    </p>
+                    <p className="text-sm text-muted-foreground">{p.accountManager.regionLine}</p>
                   </div>
                 </div>
 
-                <div className="bg-background/80 backdrop-blur-sm p-8 rounded-3xl border border-primary/20 shadow-lg text-center w-full lg:w-auto min-w-[300px]">
-                  <p className="text-sm font-bold text-muted-foreground uppercase tracking-widest mb-2">Số điện thoại riêng</p>
-                  <p className="text-3xl font-black text-foreground">0987 654 321</p>
-                  <Button variant="link" className="text-primary font-bold text-lg p-0 h-auto mt-4 hover:no-underline flex items-center gap-2 mx-auto">
-                    <HelpCircle className="w-5 h-5" />
-                    Yêu cầu hỗ trợ ngay
-                  </Button>
+                <div className="w-full min-w-[300px] rounded-3xl border border-primary/20 bg-background/80 p-8 text-center shadow-lg backdrop-blur-sm lg:w-auto">
+                  <p className="mb-2 text-sm font-bold uppercase tracking-widest text-muted-foreground">
+                    {p.accountManager.directPhoneLabel}
+                  </p>
+                  <a
+                    href={p.accountManager.directTelHref}
+                    className="text-3xl font-black text-foreground hover:underline"
+                  >
+                    {p.accountManager.directPhoneDisplay}
+                  </a>
+                  <Link
+                    href={p.accountManager.helpHrefPath}
+                    className="mx-auto mt-4 flex items-center justify-center gap-2 text-lg font-bold text-primary hover:underline"
+                  >
+                    <HelpCircle className="h-5 w-5 shrink-0" aria-hidden />
+                    {p.accountManager.helpCtaLabel}
+                  </Link>
                 </div>
               </div>
             </div>

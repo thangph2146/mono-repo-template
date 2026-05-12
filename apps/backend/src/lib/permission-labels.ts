@@ -14,6 +14,8 @@ export const PERMISSION_LABEL_VI: Record<string, string> = {
   [PERMISSION_CODES.USERS_CART_OWN]: "Giỏ hàng của chính mình",
   [PERMISSION_CODES.RBAC_READ]: "Xem vai trò & quyền",
   [PERMISSION_CODES.DATA_MAINTENANCE]: "Sao lưu / bảo trì dữ liệu",
+  [PERMISSION_CODES.SUPPORT_READ]: "Xem trang hỗ trợ đại lý (hotline / Zalo)",
+  [PERMISSION_CODES.SUPPORT_WRITE]: "Sửa nội dung hỗ trợ đại lý trên cửa hàng",
 };
 
 export function permissionLabelVi(code: string): string {

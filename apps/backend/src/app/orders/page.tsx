@@ -8,7 +8,6 @@ import type {
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@ui/components/button";
-import { Input } from "@ui/components/input";
 import { Badge } from "@ui/components/badge";
 import {
   CheckCircle2,
@@ -26,6 +25,8 @@ import {
   Loader2,
   Layers,
   Trash2,
+  ShoppingBag,
+  Info,
 } from "lucide-react";
 import { ApiError, type Order, type OrderStatus } from "@/lib/api";
 import { useAuth } from "@/providers/auth-provider";
@@ -118,8 +119,8 @@ export default function AdminOrdersPage() {
 
   const [statusFilter, setStatusFilter] = useState<FilterKey>("ALL");
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [actorRole, setActorRole] = useState("warehouse");
-  const [actorName, setActorName] = useState("");
+  const actorRole = "warehouse";
+  const actorName = "";
 
   const { data: statusCounts } = useOrderStatusCounts({
     enabled: canReadOrders,
@@ -153,6 +154,8 @@ export default function AdminOrdersPage() {
     data: trashedData,
     isLoading: trashedLoading,
     error: trashedError,
+    refetch: refetchTrashedOrders,
+    isFetching: trashedOrdersFetching,
   } = useTrashedOrders({
     enabled: canWriteOrders && mainTab === "trash",
     listParams: trashListParams,
@@ -700,25 +703,34 @@ export default function AdminOrdersPage() {
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
         <div>
-          <h1 className="text-4xl font-extrabold text-foreground tracking-tight">
+          <h1 className="flex items-center gap-3 text-4xl font-extrabold tracking-tight text-foreground">
+            <ShoppingBag className="size-9 shrink-0 text-primary" aria-hidden />
             Quản lý Đơn hàng (COD)
           </h1>
-          <p className="text-lg text-on-surface-variant font-medium mt-1">
+          <p className="mt-1 text-lg font-medium text-on-surface-variant">
             Chỉ định shipper ở cột tương ứng (user phải có role{" "}
             <span className="font-mono text-foreground">shipper</span> trong RBAC).
             Luồng: kho xác nhận → giao hàng &amp; thu COD → hoàn tất.
           </p>
         </div>
         <Button
+          type="button"
           variant="outline"
-          onClick={() => void refetch()}
-          className="flex items-center gap-2 border-outline-variant h-12 px-6 rounded-xl font-bold hover:bg-muted"
+          onClick={() => {
+            void refetch();
+            void refetchTrashedOrders();
+          }}
+          className="flex h-12 items-center gap-2 rounded-xl border-outline-variant px-6 font-bold hover:bg-muted"
         >
           <RefreshCw
-            className={`w-5 h-5 ${isFetching ? "animate-spin" : ""}`}
-          />{" "}
+            className={cn(
+              "size-5",
+              (isFetching || trashedOrdersFetching) && "animate-spin",
+            )}
+            aria-hidden
+          />
           Làm mới
         </Button>
       </div>
@@ -731,13 +743,19 @@ export default function AdminOrdersPage() {
         className="space-y-6"
       >
         <TabsList className="h-auto min-h-9 flex-wrap gap-1 rounded-xl p-1">
-          <TabsTrigger value="list" className="gap-2 rounded-lg">
-            <Layers className="size-4" />
+          <TabsTrigger
+            value="list"
+            className="flex items-center gap-2 rounded-lg px-4 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+          >
+            <Layers className="size-4" aria-hidden />
             Đơn hàng
           </TabsTrigger>
           {canWriteOrders ? (
-            <TabsTrigger value="trash" className="gap-2 rounded-lg">
-              <ArchiveRestore className="size-4" />
+            <TabsTrigger
+              value="trash"
+              className="flex items-center gap-2 rounded-lg px-4 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+            >
+              <ArchiveRestore className="size-4" aria-hidden />
               Thùng rác
               {trashedData != null && trashedData.total > 0 ? (
                 <Badge
@@ -752,11 +770,16 @@ export default function AdminOrdersPage() {
         </TabsList>
 
         <TabsContent value="list" className="mt-0 space-y-6">
-          <Card className="px-4">
-            <p className="text-sm text-on-surface-variant">
-              Bảng: cây <span className="font-semibold">đơn → dòng hàng</span>. Chọn trạng
-              thái bên dưới để lọc trên server (phân trang ở cuối bảng). Ô tìm nhanh gọi
-              API (mã đơn, email, tên khách). «Lưu trữ» chỉ cho đơn đã giao hoặc đã huỷ.
+          <Card className="border-outline-variant px-4 py-3">
+            <p className="flex items-start gap-2 text-sm text-on-surface-variant">
+              <Info className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
+              <span>
+                Bảng: cây{" "}
+                <span className="font-semibold text-foreground">đơn → dòng hàng</span>.
+                Chọn trạng thái bên dưới để lọc trên server (phân trang ở cuối bảng). Ô
+                tìm nhanh gọi API (mã đơn, email, tên khách). «Lưu trữ» chỉ cho đơn đã
+                giao hoặc đã huỷ.
+              </span>
             </p>
           </Card>
 
@@ -804,13 +827,14 @@ export default function AdminOrdersPage() {
             </CardContent>
           </Card>
           {error && (
-            <div className="text-center py-12 bg-destructive/5 border border-destructive/20 rounded-2xl">
-              <p className="text-lg font-bold text-destructive">
-                Không tải được đơn hàng
-              </p>
-              <p className="text-sm text-on-surface-variant mt-1">
-                {error.message}
-              </p>
+            <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-4 text-destructive">
+              <div className="flex items-start gap-3">
+                <AlertCircle className="mt-0.5 size-5 shrink-0" aria-hidden />
+                <div>
+                  <p className="font-semibold">Không tải được đơn hàng</p>
+                  <p className="mt-1 text-sm opacity-90">{error.message}</p>
+                </div>
+              </div>
             </div>
           )}
 
@@ -829,16 +853,31 @@ export default function AdminOrdersPage() {
               onGlobalFilterChange={setGlobalFilter}
               globalFilterPlaceholder="Tìm nhanh (API): mã đơn, email, tên khách…"
               filterToolbarExtra={
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="h-9 gap-1.5 rounded-lg"
-                  onClick={clearListFilters}
-                >
-                  <FilterX className="size-4" />
-                  Xóa bộ lọc
-                </Button>
+                <div className="flex flex-wrap items-center gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="h-9 gap-2 rounded-lg"
+                    onClick={() => void refetch()}
+                  >
+                    <RefreshCw
+                      className={cn("size-4", isFetching && "animate-spin")}
+                      aria-hidden
+                    />
+                    Làm mới
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="h-9 gap-2 rounded-lg"
+                    onClick={clearListFilters}
+                  >
+                    <FilterX className="size-4" aria-hidden />
+                    Xóa bộ lọc
+                  </Button>
+                </div>
               }
               csvExport={{ fileName: "don-hang.csv" }}
               footer={listPaginationFooter}
@@ -860,19 +899,25 @@ export default function AdminOrdersPage() {
         {canWriteOrders ? (
           <TabsContent value="trash" className="mt-0 space-y-4">
             {trashedError ? (
-              <div className="rounded-2xl border border-destructive/20 bg-destructive/5 py-12 text-center">
-                <p className="text-lg font-bold text-destructive">
-                  Không tải được thùng rác
-                </p>
-                <p className="mt-1 text-sm text-on-surface-variant">
-                  {trashedError.message}
-                </p>
+              <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-4 text-destructive">
+                <div className="flex items-start gap-3">
+                  <AlertCircle className="mt-0.5 size-5 shrink-0" aria-hidden />
+                  <div>
+                    <p className="font-semibold">Không tải được thùng rác</p>
+                    <p className="mt-1 text-sm opacity-90">
+                      {trashedError.message}
+                    </p>
+                  </div>
+                </div>
               </div>
             ) : (
               <>
-                <p className="text-sm text-on-surface-variant">
-                  Đơn lưu trữ không hiển thị cho khách và không xuất hiện trong
-                  danh sách chính.
+                <p className="flex items-start gap-2 text-sm text-on-surface-variant">
+                  <Info className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
+                  <span>
+                    Đơn lưu trữ không hiển thị cho khách và không xuất hiện trong danh
+                    sách chính.
+                  </span>
                 </p>
                 <AdminDataTable<Order>
                   data={trashedOrders}
@@ -885,16 +930,34 @@ export default function AdminOrdersPage() {
                   onGlobalFilterChange={setTrashGlobalFilter}
                   globalFilterPlaceholder="Tìm theo mã đơn, email, tên khách (API)…"
                   filterToolbarExtra={
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      className="h-9 gap-1.5 rounded-lg"
-                      onClick={clearTrashFilters}
-                    >
-                      <FilterX className="size-4" />
-                      Xóa bộ lọc
-                    </Button>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="h-9 gap-2 rounded-lg"
+                        onClick={() => void refetchTrashedOrders()}
+                      >
+                        <RefreshCw
+                          className={cn(
+                            "size-4",
+                            trashedOrdersFetching && "animate-spin",
+                          )}
+                          aria-hidden
+                        />
+                        Làm mới
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="h-9 gap-2 rounded-lg"
+                        onClick={clearTrashFilters}
+                      >
+                        <FilterX className="size-4" aria-hidden />
+                        Xóa bộ lọc
+                      </Button>
+                    </div>
                   }
                   csvExport={{ fileName: "don-hang-thung-rac.csv" }}
                   footer={trashPaginationFooter}
@@ -905,12 +968,10 @@ export default function AdminOrdersPage() {
         ) : null}
       </Tabs>
 
-      <div className="bg-primary/5 rounded-2xl p-6 border border-primary/20 flex gap-4 items-start">
-        <AlertCircle className="w-6 h-6 text-primary shrink-0 mt-0.5" />
+      <div className="flex items-start gap-4 rounded-2xl border border-primary/20 bg-primary/5 p-6">
+        <Info className="mt-0.5 size-6 shrink-0 text-primary" aria-hidden />
         <div className="space-y-1">
-          <p className="text-lg font-bold text-foreground">
-            Quy trình COD áp dụng:
-          </p>
+          <p className="text-lg font-bold text-foreground">Quy trình COD áp dụng:</p>
           <p className="text-on-surface-variant leading-relaxed text-sm">
             <span className="font-semibold">
               Chờ xử lý → Đã chốt kho → Đang giao → Đã giao &amp; thu tiền
@@ -933,7 +994,10 @@ export default function AdminOrdersPage() {
       >
         <AlertDialogContent className="rounded-2xl sm:max-w-[450px]">
           <AlertDialogHeader>
-            <AlertDialogTitle>Huỷ đơn hàng?</AlertDialogTitle>
+            <AlertDialogTitle className="flex items-center gap-2 text-left text-destructive">
+              <XCircle className="size-5 shrink-0" aria-hidden />
+              Huỷ đơn hàng?
+            </AlertDialogTitle>
             <AlertDialogDescription>
               {cancelTarget ? (
                 <>
@@ -988,7 +1052,10 @@ export default function AdminOrdersPage() {
       >
         <AlertDialogContent className="rounded-2xl sm:max-w-[450px]">
           <AlertDialogHeader>
-            <AlertDialogTitle>Mở lại đơn về &ldquo;Chờ xử lý&rdquo;?</AlertDialogTitle>
+            <AlertDialogTitle className="flex items-center gap-2 text-left">
+              <RotateCcw className="size-5 shrink-0 text-primary" aria-hidden />
+              Mở lại đơn về &ldquo;Chờ xử lý&rdquo;?
+            </AlertDialogTitle>
             <AlertDialogDescription>
               {reopenTarget ? (
                 <>
@@ -1047,7 +1114,10 @@ export default function AdminOrdersPage() {
       >
         <AlertDialogContent className="rounded-2xl sm:max-w-[450px]">
           <AlertDialogHeader>
-            <AlertDialogTitle>Lưu trữ đơn (xóa tạm)?</AlertDialogTitle>
+            <AlertDialogTitle className="flex items-center gap-2 text-left">
+              <Archive className="size-5 shrink-0 text-muted-foreground" aria-hidden />
+              Lưu trữ đơn (xóa tạm)?
+            </AlertDialogTitle>
             <AlertDialogDescription>
               {archiveTarget ? (
                 <>
@@ -1101,7 +1171,10 @@ export default function AdminOrdersPage() {
       >
         <AlertDialogContent className="rounded-2xl sm:max-w-[450px]">
           <AlertDialogHeader>
-            <AlertDialogTitle>Xóa vĩnh viễn đơn hàng?</AlertDialogTitle>
+            <AlertDialogTitle className="flex items-center gap-2 text-left text-destructive">
+              <Trash2 className="size-5 shrink-0" aria-hidden />
+              Xóa vĩnh viễn đơn hàng?
+            </AlertDialogTitle>
             <AlertDialogDescription>
               {purgeTarget ? (
                 <>
@@ -1142,7 +1215,10 @@ export default function AdminOrdersPage() {
       >
         <AlertDialogContent className="rounded-2xl sm:max-w-[450px]">
           <AlertDialogHeader>
-            <AlertDialogTitle>Khôi phục đơn?</AlertDialogTitle>
+            <AlertDialogTitle className="flex items-center gap-2 text-left">
+              <ArchiveRestore className="size-5 shrink-0 text-primary" aria-hidden />
+              Khôi phục đơn?
+            </AlertDialogTitle>
             <AlertDialogDescription>
               {restoreTarget ? (
                 <>

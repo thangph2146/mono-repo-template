@@ -8,6 +8,7 @@ import { Role } from './role.entity';
 import { RolePermissionLink } from './role-permission-link.entity';
 import { User } from './user.entity';
 import { UserRoleLink } from './user-role-link.entity';
+import { DealerSupportContent } from './dealer-support-content.entity';
 
 /**
  * Các entity được ORM quản lý — backup/import dùng metadata (cột, FK) tự động.
@@ -23,4 +24,5 @@ export const PERSISTENT_ENTITY_CLASSES = [
   Product,
   PromoCode,
   Order,
+  DealerSupportContent,
 ] as const satisfies readonly EntityClass<object>[];

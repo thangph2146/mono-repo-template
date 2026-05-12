@@ -16,6 +16,10 @@ export const PERMISSION_CODES = {
   USERS_CART_OWN: "users.cart_own",
   RBAC_READ: "rbac.read",
   DATA_MAINTENANCE: "data.maintenance",
+  /** Trang « Hỗ trợ đại lý » trên cổng admin. */
+  SUPPORT_READ: "support.read",
+  /** Sửa nội dung trang /support trên cửa hàng. */
+  SUPPORT_WRITE: "support.write",
 } as const;
 
 export type PermissionCode =
@@ -66,6 +70,8 @@ const STAFF_PANEL_PERMISSION_CODES: PermissionCode[] = [
   PERMISSION_CODES.USERS_MANAGE,
   PERMISSION_CODES.RBAC_READ,
   PERMISSION_CODES.DATA_MAINTENANCE,
+  PERMISSION_CODES.SUPPORT_READ,
+  PERMISSION_CODES.SUPPORT_WRITE,
 ];
 
 /**

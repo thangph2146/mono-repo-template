@@ -1,20 +1,39 @@
 "use client";
 
-import type { ColumnDef } from "@tanstack/react-table";
+import type {
+  ColumnDef,
+  ColumnFiltersState,
+  OnChangeFn,
+} from "@tanstack/react-table";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import {
   AlertCircle,
+  Archive,
   ArchiveRestore,
   Check,
-  Download,
+  CheckCircle2,
+  CalendarClock,
   FilterX,
+  Info,
+  KeyRound,
+  ListFilter,
   Loader2,
+  Lock,
+  Mail,
+  Pencil,
+  Phone,
+  RefreshCw,
+  Save,
   Shield,
+  ShieldHalf,
+  UserCircle,
+  UserMinus,
   UserPlus,
   Users,
   Layers,
   Trash2,
+  X,
 } from "lucide-react";
 import { Button } from "@ui/components/button";
 import { Input } from "@ui/components/input";
@@ -71,8 +90,6 @@ import {
 import { AdminDataTable } from "@/components/admin-data-table";
 import { AdminTablePaginationFooter } from "@/components/admin-table-pagination-footer";
 import { ApiError, type RbacRole, type User } from "@/lib/api";
-import { downloadCsvFile } from "@/lib/export-csv";
-import { downloadXlsxFile } from "@/lib/export-xlsx";
 import { useAuth } from "@/providers/auth-provider";
 import {
   canUserAccess,
@@ -90,6 +107,7 @@ import {
   useUpdateStaffUser,
 } from "@/hooks/queries";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
+import { cn } from "@ui/lib/utils";
 
 function roleHasPermission(role: RbacRole, permCode: string): boolean {
   if (role.permissions.includes("*")) return true;
@@ -114,13 +132,18 @@ export default function StaffAndRbacPage() {
   const [trashSearch, setTrashSearch] = useState("");
   const debouncedTrashSearch = useDebouncedValue(trashSearch, 250);
 
-  const [search, setSearch] = useState("");
-  const debouncedSearch = useDebouncedValue(search, 250);
+  const [globalFilter, setGlobalFilter] = useState("");
+  const debouncedGlobalFilter = useDebouncedValue(globalFilter, 250);
   const [roleFilter, setRoleFilter] = useState<string>("all");
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
   useEffect(() => {
     setStaffPage(1);
-  }, [debouncedSearch, staffPageSize]);
+  }, [debouncedGlobalFilter, staffPageSize]);
+
+  useEffect(() => {
+    setStaffPage(1);
+  }, [roleFilter]);
 
   useEffect(() => {
     setTrashPage(1);
@@ -128,11 +151,11 @@ export default function StaffAndRbacPage() {
 
   const staffListParams = useMemo(
     () => ({
-      q: debouncedSearch.trim() || undefined,
+      q: debouncedGlobalFilter.trim() || undefined,
       page: staffPage,
       limit: staffPageSize,
     }),
-    [debouncedSearch, staffPage, staffPageSize],
+    [debouncedGlobalFilter, staffPage, staffPageSize],
   );
 
   const trashListParams = useMemo(
@@ -188,14 +211,14 @@ export default function StaffAndRbacPage() {
     setCreateOpen(true);
   };
 
-  const openEdit = (u: User) => {
+  const openEdit = useCallback((u: User) => {
     setFormEmail(u.email);
     setFormPassword("");
     setFormFullName(u.fullName);
     setFormActive(u.isActive);
     setFormRoles(u.roles.map((r) => r.code));
     setEditUser(u);
-  };
+  }, []);
 
   const toggleRole = (code: string, checked: boolean) => {
     setFormRoles((prev) => {
@@ -210,7 +233,7 @@ export default function StaffAndRbacPage() {
   );
   const staffTotal = usersQuery.data?.total ?? 0;
 
-  const filteredUsers = useMemo(() => {
+  const roleFilteredUsers = useMemo(() => {
     return staffListItems.filter((u) => {
       if (roleFilter === "all") return true;
       if (roleFilter === "none") return u.roles.length === 0;
@@ -221,9 +244,31 @@ export default function StaffAndRbacPage() {
   const trashedUsers = trashedStaffQuery.data?.items ?? [];
   const trashStaffTotal = trashedStaffQuery.data?.total ?? 0;
 
+  const busy =
+    createUser.isPending ||
+    updateUser.isPending ||
+    deleteUser.isPending ||
+    restoreUser.isPending ||
+    purgeTrashedUser.isPending ||
+    rbacQuery.isFetching;
+
   const clearTrashStaffFilters = useCallback((): void => {
     setTrashSearch("");
     setTrashPage(1);
+  }, []);
+
+  const handleStaffColumnFiltersChange =
+    useCallback<OnChangeFn<ColumnFiltersState>>((updater) => {
+      setColumnFilters((prev) =>
+        typeof updater === "function" ? updater(prev) : updater,
+      );
+    }, []);
+
+  const clearStaffFilters = useCallback((): void => {
+    setGlobalFilter("");
+    setRoleFilter("all");
+    setColumnFilters([]);
+    setStaffPage(1);
   }, []);
 
   const trashedUserColumns: ColumnDef<User>[] = [
@@ -232,7 +277,10 @@ export default function StaffAndRbacPage() {
       header: "Email",
       enableColumnFilter: false,
       cell: ({ getValue }) => (
-        <span className="font-mono text-xs">{String(getValue())}</span>
+        <span className="flex items-center gap-2 font-mono text-xs min-w-0">
+          <Mail className="size-3.5 shrink-0 text-muted-foreground" aria-hidden />
+          <span className="truncate">{String(getValue())}</span>
+        </span>
       ),
     },
     {
@@ -240,7 +288,13 @@ export default function StaffAndRbacPage() {
       header: "Họ tên",
       enableColumnFilter: false,
       cell: ({ getValue }) => (
-        <span className="font-medium">{String(getValue())}</span>
+        <span className="flex items-center gap-2 min-w-0">
+          <UserCircle
+            className="size-4 shrink-0 text-muted-foreground"
+            aria-hidden
+          />
+          <span className="font-medium truncate">{String(getValue())}</span>
+        </span>
       ),
     },
     {
@@ -250,7 +304,8 @@ export default function StaffAndRbacPage() {
       cell: ({ getValue }) => {
         const v = getValue() as string | null | undefined;
         return (
-          <span className="text-xs text-muted-foreground">
+          <span className="flex items-center gap-2 text-xs text-muted-foreground">
+            <CalendarClock className="size-3.5 shrink-0" aria-hidden />
             {v ? new Date(v).toLocaleString("vi-VN") : "—"}
           </span>
         );
@@ -272,7 +327,7 @@ export default function StaffAndRbacPage() {
             onClick={() => setRestoreTarget(row.original)}
             disabled={restoreUser.isPending || purgeTrashedUser.isPending}
           >
-            <ArchiveRestore className="size-3.5" />
+            <ArchiveRestore className="size-3.5" aria-hidden />
             Khôi phục
           </Button>
           <Button
@@ -283,7 +338,7 @@ export default function StaffAndRbacPage() {
             onClick={() => setPurgeTarget(row.original)}
             disabled={restoreUser.isPending || purgeTrashedUser.isPending}
           >
-            <Trash2 className="size-3.5" />
+            <Trash2 className="size-3.5" aria-hidden />
             Xóa hẳn
           </Button>
         </div>
@@ -317,16 +372,172 @@ export default function StaffAndRbacPage() {
     />
   );
 
+  const staffColumns = useMemo<ColumnDef<User>[]>(
+    () => [
+      {
+        accessorKey: "fullName",
+        header: "Họ tên",
+        meta: { filterPlaceholder: "Lọc họ tên…" },
+        cell: ({ row }) => (
+          <span className="flex items-center gap-2 min-w-0">
+            <UserCircle
+              className="size-4 shrink-0 text-primary/80"
+              aria-hidden
+            />
+            <span className="font-medium truncate">{row.original.fullName}</span>
+          </span>
+        ),
+      },
+      {
+        accessorKey: "email",
+        header: "Email",
+        cell: ({ getValue }) => (
+          <span className="flex items-center gap-2 font-mono text-xs text-muted-foreground min-w-0">
+            <Mail className="size-3.5 shrink-0 opacity-80" aria-hidden />
+            <span className="truncate">{String(getValue())}</span>
+          </span>
+        ),
+        meta: { filterPlaceholder: "Lọc email…" },
+      },
+      {
+        accessorKey: "phone",
+        header: "SĐT",
+        cell: ({ getValue }) => {
+          const v = getValue() as string | null | undefined;
+          return v ? (
+            <span className="flex items-center gap-2 font-mono text-xs tabular-nums">
+              <Phone className="size-3.5 shrink-0 text-muted-foreground" aria-hidden />
+              {v}
+            </span>
+          ) : (
+            <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+              <Phone className="size-3.5 opacity-40" aria-hidden />
+              —
+            </span>
+          );
+        },
+        meta: { filterPlaceholder: "Lọc SĐT…" },
+      },
+      {
+        id: "roles",
+        accessorFn: (u) =>
+          u.roles.length === 0 ? "" : u.roles.map((r) => r.name).join("; "),
+        header: "Vai trò",
+        cell: ({ row }) => {
+          const u = row.original;
+          if (u.roles.length === 0) {
+            return (
+              <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                <ShieldHalf className="size-3.5 shrink-0 opacity-60" aria-hidden />
+                —
+              </span>
+            );
+          }
+          return (
+            <div className="flex flex-wrap items-center gap-1.5">
+              <ShieldHalf
+                className="size-3.5 shrink-0 text-muted-foreground"
+                aria-hidden
+              />
+              <div className="flex flex-wrap gap-1">
+                {u.roles.map((r) => (
+                  <Badge
+                    key={r.code}
+                    variant={
+                      isSuperAdminRoleCode(r.code) ? "default" : "secondary"
+                    }
+                    className="text-xs font-normal"
+                  >
+                    {r.name}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+          );
+        },
+        meta: { filterPlaceholder: "Lọc theo tên vai trò…" },
+      },
+      {
+        id: "isActive",
+        accessorFn: (u) => (u.isActive ? "true" : "false"),
+        header: "Trạng thái",
+        cell: ({ row }) =>
+          row.original.isActive ? (
+            <Badge
+              variant="outline"
+              className="gap-1 border-emerald-200 pr-2 text-emerald-700"
+            >
+              <CheckCircle2 className="size-3.5 shrink-0" aria-hidden />
+              Hoạt động
+            </Badge>
+          ) : (
+            <Badge
+              variant="outline"
+              className="text-muted-foreground gap-1 pr-2"
+            >
+              <Lock className="size-3.5 shrink-0" aria-hidden />
+              Khoá
+            </Badge>
+          ),
+        filterFn: (row, id, v) => {
+          if (v == null || v === "") return true;
+          return row.getValue(id) === v;
+        },
+        meta: {
+          filterVariant: "select",
+          filterLabel: "Trạng thái",
+          selectOptions: [
+            { value: "true", label: "Hoạt động" },
+            { value: "false", label: "Khoá" },
+          ],
+        },
+      },
+      {
+        id: "actions",
+        header: "Thao tác",
+        enableColumnFilter: false,
+        enableSorting: false,
+        meta: { disableColumnFilter: true },
+        cell: ({ row }) => {
+          const u = row.original;
+          return (
+            <div className="flex flex-wrap justify-end gap-1">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="h-8 gap-1 rounded-lg"
+                onClick={() => openEdit(u)}
+                disabled={busy}
+              >
+                <Pencil className="size-3.5" aria-hidden />
+                Sửa
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="h-8 gap-1 rounded-lg border-destructive/40 text-destructive hover:bg-destructive/10"
+                onClick={() => setDeleteTarget(u)}
+                disabled={busy || u.id === session?.id}
+                title={
+                  u.id === session?.id
+                    ? "Không xoá tài khoản đang đăng nhập"
+                    : "Xoá tạm"
+                }
+              >
+                <Trash2 className="size-3.5" aria-hidden /> Xóa
+              </Button>
+            </div>
+          );
+        },
+      },
+    ],
+    [session?.id, busy, openEdit],
+  );
+
   const defaultTab = canManageUsers ? "people" : "rbac";
   const showTabs = canManageUsers && canReadRbac;
-
-  const busy =
-    createUser.isPending ||
-    updateUser.isPending ||
-    deleteUser.isPending ||
-    restoreUser.isPending ||
-    purgeTrashedUser.isPending ||
-    rbacQuery.isFetching;
 
   const handleCreate = async () => {
     const email = formEmail.trim();
@@ -443,7 +654,10 @@ export default function StaffAndRbacPage() {
   if (!canManageUsers && !canReadRbac) {
     return (
       <div className="max-w-3xl mx-auto space-y-4">
-        <h1 className="text-2xl font-bold tracking-tight">Nhân sự & phân quyền</h1>
+        <h1 className="flex items-center gap-2 text-2xl font-bold tracking-tight">
+          <Users className="size-7 shrink-0 text-primary" aria-hidden />
+          Nhân sự & phân quyền
+        </h1>
         <Card className="border-destructive/30 bg-destructive/5">
           <CardHeader className="flex flex-row items-start gap-3 space-y-0">
             <AlertCircle className="size-5 text-destructive shrink-0 mt-0.5" />
@@ -476,23 +690,32 @@ export default function StaffAndRbacPage() {
       </CardHeader>
       <CardContent>
         {rbacQuery.isLoading ? (
-          <div className="flex items-center gap-2 text-muted-foreground text-sm py-8 justify-center">
-            <Loader2 className="size-4 animate-spin" />
-            Đang tải RBAC…
+          <div className="flex flex-col items-center justify-center gap-3 py-12 text-sm text-muted-foreground">
+            <Loader2 className="size-8 animate-spin text-primary" aria-hidden />
+            <span className="flex items-center gap-2 font-medium">
+              <Shield className="size-4 opacity-60" aria-hidden />
+              Đang tải RBAC…
+            </span>
           </div>
         ) : rbacQuery.isError ? (
-          <p className="text-sm text-destructive">
-            {rbacQuery.error instanceof Error
-              ? rbacQuery.error.message
-              : "Lỗi tải dữ liệu"}
-          </p>
+          <div className="rounded-xl border border-destructive/20 bg-destructive/5 py-10 text-center">
+            <AlertCircle className="mx-auto mb-2 size-9 text-destructive" aria-hidden />
+            <p className="text-sm font-semibold text-destructive">
+              {rbacQuery.error instanceof Error
+                ? rbacQuery.error.message
+                : "Lỗi tải dữ liệu"}
+            </p>
+          </div>
         ) : (
           <div className="w-full overflow-x-auto rounded-xl border border-border">
             <Table>
               <TableHeader>
                 <TableRow className="bg-muted/40 hover:bg-muted/40">
                   <TableHead className="sticky left-0 z-[1] bg-muted/90 backdrop-blur min-w-[140px] font-semibold">
-                    Vai trò
+                    <span className="flex items-center gap-2">
+                      <Shield className="size-4 text-primary shrink-0" aria-hidden />
+                      Vai trò
+                    </span>
                   </TableHead>
                   {permissions.map((p) => (
                     <TableHead
@@ -514,9 +737,17 @@ export default function StaffAndRbacPage() {
                 {roles.map((role) => (
                   <TableRow key={role.code}>
                     <TableCell className="sticky left-0 z-[1] bg-background font-medium">
-                      <div>{role.name}</div>
-                      <div className="text-[10px] font-mono text-muted-foreground">
-                        {role.code}
+                      <div className="flex items-start gap-2">
+                        <UserCircle
+                          className="mt-0.5 size-4 shrink-0 text-muted-foreground"
+                          aria-hidden
+                        />
+                        <div>
+                          <div>{role.name}</div>
+                          <div className="text-[10px] font-mono text-muted-foreground">
+                            {role.code}
+                          </div>
+                        </div>
                       </div>
                     </TableCell>
                     {permissions.map((p) => {
@@ -545,35 +776,6 @@ export default function StaffAndRbacPage() {
     </Card>
   );
 
-  const clearStaffFilters = (): void => {
-    setSearch("");
-    setRoleFilter("all");
-    setStaffPage(1);
-  };
-
-  const getStaffExportGrid = (): { headers: string[]; rows: string[][] } => {
-    const headers = ["Họ tên", "Email", "Vai trò", "Trạng thái"];
-    const rows = filteredUsers.map((u) => [
-      u.fullName,
-      u.email,
-      u.roles.length === 0
-        ? ""
-        : u.roles.map((r) => r.name).join("; "),
-      u.isActive ? "Đang hoạt động" : "Khoá",
-    ]);
-    return { headers, rows };
-  };
-
-  const exportStaffListCsv = (): void => {
-    const { headers, rows } = getStaffExportGrid();
-    downloadCsvFile("nhan-su.csv", headers, rows);
-  };
-
-  const exportStaffListXlsx = (): void => {
-    const { headers, rows } = getStaffExportGrid();
-    void downloadXlsxFile("nhan-su.xlsx", headers, rows, "Nhân sự");
-  };
-
   const peoplePanel = (
     <div className="space-y-4">
 
@@ -585,14 +787,14 @@ export default function StaffAndRbacPage() {
         }}
         className="space-y-4"
       >
-        <div className="flex flex-wrap justify-between items-center">
+        <div className="flex flex-wrap justify-between items-center gap-3">
           <TabsList className="h-auto min-h-9 flex-wrap gap-1 rounded-xl p-1">
             <TabsTrigger value="list" className="gap-2 rounded-lg">
-              <Layers className="size-4" />
+              <Layers className="size-4 shrink-0" aria-hidden />
               Danh sách
             </TabsTrigger>
             <TabsTrigger value="trash" className="gap-2 rounded-lg">
-              <ArchiveRestore className="size-4" />
+              <ArchiveRestore className="size-4 shrink-0" aria-hidden />
               Thùng rác
               {trashedStaffQuery.data != null && trashedStaffQuery.data.total > 0 ? (
                 <Badge
@@ -604,222 +806,145 @@ export default function StaffAndRbacPage() {
               ) : null}
             </TabsTrigger>
           </TabsList>
-          <Button
-            type="button"
-            onClick={openCreate}
-            className="gap-2 rounded-xl"
-            disabled={busy || roles.length === 0}
-          >
-            <UserPlus className="size-4" />
-            Thêm nhân sự
-          </Button>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              className="flex h-11 items-center gap-2 rounded-xl border-outline-variant px-4 font-semibold hover:bg-muted"
+              onClick={() => void usersQuery.refetch()}
+            >
+              <RefreshCw
+                className={cn(
+                  "size-4",
+                  usersQuery.isFetching && "animate-spin",
+                )}
+                aria-hidden
+              />
+              Làm mới
+            </Button>
+            <Button
+              type="button"
+              onClick={openCreate}
+              className="flex h-11 items-center gap-2 rounded-xl px-5 font-bold shadow-md"
+              disabled={busy || roles.length === 0}
+            >
+              <UserPlus className="size-4" aria-hidden />
+              Thêm nhân sự
+            </Button>
+          </div>
         </div>
 
-
         <TabsContent value="list" className="mt-0 space-y-4">
-          <Card className="border-border shadow-sm px-4">
-            <div className="flex flex-col gap-3 lg:flex-row lg:flex-wrap lg:items-end">
-              <div className="min-w-[min(100%,18rem)] flex-1 space-y-2">
-                <Label htmlFor="staff-search">Tìm nhanh (API)</Label>
-                <Input
-                  id="staff-search"
-                  placeholder="Email hoặc tên nhân viên"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="rounded-xl"
-                />
-              </div>
+          <p className="flex gap-2 text-sm text-on-surface-variant">
+            <Info
+              className="size-4 shrink-0 text-primary/80 mt-0.5"
+              aria-hidden
+            />
+            <span>
+              Tìm nhanh gọi API phân trang. Chọn vai trò trong thanh công cụ bảng để
+              lọc nhanh trên <span className="font-semibold">trang hiện tại</span>; lọc
+              theo cột áp dụng thêm trên các dòng đã tải. Chọn số tài khoản/trang ở
+              cuối bảng.
+            </span>
+          </p>
 
-              <div className="flex flex-wrap items-end gap-2">
-                <div className="flex flex-col gap-1.5">
-                  <span className="text-xs font-semibold text-muted-foreground">
-                    Xuất file
-                  </span>
-                  <div className="flex flex-wrap gap-2">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      className="h-9 gap-1.5 rounded-lg"
-                      disabled={filteredUsers.length === 0}
-                      onClick={exportStaffListCsv}
-                      title="CSV: phân cột bằng ; (Excel VN), UTF-16 LE"
-                    >
-                      <Download className="size-4" />
-                      CSV
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      className="h-9 gap-1.5 rounded-lg"
-                      disabled={filteredUsers.length === 0}
-                      onClick={exportStaffListXlsx}
-                      title="Excel: cột rộng theo nội dung"
-                    >
-                      <Download className="size-4" />
-                      Excel
-                    </Button>
-                  </div>
-                </div>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="h-9 gap-1.5 rounded-lg"
-                  onClick={clearStaffFilters}
-                >
-                  <FilterX className="size-4" />
-                  Xóa bộ lọc
-                </Button>
-              </div>
-
+          {usersQuery.isError ? (
+            <div className="rounded-2xl border border-destructive/20 bg-destructive/5 py-12 text-center">
+              <AlertCircle className="mx-auto mb-2 size-10 text-destructive" />
+              <p className="text-lg font-bold text-destructive">
+                Không tải được danh sách nhân sự
+              </p>
+              <p className="mt-1 text-sm text-on-surface-variant">
+                {usersQuery.error instanceof Error
+                  ? usersQuery.error.message
+                  : "Lỗi không xác định"}
+              </p>
             </div>
-            <div className="space-y-2">
-              <Label>Lọc vai trò (trang hiện tại)</Label>
-              <Select
-                value={roleFilter}
-                onValueChange={(v) => setRoleFilter(v ?? "all")}
-              >
-                <SelectTrigger className="w-[200px] rounded-xl">
-                  <SelectValue placeholder="Vai trò" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Tất cả</SelectItem>
-                  <SelectItem value="none">Chưa gán vai trò</SelectItem>
-                  {roles.map((r) => (
-                    <SelectItem key={r.code} value={r.code}>
-                      {r.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </Card>
+          ) : null}
 
-          <Card className="border-border shadow-sm">
-            <CardContent className="p-0">
-              {usersQuery.isLoading ? (
-                <div className="flex items-center justify-center gap-2 py-16 text-sm text-muted-foreground">
-                  <Loader2 className="size-4 animate-spin" />
-                  Đang tải danh sách…
-                </div>
-              ) : usersQuery.isError ? (
-                <p className="p-6 text-sm text-destructive">
-                  {usersQuery.error instanceof Error
-                    ? usersQuery.error.message
-                    : "Lỗi tải danh sách"}
-                </p>
-              ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Nhân sự</TableHead>
-                      <TableHead>Vai trò</TableHead>
-                      <TableHead className="w-[100px]">Trạng thái</TableHead>
-                      <TableHead className="w-[140px] text-right">
-                        Thao tác
-                      </TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredUsers.map((u) => (
-                      <TableRow key={u.id}>
-                        <TableCell>
-                          <div className="font-medium">{u.fullName}</div>
-                          <div className="font-mono text-xs text-muted-foreground">
-                            {u.email}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex flex-wrap gap-1">
-                            {u.roles.length === 0 ? (
-                              <span className="text-xs text-muted-foreground">
-                                —
+          {!usersQuery.isError ? (
+            <AdminDataTable<User>
+              data={roleFilteredUsers}
+              columns={staffColumns}
+              isLoading={usersQuery.isLoading}
+              emptyLabel="Không có tài khoản khớp tìm kiếm API hoặc bộ lọc vai trò / cột."
+              defaultExpandedAll={false}
+              manualFiltering
+              columnFilters={columnFilters}
+              onColumnFiltersChange={handleStaffColumnFiltersChange}
+              globalFilter={globalFilter}
+              onGlobalFilterChange={setGlobalFilter}
+              globalFilterPlaceholder="Tìm theo email, họ tên (API)…"
+              filterToolbarExtra={
+                <div className="flex flex-wrap items-end gap-2">
+                  <div className="flex items-end gap-2">
+                    <div
+                      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-border bg-muted/40 text-muted-foreground"
+                      title="Lọc theo vai trò"
+                    >
+                      <ListFilter className="size-4" aria-hidden />
+                    </div>
+                    <div className="flex flex-col gap-1.5">
+                      <span className="text-xs font-semibold text-muted-foreground">
+                        Vai trò (trang hiện tại)
+                      </span>
+                      <Select
+                        value={roleFilter}
+                        onValueChange={(v) => setRoleFilter(v ?? "all")}
+                      >
+                        <SelectTrigger className="h-9 min-w-[12rem] rounded-lg">
+                          <SelectValue placeholder="Vai trò" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">
+                            <span className="flex items-center gap-2">
+                              <Users className="size-3.5 opacity-70" aria-hidden />
+                              Tất cả
+                            </span>
+                          </SelectItem>
+                          <SelectItem value="none">
+                            <span className="flex items-center gap-2">
+                              <UserMinus className="size-3.5 opacity-70" aria-hidden />
+                              Chưa gán vai trò
+                            </span>
+                          </SelectItem>
+                          {roles.map((r) => (
+                            <SelectItem key={r.code} value={r.code}>
+                              <span className="flex items-center gap-2">
+                                <ShieldHalf
+                                  className="size-3.5 shrink-0 opacity-70"
+                                  aria-hidden
+                                />
+                                {r.name}
                               </span>
-                            ) : (
-                              u.roles.map((r) => (
-                                <Badge
-                                  key={r.code}
-                                  variant={
-                                    isSuperAdminRoleCode(r.code)
-                                      ? "default"
-                                      : "secondary"
-                                  }
-                                  className="text-xs font-normal"
-                                >
-                                  {r.name}
-                                </Badge>
-                              ))
-                            )}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          {u.isActive ? (
-                            <Badge
-                              variant="outline"
-                              className="border-emerald-200 text-emerald-700"
-                            >
-                              Hoạt động
-                            </Badge>
-                          ) : (
-                            <Badge
-                              variant="outline"
-                              className="text-muted-foreground"
-                            >
-                              Khoá
-                            </Badge>
-                          )}
-                        </TableCell>
-                        <TableCell className="space-x-2 text-right">
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            className="h-8 gap-1 rounded-lg"
-                            onClick={() => openEdit(u)}
-                            disabled={busy}
-                          >
-                            Sửa
-                          </Button>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            className="h-8 gap-1 rounded-lg border-destructive/40 text-destructive hover:bg-destructive/10"
-                            onClick={() => setDeleteTarget(u)}
-                            disabled={busy || u.id === session.id}
-                            title={
-                              u.id === session.id
-                                ? "Không xoá tài khoản đang đăng nhập"
-                                : "Xoá tạm"
-                            }
-                          >
-                            <Trash2 className="size-3.5" /> Xóa
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              )}
-            </CardContent>
-          </Card>
-
-          <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border bg-card px-4 py-3">
-            {staffListPaginationFooter}
-          </div>
-
-          {filteredUsers.length === 0 && !usersQuery.isLoading && (
-            <p className="py-4 text-center text-sm text-muted-foreground">
-              Không có bản ghi khớp bộ lọc.
-            </p>
-          )}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="h-9 gap-1.5 rounded-lg"
+                    onClick={clearStaffFilters}
+                  >
+                    <FilterX className="size-4" aria-hidden />
+                    Xóa bộ lọc
+                  </Button>
+                </div>
+              }
+              csvExport={{ fileName: "nhan-su.csv" }}
+              footer={staffListPaginationFooter}
+            />
+          ) : null}
         </TabsContent>
 
         <TabsContent value="trash" className="mt-0 space-y-4">
           {trashedStaffQuery.isError ? (
             <div className="rounded-2xl border border-destructive/20 bg-destructive/5 py-12 text-center">
+              <AlertCircle className="mx-auto mb-2 size-10 text-destructive" />
               <p className="text-lg font-bold text-destructive">
                 Không tải được thùng rác
               </p>
@@ -831,8 +956,14 @@ export default function StaffAndRbacPage() {
             </div>
           ) : (
             <>
-              <p className="text-sm text-muted-foreground">
-                Tài khoản trong thùng rác không đăng nhập được.
+              <p className="flex gap-2 text-sm text-on-surface-variant">
+                <ArchiveRestore
+                  className="size-4 shrink-0 text-primary/80 mt-0.5"
+                  aria-hidden
+                />
+                <span>
+                  Tài khoản trong thùng rác không đăng nhập được.
+                </span>
               </p>
               <AdminDataTable<User>
                 data={trashedUsers}
@@ -845,16 +976,34 @@ export default function StaffAndRbacPage() {
                 onGlobalFilterChange={setTrashSearch}
                 globalFilterPlaceholder="Tìm theo email, họ tên, SĐT (API)…"
                 filterToolbarExtra={
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    className="h-9 gap-1.5 rounded-lg"
-                    onClick={clearTrashStaffFilters}
-                  >
-                    <FilterX className="size-4" />
-                    Xóa bộ lọc
-                  </Button>
+                  <div className="flex flex-wrap items-end gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="h-9 gap-1.5 rounded-lg"
+                      onClick={() => void trashedStaffQuery.refetch()}
+                    >
+                      <RefreshCw
+                        className={cn(
+                          "size-4",
+                          trashedStaffQuery.isFetching && "animate-spin",
+                        )}
+                        aria-hidden
+                      />
+                      Làm mới
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="h-9 gap-1.5 rounded-lg"
+                      onClick={clearTrashStaffFilters}
+                    >
+                      <FilterX className="size-4" aria-hidden />
+                      Xóa bộ lọc
+                    </Button>
+                  </div>
                 }
                 csvExport={{ fileName: "nhan-su-thung-rac.csv" }}
                 footer={trashStaffPaginationFooter}
@@ -869,7 +1018,10 @@ export default function StaffAndRbacPage() {
   const roleChecklist = (
     <div className="space-y-3 max-h-[220px] overflow-y-auto rounded-xl border border-border p-3">
       {roles.length === 0 ? (
-        <p className="text-xs text-muted-foreground">Chưa tải được danh sách vai trò.</p>
+        <p className="flex items-center gap-2 text-xs text-muted-foreground">
+          <AlertCircle className="size-3.5 shrink-0 opacity-70" aria-hidden />
+          Chưa tải được danh sách vai trò.
+        </p>
       ) : (
         roles.map((r) => (
           <label
@@ -880,6 +1032,10 @@ export default function StaffAndRbacPage() {
               checked={formRoles.includes(r.code)}
               onCheckedChange={(v) => toggleRole(r.code, v === true)}
               className="mt-0.5"
+            />
+            <ShieldHalf
+              className="mt-0.5 size-4 shrink-0 text-primary/70"
+              aria-hidden
             />
             <span>
               <span className="text-sm font-medium block">{r.name}</span>
@@ -896,11 +1052,11 @@ export default function StaffAndRbacPage() {
   return (
     <div className="space-y-6 mx-auto">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
-          <Users className="size-8 text-primary shrink-0" />
+        <h1 className="flex items-center gap-3 text-4xl font-extrabold tracking-tight text-foreground">
+          <Users className="size-9 shrink-0 text-primary" aria-hidden />
           Nhân sự & phân quyền
         </h1>
-        <p className="text-muted-foreground mt-1 text-sm sm:text-base max-w-3xl">
+        <p className="mt-1 max-w-3xl font-medium text-on-surface-variant sm:text-base">
           Quản lý tài khoản nội bộ, gán vai trò và xem ma trận quyền theo role.
           Quyền thực tế của mỗi người là hợp (union) của tất cả role được gán.
         </p>
@@ -908,13 +1064,13 @@ export default function StaffAndRbacPage() {
 
       {showTabs ? (
         <Tabs defaultValue={defaultTab} className="space-y-6">
-          <TabsList className="rounded-xl">
-            <TabsTrigger value="people" className="rounded-lg gap-2">
-              <Users className="size-4" />
+          <TabsList className="h-auto min-h-9 flex-wrap gap-1 rounded-xl p-1">
+            <TabsTrigger value="people" className="gap-2 rounded-lg">
+              <Users className="size-4 shrink-0" aria-hidden />
               Danh sách nhân sự
             </TabsTrigger>
-            <TabsTrigger value="rbac" className="rounded-lg gap-2">
-              <Shield className="size-4" />
+            <TabsTrigger value="rbac" className="gap-2 rounded-lg">
+              <Shield className="size-4 shrink-0" aria-hidden />
               Vai trò & quyền
             </TabsTrigger>
           </TabsList>
@@ -934,14 +1090,20 @@ export default function StaffAndRbacPage() {
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
         <DialogContent className="sm:max-w-[500px] rounded-2xl">
           <DialogHeader>
-            <DialogTitle>Thêm nhân sự</DialogTitle>
+            <DialogTitle className="flex items-center gap-2 text-2xl font-extrabold">
+              <UserPlus className="size-7 shrink-0 text-primary" aria-hidden />
+              Thêm nhân sự
+            </DialogTitle>
             <DialogDescription>
               Tạo tài khoản mới và gán một hoặc nhiều vai trò. Có thể chỉnh sửa sau.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div className="space-y-2">
-              <Label htmlFor="c-email">Email đăng nhập</Label>
+              <Label htmlFor="c-email" className="flex items-center gap-2">
+                <Mail className="size-3.5 text-muted-foreground" aria-hidden />
+                Email đăng nhập
+              </Label>
               <Input
                 id="c-email"
                 type="email"
@@ -951,7 +1113,10 @@ export default function StaffAndRbacPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="c-name">Họ và tên</Label>
+              <Label htmlFor="c-name" className="flex items-center gap-2">
+                <UserCircle className="size-3.5 text-muted-foreground" aria-hidden />
+                Họ và tên
+              </Label>
               <Input
                 id="c-name"
                 value={formFullName}
@@ -959,7 +1124,10 @@ export default function StaffAndRbacPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="c-pw">Mật khẩu ban đầu</Label>
+              <Label htmlFor="c-pw" className="flex items-center gap-2">
+                <KeyRound className="size-3.5 text-muted-foreground" aria-hidden />
+                Mật khẩu ban đầu
+              </Label>
               <Input
                 id="c-pw"
                 type="password"
@@ -968,37 +1136,56 @@ export default function StaffAndRbacPage() {
                 onChange={(e) => setFormPassword(e.target.value)}
               />
             </div>
-            <div className="flex items-center justify-between rounded-xl border border-border px-3 py-2">
-              <div>
-                <p className="text-sm font-medium">Kích hoạt</p>
-                <p className="text-xs text-muted-foreground">
-                  Tắt để tạo tài khoản ở trạng thái khoá
-                </p>
+            <div className="flex items-center justify-between gap-3 rounded-xl border border-border px-3 py-3">
+              <div className="flex items-start gap-3 min-w-0">
+                <div className="mt-0.5 rounded-lg bg-muted p-1.5 shrink-0">
+                  {formActive ? (
+                    <CheckCircle2
+                      className="size-4 text-emerald-600"
+                      aria-hidden
+                    />
+                  ) : (
+                    <Lock className="size-4 text-muted-foreground" aria-hidden />
+                  )}
+                </div>
+                <div>
+                  <p className="text-sm font-medium">Kích hoạt</p>
+                  <p className="text-xs text-muted-foreground">
+                    Tắt để tạo tài khoản ở trạng thái khoá
+                  </p>
+                </div>
               </div>
               <Switch checked={formActive} onCheckedChange={setFormActive} />
             </div>
             <div className="space-y-2">
-              <Label>Vai trò</Label>
+              <Label className="flex items-center gap-2">
+                <ShieldHalf className="size-3.5 text-muted-foreground" aria-hidden />
+                Vai trò
+              </Label>
               {roleChecklist}
             </div>
           </div>
-          <DialogFooter className="gap-2">
+          <DialogFooter className="gap-2 sm:gap-0">
             <Button
               type="button"
-              variant="secondary"
+              variant="outline"
+              className="gap-2 rounded-xl"
               onClick={() => setCreateOpen(false)}
             >
+              <X className="size-4" aria-hidden />
               Huỷ
             </Button>
             <Button
               type="button"
               onClick={() => void handleCreate()}
               disabled={createUser.isPending}
-              className="gap-2"
+              className="gap-2 rounded-xl font-bold"
             >
               {createUser.isPending ? (
-                <Loader2 className="size-4 animate-spin" />
-              ) : null}
+                <Loader2 className="size-4 animate-spin" aria-hidden />
+              ) : (
+                <Save className="size-4" aria-hidden />
+              )}
               Tạo tài khoản
             </Button>
           </DialogFooter>
@@ -1016,7 +1203,10 @@ export default function StaffAndRbacPage() {
       >
         <DialogContent className="sm:max-w-3xl rounded-2xl">
           <DialogHeader>
-            <DialogTitle>Sửa nhân sự</DialogTitle>
+            <DialogTitle className="flex items-center gap-2 text-2xl font-extrabold">
+              <Pencil className="size-7 shrink-0 text-primary" aria-hidden />
+              Sửa nhân sự
+            </DialogTitle>
             <DialogDescription>
               Email cố định. Có thể đặt lại mật khẩu (để trống nếu giữ nguyên).
             </DialogDescription>
@@ -1025,11 +1215,17 @@ export default function StaffAndRbacPage() {
             <>
               <div className="space-y-4 py-2">
                 <div className="space-y-2">
-                  <Label>Email</Label>
+                  <Label className="flex items-center gap-2">
+                    <Mail className="size-3.5 text-muted-foreground" aria-hidden />
+                    Email
+                  </Label>
                   <Input value={formEmail} disabled className="bg-muted/50 font-mono text-sm" />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="e-name">Họ và tên</Label>
+                  <Label htmlFor="e-name" className="flex items-center gap-2">
+                    <UserCircle className="size-3.5 text-muted-foreground" aria-hidden />
+                    Họ và tên
+                  </Label>
                   <Input
                     id="e-name"
                     value={formFullName}
@@ -1037,7 +1233,10 @@ export default function StaffAndRbacPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="e-pw">Mật khẩu mới (tuỳ chọn)</Label>
+                  <Label htmlFor="e-pw" className="flex items-center gap-2">
+                    <KeyRound className="size-3.5 text-muted-foreground" aria-hidden />
+                    Mật khẩu mới (tuỳ chọn)
+                  </Label>
                   <Input
                     id="e-pw"
                     type="password"
@@ -1047,40 +1246,59 @@ export default function StaffAndRbacPage() {
                     onChange={(e) => setFormPassword(e.target.value)}
                   />
                 </div>
-                <div className="flex items-center justify-between rounded-xl border border-border px-3 py-2">
-                  <div>
-                    <p className="text-sm font-medium">Tài khoản hoạt động</p>
-                    <p className="text-xs text-muted-foreground">
-                      Khoá sẽ chặn đăng nhập
-                    </p>
+                <div className="flex items-center justify-between gap-3 rounded-xl border border-border px-3 py-3">
+                  <div className="flex items-start gap-3 min-w-0">
+                    <div className="mt-0.5 rounded-lg bg-muted p-1.5 shrink-0">
+                      {formActive ? (
+                        <CheckCircle2
+                          className="size-4 text-emerald-600"
+                          aria-hidden
+                        />
+                      ) : (
+                        <Lock className="size-4 text-muted-foreground" aria-hidden />
+                      )}
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium">Tài khoản hoạt động</p>
+                      <p className="text-xs text-muted-foreground">
+                        Khoá sẽ chặn đăng nhập
+                      </p>
+                    </div>
                   </div>
                   <Switch checked={formActive} onCheckedChange={setFormActive} />
                 </div>
                 <div className="space-y-2">
-                  <Label>Vai trò (thay thế toàn bộ khi lưu)</Label>
+                  <Label className="flex items-center gap-2">
+                    <ShieldHalf className="size-3.5 text-muted-foreground" aria-hidden />
+                    Vai trò (thay thế toàn bộ khi lưu)
+                  </Label>
                   {roleChecklist}
                 </div>
               </div>
-              <DialogFooter className="gap-2">
+              <DialogFooter className="gap-2 sm:gap-0">
                 <Button
                   type="button"
-                  variant="secondary"
+                  variant="outline"
+                  className="gap-2 rounded-xl"
                   onClick={() => {
                     setEditUser(null);
                     resetForm();
                   }}
                 >
+                  <X className="size-4" aria-hidden />
                   Huỷ
                 </Button>
                 <Button
                   type="button"
                   onClick={() => void handleUpdate()}
                   disabled={updateUser.isPending}
-                  className="gap-2"
+                  className="gap-2 rounded-xl font-bold"
                 >
                   {updateUser.isPending ? (
-                    <Loader2 className="size-4 animate-spin" />
-                  ) : null}
+                    <Loader2 className="size-4 animate-spin" aria-hidden />
+                  ) : (
+                    <Save className="size-4" aria-hidden />
+                  )}
                   Lưu thay đổi
                 </Button>
               </DialogFooter>
@@ -1097,7 +1315,10 @@ export default function StaffAndRbacPage() {
       >
         <AlertDialogContent className="sm:max-w-[450px] rounded-2xl">
           <AlertDialogHeader>
-            <AlertDialogTitle>Đưa tài khoản vào thùng rác?</AlertDialogTitle>
+            <AlertDialogTitle className="flex items-center gap-2 text-left">
+              <Archive className="size-5 shrink-0 text-destructive" aria-hidden />
+              Đưa tài khoản vào thùng rác?
+            </AlertDialogTitle>
             <AlertDialogDescription>
               {deleteTarget ? (
                 <>
@@ -1107,10 +1328,13 @@ export default function StaffAndRbacPage() {
               ) : null}
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="rounded-xl">Huỷ</AlertDialogCancel>
+          <AlertDialogFooter className="gap-2 sm:gap-0">
+            <AlertDialogCancel className="rounded-xl gap-2">
+              <X className="size-4" aria-hidden />
+              Huỷ
+            </AlertDialogCancel>
             <AlertDialogAction
-              className="rounded-xl bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              className="rounded-xl gap-2 bg-destructive text-destructive-foreground hover:bg-destructive/90"
               onClick={(e) => {
                 e.preventDefault();
                 void handleDelete();
@@ -1118,9 +1342,12 @@ export default function StaffAndRbacPage() {
               disabled={deleteUser.isPending}
             >
               {deleteUser.isPending ? (
-                <Loader2 className="size-4 animate-spin" />
+                <Loader2 className="size-4 animate-spin" aria-hidden />
               ) : (
-                "Xóa tạm"
+                <>
+                  <Archive className="size-4" aria-hidden />
+                  Xóa tạm
+                </>
               )}
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -1135,7 +1362,10 @@ export default function StaffAndRbacPage() {
       >
         <AlertDialogContent className="sm:max-w-[450px] rounded-2xl">
           <AlertDialogHeader>
-            <AlertDialogTitle>Xóa vĩnh viễn tài khoản?</AlertDialogTitle>
+            <AlertDialogTitle className="flex items-center gap-2 text-left">
+              <Trash2 className="size-5 shrink-0 text-destructive" aria-hidden />
+              Xóa vĩnh viễn tài khoản?
+            </AlertDialogTitle>
             <AlertDialogDescription>
               {purgeTarget ? (
                 <>
@@ -1146,10 +1376,13 @@ export default function StaffAndRbacPage() {
               ) : null}
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="rounded-xl">Huỷ</AlertDialogCancel>
+          <AlertDialogFooter className="gap-2 sm:gap-0">
+            <AlertDialogCancel className="rounded-xl gap-2">
+              <X className="size-4" aria-hidden />
+              Huỷ
+            </AlertDialogCancel>
             <AlertDialogAction
-              className="rounded-xl bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              className="rounded-xl gap-2 bg-destructive text-destructive-foreground hover:bg-destructive/90"
               onClick={(e) => {
                 e.preventDefault();
                 void handlePurgeTrashedUser();
@@ -1157,9 +1390,12 @@ export default function StaffAndRbacPage() {
               disabled={purgeTrashedUser.isPending}
             >
               {purgeTrashedUser.isPending ? (
-                <Loader2 className="size-4 animate-spin" />
+                <Loader2 className="size-4 animate-spin" aria-hidden />
               ) : (
-                "Xóa vĩnh viễn"
+                <>
+                  <Trash2 className="size-4" aria-hidden />
+                  Xóa vĩnh viễn
+                </>
               )}
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -1174,7 +1410,10 @@ export default function StaffAndRbacPage() {
       >
         <AlertDialogContent className="sm:max-w-[450px] rounded-2xl">
           <AlertDialogHeader>
-            <AlertDialogTitle>Khôi phục tài khoản?</AlertDialogTitle>
+            <AlertDialogTitle className="flex items-center gap-2 text-left">
+              <ArchiveRestore className="size-5 shrink-0 text-primary" aria-hidden />
+              Khôi phục tài khoản?
+            </AlertDialogTitle>
             <AlertDialogDescription>
               {restoreTarget ? (
                 <>
@@ -1184,10 +1423,13 @@ export default function StaffAndRbacPage() {
               ) : null}
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="rounded-xl">Huỷ</AlertDialogCancel>
+          <AlertDialogFooter className="gap-2 sm:gap-0">
+            <AlertDialogCancel className="rounded-xl gap-2">
+              <X className="size-4" aria-hidden />
+              Huỷ
+            </AlertDialogCancel>
             <AlertDialogAction
-              className="rounded-xl"
+              className="rounded-xl gap-2"
               onClick={(e) => {
                 e.preventDefault();
                 void handleRestoreUser();
@@ -1195,9 +1437,12 @@ export default function StaffAndRbacPage() {
               disabled={restoreUser.isPending}
             >
               {restoreUser.isPending ? (
-                <Loader2 className="size-4 animate-spin" />
+                <Loader2 className="size-4 animate-spin" aria-hidden />
               ) : (
-                "Khôi phục"
+                <>
+                  <ArchiveRestore className="size-4" aria-hidden />
+                  Khôi phục
+                </>
               )}
             </AlertDialogAction>
           </AlertDialogFooter>

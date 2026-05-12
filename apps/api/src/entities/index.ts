@@ -14,4 +14,5 @@ export {
 export type { OrderItem } from './order.entity';
 export { PromoCode } from './promo-code.entity';
 export type { PromoDiscountKind } from './promo-code.entity';
+export { DealerSupportContent } from './dealer-support-content.entity';
 export { PERSISTENT_ENTITY_CLASSES } from './registry';
