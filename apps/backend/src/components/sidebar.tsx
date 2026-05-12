@@ -12,11 +12,12 @@ import {
   Tags,
   TicketPercent,
   LogOut,
-  ChevronsLeft,
-  ChevronsRight,
   Users,
 } from "lucide-react";
+import { Button } from "@ui/components/button";
+import { Badge } from "@ui/components/badge";
 import { cn } from "@ui/lib/utils";
+import { useOrderAlerts } from "@/providers/admin-order-alerts-provider";
 import {
   canUserAccess,
   PERMISSION_CODES,
@@ -107,6 +108,7 @@ export function SidebarNavLinks({
 }) {
   const pathname = usePathname();
   const { user } = useAuth();
+  const { pendingCount } = useOrderAlerts();
   const visible = getVisibleMenuItems(user);
 
   return (
@@ -121,6 +123,9 @@ export function SidebarNavLinks({
         const isActive = pathname === item.href;
         const Icon = item.icon;
 
+        const orderBadge =
+          item.href === "/orders" && pendingCount > 0 ? pendingCount : 0;
+
         return (
           <Link
             key={item.href}
@@ -128,7 +133,7 @@ export function SidebarNavLinks({
             title={item.label}
             onClick={onLinkClick}
             className={cn(
-              "flex items-center rounded-lg transition-all duration-200 group",
+              "relative flex items-center rounded-lg transition-all duration-200 group",
               collapsed ? "justify-center px-2 py-3" : "gap-3 px-4 py-3",
               isActive
                 ? "bg-sidebar-primary/10 text-sidebar-primary shadow-sm"
@@ -144,8 +149,24 @@ export function SidebarNavLinks({
               )}
             />
             {!collapsed && (
-              <span className="font-medium truncate">{item.label}</span>
+              <>
+                <span className="min-w-0 flex-1 truncate font-medium">
+                  {item.label}
+                </span>
+                {orderBadge > 0 ? (
+                  <Badge
+                    className="h-5 min-w-5 shrink-0 justify-center px-1.5 text-[0.65rem] tabular-nums"
+                  >
+                    {orderBadge > 99 ? "99+" : orderBadge}
+                  </Badge>
+                ) : null}
+              </>
             )}
+            {collapsed && orderBadge > 0 ? (
+              <span className="pointer-events-none absolute right-1 top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-0.5 text-[9px] font-bold leading-none text-destructive-foreground ring-2 ring-sidebar">
+                {orderBadge > 9 ? "9+" : orderBadge}
+              </span>
+            ) : null}
           </Link>
         );
       })}
@@ -175,17 +196,19 @@ export function MobileSidebarPanel({ onNavigate }: { onNavigate: () => void }) {
       </div>
       <SidebarNavLinks collapsed={false} onLinkClick={onNavigate} />
       <div className="mt-auto shrink-0 border-t border-sidebar-border/50 p-4">
-        <button
+        <Button
           type="button"
+          variant="outline"
+          className="h-auto min-h-11 w-full justify-start gap-3 rounded-xl border-destructive/25 bg-sidebar px-4 py-3 text-left font-medium text-destructive shadow-none hover:border-destructive/40 hover:bg-destructive/10 hover:text-destructive"
           onClick={() => {
             onNavigate();
             void logout();
           }}
-          className="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-left text-sidebar-foreground/70 transition-colors hover:bg-destructive/10 hover:text-destructive"
+          aria-label="Đăng xuất"
         >
-          <LogOut className="size-5 shrink-0" />
-          <span className="font-medium">Đăng xuất</span>
-        </button>
+          <LogOut aria-hidden className="size-5 shrink-0" />
+          Đăng xuất
+        </Button>
       </div>
     </div>
   );
@@ -193,10 +216,9 @@ export function MobileSidebarPanel({ onNavigate }: { onNavigate: () => void }) {
 
 type SidebarProps = {
   collapsed: boolean;
-  onToggleCollapsed: () => void;
 };
 
-export function Sidebar({ collapsed, onToggleCollapsed }: SidebarProps) {
+export function Sidebar({ collapsed }: SidebarProps) {
   const { logout } = useAuth();
 
   return (
@@ -237,37 +259,26 @@ export function Sidebar({ collapsed, onToggleCollapsed }: SidebarProps) {
           collapsed ? "p-2" : "p-4",
         )}
       >
-        <button
+        <Button
           type="button"
-          onClick={onToggleCollapsed}
-          className={cn(
-            "flex w-full items-center rounded-lg text-sm text-sidebar-foreground/70 transition-all duration-200 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-            collapsed ? "justify-center p-3" : "gap-3 px-4 py-3 text-left",
-          )}
-          aria-label={collapsed ? "Mở rộng sidebar" : "Thu gọn sidebar"}
-          title={collapsed ? "Mở rộng sidebar" : "Thu gọn sidebar"}
-        >
-          {collapsed ? (
-            <ChevronsRight className="size-5 shrink-0" />
-          ) : (
-            <>
-              <ChevronsLeft className="size-5 shrink-0" />
-              <span className="font-medium">Thu gọn</span>
-            </>
-          )}
-        </button>
-        <button
-          type="button"
-          onClick={() => logout()}
           title="Đăng xuất"
+          aria-label="Đăng xuất"
+          onClick={() => logout()}
           className={cn(
-            "group flex w-full items-center rounded-lg text-left text-sidebar-foreground/70 transition-all duration-200 hover:bg-destructive/10 hover:text-destructive",
-            collapsed ? "justify-center p-3" : "gap-3 px-4 py-3",
+            collapsed
+              ? "size-11 justify-center rounded-xl p-0"
+              : "h-auto min-h-11 w-full justify-center gap-3 rounded-xl px-4 py-3",
           )}
         >
-          <LogOut className="size-5 shrink-0 text-sidebar-foreground/50 group-hover:text-destructive" />
+          <LogOut
+            aria-hidden
+            className={cn(
+              "size-5 shrink-0",
+              collapsed && "text-sidebar-foreground/50 group-hover:text-sidebar-accent-foreground",
+            )}
+          />
           {!collapsed && <span className="font-medium">Đăng xuất</span>}
-        </button>
+        </Button>
       </div>
     </aside>
   );

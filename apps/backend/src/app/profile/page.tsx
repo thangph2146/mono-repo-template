@@ -273,18 +273,20 @@ export default function AdminProfilePage() {
               placeholder="Địa chỉ liên hệ khi cần (không bắt buộc)"
             />
           </div>
-          <Button
-            type="button"
-            onClick={() => void handleSaveProfile()}
-            disabled={isLoading || !profile || updateProfile.isPending}
-          >
-            {updateProfile.isPending ? (
-              <Loader2 className="size-4 animate-spin" />
-            ) : (
-              <Save className="size-4" />
-            )}
-            <span className="ml-2">Lưu hồ sơ</span>
-          </Button>
+          <div className="flex justify-end">
+            <Button
+              type="button"
+              onClick={() => void handleSaveProfile()}
+              disabled={isLoading || !profile || updateProfile.isPending}
+            >
+              {updateProfile.isPending ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <Save className="size-4" />
+              )}
+              <span className="ml-2">Lưu hồ sơ</span>
+            </Button>
+          </div>
         </CardContent>
       </Card>
 
@@ -326,19 +328,21 @@ export default function AdminProfilePage() {
               onChange={(e) => setConfirmPassword(e.target.value)}
             />
           </div>
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={() => void handleChangePassword()}
-            disabled={changePw.isPending}
-          >
-            {changePw.isPending ? (
-              <Loader2 className="size-4 animate-spin" />
-            ) : (
-              <KeyRound className="size-4" />
-            )}
-            <span className="ml-2">Đổi mật khẩu</span>
-          </Button>
+          <div className="flex justify-end">
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => void handleChangePassword()}
+              disabled={changePw.isPending}
+            >
+              {changePw.isPending ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <KeyRound className="size-4" />
+              )}
+              <span className="ml-2">Đổi mật khẩu</span>
+            </Button>
+          </div>
         </CardContent>
       </Card>
     </div>

@@ -155,6 +155,16 @@ export type OrderStatus =
   | 'delivered'
   | 'cancelled';
 
+/** GET /orders/staff/status-counts — đếm đơn cho badge admin. */
+export type StaffOrderStatusCounts = {
+  ALL: number;
+  pending: number;
+  confirmed: number;
+  shipped: number;
+  delivered: number;
+  cancelled: number;
+};
+
 export type PaymentMethod = 'cod';
 export type PaymentStatus = 'unpaid' | 'paid';
 

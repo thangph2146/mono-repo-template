@@ -260,6 +260,32 @@ export const useOrders = (opts?: {
     enabled: opts?.enabled ?? true,
   });
 
+const PENDING_ORDERS_PREVIEW_LIMIT = 12;
+
+/** Đơn chờ xử lý (rút gọn) cho popover thông báo admin; cùng nhịch polling với badge. */
+export const usePendingOrdersPreview = (opts?: {
+  enabled?: boolean;
+  liveRefresh?: boolean;
+}) =>
+  useQuery<Order[], Error>({
+    queryKey: [
+      ...queryKeys.orders(),
+      "pending-preview",
+      PENDING_ORDERS_PREVIEW_LIMIT,
+    ] as const,
+    queryFn: async () => {
+      const res = await api.orders.list({
+        status: "pending",
+        page: 1,
+        limit: PENDING_ORDERS_PREVIEW_LIMIT,
+      });
+      return Array.isArray(res) ? res : res.items;
+    },
+    enabled: opts?.enabled ?? true,
+    refetchInterval: opts?.liveRefresh ? 5_000 : false,
+    staleTime: opts?.liveRefresh ? 0 : undefined,
+  });
+
 export const useTrashedOrders = (opts?: {
   enabled?: boolean;
   listParams?: { page?: number; limit?: number; q?: string };
@@ -287,34 +313,17 @@ export type OrderStatusTabKey =
   | "delivered"
   | "cancelled";
 
-export const useOrderStatusCounts = (opts?: { enabled?: boolean }) =>
+export const useOrderStatusCounts = (opts?: {
+  enabled?: boolean;
+  /** Polling ~5s: badge + thông báo đơn mới (chỉ bật khi cần realtime gần đúng). */
+  liveRefresh?: boolean;
+}) =>
   useQuery<Record<OrderStatusTabKey, number>, Error>({
     queryKey: ["orders", "status-counts"] as const,
-    queryFn: async () => {
-      const statuses: Array<
-        "pending" | "confirmed" | "shipped" | "delivered" | "cancelled"
-      > = ["pending", "confirmed", "shipped", "delivered", "cancelled"];
-      const parts = await Promise.all(
-        statuses.map(async (s) => {
-          const r = await api.orders.list({ status: s, page: 1, limit: 1 });
-          const n = Array.isArray(r) ? r.length : r.total;
-          return [s, n] as const;
-        }),
-      );
-      const allRes = await api.orders.list({ page: 1, limit: 1 });
-      const all = Array.isArray(allRes) ? allRes.length : allRes.total;
-      const base: Record<OrderStatusTabKey, number> = {
-        ALL: all,
-        pending: 0,
-        confirmed: 0,
-        shipped: 0,
-        delivered: 0,
-        cancelled: 0,
-      };
-      for (const [s, n] of parts) base[s] = n;
-      return base;
-    },
+    queryFn: () => api.orders.staffStatusCounts(),
     enabled: opts?.enabled ?? true,
+    refetchInterval: opts?.liveRefresh ? 5_000 : false,
+    staleTime: opts?.liveRefresh ? 0 : undefined,
   });
 
 export const useDispatchShippers = (opts?: { enabled?: boolean }) =>

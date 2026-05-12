@@ -64,6 +64,8 @@ import {
 } from "@/lib/admin-orders-tree";
 import { AdminDataTable } from "@/components/admin-data-table";
 import { AdminTablePaginationFooter } from "@/components/admin-table-pagination-footer";
+import { Card, CardContent, CardHeader, CardTitle } from "@ui/components/card";
+import { cn } from "@ui/lib/utils";
 
 type FilterKey =
   | "ALL"
@@ -176,6 +178,8 @@ export default function AdminOrdersPage() {
   const [archiveTarget, setArchiveTarget] = useState<Order | null>(null);
   const [restoreTarget, setRestoreTarget] = useState<Order | null>(null);
   const [purgeTarget, setPurgeTarget] = useState<Order | null>(null);
+  const [cancelTarget, setCancelTarget] = useState<Order | null>(null);
+  const [reopenTarget, setReopenTarget] = useState<Order | null>(null);
 
   useEffect(() => {
     setListPage(1);
@@ -196,6 +200,7 @@ export default function AdminOrdersPage() {
   const clearListFilters = useCallback((): void => {
     setColumnFilters([]);
     setGlobalFilter("");
+    setStatusFilter("ALL");
     setListPage(1);
   }, []);
 
@@ -244,34 +249,11 @@ export default function AdminOrdersPage() {
   };
 
   const onCancel = (order: Order): void => {
-    if (!confirm(`Huỷ đơn ${order.orderNumber}? Tồn kho sẽ được hoàn lại.`)) {
-      return;
-    }
-    toast.promise(cancelOrder.mutateAsync({ id: order.id, actor: actorLabel }), {
-      loading: `Đang huỷ ${order.orderNumber}...`,
-      success: `${order.orderNumber} đã huỷ – kho đã hoàn`,
-      error: (err: unknown) =>
-        err instanceof ApiError ? err.message : "Lỗi huỷ đơn",
-    });
+    setCancelTarget(order);
   };
 
   const onReopenCancelled = (order: Order): void => {
-    if (
-      !confirm(
-        `Mở lại đơn ${order.orderNumber} về trạng thái “Chờ xử lý”? Tồn kho sẽ bị trừ lại theo từng dòng hàng.`,
-      )
-    ) {
-      return;
-    }
-    toast.promise(
-      reopenCancelled.mutateAsync({ id: order.id, actor: actorLabel }),
-      {
-        loading: `Đang mở lại ${order.orderNumber}...`,
-        success: `${order.orderNumber} → Chờ xử lý (đã trừ tồn lại)`,
-        error: (err: unknown) =>
-          err instanceof ApiError ? err.message : "Không mở lại được đơn",
-      },
-    );
+    setReopenTarget(order);
   };
 
   const getStatusBadge = (status: OrderStatus) => {
@@ -741,53 +723,6 @@ export default function AdminOrdersPage() {
         </Button>
       </div>
 
-      {canWriteOrders && (
-        <div className="bg-surface rounded-2xl border border-outline-variant shadow-sm p-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <p className="text-xs font-bold uppercase tracking-wide text-on-surface-variant">
-              Vai trò xác nhận
-            </p>
-            <div className="flex gap-2 flex-wrap">
-              {ROLE_OPTIONS.map((r) => (
-                <Button
-                  key={r.value}
-                  onClick={() => setActorRole(r.value)}
-                  className={`h-10 px-4 rounded-xl text-sm font-bold border ${
-                    actorRole === r.value
-                      ? "bg-primary text-primary-foreground border-primary"
-                      : "bg-background text-on-surface-variant border-outline-variant hover:bg-muted"
-                  }`}
-                >
-                  {r.label}
-                </Button>
-              ))}
-            </div>
-          </div>
-          <div className="space-y-2">
-            <p className="text-xs font-bold uppercase tracking-wide text-on-surface-variant">
-              Tên người xác nhận (lưu vào audit log)
-            </p>
-            <Input
-              placeholder="VD: Nguyễn Văn A"
-              value={actorName}
-              onChange={(e) => setActorName(e.target.value)}
-              className="rounded-xl bg-background"
-            />
-          </div>
-        </div>
-      )}
-
-      {user && !canWriteOrders && (
-        <div className="rounded-2xl border border-amber-500/30 bg-amber-500/5 px-5 py-4 text-sm text-amber-900 dark:text-amber-100/90">
-          <p className="font-semibold">Chế độ chỉ xem đơn</p>
-          <p className="mt-1 opacity-90">
-            Tài khoản không có{" "}
-            <span className="font-mono">orders.write</span> — không thể xác
-            nhận xuất kho, giao hàng hay huỷ đơn trên API.
-          </p>
-        </div>
-      )}
-
       <Tabs
         value={mainTab}
         onValueChange={(v) => {
@@ -817,107 +752,109 @@ export default function AdminOrdersPage() {
         </TabsList>
 
         <TabsContent value="list" className="mt-0 space-y-6">
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-        {STATUS_FILTERS.map((f) => (
-          <Button
-            key={f.key}
-            onClick={() => applyStatusTab(f.key)}
-            className={`rounded-2xl p-4 h-auto text-left flex-col items-start border transition-all ${
-              statusFilter === f.key
-                ? "bg-primary text-primary-foreground border-primary shadow-md"
-                : "bg-surface border-outline-variant hover:bg-muted"
-            }`}
-          >
-            <p
-              className={`text-2xl font-black ${
-                statusFilter === f.key ? "text-primary-foreground" : "text-foreground"
-              }`}
-            >
-              {counts[f.key]}
+          <Card className="px-4">
+            <p className="text-sm text-on-surface-variant">
+              Bảng: cây <span className="font-semibold">đơn → dòng hàng</span>. Chọn trạng
+              thái bên dưới để lọc trên server (phân trang ở cuối bảng). Ô tìm nhanh gọi
+              API (mã đơn, email, tên khách). «Lưu trữ» chỉ cho đơn đã giao hoặc đã huỷ.
             </p>
-            <p
-              className={`text-xs font-semibold mt-1 ${
-                statusFilter === f.key
-                  ? "text-primary-foreground/70"
-                    : "text-muted-foreground"
-              }`}
-            >
-              {f.label}
-            </p>
-            {f.hint && (
-              <p
-                className={`text-[10px] mt-0.5 ${
-                  statusFilter === f.key
-                    ? "text-primary-foreground/70"
-                    : "text-muted-foreground"
-                }`}
-              >
-                {f.hint}
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base">Trạng thái đơn</CardTitle>
+              <p className="text-sm text-muted-foreground">
+                Lọc danh sách theo trạng thái (API + phân trang). Số trong ngoặc là tổng
+                đơn chưa lưu trữ theo từng trạng thái.
               </p>
-            )}
-          </Button>
-        ))}
-      </div>
+            </CardHeader>
+            <CardContent className="pt-0">
+              <div className="flex flex-wrap gap-2">
+                {STATUS_FILTERS.map(({ key, label, hint }) => {
+                  const active = statusFilter === key;
+                  const n = counts[key];
+                  return (
+                    <Button
+                      key={key}
+                      type="button"
+                      variant={active ? "default" : "outline"}
+                      size="sm"
+                      title={hint || undefined}
+                      className={cn(
+                        "h-auto min-h-9 gap-2 rounded-xl px-3 py-2 font-semibold",
+                        active && "shadow-sm",
+                      )}
+                      onClick={() => applyStatusTab(key)}
+                    >
+                      <span>{label}</span>
+                      <span
+                        className={cn(
+                          "tabular-nums rounded-md px-1.5 py-0.5 text-xs font-bold",
+                          active
+                            ? "bg-primary-foreground/20 text-primary-foreground"
+                            : "bg-muted text-muted-foreground",
+                        )}
+                      >
+                        {n}
+                      </span>
+                    </Button>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+          {error && (
+            <div className="text-center py-12 bg-destructive/5 border border-destructive/20 rounded-2xl">
+              <p className="text-lg font-bold text-destructive">
+                Không tải được đơn hàng
+              </p>
+              <p className="text-sm text-on-surface-variant mt-1">
+                {error.message}
+              </p>
+            </div>
+          )}
 
-      <p className="text-sm text-on-surface-variant">
-        Bảng: cây <span className="font-semibold">đơn → dòng hàng</span>. Chip trạng
-        thái lọc trên server kèm phân trang (chọn số đơn/trang ở cuối bảng). Ô tìm
-        nhanh gọi API (mã đơn, email, tên khách). «Lưu trữ» chỉ cho đơn đã giao
-        hoặc đã huỷ.
-      </p>
-
-      {error && (
-        <div className="text-center py-12 bg-destructive/5 border border-destructive/20 rounded-2xl">
-          <p className="text-lg font-bold text-destructive">
-            Không tải được đơn hàng
-          </p>
-          <p className="text-sm text-on-surface-variant mt-1">
-            {error.message}
-          </p>
-        </div>
-      )}
-
-      {!error && (
-        <AdminDataTable<OrderTreeRow>
-          data={treeRows}
-          columns={orderColumns}
-          getSubRows={getOrderSubRows}
-          isLoading={isLoading}
-          emptyLabel="Không có đơn phù hợp chip / bộ lọc."
-          defaultExpandedAll={false}
-          manualFiltering
-          columnFilters={columnFilters}
-          onColumnFiltersChange={handleColumnFiltersChange}
-          globalFilter={globalFilter}
-          onGlobalFilterChange={setGlobalFilter}
-          globalFilterPlaceholder="Tìm nhanh (API): mã đơn, email, tên khách…"
-          filterToolbarExtra={
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              className="h-9 gap-1.5 rounded-lg"
-              onClick={clearListFilters}
-            >
-              <FilterX className="size-4" />
-              Xóa bộ lọc
-            </Button>
-          }
-          csvExport={{ fileName: "don-hang.csv" }}
-          footer={listPaginationFooter}
-          getRowClassName={(row) =>
-            row.original.rowKind === "order"
-              ? row.original.order.status === "pending"
-                ? "bg-warning/5"
-                : row.original.order.status === "delivered"
-                  ? "bg-success/5"
-                  : row.original.order.status === "cancelled"
-                    ? "bg-destructive/5"
-                    : "bg-primary/5"
-              : undefined
-          }
-        />
-      )}
+          {!error && (
+            <AdminDataTable<OrderTreeRow>
+              data={treeRows}
+              columns={orderColumns}
+              getSubRows={getOrderSubRows}
+              isLoading={isLoading}
+              emptyLabel="Không có đơn phù hợp chip / bộ lọc."
+              defaultExpandedAll={false}
+              manualFiltering
+              columnFilters={columnFilters}
+              onColumnFiltersChange={handleColumnFiltersChange}
+              globalFilter={globalFilter}
+              onGlobalFilterChange={setGlobalFilter}
+              globalFilterPlaceholder="Tìm nhanh (API): mã đơn, email, tên khách…"
+              filterToolbarExtra={
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="h-9 gap-1.5 rounded-lg"
+                  onClick={clearListFilters}
+                >
+                  <FilterX className="size-4" />
+                  Xóa bộ lọc
+                </Button>
+              }
+              csvExport={{ fileName: "don-hang.csv" }}
+              footer={listPaginationFooter}
+              getRowClassName={(row) =>
+                row.original.rowKind === "order"
+                  ? row.original.order.status === "pending"
+                    ? "bg-warning/5"
+                    : row.original.order.status === "delivered"
+                      ? "bg-success/5"
+                      : row.original.order.status === "cancelled"
+                        ? "bg-destructive/5"
+                        : "bg-primary/5"
+                  : undefined
+              }
+            />
+          )}
         </TabsContent>
 
         {canWriteOrders ? (
@@ -987,6 +924,120 @@ export default function AdminOrdersPage() {
           </p>
         </div>
       </div>
+
+      <AlertDialog
+        open={cancelTarget != null}
+        onOpenChange={(o) => {
+          if (!o) setCancelTarget(null);
+        }}
+      >
+        <AlertDialogContent className="rounded-2xl sm:max-w-[450px]">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Huỷ đơn hàng?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {cancelTarget ? (
+                <>
+                  Đơn{" "}
+                  <strong className="text-foreground">
+                    {cancelTarget.orderNumber}
+                  </strong>{" "}
+                  sẽ chuyển sang trạng thái đã huỷ và{" "}
+                  <strong className="text-foreground">tồn kho được hoàn lại</strong>{" "}
+                  theo từng dòng hàng.
+                </>
+              ) : null}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="rounded-xl">Quay lại</AlertDialogCancel>
+            <AlertDialogAction
+              className="rounded-xl bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={(e) => {
+                e.preventDefault();
+                if (!cancelTarget) return;
+                const o = cancelTarget;
+                toast.promise(
+                  cancelOrder
+                    .mutateAsync({ id: o.id, actor: actorLabel })
+                    .then(() => setCancelTarget(null)),
+                  {
+                    loading: `Đang huỷ ${o.orderNumber}...`,
+                    success: `${o.orderNumber} đã huỷ – kho đã hoàn`,
+                    error: (err: unknown) =>
+                      err instanceof ApiError ? err.message : "Lỗi huỷ đơn",
+                  },
+                );
+              }}
+              disabled={cancelOrder.isPending}
+            >
+              {cancelOrder.isPending ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                "Huỷ đơn"
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog
+        open={reopenTarget != null}
+        onOpenChange={(o) => {
+          if (!o) setReopenTarget(null);
+        }}
+      >
+        <AlertDialogContent className="rounded-2xl sm:max-w-[450px]">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Mở lại đơn về &ldquo;Chờ xử lý&rdquo;?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {reopenTarget ? (
+                <>
+                  Đơn{" "}
+                  <strong className="text-foreground">
+                    {reopenTarget.orderNumber}
+                  </strong>{" "}
+                  sẽ quay lại trạng thái chờ xử lý.{" "}
+                  <strong className="text-foreground">
+                    Tồn kho sẽ bị trừ lại
+                  </strong>{" "}
+                  theo từng dòng hàng như lúc đặt.
+                </>
+              ) : null}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="rounded-xl">Huỷ</AlertDialogCancel>
+            <AlertDialogAction
+              className="rounded-xl"
+              onClick={(e) => {
+                e.preventDefault();
+                if (!reopenTarget) return;
+                const o = reopenTarget;
+                toast.promise(
+                  reopenCancelled
+                    .mutateAsync({ id: o.id, actor: actorLabel })
+                    .then(() => setReopenTarget(null)),
+                  {
+                    loading: `Đang mở lại ${o.orderNumber}...`,
+                    success: `${o.orderNumber} → Chờ xử lý (đã trừ tồn lại)`,
+                    error: (err: unknown) =>
+                      err instanceof ApiError
+                        ? err.message
+                        : "Không mở lại được đơn",
+                  },
+                );
+              }}
+              disabled={reopenCancelled.isPending}
+            >
+              {reopenCancelled.isPending ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                "Mở lại đơn"
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <AlertDialog
         open={archiveTarget != null}

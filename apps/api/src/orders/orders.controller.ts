@@ -134,6 +134,22 @@ export class OrdersController {
     return this.ordersService.listShippers();
   }
 
+  @Get('staff/status-counts')
+  @Permissions(PERMISSIONS.ORDERS_READ)
+  @ApiOperation({
+    summary: 'Đếm đơn theo trạng thái (dashboard / badge, một request)',
+  })
+  async staffStatusCounts(): Promise<{
+    ALL: number;
+    pending: number;
+    confirmed: number;
+    shipped: number;
+    delivered: number;
+    cancelled: number;
+  }> {
+    return this.ordersService.staffOrderStatusCounts();
+  }
+
   @Get(':id')
   @Permissions(PERMISSIONS.ORDERS_READ)
   @ApiOperation({ summary: 'Get order by id' })

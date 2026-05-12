@@ -139,11 +139,8 @@ function LoginFormInner() {
   };
 
   return (
-    <Page>
       <PageContent className="px-0 md:px-0 py-8 md:py-10 space-y-0">
-        <section>
-          <Container max="8xl" className="px-4 md:px-8">
-            <div className="w-full min-h-[calc(100vh-220px)] py-6 md:py-10 grid place-items-center">
+          <Container max="3xl" className="px-4 md:px-8">
               <Card className={STORE_AUTH_FORM_CARD_CLASS}>
                 <CardHeader className="space-y-2 text-center pb-6">
                   <div className="mx-auto bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mb-2">
@@ -269,11 +266,8 @@ function LoginFormInner() {
                   </p>
                 </CardContent>
               </Card>
-            </div>
           </Container>
-        </section>
       </PageContent>
-    </Page>
   );
 }
 

@@ -229,6 +229,37 @@ export class OrdersService {
   }
 
   /**
+   * Đếm đơn theo trạng thái (một vòng HTTP, song song DB) — dùng badge admin / polling.
+   */
+  async staffOrderStatusCounts(): Promise<{
+    ALL: number;
+    pending: number;
+    confirmed: number;
+    shipped: number;
+    delivered: number;
+    cancelled: number;
+  }> {
+    const base = { deletedAt: null } as const;
+    const [ALL, pending, confirmed, shipped, delivered, cancelled] =
+      await Promise.all([
+        this.orderRepository.count(base),
+        this.orderRepository.count({ ...base, status: OrderStatus.PENDING }),
+        this.orderRepository.count({ ...base, status: OrderStatus.CONFIRMED }),
+        this.orderRepository.count({ ...base, status: OrderStatus.SHIPPED }),
+        this.orderRepository.count({ ...base, status: OrderStatus.DELIVERED }),
+        this.orderRepository.count({ ...base, status: OrderStatus.CANCELLED }),
+      ]);
+    return {
+      ALL,
+      pending,
+      confirmed,
+      shipped,
+      delivered,
+      cancelled,
+    };
+  }
+
+  /**
    * Gán / bỏ gán shipper. Chỉ user đang có role `shipper` được phép gán.
    */
   async assignShipper(
@@ -299,6 +330,18 @@ export class OrdersService {
     }
 
     const em = this.orderRepository.getEntityManager();
+
+    let customer: User | undefined;
+    const rawCustomerId = dto.customerId;
+    if (
+      rawCustomerId != null &&
+      Number.isFinite(Number(rawCustomerId)) &&
+      Number(rawCustomerId) > 0
+    ) {
+      const customerId = Math.floor(Number(rawCustomerId));
+      customer = await this.usersService.findOne(customerId);
+    }
+
     const productIds = Array.from(new Set(mergedItems.map((i) => i.productId)));
     const products = await this.productRepository.find({
       id: { $in: productIds },
@@ -325,10 +368,10 @@ export class OrdersService {
 
       const unit = this.resolveUnit(product, dtoItem.unitType);
       const eff = effectiveLineUnitPrice(unit, dtoItem.quantity);
-      const listUnitPrice = eff.listUnitPrice;
-      const unitPrice = eff.unitPrice;
-      const totalPrice = unitPrice * dtoItem.quantity;
-      const requiredStock = unit.qtyPerUnit * dtoItem.quantity;
+      const listUnitPrice = Math.floor(Number(eff.listUnitPrice));
+      const unitPrice = Math.floor(Number(eff.unitPrice));
+      const totalPrice = Math.floor(unitPrice * dtoItem.quantity);
+      const requiredStock = Math.floor(unit.qtyPerUnit * dtoItem.quantity);
 
       if (product.stock < requiredStock) {
         throw new ConflictException(
@@ -347,7 +390,7 @@ export class OrdersService {
         unitType: unit.type,
         unitPrice,
         totalPrice,
-        qtyPerUnit: unit.qtyPerUnit,
+        qtyPerUnit: Math.max(1, Math.floor(Number(unit.qtyPerUnit) || 1)),
         image: product.images?.[0],
         listUnitPrice,
         unitLabel: unit.label,
@@ -379,19 +422,35 @@ export class OrdersService {
 
     const totalAmount = Math.max(0, subtotal - discountAmount);
 
+    const subtotalInt = Math.max(0, Math.floor(Number(subtotal)));
+    const discountInt = Math.max(0, Math.floor(Number(discountAmount)));
+    const totalInt = Math.max(0, Math.floor(Number(totalAmount)));
+    if (!Number.isFinite(subtotalInt) || !Number.isFinite(totalInt)) {
+      throw new BadRequestException('Tổng tiền đơn không hợp lệ (NaN).');
+    }
+
+    let itemsForDb: OrderItem[];
+    try {
+      itemsForDb = JSON.parse(JSON.stringify(items)) as OrderItem[];
+    } catch {
+      throw new BadRequestException(
+        'Không thể chuẩn hoá dòng hàng đơn (JSON).',
+      );
+    }
+
     const order = this.orderRepository.create({
-      customer: dto.customerId ?? undefined,
+      customer,
       customerName: dto.customerName,
       customerEmail: dto.customerEmail,
       customerPhone: dto.customerPhone,
       shippingAddress: dto.shippingAddress,
       notes: dto.notes,
       couponCode,
-      items,
-      subtotal,
-      discountAmount,
+      items: itemsForDb,
+      subtotal: subtotalInt,
+      discountAmount: discountInt,
       shippingFee: 0,
-      totalAmount,
+      totalAmount: totalInt,
       status: OrderStatus.PENDING,
       paymentMethod: dto.paymentMethod ?? PaymentMethod.COD,
       paymentStatus: PaymentStatus.UNPAID,
@@ -399,13 +458,22 @@ export class OrdersService {
       orderNumber: this.generateOrderNumber(),
     } as RequiredEntityData<Order>);
 
-    await em.persistAndFlush(order);
+    try {
+      await em.persistAndFlush(order);
+    } catch (e: unknown) {
+      const err = e as Error & { code?: string; errno?: number };
+      this.logger.error(
+        `Order persist failed: ${err.message} code=${String(err.code)} errno=${String(err.errno)}`,
+        err.stack,
+      );
+      throw e;
+    }
     if (couponCode) {
       await this.promoCodesService.incrementUsageIfTracked(em, couponCode);
       await em.flush();
     }
     this.logger.log(
-      `Order ${order.orderNumber} created (${items.length} items, subtotal ${subtotal}, discount ${discountAmount}, total ${totalAmount})`,
+      `Order ${order.orderNumber} created (${items.length} items, subtotal ${subtotalInt}, discount ${discountInt}, total ${totalInt})`,
     );
     return order;
   }
@@ -621,6 +689,37 @@ export class OrdersService {
     }
   }
 
+  /**
+   * Cột JSON `unitTypes` đôi khi trả về chuỗi (schema cũ / driver) — cần mảng
+   * trước khi `.find`; đồng bộ với `ProductsService.hydrateJsonColumns`.
+   */
+  private productUnitTypesArray(
+    product: Product,
+  ): NonNullable<Product['unitTypes']> {
+    const raw = product.unitTypes as unknown;
+    let parsed: unknown = raw;
+    if (typeof raw === 'string') {
+      const t = raw.trim();
+      if (!t) return [];
+      try {
+        parsed = JSON.parse(t) as unknown;
+      } catch {
+        return [];
+      }
+    }
+    if (Array.isArray(parsed)) {
+      return parsed as NonNullable<Product['unitTypes']>;
+    }
+    if (
+      parsed &&
+      typeof parsed === 'object' &&
+      'type' in (parsed as Record<string, unknown>)
+    ) {
+      return [parsed as NonNullable<Product['unitTypes']>[number]];
+    }
+    return [];
+  }
+
   private resolveUnit(
     product: Product,
     unitType: string,
@@ -632,7 +731,7 @@ export class OrdersService {
     minWholesaleQty: number;
     qtyPerUnit: number;
   } {
-    const units = product.unitTypes ?? [];
+    const units = this.productUnitTypesArray(product);
     const found = units.find((u) => u.type === unitType);
     if (found) return found;
     if (unitType === product.unit || !unitType) {

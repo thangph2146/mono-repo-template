@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { json } from 'express';
 import { AppModule } from './app.module';
+import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
 import { AppLogger, registerDevHttpLogging } from './common/logger';
 
 const isDev = process.env.NODE_ENV === 'development';
@@ -21,6 +22,7 @@ async function bootstrap() {
   appLogger.setContext('Bootstrap');
   app.useLogger(appLogger);
   registerDevHttpLogging(app, appLogger);
+  app.useGlobalFilters(new GlobalExceptionFilter(appLogger));
 
   const apiPrefix = (process.env.API_PREFIX ?? 'api').trim();
   if (apiPrefix) {

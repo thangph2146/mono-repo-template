@@ -5,6 +5,7 @@ import type {
   CreateOrderInput,
   Order,
   OrderStatus,
+  StaffOrderStatusCounts,
   UpdateOrderInput,
 } from '../types';
 
@@ -83,6 +84,13 @@ export class OrdersApi {
   /** Nhân viên có role `shipper` — cần orders.write. */
   listShippers(): Promise<AssignedShipperRef[]> {
     return this.http.get<AssignedShipperRef[]>('/orders/dispatch/shippers');
+  }
+
+  /** Đếm đơn theo trạng thái — orders.read; tối ưu cho polling badge. */
+  staffStatusCounts(): Promise<StaffOrderStatusCounts> {
+    return this.http.get<StaffOrderStatusCounts>(
+      '/orders/staff/status-counts',
+    );
   }
 
   assignShipper(

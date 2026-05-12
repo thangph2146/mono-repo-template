@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Bell, Menu, PanelLeftClose, PanelLeft } from "lucide-react";
+import { Menu, PanelLeftClose, PanelLeft } from "lucide-react";
 import { Button } from "@ui/components/button";
 import {
   Sheet,
@@ -13,8 +13,10 @@ import {
 } from "@ui/components/sheet";
 import { MobileSidebarPanel, Sidebar } from "@/components/sidebar";
 import { TextSizeToggle } from "@ui/components/text-size-toggle";
-import { canAccessStaffAdmin } from "@workspace/api-client";
+import { canAccessStaffAdmin, canUserAccess, PERMISSION_CODES } from "@workspace/api-client";
 import { useAuth, useClientReady } from "@/providers/auth-provider";
+import { AdminOrderAlertsProvider } from "@/providers/admin-order-alerts-provider";
+import { AdminNotificationBell } from "@/components/admin-notification-bell";
 import {
   ADMIN_SESSION_EVENT,
   clearAdminSession,
@@ -114,10 +116,15 @@ export function AdminShell({ children }: { children: ReactNode }) {
     return <AuthLoadingScreen message="Đang tải…" />;
   }
 
+  const orderAlertsEnabled =
+    !!user && canUserAccess(user, PERMISSION_CODES.ORDERS_READ);
+
   return (
-    <div className="flex min-h-screen w-full flex-col bg-background font-sans text-foreground md:flex-row">
+    <AdminOrderAlertsProvider alertsEnabled={orderAlertsEnabled}>
+      <div className="flex min-h-screen w-full flex-col bg-background font-sans text-foreground md:flex-row">
       <Sheet open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
         <SheetContent
+          id="admin-mobile-nav"
           side="left"
           showCloseButton
           className="flex w-[min(100vw,20rem)] flex-col border-sidebar-border bg-sidebar p-0 text-sidebar-foreground sm:max-w-sm"
@@ -129,54 +136,47 @@ export function AdminShell({ children }: { children: ReactNode }) {
         </SheetContent>
       </Sheet>
 
-      <Sidebar
-        collapsed={sidebarCollapsed}
-        onToggleCollapsed={() => setSidebarCollapsed((c) => !c)}
-      />
+      <Sidebar collapsed={sidebarCollapsed} />
 
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="sticky top-0 z-10 flex h-14 shrink-0 items-center justify-between border-b border-border bg-surface/80 px-3 backdrop-blur-sm sm:h-16 sm:px-6">
           <div className="flex min-w-0 items-center gap-1 sm:gap-2">
             <Button
               type="button"
-              variant="ghost"
+              variant="outline"
               size="icon"
-              className="shrink-0 rounded-lg text-muted-foreground hover:text-primary md:hidden"
+              className="h-11 w-11 min-h-11 min-w-11 shrink-0 rounded-xl border-border/70 bg-background/90 text-muted-foreground shadow-sm hover:border-primary/40 hover:bg-primary/5 hover:text-primary hover:shadow active:scale-[0.98] md:hidden [&_svg]:size-5"
               onClick={() => setMobileNavOpen(true)}
               aria-label="Mở menu điều hướng"
+              aria-expanded={mobileNavOpen}
+              aria-controls="admin-mobile-nav"
             >
-              <Menu className="size-6" />
+              <Menu aria-hidden className="size-5" />
             </Button>
             <h2 className="shrink-0 truncate text-lg font-bold text-primary sm:text-xl md:hidden">
               B2B Admin
             </h2>
             <Button
               type="button"
-              variant="ghost"
+              variant="outline"
               size="icon"
-              className="hidden shrink-0 rounded-lg text-muted-foreground hover:text-primary md:inline-flex"
+              className="hidden h-10 w-10 shrink-0 rounded-xl border-border/70 bg-background/90 text-muted-foreground shadow-sm hover:border-primary/40 hover:bg-primary/5 hover:text-primary hover:shadow active:scale-[0.98] md:inline-flex [&_svg]:size-5"
               onClick={() => setSidebarCollapsed((c) => !c)}
               aria-label={sidebarCollapsed ? "Mở sidebar" : "Thu gọn sidebar"}
               title={sidebarCollapsed ? "Mở sidebar" : "Thu gọn sidebar"}
+              aria-pressed={!sidebarCollapsed}
             >
               {sidebarCollapsed ? (
-                <PanelLeft className="size-5" />
+                <PanelLeft aria-hidden className="size-5" />
               ) : (
-                <PanelLeftClose className="size-5" />
+                <PanelLeftClose aria-hidden className="size-5" />
               )}
             </Button>
           </div>
           <div className="flex-1" />
           <div className="flex items-center gap-2 sm:gap-4">
             <TextSizeToggle />
-            <Button
-              variant="ghost"
-              size="icon"
-              className="text-muted-foreground hover:text-primary"
-              type="button"
-            >
-              <Bell className="size-5" />
-            </Button>
+            <AdminNotificationBell />
             <Link
               href="/profile"
               className="flex items-center gap-3 pl-4 border-l border-border/50 rounded-lg pr-1 py-1 -my-1 hover:bg-muted/60 transition-colors"
@@ -202,5 +202,6 @@ export function AdminShell({ children }: { children: ReactNode }) {
         </main>
       </div>
     </div>
+    </AdminOrderAlertsProvider>
   );
 }

@@ -576,17 +576,7 @@ export default function StaffAndRbacPage() {
 
   const peoplePanel = (
     <div className="space-y-4">
-      <div className="flex flex-wrap justify-end gap-2">
-        <Button
-          type="button"
-          onClick={openCreate}
-          className="gap-2 rounded-xl"
-          disabled={busy || roles.length === 0}
-        >
-          <UserPlus className="size-4" />
-          Thêm nhân sự
-        </Button>
-      </div>
+
 
       <Tabs
         value={staffSubTab}
@@ -595,85 +585,97 @@ export default function StaffAndRbacPage() {
         }}
         className="space-y-4"
       >
-        <TabsList className="h-auto min-h-9 flex-wrap gap-1 rounded-xl p-1">
-          <TabsTrigger value="list" className="gap-2 rounded-lg">
-            <Layers className="size-4" />
-            Danh sách
-          </TabsTrigger>
-          <TabsTrigger value="trash" className="gap-2 rounded-lg">
-            <ArchiveRestore className="size-4" />
-            Thùng rác
-            {trashedStaffQuery.data != null && trashedStaffQuery.data.total > 0 ? (
-              <Badge
-                variant="secondary"
-                className="px-1.5 py-0 text-[10px] tabular-nums"
-              >
-                {trashedStaffQuery.data.total}
-              </Badge>
-            ) : null}
-          </TabsTrigger>
-        </TabsList>
+        <div className="flex flex-wrap justify-between items-center">
+          <TabsList className="h-auto min-h-9 flex-wrap gap-1 rounded-xl p-1">
+            <TabsTrigger value="list" className="gap-2 rounded-lg">
+              <Layers className="size-4" />
+              Danh sách
+            </TabsTrigger>
+            <TabsTrigger value="trash" className="gap-2 rounded-lg">
+              <ArchiveRestore className="size-4" />
+              Thùng rác
+              {trashedStaffQuery.data != null && trashedStaffQuery.data.total > 0 ? (
+                <Badge
+                  variant="secondary"
+                  className="px-1.5 py-0 text-[10px] tabular-nums"
+                >
+                  {trashedStaffQuery.data.total}
+                </Badge>
+              ) : null}
+            </TabsTrigger>
+          </TabsList>
+          <Button
+            type="button"
+            onClick={openCreate}
+            className="gap-2 rounded-xl"
+            disabled={busy || roles.length === 0}
+          >
+            <UserPlus className="size-4" />
+            Thêm nhân sự
+          </Button>
+        </div>
+
 
         <TabsContent value="list" className="mt-0 space-y-4">
-        <Card className="border-border shadow-sm px-4">
-          <div className="flex flex-col gap-3 lg:flex-row lg:flex-wrap lg:items-end">
-            <div className="min-w-[min(100%,18rem)] flex-1 space-y-2">
-              <Label htmlFor="staff-search">Tìm nhanh (API)</Label>
-              <Input
-                id="staff-search"
-                placeholder="Email hoặc tên nhân viên"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="rounded-xl"
-              />
-            </div>
-           
-            <div className="flex flex-wrap items-end gap-2">
-              <div className="flex flex-col gap-1.5">
-                <span className="text-xs font-semibold text-muted-foreground">
-                  Xuất file
-                </span>
-                <div className="flex flex-wrap gap-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    className="h-9 gap-1.5 rounded-lg"
-                    disabled={filteredUsers.length === 0}
-                    onClick={exportStaffListCsv}
-                    title="CSV: phân cột bằng ; (Excel VN), UTF-16 LE"
-                  >
-                    <Download className="size-4" />
-                    CSV
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    className="h-9 gap-1.5 rounded-lg"
-                    disabled={filteredUsers.length === 0}
-                    onClick={exportStaffListXlsx}
-                    title="Excel: cột rộng theo nội dung"
-                  >
-                    <Download className="size-4" />
-                    Excel
-                  </Button>
-                </div>
+          <Card className="border-border shadow-sm px-4">
+            <div className="flex flex-col gap-3 lg:flex-row lg:flex-wrap lg:items-end">
+              <div className="min-w-[min(100%,18rem)] flex-1 space-y-2">
+                <Label htmlFor="staff-search">Tìm nhanh (API)</Label>
+                <Input
+                  id="staff-search"
+                  placeholder="Email hoặc tên nhân viên"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="rounded-xl"
+                />
               </div>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="h-9 gap-1.5 rounded-lg"
-                onClick={clearStaffFilters}
-              >
-                <FilterX className="size-4" />
-                Xóa bộ lọc
-              </Button>
+
+              <div className="flex flex-wrap items-end gap-2">
+                <div className="flex flex-col gap-1.5">
+                  <span className="text-xs font-semibold text-muted-foreground">
+                    Xuất file
+                  </span>
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="h-9 gap-1.5 rounded-lg"
+                      disabled={filteredUsers.length === 0}
+                      onClick={exportStaffListCsv}
+                      title="CSV: phân cột bằng ; (Excel VN), UTF-16 LE"
+                    >
+                      <Download className="size-4" />
+                      CSV
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="h-9 gap-1.5 rounded-lg"
+                      disabled={filteredUsers.length === 0}
+                      onClick={exportStaffListXlsx}
+                      title="Excel: cột rộng theo nội dung"
+                    >
+                      <Download className="size-4" />
+                      Excel
+                    </Button>
+                  </div>
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="h-9 gap-1.5 rounded-lg"
+                  onClick={clearStaffFilters}
+                >
+                  <FilterX className="size-4" />
+                  Xóa bộ lọc
+                </Button>
+              </div>
+
             </div>
-            
-          </div>
-          <div className="space-y-2">
+            <div className="space-y-2">
               <Label>Lọc vai trò (trang hiện tại)</Label>
               <Select
                 value={roleFilter}
@@ -693,7 +695,7 @@ export default function StaffAndRbacPage() {
                 </SelectContent>
               </Select>
             </div>
-</Card>
+          </Card>
 
           <Card className="border-border shadow-sm">
             <CardContent className="p-0">

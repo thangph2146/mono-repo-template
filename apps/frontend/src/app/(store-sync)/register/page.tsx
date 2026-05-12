@@ -12,10 +12,8 @@ import { toast } from "sonner";
 
 export default function RegisterPage() {
   return (
-    <Page>
       <PageContent className="px-0 md:px-0 py-8 md:py-10 space-y-0">
-        <section>
-          <Container max="8xl" className="px-4 md:px-8">
+          <Container max="3xl" className="px-4 md:px-8">
             <div className="w-full min-h-[calc(100vh-220px)] py-6 md:py-10 grid place-items-center">
               <Card className={STORE_AUTH_FORM_CARD_CLASS}>
                 <CardHeader className="space-y-2 text-center pb-6">
@@ -88,8 +86,6 @@ export default function RegisterPage() {
               </Card>
             </div>
           </Container>
-        </section>
       </PageContent>
-    </Page>
   );
 }

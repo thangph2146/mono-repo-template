@@ -179,7 +179,7 @@ export function ProductDetail({
         </Button>
       </Link>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 pt-6">
         <Card className="rounded-3xl border-outline-variant overflow-hidden">
           <CardContent className="p-6 space-y-4">
             <div className="aspect-square bg-gradient-to-b from-white to-muted/20 rounded-2xl p-6 border border-outline-variant/30 shadow-inner flex items-center justify-center">

@@ -87,14 +87,8 @@ export function Hero({
 }
 
 // ── Container (max-width) ───────────────────────────────────
-export function Container({
-  children,
-  className,
-  max = "7xl",
-}: {
-  children: React.ReactNode;
-  className?: string;
-  max?:
+/** Khớp scale `max-w-*` của Tailwind — không phải breakpoint `sm:`/`md:`. */
+export type ContainerMaxWidth =
   | "sm"
   | "md"
   | "lg"
@@ -107,23 +101,57 @@ export function Container({
   | "7xl"
   | "8xl"
   | "full";
+
+function containerMaxWidthClass(max: ContainerMaxWidth): string {
+  switch (max) {
+    case "sm":
+      return "max-w-sm";
+    case "md":
+      return "max-w-md";
+    case "lg":
+      return "max-w-lg";
+    case "xl":
+      return "max-w-xl";
+    case "2xl":
+      return "max-w-2xl";
+    case "3xl":
+      return "max-w-3xl";
+    case "4xl":
+      return "max-w-4xl";
+    case "5xl":
+      return "max-w-5xl";
+    case "6xl":
+      return "max-w-6xl";
+    case "7xl":
+      return "max-w-7xl";
+    case "8xl":
+      return "max-w-[1440px]";
+    case "full":
+      return "max-w-full";
+    default: {
+      const _exhaustive: never = max;
+      return _exhaustive;
+    }
+  }
+}
+
+export function Container({
+  children,
+  className,
+  max = "7xl",
+}: {
+  children: React.ReactNode;
+  className?: string;
+  max?: ContainerMaxWidth;
 }) {
-  const widths: Record<string, string> = {
-    sm: "max-w-sm",
-    md: "max-w-md",
-    lg: "max-w-lg",
-    xl: "max-w-xl",
-    "2xl": "max-w-2xl",
-    "3xl": "max-w-3xl",
-    "4xl": "max-w-4xl",
-    "5xl": "max-w-5xl",
-    "6xl": "max-w-6xl",
-    "7xl": "max-w-7xl",
-    "8xl": "max-w-[1440px]",
-    full: "max-w-full",
-  };
   return (
-    <div className={cn("w-full mx-auto", widths[max], className)}>
+    <div
+      className={cn(
+        "w-full mx-auto",
+        containerMaxWidthClass(max),
+        className,
+      )}
+    >
       {children}
     </div>
   );
