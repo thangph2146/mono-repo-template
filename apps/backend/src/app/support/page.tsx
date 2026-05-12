@@ -24,6 +24,8 @@ import {
   useSaveDealerSupport,
 } from "@/hooks/queries";
 import { cn } from "@ui/lib/utils";
+import { PageSection } from "@ui/components/layout";
+import { ADMIN_PAGE_SUBTITLE_CLASS } from "@ui/lib/layout-shell";
 import {
   DEALER_SUPPORT_ADMIN_FORM_ID,
   DealerSupportEditor,
@@ -54,7 +56,7 @@ export default function AdminDealerSupportPage() {
 
   if (!canView) {
     return (
-      <div className="space-y-6">
+      <PageSection max="full" className="min-w-0 space-y-6">
         <h1 className="flex items-center gap-3 text-3xl font-extrabold tracking-tight text-foreground">
           <Headphones className="size-8 shrink-0 text-primary" aria-hidden />
           {DEALER_SUPPORT_TITLE}
@@ -72,7 +74,7 @@ export default function AdminDealerSupportPage() {
             </div>
           </div>
         </div>
-      </div>
+      </PageSection>
     );
   }
 
@@ -97,14 +99,14 @@ export default function AdminDealerSupportPage() {
   };
 
   return (
-    <div className="space-y-8">
+    <PageSection max="full" className="min-w-0 space-y-8">
       <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
         <div>
           <h1 className="flex items-center gap-3 text-4xl font-extrabold tracking-tight text-foreground">
             <Headphones className="size-9 shrink-0 text-primary" aria-hidden />
             {headerTitle}
           </h1>
-          <p className="mt-1 max-w-3xl font-medium text-on-surface-variant">{headerSubtitle}</p>
+          <p className={ADMIN_PAGE_SUBTITLE_CLASS}>{headerSubtitle}</p>
           <p className="mt-2 text-sm text-muted-foreground">
             Mặc định từ{" "}
             <span className="font-mono text-foreground">@workspace/dealer-support</span>; ghi đè lưu
@@ -224,6 +226,6 @@ export default function AdminDealerSupportPage() {
           </div>
         </>
       ) : null}
-    </div>
+    </PageSection>
   );
 }

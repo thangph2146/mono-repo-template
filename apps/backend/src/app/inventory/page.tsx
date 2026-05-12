@@ -32,6 +32,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@ui/components/card";
+import { PageSection } from "@ui/components/layout";
 import {
   Dialog,
   DialogContent,
@@ -109,6 +110,10 @@ import {
 import { AdminDataTable } from "@/components/admin-data-table";
 import { AdminTablePaginationFooter } from "@/components/admin-table-pagination-footer";
 import { cn } from "@ui/lib/utils";
+import {
+  ADMIN_ALERT_DIALOG_CONTENT_CLASS,
+  ADMIN_DIALOG_CONTENT_INVENTORY_FULL_CLASS,
+} from "@ui/lib/layout-shell";
 import { resolveCategoryIcon } from "@/lib/category-icons";
 import {
   defaultProductForm,
@@ -1075,7 +1080,7 @@ export default function InventoryPage() {
   }, [canWriteProducts, mainTab]);
 
   return (
-    <div className="space-y-6">
+    <PageSection max="full" className="min-w-0 space-y-6">
       <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
         <div>
           <h1 className="flex items-center gap-3 text-4xl font-extrabold tracking-tight text-foreground">
@@ -1126,7 +1131,7 @@ export default function InventoryPage() {
       </div>
 
       <Dialog open={dialogOpen} onOpenChange={onDialogOpenChange}>
-        <DialogContent className="sm:max-w-7xl flex-col gap-0 p-0">
+        <DialogContent className={ADMIN_DIALOG_CONTENT_INVENTORY_FULL_CLASS}>
           <div className="w-full min-w-0 shrink-0 space-y-1.5 px-4 pt-4 pr-12">
             <DialogHeader>
               <DialogTitle className="text-2xl font-extrabold">
@@ -2149,7 +2154,7 @@ export default function InventoryPage() {
           if (!o) setDeleteTarget(null);
         }}
       >
-        <AlertDialogContent className="rounded-2xl sm:max-w-[450px]">
+        <AlertDialogContent className={ADMIN_ALERT_DIALOG_CONTENT_CLASS}>
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2 text-left">
               <Archive className="size-5 shrink-0 text-muted-foreground" aria-hidden />
@@ -2192,7 +2197,7 @@ export default function InventoryPage() {
           if (!o) setPurgeTarget(null);
         }}
       >
-        <AlertDialogContent className="rounded-2xl sm:max-w-[450px]">
+        <AlertDialogContent className={ADMIN_ALERT_DIALOG_CONTENT_CLASS}>
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2 text-left text-destructive">
               <Trash2 className="size-5 shrink-0" aria-hidden />
@@ -2234,7 +2239,7 @@ export default function InventoryPage() {
           if (!o) setRestoreTarget(null);
         }}
       >
-        <AlertDialogContent className="rounded-2xl sm:max-w-[450px]">
+        <AlertDialogContent className={ADMIN_ALERT_DIALOG_CONTENT_CLASS}>
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2 text-left">
               <ArchiveRestore className="size-5 shrink-0 text-primary" aria-hidden />
@@ -2270,7 +2275,7 @@ export default function InventoryPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+    </PageSection>
   );
 }
 

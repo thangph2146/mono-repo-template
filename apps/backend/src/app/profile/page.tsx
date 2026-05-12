@@ -23,6 +23,7 @@ import {
 } from "@/hooks/queries";
 import { ApiError } from "@/lib/api";
 import { patchAdminSessionProfile } from "@/lib/auth-session";
+import { Container } from "@ui/components/layout";
 
 export default function AdminProfilePage() {
   const { user: sessionUser } = useAuth();
@@ -118,7 +119,7 @@ export default function AdminProfilePage() {
   const email = profile?.email ?? sessionUser.email;
 
   return (
-    <div className="space-y-6 max-w-4xl mx-auto">
+    <Container max="4xl" className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Hồ sơ tài khoản</h1>
         <p className="text-muted-foreground mt-1 text-sm sm:text-base">
@@ -345,6 +346,6 @@ export default function AdminProfilePage() {
           </div>
         </CardContent>
       </Card>
-    </div>
+    </Container>
   );
 }

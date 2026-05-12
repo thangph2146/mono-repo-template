@@ -10,6 +10,11 @@ import { Input } from "@ui/components/input";
 import { Label } from "@ui/components/label";
 import { Textarea } from "@ui/components/textarea";
 import { Container, Page, PageContent } from "@ui/components/layout";
+import {
+  STORE_CONTAINER_INSET,
+  STORE_CONTAINER_MAX_DEFAULT,
+  STORE_PAGE_CONTENT_CLASS,
+} from "@ui/lib/layout-shell";
 import { StoreLocationMapPicker } from "@/components/shared/store-location-map-picker";
 import { Loader2, LogOut, MapPin, Save, ShieldCheck, Store } from "lucide-react";
 import { toast } from "sonner";
@@ -99,9 +104,9 @@ export default function ProfilePage() {
 
   return (
     <Page>
-      <PageContent className="px-0 md:px-0 py-8 md:py-10 space-y-0">
+      <PageContent className={STORE_PAGE_CONTENT_CLASS}>
         <section>
-          <Container max="8xl" className="px-4 md:px-8">
+          <Container max={STORE_CONTAINER_MAX_DEFAULT} className={STORE_CONTAINER_INSET}>
             <div className="min-h-[60vh] grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
               <Card className="w-full border-outline-variant">
                 <CardHeader className="space-y-3">

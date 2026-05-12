@@ -66,7 +66,18 @@
   --radius-lg: 0.5rem;
   --radius-xl: 0.75rem;
   --radius-full: 9999px;
-  /* Spacing */
+  /* Elevation shadows */
+  --shadow-1: 0 4px 4px rgba(30, 41, 59, 0.02);
+  --shadow-2: 0 12px 12px rgba(30, 41, 59, 0.05);
+  --shadow-3: 0 24px 24px rgba(30, 41, 59, 0.08);
+}
+
+/* ── Light mode (:root) ─────────────────────────────────────────────────── */
+:root {
+  /*
+   * Token khoảng trắng layout — đặt ở :root, không trong @theme, vì Tailwind v4
+   * map --spacing-{xs|sm|…|2xl} trong @theme chung scale với max-w-{xs|sm|…|2xl}.
+   */
   --spacing-base: 4px;
   --spacing-xs: 4px;
   --spacing-sm: 8px;
@@ -76,14 +87,7 @@
   --spacing-2xl: 48px;
   --spacing-gutter: 24px;
   --spacing-margin: 32px;
-  /* Elevation shadows */
-  --shadow-1: 0 4px 4px rgba(30, 41, 59, 0.02);
-  --shadow-2: 0 12px 12px rgba(30, 41, 59, 0.05);
-  --shadow-3: 0 24px 24px rgba(30, 41, 59, 0.08);
-}
 
-/* ── Light mode (:root) ─────────────────────────────────────────────────── */
-:root {
   /* Semantic surface colors */
   --background: #F8FAFC;
   --foreground: #0b1c30;

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useMemo } from "react";
 import { Button } from "@ui/components/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@ui/components/card";
+import { PageSection } from "@ui/components/layout";
 import {
   Package2,
   ShoppingBag,
@@ -19,6 +20,7 @@ import {
   ShieldOff,
 } from "lucide-react";
 import { cn } from "@ui/lib/utils";
+import { ADMIN_DASHBOARD_EMPTY_INNER_CLASS } from "@ui/lib/layout-shell";
 import { useOrders, useProducts } from "@/hooks/queries";
 import { formatVND } from "@/lib/format";
 import { useAuth } from "@/providers/auth-provider";
@@ -74,7 +76,7 @@ export default function AdminDashboardPage() {
   };
 
   return (
-    <div className="space-y-8">
+    <PageSection max="full" className="min-w-0 space-y-8">
       <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
         <div>
           <h1 className="flex items-center gap-3 text-4xl font-extrabold tracking-tight text-foreground">
@@ -116,7 +118,7 @@ export default function AdminDashboardPage() {
 
       {noOverviewAccess && (
         <div className="rounded-2xl border border-border bg-muted/20 px-6 py-8 text-muted-foreground">
-          <div className="mx-auto flex max-w-md flex-col items-center gap-3 text-center">
+          <div className={ADMIN_DASHBOARD_EMPTY_INNER_CLASS}>
             <ShieldOff className="size-10 text-muted-foreground/80" aria-hidden />
             <p className="font-semibold text-foreground">Không đủ quyền xem tổng quan</p>
             <p className="text-sm">
@@ -251,7 +253,7 @@ export default function AdminDashboardPage() {
           </div>
         </>
       )}
-    </div>
+    </PageSection>
   );
 }
 

@@ -3,6 +3,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@ui/components/card";
 import { Button } from "@ui/components/button";
 import { CircleHelp, PackageSearch, ShoppingCart, UserRoundCheck } from "lucide-react";
 import { Container, Page, PageContent } from "@ui/components/layout";
+import {
+  STORE_CONTAINER_INSET,
+  STORE_CONTAINER_MAX_DEFAULT,
+  STORE_PAGE_CONTENT_CLASS,
+} from "@ui/lib/layout-shell";
 
 const quickHelp = [
   {
@@ -31,9 +36,9 @@ const quickHelp = [
 export default function HelpPage() {
   return (
     <Page>
-      <PageContent className="px-0 md:px-0 py-8 md:py-10 space-y-0">
+      <PageContent className={STORE_PAGE_CONTENT_CLASS}>
         <section>
-          <Container max="8xl" className="px-4 md:px-8 space-y-6">
+          <Container max={STORE_CONTAINER_MAX_DEFAULT} className={`${STORE_CONTAINER_INSET} space-y-6`}>
       <div className="space-y-2">
         <h1 className="text-3xl sm:text-4xl font-bold text-foreground tracking-tight flex items-center gap-3">
           <CircleHelp className="w-8 h-8 text-primary shrink-0" aria-hidden />

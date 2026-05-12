@@ -19,6 +19,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@ui/components/dialog";
+import { PageSection } from "@ui/components/layout";
 import {
   Select,
   SelectContent,
@@ -69,6 +70,10 @@ import { canUserAccess, PERMISSION_CODES } from "@workspace/api-client";
 import type { PromoCode, PromoDiscountKind } from "@/lib/api";
 import { ApiError } from "@/lib/api";
 import { cn } from "@ui/lib/utils";
+import {
+  ADMIN_ALERT_DIALOG_CONTENT_CLASS,
+  ADMIN_DIALOG_CONTENT_MD_CLASS,
+} from "@ui/lib/layout-shell";
 
 type FormState = {
   code: string;
@@ -557,7 +562,7 @@ export default function PromoCodesAdminPage() {
   );
 
   return (
-    <div className="space-y-6">
+    <PageSection max="full" className="min-w-0 space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="flex items-center gap-3 text-4xl font-extrabold text-foreground tracking-tight">
@@ -605,7 +610,7 @@ export default function PromoCodesAdminPage() {
       </div>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-[500px] rounded-2xl">
+        <DialogContent className={ADMIN_DIALOG_CONTENT_MD_CLASS}>
           <DialogHeader>
             <DialogTitle className="text-2xl font-extrabold">
               {editingId == null ? "Tạo mã mới" : `Sửa mã ${form.code}`}
@@ -848,7 +853,7 @@ export default function PromoCodesAdminPage() {
         open={deleteTarget != null}
         onOpenChange={(o) => !o && setDeleteTarget(null)}
       >
-        <AlertDialogContent className="rounded-2xl">
+        <AlertDialogContent className={ADMIN_ALERT_DIALOG_CONTENT_CLASS}>
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2 text-left text-destructive">
               <Trash2 className="size-5 shrink-0" aria-hidden />
@@ -879,6 +884,6 @@ export default function PromoCodesAdminPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+    </PageSection>
   );
 }

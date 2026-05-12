@@ -18,6 +18,12 @@ import {
   Container,
   Grid,
 } from "@ui/components/layout";
+import {
+  STORE_CONTAINER_INSET_WIDE,
+  STORE_CONTAINER_MAX_DEFAULT,
+  STORE_LANDING_PAGE_CONTENT_CLASS,
+} from "@ui/lib/layout-shell";
+import { cn } from "@ui/lib/utils";
 import { Heading, Text, Badge, LiveDot } from "@ui/components/typography";
 import { Button } from "@ui/components/button";
 import { ProductCard } from "@/components/shared/product-card";
@@ -137,10 +143,10 @@ export default function Home() {
 
   return (
     <Page className="selection:bg-primary/30 scroll-smooth">
-      <PageContent className="p-0 md:p-0 space-y-0">
+      <PageContent className={STORE_LANDING_PAGE_CONTENT_CLASS}>
         {/* --- Hero Section --- */}
         <section className="relative overflow-hidden pt-12 pb-24 md:pt-28 md:pb-40 w-full">
-          <Container max="8xl" className="px-6 md:px-12">
+          <Container max={STORE_CONTAINER_MAX_DEFAULT} className={STORE_CONTAINER_INSET_WIDE}>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
               <div className="space-y-10 animate-in fade-in slide-in-from-left duration-700">
                 <Badge variant="primary" className="px-5 py-2 rounded-full text-base font-bold bg-primary/10 text-primary border-primary/20 flex w-fit items-center gap-2">
@@ -208,7 +214,7 @@ export default function Home() {
 
         {/* --- Flash Sale Section (data-driven) --- */}
         <section className="py-24 relative overflow-hidden w-full">
-          <Container max="8xl" className="px-6 md:px-12">
+          <Container max={STORE_CONTAINER_MAX_DEFAULT} className={STORE_CONTAINER_INSET_WIDE}>
             <div className="flex flex-col md:flex-row justify-between items-end gap-8 mb-16">
               <div className="space-y-6">
                 <Badge className="bg-destructive/10 text-destructive border-destructive/20 font-bold px-4 py-1.5 rounded-xl flex w-fit items-center gap-2 text-base">
@@ -288,7 +294,7 @@ export default function Home() {
 
         {/* --- Categories Grid (data-driven) --- */}
         <section className="py-32 bg-background w-full">
-          <Container max="8xl" className="px-6 md:px-12">
+          <Container max={STORE_CONTAINER_MAX_DEFAULT} className={STORE_CONTAINER_INSET_WIDE}>
             <div className="text-center space-y-6 mb-20">
               <Heading as="h2" size="display" align="center" className="tracking-tight">
                 Danh Mục <span className="text-primary">Hàng Tiêu Dùng</span>
@@ -336,7 +342,7 @@ export default function Home() {
 
         {/* --- Most Purchased Section (data-driven) --- */}
         <section className="py-32 mx-0 md:mx-6 w-full md:w-[calc(100%-3rem)]">
-          <Container max="8xl" className="px-6 md:px-12 w-full">
+          <Container max={STORE_CONTAINER_MAX_DEFAULT} className={cn(STORE_CONTAINER_INSET_WIDE, "w-full")}>
             <div className="flex flex-col lg:flex-row gap-16 items-start min-w-0 w-full">
               <div className="w-full lg:w-[380px] flex-shrink-0 space-y-10">
                 <Badge className="bg-primary/10 text-primary border-primary/20 font-bold px-5 py-2 rounded-xl text-base">
@@ -411,7 +417,7 @@ export default function Home() {
 
         {/* --- Trust & Branding --- */}
         <section className="py-24 overflow-hidden bg-background w-full">
-          <Container max="8xl" className="px-6 md:px-12">
+          <Container max={STORE_CONTAINER_MAX_DEFAULT} className={STORE_CONTAINER_INSET_WIDE}>
             <div className="text-center mb-16 space-y-2">
               <Text variant="label" className="font-black text-primary tracking-[0.3em]">Đối tác tin cậy</Text>
               <Heading as="h3" size="title">Hợp tác cùng 100+ thương hiệu lớn</Heading>
@@ -452,7 +458,7 @@ export default function Home() {
           </div>
         </section>
 
-        <Container max="8xl" className="py-12 px-6">
+        <Container max={STORE_CONTAINER_MAX_DEFAULT} className={cn(STORE_CONTAINER_INSET_WIDE, "py-12")}>
           <div className="flex justify-center">
             <Link
               href="/graph"

@@ -22,6 +22,12 @@ import {
   CardTitle,
 } from "@ui/components/card";
 import { Container, Page, PageContent } from "@ui/components/layout";
+import {
+  STORE_CONTAINER_INSET,
+  STORE_CONTAINER_MAX_AUTH,
+  STORE_PAGE_CONTENT_CENTER_CLASS,
+  STORE_PAGE_CONTENT_CLASS,
+} from "@ui/lib/layout-shell";
 import { Store, Lock, User, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { api, ApiError } from "@/lib/api";
@@ -139,8 +145,8 @@ function LoginFormInner() {
   };
 
   return (
-      <PageContent className="px-0 md:px-0 py-8 md:py-10 space-y-0">
-          <Container max="3xl" className="px-4 md:px-8">
+      <PageContent className={STORE_PAGE_CONTENT_CLASS}>
+          <Container max={STORE_CONTAINER_MAX_AUTH} className={STORE_CONTAINER_INSET}>
               <Card className={STORE_AUTH_FORM_CARD_CLASS}>
                 <CardHeader className="space-y-2 text-center pb-6">
                   <div className="mx-auto bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mb-2">
@@ -276,7 +282,7 @@ export default function LoginPage() {
     <Suspense
       fallback={
         <Page>
-          <PageContent className="px-0 md:px-0 py-8 md:py-10 grid place-items-center min-h-[50vh]">
+          <PageContent className={STORE_PAGE_CONTENT_CENTER_CLASS}>
             <Loader2 className="size-10 animate-spin text-primary" />
           </PageContent>
         </Page>

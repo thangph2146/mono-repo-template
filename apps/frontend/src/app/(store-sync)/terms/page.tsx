@@ -3,6 +3,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@ui/components/card";
 import { Button } from "@ui/components/button";
 import { FileCheck2, Scale, ShieldCheck } from "lucide-react";
 import { Container, Page, PageContent } from "@ui/components/layout";
+import {
+  STORE_CONTAINER_INSET,
+  STORE_CONTAINER_MAX_DEFAULT,
+  STORE_PAGE_CONTENT_CLASS,
+} from "@ui/lib/layout-shell";
 
 const sections = [
   {
@@ -25,9 +30,9 @@ const sections = [
 export default function TermsPage() {
   return (
     <Page>
-      <PageContent className="px-0 md:px-0 py-8 md:py-10 space-y-0">
+      <PageContent className={STORE_PAGE_CONTENT_CLASS}>
         <section>
-          <Container max="8xl" className="px-4 md:px-8 space-y-6">
+          <Container max={STORE_CONTAINER_MAX_DEFAULT} className={`${STORE_CONTAINER_INSET} space-y-6`}>
             <Card className="rounded-2xl border-outline-variant">
               <CardHeader className="space-y-3">
                 <div className="inline-flex w-fit items-center gap-2 rounded-full bg-primary/10 text-primary px-3 py-1 text-sm font-bold">

@@ -2,6 +2,11 @@
 
 import { notFound, useParams } from "next/navigation";
 import { Container, Page, PageContent } from "@ui/components/layout";
+import {
+  STORE_CONTAINER_INSET,
+  STORE_CONTAINER_MAX_DEFAULT,
+  STORE_PAGE_CONTENT_CLASS,
+} from "@ui/lib/layout-shell";
 import { ProductDetail } from "@/components/shared/product-detail";
 import { useProduct, useProductBySku } from "@/hooks/queries";
 
@@ -23,9 +28,9 @@ export default function ProductDetailPage() {
 
   return (
     <Page>
-      <PageContent className="px-0 md:px-0 py-8 md:py-10 space-y-0">
+      <PageContent className={STORE_PAGE_CONTENT_CLASS}>
         <section>
-          <Container max="8xl" className="px-4 md:px-8 space-y-6">
+          <Container max={STORE_CONTAINER_MAX_DEFAULT} className={`${STORE_CONTAINER_INSET} space-y-6`}>
             {isLoading && (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <div className="aspect-square rounded-3xl bg-muted/40 animate-pulse" />

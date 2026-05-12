@@ -66,6 +66,8 @@ import {
 import { AdminDataTable } from "@/components/admin-data-table";
 import { AdminTablePaginationFooter } from "@/components/admin-table-pagination-footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@ui/components/card";
+import { PageSection } from "@ui/components/layout";
+import { ADMIN_ALERT_DIALOG_CONTENT_CLASS } from "@ui/lib/layout-shell";
 import { cn } from "@ui/lib/utils";
 
 type FilterKey =
@@ -702,7 +704,7 @@ export default function AdminOrdersPage() {
   }, [statusCounts]);
 
   return (
-    <div className="space-y-8">
+    <PageSection max="full" className="min-w-0 space-y-8">
       <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
         <div>
           <h1 className="flex items-center gap-3 text-4xl font-extrabold tracking-tight text-foreground">
@@ -992,7 +994,7 @@ export default function AdminOrdersPage() {
           if (!o) setCancelTarget(null);
         }}
       >
-        <AlertDialogContent className="rounded-2xl sm:max-w-[450px]">
+        <AlertDialogContent className={ADMIN_ALERT_DIALOG_CONTENT_CLASS}>
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2 text-left text-destructive">
               <XCircle className="size-5 shrink-0" aria-hidden />
@@ -1050,7 +1052,7 @@ export default function AdminOrdersPage() {
           if (!o) setReopenTarget(null);
         }}
       >
-        <AlertDialogContent className="rounded-2xl sm:max-w-[450px]">
+        <AlertDialogContent className={ADMIN_ALERT_DIALOG_CONTENT_CLASS}>
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2 text-left">
               <RotateCcw className="size-5 shrink-0 text-primary" aria-hidden />
@@ -1112,7 +1114,7 @@ export default function AdminOrdersPage() {
           if (!o) setArchiveTarget(null);
         }}
       >
-        <AlertDialogContent className="rounded-2xl sm:max-w-[450px]">
+        <AlertDialogContent className={ADMIN_ALERT_DIALOG_CONTENT_CLASS}>
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2 text-left">
               <Archive className="size-5 shrink-0 text-muted-foreground" aria-hidden />
@@ -1169,7 +1171,7 @@ export default function AdminOrdersPage() {
           if (!o) setPurgeTarget(null);
         }}
       >
-        <AlertDialogContent className="rounded-2xl sm:max-w-[450px]">
+        <AlertDialogContent className={ADMIN_ALERT_DIALOG_CONTENT_CLASS}>
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2 text-left text-destructive">
               <Trash2 className="size-5 shrink-0" aria-hidden />
@@ -1213,7 +1215,7 @@ export default function AdminOrdersPage() {
           if (!o) setRestoreTarget(null);
         }}
       >
-        <AlertDialogContent className="rounded-2xl sm:max-w-[450px]">
+        <AlertDialogContent className={ADMIN_ALERT_DIALOG_CONTENT_CLASS}>
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2 text-left">
               <ArchiveRestore className="size-5 shrink-0 text-primary" aria-hidden />
@@ -1262,6 +1264,6 @@ export default function AdminOrdersPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+    </PageSection>
   );
 }

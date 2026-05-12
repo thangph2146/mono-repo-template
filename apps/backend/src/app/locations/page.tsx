@@ -22,6 +22,7 @@ import {
   UserCircle,
 } from "lucide-react";
 import { Card } from "@ui/components/card";
+import { PageSection } from "@ui/components/layout";
 import { Badge } from "@ui/components/badge";
 import { Button } from "@ui/components/button";
 import { Input } from "@ui/components/input";
@@ -157,7 +158,10 @@ export default function StoreLocationsPage() {
   };
 
   return (
-    <div className="flex h-full min-h-[80vh] flex-col space-y-6">
+    <PageSection
+      max="full"
+      className="flex h-full min-h-[80vh] min-w-0 flex-col space-y-6"
+    >
       <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
         <div>
           <h1 className="flex items-center gap-3 text-4xl font-extrabold tracking-tight text-foreground">
@@ -408,6 +412,6 @@ export default function StoreLocationsPage() {
           </div>
         </Card>
       </div>
-    </div>
+    </PageSection>
   );
 }

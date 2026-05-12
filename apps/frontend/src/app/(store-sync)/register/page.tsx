@@ -7,6 +7,11 @@ import { Label } from "@ui/components/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@ui/components/card";
 import { Headphones, Store, Phone, Lock, User, MapPin } from "lucide-react";
 import { Container, PageContent } from "@ui/components/layout";
+import {
+  STORE_CONTAINER_INSET,
+  STORE_CONTAINER_MAX_REGISTER,
+  STORE_PAGE_CONTENT_CLASS,
+} from "@ui/lib/layout-shell";
 import { STORE_AUTH_FORM_CARD_CLASS } from "@/lib/store-ui";
 import { toast } from "sonner";
 import {
@@ -17,8 +22,8 @@ import {
 
 export default function RegisterPage() {
   return (
-      <PageContent className="px-0 md:px-0 py-8 md:py-10 space-y-0">
-          <Container max="3xl" className="px-4 md:px-8">
+      <PageContent className={STORE_PAGE_CONTENT_CLASS}>
+          <Container max={STORE_CONTAINER_MAX_REGISTER} className={STORE_CONTAINER_INSET}>
             <div className="w-full min-h-[calc(100vh-220px)] py-6 md:py-10 grid place-items-center">
               <Card className={STORE_AUTH_FORM_CARD_CLASS}>
                 <CardHeader className="space-y-2 text-center pb-6">

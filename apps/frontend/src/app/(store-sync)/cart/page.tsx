@@ -11,6 +11,11 @@ import {
   CardTitle,
 } from "@ui/components/card";
 import { Container, Page, PageContent } from "@ui/components/layout";
+import {
+  STORE_CONTAINER_INSET,
+  STORE_CONTAINER_MAX_DEFAULT,
+  STORE_PAGE_CONTENT_CLASS,
+} from "@ui/lib/layout-shell";
 import { ArrowLeft, Package2, Trash2 } from "lucide-react";
 import { useCart } from "@/hooks/use-cart";
 import { CartLineItem } from "@/components/shared/cart-line-item";
@@ -23,8 +28,8 @@ export default function CartPage() {
 
   return (
     <Page>
-      <PageContent className="px-0 md:px-0 py-8 md:py-10 space-y-0">
-        <Container max="8xl" className="px-4 md:px-8 space-y-6">
+      <PageContent className={STORE_PAGE_CONTENT_CLASS}>
+        <Container max={STORE_CONTAINER_MAX_DEFAULT} className={`${STORE_CONTAINER_INSET} space-y-6`}>
           <div className="flex items-center justify-between gap-4">
             <div>
               <Button

@@ -6,6 +6,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@ui/c
 import { buttonVariants } from "@ui/components/button";
 import { Phone, MessageCircle, User, Clock, ShieldCheck, HelpCircle } from "lucide-react";
 import { Container, Page, PageContent } from "@ui/components/layout";
+import {
+  STORE_CONTAINER_INSET,
+  STORE_CONTAINER_MAX_DEFAULT,
+  STORE_INTRO_COLUMN_CLASS,
+  STORE_PAGE_CONTENT_CLASS,
+} from "@ui/lib/layout-shell";
 import { cn } from "@ui/lib/utils";
 import { DEFAULT_API_URL } from "@workspace/api-client";
 import type { DealerSupportPublicPayload } from "@workspace/dealer-support";
@@ -38,10 +44,10 @@ export default async function SupportPage() {
 
   return (
     <Page>
-      <PageContent className="space-y-0 px-0 py-8 md:px-0 md:py-10">
+      <PageContent className={STORE_PAGE_CONTENT_CLASS}>
         <section>
-          <Container max="8xl" className="space-y-10 px-4 md:px-8">
-            <div className="mx-auto max-w-3xl space-y-3 text-center">
+          <Container max={STORE_CONTAINER_MAX_DEFAULT} className={cn(STORE_CONTAINER_INSET, "space-y-10")}>
+            <div className={STORE_INTRO_COLUMN_CLASS}>
               <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
                 {p.title}
               </h1>

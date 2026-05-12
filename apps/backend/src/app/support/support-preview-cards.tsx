@@ -17,6 +17,8 @@ import {
   User,
 } from "lucide-react";
 import type { DealerSupportPublicPayload } from "@workspace/api-client";
+import { Container } from "@ui/components/layout";
+import { STORE_CONTAINER_MAX_DEFAULT, STORE_INTRO_COLUMN_CLASS } from "@ui/lib/layout-shell";
 import { cn } from "@ui/lib/utils";
 
 export function SupportPreviewCards(props: {
@@ -31,8 +33,8 @@ export function SupportPreviewCards(props: {
   const helpHref = `${storefrontBase}${helpPath}`;
 
   return (
-    <div className="mx-auto w-full max-w-[1440px] space-y-10">
-      <div className="mx-auto max-w-3xl space-y-3 text-center">
+    <Container max={STORE_CONTAINER_MAX_DEFAULT} className="space-y-10">
+      <div className={STORE_INTRO_COLUMN_CLASS}>
         <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
           {payload.title}
         </h2>
@@ -157,6 +159,6 @@ export function SupportPreviewCards(props: {
           </div>
         </div>
       </div>
-    </div>
+    </Container>
   );
 }

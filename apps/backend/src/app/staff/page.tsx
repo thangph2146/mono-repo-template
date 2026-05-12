@@ -48,6 +48,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@ui/components/card";
+import { PageSection } from "@ui/components/layout";
 import {
   Dialog,
   DialogContent,
@@ -108,6 +109,13 @@ import {
 } from "@/hooks/queries";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { cn } from "@ui/lib/utils";
+import {
+  ADMIN_ALERT_DIALOG_CONTENT_CLASS,
+  ADMIN_DIALOG_CONTENT_LG_CLASS,
+  ADMIN_DIALOG_CONTENT_MD_CLASS,
+  ADMIN_PAGE_FORM_COLUMN_CLASS,
+  ADMIN_PAGE_SUBTITLE_CLASS,
+} from "@ui/lib/layout-shell";
 
 function roleHasPermission(role: RbacRole, permCode: string): boolean {
   if (role.permissions.includes("*")) return true;
@@ -653,7 +661,7 @@ export default function StaffAndRbacPage() {
 
   if (!canManageUsers && !canReadRbac) {
     return (
-      <div className="max-w-3xl mx-auto space-y-4">
+      <div className={ADMIN_PAGE_FORM_COLUMN_CLASS}>
         <h1 className="flex items-center gap-2 text-2xl font-bold tracking-tight">
           <Users className="size-7 shrink-0 text-primary" aria-hidden />
           Nhân sự & phân quyền
@@ -1050,13 +1058,13 @@ export default function StaffAndRbacPage() {
   );
 
   return (
-    <div className="space-y-6 mx-auto">
+    <PageSection max="full" className="mx-auto min-w-0 space-y-6">
       <div>
         <h1 className="flex items-center gap-3 text-4xl font-extrabold tracking-tight text-foreground">
           <Users className="size-9 shrink-0 text-primary" aria-hidden />
           Nhân sự & phân quyền
         </h1>
-        <p className="mt-1 max-w-3xl font-medium text-on-surface-variant sm:text-base">
+        <p className={cn(ADMIN_PAGE_SUBTITLE_CLASS, "sm:text-base")}>
           Quản lý tài khoản nội bộ, gán vai trò và xem ma trận quyền theo role.
           Quyền thực tế của mỗi người là hợp (union) của tất cả role được gán.
         </p>
@@ -1088,7 +1096,7 @@ export default function StaffAndRbacPage() {
       )}
 
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
-        <DialogContent className="sm:max-w-[500px] rounded-2xl">
+        <DialogContent className={ADMIN_DIALOG_CONTENT_MD_CLASS}>
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-2xl font-extrabold">
               <UserPlus className="size-7 shrink-0 text-primary" aria-hidden />
@@ -1201,7 +1209,7 @@ export default function StaffAndRbacPage() {
           }
         }}
       >
-        <DialogContent className="sm:max-w-3xl rounded-2xl">
+        <DialogContent className={ADMIN_DIALOG_CONTENT_LG_CLASS}>
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-2xl font-extrabold">
               <Pencil className="size-7 shrink-0 text-primary" aria-hidden />
@@ -1313,7 +1321,7 @@ export default function StaffAndRbacPage() {
           if (!o) setDeleteTarget(null);
         }}
       >
-        <AlertDialogContent className="sm:max-w-[450px] rounded-2xl">
+        <AlertDialogContent className={ADMIN_ALERT_DIALOG_CONTENT_CLASS}>
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2 text-left">
               <Archive className="size-5 shrink-0 text-destructive" aria-hidden />
@@ -1360,7 +1368,7 @@ export default function StaffAndRbacPage() {
           if (!o) setPurgeTarget(null);
         }}
       >
-        <AlertDialogContent className="sm:max-w-[450px] rounded-2xl">
+        <AlertDialogContent className={ADMIN_ALERT_DIALOG_CONTENT_CLASS}>
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2 text-left">
               <Trash2 className="size-5 shrink-0 text-destructive" aria-hidden />
@@ -1408,7 +1416,7 @@ export default function StaffAndRbacPage() {
           if (!o) setRestoreTarget(null);
         }}
       >
-        <AlertDialogContent className="sm:max-w-[450px] rounded-2xl">
+        <AlertDialogContent className={ADMIN_ALERT_DIALOG_CONTENT_CLASS}>
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2 text-left">
               <ArchiveRestore className="size-5 shrink-0 text-primary" aria-hidden />
@@ -1448,6 +1456,6 @@ export default function StaffAndRbacPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+    </PageSection>
   );
 }

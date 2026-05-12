@@ -1,4 +1,10 @@
 import { cn } from "../lib/utils";
+import {
+  type ContainerMaxWidth,
+  containerMaxWidthClass,
+} from "../lib/layout-shell";
+
+export type { ContainerMaxWidth } from "../lib/layout-shell";
 
 /** Tailwind không quét `gap-${n}` — phải map đủ chuỗi literal. */
 const STACK_GAP_CLASS = {
@@ -29,12 +35,22 @@ const GRID_GAP_CLASS = {
 export function Page({
   children,
   className,
+  as = "main",
 }: {
   children: React.ReactNode;
   className?: string;
+  /** `div` khi layout cha đã có `<main>` (vd. AdminShell). */
+  as?: "main" | "div";
 }) {
+  if (as === "div") {
+    return (
+      <div className={cn("flex min-h-0 flex-1 flex-col", className)}>
+        {children}
+      </div>
+    );
+  }
   return (
-    <main className={cn("flex flex-col min-h-screen", className)}>
+    <main className={cn("flex min-h-screen flex-col", className)}>
       {children}
     </main>
   );
@@ -62,12 +78,18 @@ export function PageContent({
 export function PageSection({
   children,
   className,
+  max = "7xl",
 }: {
   children: React.ReactNode;
   className?: string;
+  max?: ContainerMaxWidth;
 }) {
   return (
-    <section className={cn("w-full mx-auto max-w-7xl", className)}>{children}</section>
+    <section
+      className={cn("mx-auto w-full", containerMaxWidthClass(max), className)}
+    >
+      {children}
+    </section>
   );
 }
 
@@ -87,54 +109,6 @@ export function Hero({
 }
 
 // ── Container (max-width) ───────────────────────────────────
-/** Khớp scale `max-w-*` của Tailwind — không phải breakpoint `sm:`/`md:`. */
-export type ContainerMaxWidth =
-  | "sm"
-  | "md"
-  | "lg"
-  | "xl"
-  | "2xl"
-  | "3xl"
-  | "4xl"
-  | "5xl"
-  | "6xl"
-  | "7xl"
-  | "8xl"
-  | "full";
-
-function containerMaxWidthClass(max: ContainerMaxWidth): string {
-  switch (max) {
-    case "sm":
-      return "max-w-sm";
-    case "md":
-      return "max-w-md";
-    case "lg":
-      return "max-w-lg";
-    case "xl":
-      return "max-w-xl";
-    case "2xl":
-      return "max-w-2xl";
-    case "3xl":
-      return "max-w-3xl";
-    case "4xl":
-      return "max-w-4xl";
-    case "5xl":
-      return "max-w-5xl";
-    case "6xl":
-      return "max-w-6xl";
-    case "7xl":
-      return "max-w-7xl";
-    case "8xl":
-      return "max-w-[1440px]";
-    case "full":
-      return "max-w-full";
-    default: {
-      const _exhaustive: never = max;
-      return _exhaustive;
-    }
-  }
-}
-
 export function Container({
   children,
   className,

@@ -13,6 +13,7 @@ import {
 } from "@ui/components/sheet";
 import { MobileSidebarPanel, Sidebar } from "@/components/sidebar";
 import { TextSizeToggle } from "@ui/components/text-size-toggle";
+import { Page, PageContent } from "@ui/components/layout";
 import { canAccessStaffAdmin, canUserAccess, PERMISSION_CODES } from "@workspace/api-client";
 import { useAuth, useClientReady } from "@/providers/auth-provider";
 import { AdminOrderAlertsProvider } from "@/providers/admin-order-alerts-provider";
@@ -22,6 +23,12 @@ import {
   clearAdminSession,
 } from "@/lib/auth-session";
 import { isAuthPath } from "@/lib/auth-routes";
+import {
+  ADMIN_HEADER_ROLE_LINE_CLASS,
+  ADMIN_MAIN_SCROLL_CLASS,
+  ADMIN_PAGE_CONTENT_CLASS,
+  ADMIN_SHEET_NAV_CLASS,
+} from "@ui/lib/layout-shell";
 
 const SIDEBAR_COLLAPSED_KEY = "admin-sidebar-collapsed";
 
@@ -127,7 +134,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
           id="admin-mobile-nav"
           side="left"
           showCloseButton
-          className="flex w-[min(100vw,20rem)] flex-col border-sidebar-border bg-sidebar p-0 text-sidebar-foreground sm:max-w-sm"
+          className={ADMIN_SHEET_NAV_CLASS}
         >
           <SheetHeader className="sr-only">
             <SheetTitle>Menu điều hướng</SheetTitle>
@@ -185,7 +192,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
               <div className="text-right hidden sm:block">
                 <p className="text-sm font-bold leading-none">{user.fullName}</p>
                 <p
-                  className="text-xs text-muted-foreground mt-1 max-w-[220px] truncate"
+                  className={ADMIN_HEADER_ROLE_LINE_CLASS}
                   title={roleSummary(user)}
                 >
                   {roleSummary(user)}
@@ -197,8 +204,12 @@ export function AdminShell({ children }: { children: ReactNode }) {
             </Link>
           </div>
         </header>
-        <main className="flex-1 overflow-y-auto bg-muted/20 p-4 sm:p-6">
-          {children}
+        <main className={ADMIN_MAIN_SCROLL_CLASS}>
+          <Page as="div">
+            <PageContent className={ADMIN_PAGE_CONTENT_CLASS}>
+              {children}
+            </PageContent>
+          </Page>
         </main>
       </div>
     </div>

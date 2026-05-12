@@ -9,6 +9,11 @@ import { Button } from "@ui/components/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@ui/components/card";
 import { Container, Page, PageContent } from "@ui/components/layout";
 import {
+  STORE_CONTAINER_INSET,
+  STORE_CONTAINER_MAX_DEFAULT,
+  STORE_PAGE_CONTENT_CLASS,
+} from "@ui/lib/layout-shell";
+import {
   ArrowLeft,
   CheckCircle2,
   CircleDot,
@@ -65,9 +70,9 @@ export default function OrderDetailPage() {
 
   return (
     <Page>
-      <PageContent className="px-0 md:px-0 py-8 md:py-10 space-y-0">
+      <PageContent className={STORE_PAGE_CONTENT_CLASS}>
         <section>
-          <Container max="8xl" className="px-4 md:px-8 space-y-6">
+          <Container max={STORE_CONTAINER_MAX_DEFAULT} className={`${STORE_CONTAINER_INSET} space-y-6`}>
             <div className="flex flex-wrap items-center justify-between gap-4">
               <Link href="/orders">
                 <Button variant="outline" className="rounded-xl">

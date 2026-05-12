@@ -19,6 +19,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@ui/components/card";
+import { PageSection } from "@ui/components/layout";
 import {
   Collapsible,
   CollapsibleContent,
@@ -215,7 +216,7 @@ export default function DataBackupPage() {
   const exportBusy = exporting !== null;
 
   return (
-    <div className="space-y-8 pb-10">
+    <PageSection max="full" className="min-w-0 space-y-8 pb-10">
       {/* Tiêu đề + bối cảnh ngay khi mở trang */}
       <header className="space-y-3">
         <div className="flex flex-wrap items-start gap-4">
@@ -515,6 +516,6 @@ export default function DataBackupPage() {
           </div>
         </CardContent>
       </Card>
-    </div>
+    </PageSection>
   );
 }

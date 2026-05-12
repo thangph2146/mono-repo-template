@@ -17,6 +17,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@ui/components/dialog";
+import { PageSection } from "@ui/components/layout";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -70,6 +71,10 @@ import {
   resolveCategoryIcon,
 } from "@/lib/category-icons";
 import { cn } from "@ui/lib/utils";
+import {
+  ADMIN_ALERT_DIALOG_CONTENT_CLASS,
+  ADMIN_DIALOG_CONTENT_CATEGORY_CLASS,
+} from "@ui/lib/layout-shell";
 
 interface FormState {
   id?: number;
@@ -540,7 +545,7 @@ export default function CategoriesPage() {
   );
 
   return (
-    <div className="space-y-6">
+    <PageSection max="full" className="min-w-0 space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="flex items-center gap-3 text-4xl font-extrabold text-foreground">
@@ -589,7 +594,7 @@ export default function CategoriesPage() {
                 <Plus className="size-5" aria-hidden /> Thêm danh mục
               </DialogTrigger>
             )}
-          <DialogContent className="sm:max-w-[560px]">
+          <DialogContent className={ADMIN_DIALOG_CONTENT_CATEGORY_CLASS}>
             <DialogHeader>
               <DialogTitle className="text-2xl font-extrabold">
                 {form.id ? "Chỉnh sửa danh mục" : "Tạo danh mục mới"}
@@ -912,7 +917,7 @@ export default function CategoriesPage() {
           if (!o) setDeleteTarget(null);
         }}
       >
-        <AlertDialogContent className="rounded-2xl sm:max-w-[450px]">
+        <AlertDialogContent className={ADMIN_ALERT_DIALOG_CONTENT_CLASS}>
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2 text-left">
               <Archive className="size-5 shrink-0 text-muted-foreground" aria-hidden />
@@ -954,7 +959,7 @@ export default function CategoriesPage() {
           if (!o) setPurgeTarget(null);
         }}
       >
-        <AlertDialogContent className="rounded-2xl sm:max-w-[450px]">
+        <AlertDialogContent className={ADMIN_ALERT_DIALOG_CONTENT_CLASS}>
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2 text-left text-destructive">
               <Trash2 className="size-5 shrink-0" aria-hidden />
@@ -997,7 +1002,7 @@ export default function CategoriesPage() {
           if (!o) setRestoreTarget(null);
         }}
       >
-        <AlertDialogContent className="rounded-2xl sm:max-w-[450px]">
+        <AlertDialogContent className={ADMIN_ALERT_DIALOG_CONTENT_CLASS}>
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2 text-left">
               <ArchiveRestore className="size-5 shrink-0 text-primary" aria-hidden />
@@ -1032,6 +1037,6 @@ export default function CategoriesPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+    </PageSection>
   );
 }
