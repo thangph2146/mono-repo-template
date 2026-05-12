@@ -67,7 +67,12 @@ import { AdminDataTable } from "@/components/admin-data-table";
 import { AdminTablePaginationFooter } from "@/components/admin-table-pagination-footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@ui/components/card";
 import { PageSection } from "@ui/components/layout";
-import { ADMIN_ALERT_DIALOG_CONTENT_CLASS } from "@ui/lib/layout-shell";
+import {
+  ADMIN_ALERT_DIALOG_CONTENT_CLASS,
+  ADMIN_PAGE_LEDE_CLASS,
+  ADMIN_PAGE_TITLE_ICON_CLASS,
+  ADMIN_PAGE_TITLE_PRIMARY_CLASS,
+} from "@ui/lib/layout-shell";
 import { cn } from "@ui/lib/utils";
 
 type FilterKey =
@@ -707,11 +712,11 @@ export default function AdminOrdersPage() {
     <PageSection max="full" className="min-w-0 space-y-8">
       <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
         <div>
-          <h1 className="flex items-center gap-3 text-4xl font-extrabold tracking-tight text-foreground">
-            <ShoppingBag className="size-9 shrink-0 text-primary" aria-hidden />
+          <h1 className={ADMIN_PAGE_TITLE_PRIMARY_CLASS}>
+            <ShoppingBag className={ADMIN_PAGE_TITLE_ICON_CLASS} aria-hidden />
             Quản lý Đơn hàng (COD)
           </h1>
-          <p className="mt-1 text-lg font-medium text-on-surface-variant">
+          <p className={ADMIN_PAGE_LEDE_CLASS}>
             Chỉ định shipper ở cột tương ứng (user phải có role{" "}
             <span className="font-mono text-foreground">shipper</span> trong RBAC).
             Luồng: kho xác nhận → giao hàng &amp; thu COD → hoàn tất.
@@ -773,7 +778,7 @@ export default function AdminOrdersPage() {
 
         <TabsContent value="list" className="mt-0 space-y-6">
           <Card className="border-outline-variant px-4 py-3">
-            <p className="flex items-start gap-2 text-sm text-on-surface-variant">
+            <p className="flex items-start gap-2 text-sm text-muted-foreground">
               <Info className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
               <span>
                 Bảng: cây{" "}
@@ -914,7 +919,7 @@ export default function AdminOrdersPage() {
               </div>
             ) : (
               <>
-                <p className="flex items-start gap-2 text-sm text-on-surface-variant">
+                <p className="flex items-start gap-2 text-sm text-muted-foreground">
                   <Info className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
                   <span>
                     Đơn lưu trữ không hiển thị cho khách và không xuất hiện trong danh
@@ -974,7 +979,7 @@ export default function AdminOrdersPage() {
         <Info className="mt-0.5 size-6 shrink-0 text-primary" aria-hidden />
         <div className="space-y-1">
           <p className="text-lg font-bold text-foreground">Quy trình COD áp dụng:</p>
-          <p className="text-on-surface-variant leading-relaxed text-sm">
+          <p className="text-muted-foreground leading-relaxed text-sm">
             <span className="font-semibold">
               Chờ xử lý → Đã chốt kho → Đang giao → Đã giao &amp; thu tiền
             </span>

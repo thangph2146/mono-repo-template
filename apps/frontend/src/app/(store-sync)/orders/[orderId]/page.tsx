@@ -86,7 +86,7 @@ export default function OrderDetailPage() {
             {error && (
               <div className="text-center py-12 bg-destructive/5 border border-destructive/20 rounded-2xl">
                 <p className="text-lg font-bold text-destructive">Không tải được đơn hàng</p>
-                <p className="text-sm text-on-surface-variant mt-1">{error.message}</p>
+                <p className="text-sm text-muted-foreground mt-1">{error.message}</p>
               </div>
             )}
 

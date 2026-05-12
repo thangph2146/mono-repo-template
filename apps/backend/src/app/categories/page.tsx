@@ -74,6 +74,9 @@ import { cn } from "@ui/lib/utils";
 import {
   ADMIN_ALERT_DIALOG_CONTENT_CLASS,
   ADMIN_DIALOG_CONTENT_CATEGORY_CLASS,
+  ADMIN_PAGE_SUBTITLE_CLASS,
+  ADMIN_PAGE_TITLE_ICON_CLASS,
+  ADMIN_PAGE_TITLE_PRIMARY_CLASS,
 } from "@ui/lib/layout-shell";
 
 interface FormState {
@@ -548,11 +551,11 @@ export default function CategoriesPage() {
     <PageSection max="full" className="min-w-0 space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="flex items-center gap-3 text-4xl font-extrabold text-foreground">
-            <Tags className="size-9 shrink-0 text-primary" aria-hidden />
+          <h1 className={ADMIN_PAGE_TITLE_PRIMARY_CLASS}>
+            <Tags className={ADMIN_PAGE_TITLE_ICON_CLASS} aria-hidden />
             Loại sản phẩm
           </h1>
-          <p className="mt-1 font-medium text-on-surface-variant">
+          <p className={ADMIN_PAGE_SUBTITLE_CLASS}>
             Quản lý danh mục dùng chung cho cả storefront và quản trị viên
           </p>
           {user && !canWriteCategories && (
@@ -689,7 +692,7 @@ export default function CategoriesPage() {
                 <div className="flex items-center justify-between rounded-xl border border-outline-variant px-4 py-3 sm:col-span-2">
                   <div>
                     <p className="text-sm font-semibold">Đang hoạt động</p>
-                    <p className="text-xs text-on-surface-variant">
+                    <p className="text-xs text-muted-foreground">
                       Khi tắt, danh mục sẽ ẩn khỏi storefront nhưng giữ lại
                       tham chiếu sản phẩm.
                     </p>
@@ -763,7 +766,7 @@ export default function CategoriesPage() {
           <div className="rounded-2xl border border-outline-variant bg-surface-container-low p-4 shadow-sm">
             <p className="flex items-start gap-2 text-sm text-muted-foreground">
               <Info className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
-              <span className="text-on-surface-variant">
+              <span className="text-muted-foreground">
                 Tìm nhanh và lọc cột gọi API phân trang (chọn số dòng/trang ở cuối bảng).
                 Cột «Số SP» lấy từ thống kê toàn hệ thống.
                 {canWriteCategories ? (
@@ -856,7 +859,7 @@ export default function CategoriesPage() {
               </div>
             ) : (
               <>
-                <p className="flex items-start gap-2 text-sm text-on-surface-variant">
+                <p className="flex items-start gap-2 text-sm text-muted-foreground">
                   <Info className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
                   <span>
                     Danh mục trong thùng rác không hiển thị trên storefront.

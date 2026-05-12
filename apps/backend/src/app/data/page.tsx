@@ -20,6 +20,7 @@ import {
   CardTitle,
 } from "@ui/components/card";
 import { PageSection } from "@ui/components/layout";
+import { ADMIN_PAGE_TITLE_DOCUMENT_CLASS } from "@ui/lib/layout-shell";
 import {
   Collapsible,
   CollapsibleContent,
@@ -225,7 +226,7 @@ export default function DataBackupPage() {
           </div>
           <div className="min-w-0 flex-1 space-y-2">
             <div className="flex flex-wrap items-center gap-2">
-              <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+              <h1 className={ADMIN_PAGE_TITLE_DOCUMENT_CLASS}>
                 Sao lưu &amp; phục hồi dữ liệu
               </h1>
               <Badge variant="secondary" className="font-normal">

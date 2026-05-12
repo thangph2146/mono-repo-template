@@ -3,6 +3,7 @@ import { Roboto, Roboto_Mono } from "next/font/google";
 import "@ui/globals.css";
 import { Toaster } from "sonner";
 import NextTopLoader from "nextjs-toploader";
+import { ThemeProvider } from "@ui/components/theme-provider";
 import { TextSizeProvider } from "@ui/components/text-size-provider";
 import { QueryProvider } from "@/providers/query-provider";
 import { AuthProvider } from "@/providers/auth-provider";
@@ -36,6 +37,7 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${roboto.variable} ${robotoMono.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col font-sans bg-background text-foreground" suppressHydrationWarning>
         <NextTopLoader
@@ -43,14 +45,16 @@ export default function RootLayout({
           showSpinner={false}
           shadow="0 0 10px var(--primary),0 0 5px var(--primary)"
         />
-        <TextSizeProvider>
-          <QueryProvider>
-            <AuthProvider>
-              <AdminShell>{children}</AdminShell>
-            </AuthProvider>
-            <Toaster position="top-right" richColors />
-          </QueryProvider>
-        </TextSizeProvider>
+        <ThemeProvider>
+          <TextSizeProvider>
+            <QueryProvider>
+              <AuthProvider>
+                <AdminShell>{children}</AdminShell>
+              </AuthProvider>
+              <Toaster position="top-right" richColors />
+            </QueryProvider>
+          </TextSizeProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

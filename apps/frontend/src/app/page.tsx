@@ -465,7 +465,7 @@ export default function Home() {
               className="group flex items-center gap-3 px-8 py-4 rounded-full bg-surface border border-outline-variant hover:border-primary/50 transition-all shadow-sm"
             >
               <Network className="size-6 text-primary group-hover:rotate-90 transition-transform duration-500" />
-              <Text as="span" variant="body" className="font-bold text-on-surface-variant group-hover:text-primary">
+              <Text as="span" variant="body" className="font-bold text-muted-foreground group-hover:text-primary">
                 Technical Insight: View Architecture Graphify
               </Text>
               <ArrowRight className="size-5 text-outline" />

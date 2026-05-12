@@ -65,7 +65,7 @@ export default function CartPage() {
             <div className="bg-surface border border-dashed border-outline-variant rounded-3xl p-16 text-center space-y-4">
               <Package2 className="size-20 mx-auto text-outline-variant opacity-30" />
               <h2 className="text-2xl font-bold">Giỏ hàng đang trống</h2>
-              <p className="text-on-surface-variant">
+              <p className="text-muted-foreground">
                 Hãy chọn sản phẩm từ danh mục để bắt đầu mua sắm.
               </p>
               <Button

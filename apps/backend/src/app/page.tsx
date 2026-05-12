@@ -20,7 +20,12 @@ import {
   ShieldOff,
 } from "lucide-react";
 import { cn } from "@ui/lib/utils";
-import { ADMIN_DASHBOARD_EMPTY_INNER_CLASS } from "@ui/lib/layout-shell";
+import {
+  ADMIN_DASHBOARD_EMPTY_INNER_CLASS,
+  ADMIN_PAGE_LEDE_CLASS,
+  ADMIN_PAGE_TITLE_ICON_CLASS,
+  ADMIN_PAGE_TITLE_PRIMARY_CLASS,
+} from "@ui/lib/layout-shell";
 import { useOrders, useProducts } from "@/hooks/queries";
 import { formatVND } from "@/lib/format";
 import { useAuth } from "@/providers/auth-provider";
@@ -79,11 +84,11 @@ export default function AdminDashboardPage() {
     <PageSection max="full" className="min-w-0 space-y-8">
       <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
         <div>
-          <h1 className="flex items-center gap-3 text-4xl font-extrabold tracking-tight text-foreground">
-            <LayoutDashboard className="size-9 shrink-0 text-primary" aria-hidden />
+          <h1 className={ADMIN_PAGE_TITLE_PRIMARY_CLASS}>
+            <LayoutDashboard className={ADMIN_PAGE_TITLE_ICON_CLASS} aria-hidden />
             Tổng quan vận hành
           </h1>
-          <p className="mt-1 text-lg font-medium text-on-surface-variant">
+          <p className={ADMIN_PAGE_LEDE_CLASS}>
             Theo dõi nhanh tồn kho và đơn hàng theo thời gian thực
           </p>
         </div>
@@ -107,7 +112,7 @@ export default function AdminDashboardPage() {
         <div className="rounded-2xl border border-outline-variant bg-surface-container-low p-4 shadow-sm">
           <p className="flex items-start gap-2 text-sm text-muted-foreground">
             <Info className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
-            <span className="text-on-surface-variant">
+            <span className="text-muted-foreground">
               Số liệu trên trang này lấy từ danh sách sản phẩm và đơn hàng (theo quyền của
               bạn). Dùng nút <span className="font-semibold text-foreground">Làm mới</span>{" "}
               để đồng bộ nhanh với API.
@@ -218,7 +223,7 @@ export default function AdminDashboardPage() {
               </CardHeader>
               <CardContent>
                 {orders.length === 0 ? (
-                  <p className="flex items-center justify-center gap-2 py-6 text-sm text-on-surface-variant">
+                  <p className="flex items-center justify-center gap-2 py-6 text-sm text-muted-foreground">
                     <ShoppingBag className="size-4 opacity-60" aria-hidden />
                     Chưa có đơn hàng nào
                   </p>
@@ -236,7 +241,7 @@ export default function AdminDashboardPage() {
                           />
                           <div className="min-w-0">
                             <p className="font-bold text-primary">{order.orderNumber}</p>
-                            <p className="truncate text-xs text-on-surface-variant">
+                            <p className="truncate text-xs text-muted-foreground">
                               {order.customerName} · {order.items.length} mặt hàng
                             </p>
                           </div>
@@ -278,7 +283,7 @@ function StatCard({
           : "border-outline-variant bg-surface";
   return (
     <div className={`rounded-2xl border p-5 ${toneClass}`}>
-      <div className="flex items-center gap-2 mb-2">{icon}<span className="text-sm font-semibold text-on-surface-variant">{label}</span></div>
+      <div className="flex items-center gap-2 mb-2">{icon}<span className="text-sm font-semibold text-muted-foreground">{label}</span></div>
       <p className="text-3xl font-black text-foreground">{value}</p>
     </div>
   );
@@ -301,7 +306,7 @@ function Row({
         : "text-foreground";
   return (
     <div className="flex items-center justify-between text-sm">
-      <span className="text-on-surface-variant">{label}</span>
+      <span className="text-muted-foreground">{label}</span>
       <span className={`font-black ${accentClass}`}>{value}</span>
     </div>
   );

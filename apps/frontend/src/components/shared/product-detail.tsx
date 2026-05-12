@@ -236,7 +236,7 @@ export function ProductDetail({
 
           {units.length > 1 && (
             <div className="space-y-2">
-              <p className="text-xs font-bold text-on-surface-variant uppercase tracking-wide">
+              <p className="text-xs font-bold text-muted-foreground uppercase tracking-wide">
                 Chọn loại đơn vị:
               </p>
               <div className="flex flex-wrap gap-2">
@@ -258,7 +258,7 @@ export function ProductDetail({
                           ? isSi
                             ? "bg-primary text-primary-foreground border-primary shadow-md"
                             : "bg-secondary text-secondary-foreground border-secondary shadow-md"
-                          : "bg-background border-outline-variant text-on-surface-variant hover:bg-muted"
+                          : "bg-background border-outline-variant text-muted-foreground hover:bg-muted"
                       }`}
                     >
                       <span>{u.label}</span>
@@ -316,7 +316,7 @@ export function ProductDetail({
               </p>
             )}
             {isWholesale && minPromoQty > 1 && (
-              <p className="text-sm text-on-surface-variant font-medium">
+              <p className="text-sm text-muted-foreground font-medium">
                 Từ{" "}
                 <span className="font-black text-primary">
                   {minPromoQty} {selectedUnit.type}
@@ -412,7 +412,7 @@ export function ProductDetail({
             )}
             {totalPrice > 0 && (
               <div className="pt-2 border-t border-outline-variant/30 flex items-center justify-between">
-                <p className="text-sm text-on-surface-variant font-medium">
+                <p className="text-sm text-muted-foreground font-medium">
                   Tổng cộng ({qty} {selectedUnit.type}
                   {selectedUnit.qtyPerUnit > 1
                     ? ` × ${selectedUnit.qtyPerUnit} ${product.unit}`
@@ -425,7 +425,7 @@ export function ProductDetail({
           </div>
 
           <div className="space-y-2">
-            <p className="text-xs font-bold text-on-surface-variant uppercase tracking-wide">
+            <p className="text-xs font-bold text-muted-foreground uppercase tracking-wide">
               Số lượng đặt:
             </p>
             <div className="flex items-center gap-4">
@@ -441,7 +441,7 @@ export function ProductDetail({
                 </Button>
                 <div className="w-16 text-center">
                   <p className="text-xl font-black text-foreground">{qty}</p>
-                  <p className="text-[10px] text-on-surface-variant leading-none">
+                  <p className="text-[10px] text-muted-foreground leading-none">
                     {selectedUnit.type}
                   </p>
                 </div>
@@ -455,7 +455,7 @@ export function ProductDetail({
                   <Plus className="w-4 h-4" />
                 </Button>
               </div>
-              <div className="text-sm text-on-surface-variant space-y-0.5">
+              <div className="text-sm text-muted-foreground space-y-0.5">
                 <p>
                   ={" "}
                   <span className="font-bold text-foreground">

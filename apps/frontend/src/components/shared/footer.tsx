@@ -21,19 +21,19 @@ export function Footer() {
 
           {/* Links */}
           <div className="flex flex-wrap justify-center gap-4">
-            <Link href="/terms" className="flex items-center gap-1.5 text-on-surface-variant hover:text-primary transition-colors">
+            <Link href="/terms" className="flex items-center gap-1.5 text-muted-foreground hover:text-primary transition-colors">
               <ShieldCheck className="size-4" />
               <Text variant="small">Terms of Service</Text>
             </Link>
-            <Link href="/privacy" className="flex items-center gap-1.5 text-on-surface-variant hover:text-primary transition-colors">
+            <Link href="/privacy" className="flex items-center gap-1.5 text-muted-foreground hover:text-primary transition-colors">
               <ShieldCheck className="size-4" />
               <Text variant="small">Privacy Policy</Text>
             </Link>
-            <Link href="/support" className="flex items-center gap-1.5 text-on-surface-variant hover:text-primary transition-colors">
+            <Link href="/support" className="flex items-center gap-1.5 text-muted-foreground hover:text-primary transition-colors">
               <LifeBuoy className="size-4" />
               <Text variant="small">Vendor Support</Text>
             </Link>
-            <Link href="/help" className="flex items-center gap-1.5 text-on-surface-variant hover:text-primary transition-colors">
+            <Link href="/help" className="flex items-center gap-1.5 text-muted-foreground hover:text-primary transition-colors">
               <HelpCircle className="size-4" />
               <Text variant="small">Help Center</Text>
             </Link>

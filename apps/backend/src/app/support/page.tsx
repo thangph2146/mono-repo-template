@@ -10,7 +10,7 @@ import {
   Save,
 } from "lucide-react";
 import { toast } from "sonner";
-import { buttonVariants } from "@ui/components/button";
+import { Button, buttonVariants } from "@ui/components/button";
 import {
   DEALER_SUPPORT_META_DESCRIPTION,
   DEALER_SUPPORT_TITLE,
@@ -25,7 +25,13 @@ import {
 } from "@/hooks/queries";
 import { cn } from "@ui/lib/utils";
 import { PageSection } from "@ui/components/layout";
-import { ADMIN_PAGE_SUBTITLE_CLASS } from "@ui/lib/layout-shell";
+import {
+  ADMIN_PAGE_SUBTITLE_CLASS,
+  ADMIN_PAGE_TITLE_COMPACT_CLASS,
+  ADMIN_PAGE_TITLE_ICON_MD_CLASS,
+  ADMIN_PAGE_TITLE_ICON_CLASS,
+  ADMIN_PAGE_TITLE_PRIMARY_CLASS,
+} from "@ui/lib/layout-shell";
 import {
   DEALER_SUPPORT_ADMIN_FORM_ID,
   DealerSupportEditor,
@@ -57,8 +63,8 @@ export default function AdminDealerSupportPage() {
   if (!canView) {
     return (
       <PageSection max="full" className="min-w-0 space-y-6">
-        <h1 className="flex items-center gap-3 text-3xl font-extrabold tracking-tight text-foreground">
-          <Headphones className="size-8 shrink-0 text-primary" aria-hidden />
+        <h1 className={ADMIN_PAGE_TITLE_COMPACT_CLASS}>
+          <Headphones className={ADMIN_PAGE_TITLE_ICON_MD_CLASS} aria-hidden />
           {DEALER_SUPPORT_TITLE}
         </h1>
         <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-4 text-destructive">
@@ -102,8 +108,8 @@ export default function AdminDealerSupportPage() {
     <PageSection max="full" className="min-w-0 space-y-8">
       <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
         <div>
-          <h1 className="flex items-center gap-3 text-4xl font-extrabold tracking-tight text-foreground">
-            <Headphones className="size-9 shrink-0 text-primary" aria-hidden />
+          <h1 className={ADMIN_PAGE_TITLE_PRIMARY_CLASS}>
+            <Headphones className={ADMIN_PAGE_TITLE_ICON_CLASS} aria-hidden />
             {headerTitle}
           </h1>
           <p className={ADMIN_PAGE_SUBTITLE_CLASS}>{headerSubtitle}</p>
@@ -117,11 +123,11 @@ export default function AdminDealerSupportPage() {
         <div className="flex flex-wrap gap-2">
           {canEdit && merged ? (
             <>
-              <button
+              <Button
                 type="submit"
                 form={DEALER_SUPPORT_ADMIN_FORM_ID}
                 disabled={saveMut.isPending}
-                className={cn(buttonVariants(), "h-12 gap-2 rounded-xl px-5 font-semibold")}
+                className="h-12 gap-2 rounded-xl px-5 font-semibold"
               >
                 {saveMut.isPending ? (
                   <Loader2 className="size-4 animate-spin" aria-hidden />
@@ -129,15 +135,13 @@ export default function AdminDealerSupportPage() {
                   <Save className="size-4 shrink-0" aria-hidden />
                 )}
                 Lưu
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
+                variant="outline"
                 disabled={resetMut.isPending}
                 onClick={() => void onReset()}
-                className={cn(
-                  buttonVariants({ variant: "outline" }),
-                  "h-12 gap-2 rounded-xl px-5 font-semibold",
-                )}
+                className="h-12 gap-2 rounded-xl px-5 font-semibold"
               >
                 {resetMut.isPending ? (
                   <Loader2 className="size-4 animate-spin" aria-hidden />
@@ -145,7 +149,7 @@ export default function AdminDealerSupportPage() {
                   <RotateCcw className="size-4 shrink-0" aria-hidden />
                 )}
                 Mặc định gói
-              </button>
+              </Button>
             </>
           ) : null}
           <a
@@ -166,7 +170,7 @@ export default function AdminDealerSupportPage() {
       <div className="rounded-2xl border border-outline-variant bg-surface-container-low p-4 shadow-sm">
         <p className="flex items-start gap-2 text-sm text-muted-foreground">
           <Info className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
-          <span className="text-on-surface-variant">
+          <span className="text-muted-foreground">
             Trang khách:{" "}
             <span className="font-mono text-foreground">{storefrontSupportUrl}</span>.
             {!canEdit ? (

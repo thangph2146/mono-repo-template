@@ -13,6 +13,7 @@ import {
 } from "@ui/components/sheet";
 import { MobileSidebarPanel, Sidebar } from "@/components/sidebar";
 import { TextSizeToggle } from "@ui/components/text-size-toggle";
+import { ThemeToggle } from "@ui/components/theme-toggle";
 import { Page, PageContent } from "@ui/components/layout";
 import { canAccessStaffAdmin, canUserAccess, PERMISSION_CODES } from "@workspace/api-client";
 import { useAuth, useClientReady } from "@/providers/auth-provider";
@@ -116,7 +117,14 @@ export function AdminShell({ children }: { children: ReactNode }) {
     if (user && canAccessStaffAdmin(user)) {
       return <AuthLoadingScreen message="Đang chuyển về bảng điều khiển…" />;
     }
-    return <>{children}</>;
+    return (
+      <>
+        <div className="fixed right-4 top-4 z-50 rounded-xl border border-border bg-background/90 p-0.5 shadow-sm backdrop-blur-sm">
+          <ThemeToggle />
+        </div>
+        {children}
+      </>
+    );
   }
 
   if (!clientReady || !user) {
@@ -182,6 +190,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
           </div>
           <div className="flex-1" />
           <div className="flex items-center gap-2 sm:gap-4">
+            <ThemeToggle />
             <TextSizeToggle />
             <AdminNotificationBell />
             <Link

@@ -289,7 +289,7 @@ function CatalogPageInner() {
                 <h1 className="text-3xl sm:text-4xl font-extrabold text-foreground mb-2 tracking-tight">
                   Danh mục sản phẩm
                 </h1>
-                <p className="text-base sm:text-lg text-on-surface-variant font-medium">
+                <p className="text-base sm:text-lg text-muted-foreground font-medium">
                   Dữ liệu lọc theo trang từ API (đang bán, tìm kiếm, danh mục, đơn
                   vị, giá ban đầu/KM). URL lưu bộ lọc để chia sẻ.
                 </p>
@@ -341,7 +341,7 @@ function CatalogPageInner() {
                     onClick={() => setCategoryTab(tab.key)}
                     className={`flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl font-bold text-sm whitespace-nowrap border transition-all shrink-0 ${active
                         ? "bg-primary text-primary-foreground border-primary shadow-md"
-                        : "bg-background border-outline-variant text-on-surface-variant hover:bg-muted"
+                        : "bg-background border-outline-variant text-muted-foreground hover:bg-muted"
                       }`}
                   >
                     <Icon className="w-4 h-4 shrink-0" aria-hidden />
@@ -373,7 +373,7 @@ function CatalogPageInner() {
                       onClick={() => setPurchaseType(opt.key)}
                       className={`rounded-lg text-sm font-semibold border transition-all ${purchaseType === opt.key
                           ? "bg-primary/10 text-primary border-primary/40"
-                          : "bg-background border-outline-variant text-on-surface-variant hover:bg-muted"
+                          : "bg-background border-outline-variant text-muted-foreground hover:bg-muted"
                         }`}
                     >
                       {opt.label}
@@ -390,7 +390,7 @@ function CatalogPageInner() {
                       onClick={() => setUnitFilter(opt.key)}
                       className={`rounded-lg text-xs font-semibold border transition-all ${unitFilter === opt.key
                           ? "bg-secondary/15 text-secondary-foreground border-secondary/40"
-                          : "bg-background border-outline-variant text-on-surface-variant hover:bg-muted"
+                          : "bg-background border-outline-variant text-muted-foreground hover:bg-muted"
                         }`}
                     >
                       {opt.label}
@@ -406,17 +406,19 @@ function CatalogPageInner() {
                   Đang lọc:
                 </span>
                 {activeChips.map((c) => (
-                  <button
+                  <Button
                     key={c.key}
                     type="button"
+                    variant="ghost"
+                    size="sm"
                     onClick={c.onRemove}
-                    className="inline-flex items-center gap-1 rounded-full border border-primary/25 bg-primary/5 pl-2.5 pr-1 py-0.5 text-xs font-medium text-foreground hover:bg-primary/10 transition-colors"
+                    className="h-auto gap-1 rounded-full border border-primary/25 bg-primary/5 px-2.5 py-0.5 text-xs font-medium text-foreground hover:bg-primary/10"
                   >
                     {c.label}
                     <span className="flex h-5 w-5 items-center justify-center rounded-full hover:bg-primary/15">
                       <X className="h-3 w-3" aria-hidden />
                     </span>
-                  </button>
+                  </Button>
                 ))}
                 <Button
                   type="button"
@@ -432,7 +434,7 @@ function CatalogPageInner() {
             )}
 
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-              <p className="text-sm text-on-surface-variant font-medium">
+              <p className="text-sm text-muted-foreground font-medium">
                 Trang{" "}
                 <span className="font-bold text-foreground tabular-nums">
                   {page}
@@ -463,7 +465,7 @@ function CatalogPageInner() {
             {error && (
               <div className="text-center py-12 bg-destructive/5 border border-destructive/20 rounded-2xl">
                 <p className="text-lg font-bold text-destructive">Không tải được dữ liệu sản phẩm</p>
-                <p className="text-sm text-on-surface-variant mt-1">{error.message}</p>
+                <p className="text-sm text-muted-foreground mt-1">{error.message}</p>
               </div>
             )}
 
@@ -656,12 +658,12 @@ function ProductCardWithUnitSelector({
             {p.name}
           </h3>
         </Link>
-        <p className="text-xs text-on-surface-variant font-medium">
+        <p className="text-xs text-muted-foreground font-medium">
           {[p.brand, p.origin].filter(Boolean).join(" · ")}
         </p>
 
         <div className="space-y-2">
-          <p className="text-xs font-bold text-on-surface-variant uppercase tracking-wide">
+          <p className="text-xs font-bold text-muted-foreground uppercase tracking-wide">
             Chọn loại hàng:
           </p>
           <div className="flex flex-wrap gap-1.5">
@@ -676,7 +678,7 @@ function ProductCardWithUnitSelector({
                       ? isSi
                         ? "bg-primary text-primary-foreground border-primary"
                         : "bg-secondary text-secondary-foreground border-secondary"
-                      : "bg-muted/50 text-on-surface-variant border-outline-variant hover:bg-muted"
+                      : "bg-muted/50 text-muted-foreground border-outline-variant hover:bg-muted"
                     }`}
                 >
                   {u.label}
@@ -700,7 +702,7 @@ function ProductCardWithUnitSelector({
               <p className="text-2xl font-black text-primary">{formatVND(displayPrice)}</p>
             </div>
             {isWholesale && selectedUnit.minWholesaleQty > 0 && (
-              <p className="text-xs text-on-surface-variant">
+              <p className="text-xs text-muted-foreground">
                 Giá KM khi đặt ≥ {selectedUnit.minWholesaleQty} {selectedUnit.type}
                 {qtyInCart > 0 && (
                   <span className="block text-[10px] mt-0.5 text-muted-foreground">
@@ -723,7 +725,7 @@ function ProductCardWithUnitSelector({
               </p>
             )}
             {!isWholesale && (
-              <p className="text-xs text-on-surface-variant">
+              <p className="text-xs text-muted-foreground">
                 Giá ban đầu / {selectedUnit.type}
               </p>
             )}
@@ -744,7 +746,7 @@ function ProductCardWithUnitSelector({
                 Giá ban đầu
               </Badge>
             )}
-            <p className="text-[10px] text-on-surface-variant mt-1 font-medium">
+            <p className="text-[10px] text-muted-foreground mt-1 font-medium">
               Tồn: {maxQty} {selectedUnit.type}
             </p>
           </div>

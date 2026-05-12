@@ -115,6 +115,10 @@ import {
   ADMIN_DIALOG_CONTENT_MD_CLASS,
   ADMIN_PAGE_FORM_COLUMN_CLASS,
   ADMIN_PAGE_SUBTITLE_CLASS,
+  ADMIN_PAGE_TITLE_FORM_CLASS,
+  ADMIN_PAGE_TITLE_ICON_CLASS,
+  ADMIN_PAGE_TITLE_ICON_SM_CLASS,
+  ADMIN_PAGE_TITLE_PRIMARY_CLASS,
 } from "@ui/lib/layout-shell";
 
 function roleHasPermission(role: RbacRole, permCode: string): boolean {
@@ -662,8 +666,8 @@ export default function StaffAndRbacPage() {
   if (!canManageUsers && !canReadRbac) {
     return (
       <div className={ADMIN_PAGE_FORM_COLUMN_CLASS}>
-        <h1 className="flex items-center gap-2 text-2xl font-bold tracking-tight">
-          <Users className="size-7 shrink-0 text-primary" aria-hidden />
+        <h1 className={ADMIN_PAGE_TITLE_FORM_CLASS}>
+          <Users className={ADMIN_PAGE_TITLE_ICON_SM_CLASS} aria-hidden />
           Nhân sự & phân quyền
         </h1>
         <Card className="border-destructive/30 bg-destructive/5">
@@ -843,7 +847,7 @@ export default function StaffAndRbacPage() {
         </div>
 
         <TabsContent value="list" className="mt-0 space-y-4">
-          <p className="flex gap-2 text-sm text-on-surface-variant">
+          <p className="flex gap-2 text-sm text-muted-foreground">
             <Info
               className="size-4 shrink-0 text-primary/80 mt-0.5"
               aria-hidden
@@ -862,7 +866,7 @@ export default function StaffAndRbacPage() {
               <p className="text-lg font-bold text-destructive">
                 Không tải được danh sách nhân sự
               </p>
-              <p className="mt-1 text-sm text-on-surface-variant">
+              <p className="mt-1 text-sm text-muted-foreground">
                 {usersQuery.error instanceof Error
                   ? usersQuery.error.message
                   : "Lỗi không xác định"}
@@ -956,7 +960,7 @@ export default function StaffAndRbacPage() {
               <p className="text-lg font-bold text-destructive">
                 Không tải được thùng rác
               </p>
-              <p className="mt-1 text-sm text-on-surface-variant">
+              <p className="mt-1 text-sm text-muted-foreground">
                 {trashedStaffQuery.error instanceof Error
                   ? trashedStaffQuery.error.message
                   : "Lỗi tải thùng rác"}
@@ -964,7 +968,7 @@ export default function StaffAndRbacPage() {
             </div>
           ) : (
             <>
-              <p className="flex gap-2 text-sm text-on-surface-variant">
+              <p className="flex gap-2 text-sm text-muted-foreground">
                 <ArchiveRestore
                   className="size-4 shrink-0 text-primary/80 mt-0.5"
                   aria-hidden
@@ -1060,8 +1064,8 @@ export default function StaffAndRbacPage() {
   return (
     <PageSection max="full" className="mx-auto min-w-0 space-y-6">
       <div>
-        <h1 className="flex items-center gap-3 text-4xl font-extrabold tracking-tight text-foreground">
-          <Users className="size-9 shrink-0 text-primary" aria-hidden />
+        <h1 className={ADMIN_PAGE_TITLE_PRIMARY_CLASS}>
+          <Users className={ADMIN_PAGE_TITLE_ICON_CLASS} aria-hidden />
           Nhân sự & phân quyền
         </h1>
         <p className={cn(ADMIN_PAGE_SUBTITLE_CLASS, "sm:text-base")}>

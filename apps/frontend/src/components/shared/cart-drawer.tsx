@@ -11,8 +11,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@ui/components/sheet";
-import { Button, buttonVariants } from "@ui/components/button";
-import { cn } from "@ui/lib/utils";
+import { Button } from "@ui/components/button";
 import { Badge } from "@ui/components/badge";
 import {
   Minus,
@@ -43,12 +42,11 @@ export function CartDrawer() {
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger
         render={
-          <button
+          <Button
             type="button"
-            className={cn(
-              buttonVariants({ variant: "ghost", size: "icon" }),
-              "relative text-on-surface-variant hover:text-primary",
-            )}
+            variant="ghost"
+            size="icon"
+            className="relative text-muted-foreground hover:text-primary"
           />
         }
       >
@@ -92,7 +90,7 @@ export function CartDrawer() {
           {isEmpty && (
             <div className="text-center py-16 space-y-3">
               <Package2 className="size-16 mx-auto text-outline-variant opacity-30" />
-              <p className="text-base font-bold text-on-surface-variant">
+              <p className="text-base font-bold text-muted-foreground">
                 Giỏ hàng trống
               </p>
               <p className="text-sm text-muted-foreground">
@@ -139,7 +137,7 @@ export function CartDrawer() {
                     {line.name}
                   </p>
                   <div className="flex items-center gap-1.5 mt-1">
-                    <Badge className="text-[10px] px-1.5 py-0 bg-muted text-on-surface-variant border-outline-variant/40 font-semibold">
+                    <Badge className="text-[10px] px-1.5 py-0 bg-muted text-muted-foreground border-outline-variant/40 font-semibold">
                       {line.unitLabel}
                     </Badge>
                     {line.isWholesale && (
@@ -204,7 +202,7 @@ export function CartDrawer() {
         {!isEmpty && (
           <SheetFooter className="border-t border-outline-variant px-6 py-5 space-y-3 flex-col sm:flex-col">
             <div className="space-y-1.5 text-sm">
-              <div className="flex justify-between text-on-surface-variant">
+              <div className="flex justify-between text-muted-foreground">
                 <span>Tạm tính</span>
                 <span className="font-semibold tabular-nums text-foreground">
                   {formatVND(subtotal)}
@@ -219,7 +217,7 @@ export function CartDrawer() {
                 </div>
               )}
               <div className="flex justify-between text-base font-semibold border-t border-outline-variant/60 pt-2">
-                <span className="text-on-surface-variant">Ước tính thanh toán</span>
+                <span className="text-muted-foreground">Ước tính thanh toán</span>
                 <span className="font-black text-primary text-xl tabular-nums">
                   {formatVND(grandTotal)}
                 </span>

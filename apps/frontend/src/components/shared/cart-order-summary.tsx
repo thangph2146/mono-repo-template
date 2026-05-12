@@ -53,7 +53,7 @@ function PromoField({ className }: { className?: string }) {
     <div className={cn("space-y-2", className)}>
       <Label
         htmlFor="cart-promo-code"
-        className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-on-surface-variant"
+        className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-muted-foreground"
       >
         <TicketPercent className="size-3.5 text-primary" />
         Mã khuyến mãi
@@ -124,7 +124,7 @@ export function CartOrderSummary({ variant = "cart-aside" }: CartOrderSummaryPro
         <h2 className="text-lg font-extrabold tracking-tight text-foreground">
           Tổng đơn hàng
         </h2>
-        <p className="text-xs text-on-surface-variant">
+        <p className="text-xs text-muted-foreground">
           {unitCount} đơn vị trong giỏ — giá theo bảng giá ban đầu / khuyến mãi từng dòng.
         </p>
       </div>
@@ -133,7 +133,7 @@ export function CartOrderSummary({ variant = "cart-aside" }: CartOrderSummaryPro
 
       <dl className="space-y-3 text-sm">
         <div className="flex justify-between gap-4">
-          <dt className="text-on-surface-variant">Tạm tính</dt>
+          <dt className="text-muted-foreground">Tạm tính</dt>
           <dd className="text-right font-bold tabular-nums">{formatVND(subtotal)}</dd>
         </div>
         {promoDiscount > 0 && (
@@ -145,8 +145,8 @@ export function CartOrderSummary({ variant = "cart-aside" }: CartOrderSummaryPro
           </div>
         )}
         <div className="flex justify-between gap-4">
-          <dt className="text-on-surface-variant">Phí vận chuyển</dt>
-          <dd className="text-right text-xs text-on-surface-variant">
+          <dt className="text-muted-foreground">Phí vận chuyển</dt>
+          <dd className="text-right text-xs text-muted-foreground">
             Tính khi xác nhận đơn
           </dd>
         </div>
@@ -169,7 +169,7 @@ export function CartOrderSummary({ variant = "cart-aside" }: CartOrderSummaryPro
             {formatVND(grandTotal)}
           </span>
         </div>
-        <p className="mt-1 text-[11px] leading-relaxed text-on-surface-variant">
+        <p className="mt-1 text-[11px] leading-relaxed text-muted-foreground">
           Thanh toán COD khi nhận hàng. Số tiền cuối khớp với đơn hàng sau khi hệ
           thống xác nhận tồn kho và mã KM.
         </p>

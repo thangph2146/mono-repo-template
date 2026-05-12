@@ -47,14 +47,14 @@ export function CartLineItem({
         <h3 className="line-clamp-2 text-lg font-bold leading-tight">{line.name}</h3>
         <div className="mt-2 flex flex-wrap items-center justify-center gap-2 sm:justify-start sm:gap-3">
           {showListStrike && (
-            <span className="text-sm text-on-surface-variant line-through decoration-muted-foreground/80">
+            <span className="text-sm text-muted-foreground line-through decoration-muted-foreground/80">
               {formatVND(listUnit)}
             </span>
           )}
           <span className="text-xl font-extrabold text-foreground">
             {formatVND(line.unitPrice)}
           </span>
-          <span className="text-sm text-on-surface-variant">
+          <span className="text-sm text-muted-foreground">
             × {line.quantity} {line.unitType}
           </span>
         </div>

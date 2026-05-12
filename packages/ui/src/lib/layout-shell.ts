@@ -109,9 +109,46 @@ export const ADMIN_SHEET_NAV_CLASS =
 export const ADMIN_HEADER_ROLE_LINE_CLASS =
   "mt-1 max-w-[220px] truncate text-xs text-muted-foreground";
 
-/** Tiêu đề phụ trang (subtitle) — giới hạn độ rộng đọc. */
+/** H1 tiêu đề trang module (icon + text), dùng chung admin. */
+export const ADMIN_PAGE_TITLE_PRIMARY_CLASS =
+  "flex items-center gap-3 text-4xl font-extrabold tracking-tight text-foreground";
+
+/** H1 gọn hơn (vd. trang phụ / banner không quyền đọc). */
+export const ADMIN_PAGE_TITLE_COMPACT_CLASS =
+  "flex items-center gap-3 text-3xl font-extrabold tracking-tight text-foreground";
+
+/** H1 trong khối hẹp (vd. từ chối quyền trước khi vào layout đầy đủ). */
+export const ADMIN_PAGE_TITLE_FORM_CLASS =
+  "flex items-center gap-2 text-2xl font-bold tracking-tight text-foreground";
+
+/** H1 trang hồ sơ / cài đặt tài khoản. */
+export const ADMIN_PAGE_TITLE_PROFILE_CLASS =
+  "text-3xl font-bold tracking-tight text-foreground";
+
+/** H1 màn đăng nhập / auth panel. */
+export const ADMIN_PAGE_TITLE_AUTH_CLASS =
+  "text-2xl font-bold tracking-tight text-foreground";
+
+/** H1 kiểu tài liệu (vd. sao lưu dữ liệu). */
+export const ADMIN_PAGE_TITLE_DOCUMENT_CLASS =
+  "text-2xl font-bold tracking-tight text-foreground sm:text-3xl";
+
+/** Icon Lucide cạnh H1 module (size-9). */
+export const ADMIN_PAGE_TITLE_ICON_CLASS = "size-9 shrink-0 text-primary";
+
+/** Icon Lucide cạnh H1 form / compact (size-7). */
+export const ADMIN_PAGE_TITLE_ICON_SM_CLASS = "size-7 shrink-0 text-primary";
+
+/** Icon cạnh H1 compact (text-3xl, vd. không quyền). */
+export const ADMIN_PAGE_TITLE_ICON_MD_CLASS = "size-8 shrink-0 text-primary";
+
+/** Tiêu đề phụ trang (subtitle) — màu phụ chuẩn shadcn, độ rộng đọc. */
 export const ADMIN_PAGE_SUBTITLE_CLASS =
-  "mt-1 max-w-3xl font-medium text-on-surface-variant";
+  "mt-1 max-w-3xl font-medium text-muted-foreground";
+
+/** Đoạn dẫn dưới H1 (cỡ chữ lớn hơn subtitle) — dashboard, đơn hàng. */
+export const ADMIN_PAGE_LEDE_CLASS =
+  "mt-1 max-w-3xl text-lg font-medium text-muted-foreground";
 
 /** Cột form / bảng phụ (vd. staff). */
 export const ADMIN_PAGE_FORM_COLUMN_CLASS = "mx-auto max-w-3xl space-y-4";

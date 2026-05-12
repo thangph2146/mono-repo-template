@@ -73,6 +73,9 @@ import { cn } from "@ui/lib/utils";
 import {
   ADMIN_ALERT_DIALOG_CONTENT_CLASS,
   ADMIN_DIALOG_CONTENT_MD_CLASS,
+  ADMIN_PAGE_SUBTITLE_CLASS,
+  ADMIN_PAGE_TITLE_ICON_CLASS,
+  ADMIN_PAGE_TITLE_PRIMARY_CLASS,
 } from "@ui/lib/layout-shell";
 
 type FormState = {
@@ -565,11 +568,11 @@ export default function PromoCodesAdminPage() {
     <PageSection max="full" className="min-w-0 space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="flex items-center gap-3 text-4xl font-extrabold text-foreground tracking-tight">
-            <TicketPercent className="size-9 shrink-0 text-primary" aria-hidden />
+          <h1 className={ADMIN_PAGE_TITLE_PRIMARY_CLASS}>
+            <TicketPercent className={ADMIN_PAGE_TITLE_ICON_CLASS} aria-hidden />
             Mã khuyến mãi toàn đơn
           </h1>
-          <p className="mt-1 font-medium text-on-surface-variant">
+          <p className={ADMIN_PAGE_SUBTITLE_CLASS}>
             Quản lý mã nhập ở giỏ / thanh toán cửa hàng. Giá KM theo từng sản phẩm
             vẫn do kho cấu hình — khác hoàn toàn với mã ở đây.
           </p>
@@ -778,7 +781,7 @@ export default function PromoCodesAdminPage() {
       <div className="rounded-2xl border border-outline-variant bg-surface-container-low p-4 shadow-sm">
         <p className="flex items-start gap-2 text-sm text-muted-foreground">
           <Info className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
-          <span className="text-on-surface-variant">
+          <span className="text-muted-foreground">
             Tìm nhanh gọi API phân trang; lọc theo cột chỉ áp dụng trên{" "}
             <span className="font-semibold text-foreground">trang hiện tại</span> (chọn số
             mã/trang ở cuối bảng). Xuất CSV / Excel theo dữ liệu đang hiển thị.

@@ -12,6 +12,7 @@ import {
   DEV_DEMO_ACCOUNTS,
   isDevDemoLoginEnabled,
 } from "@/lib/dev-demo-accounts";
+import { ADMIN_PAGE_TITLE_AUTH_CLASS } from "@ui/lib/layout-shell";
 import { ADMIN_LOGIN_PANEL_CLASS } from "@/lib/admin-ui";
 
 export default function AdminLoginPage() {
@@ -70,7 +71,7 @@ export default function AdminLoginPage() {
           <div className="bg-primary/10 p-3 rounded-xl">
             <ShieldCheck className="size-10 text-primary" />
           </div>
-          <h1 className="text-2xl font-bold text-foreground">B2B Admin</h1>
+          <h1 className={ADMIN_PAGE_TITLE_AUTH_CLASS}>B2B Admin</h1>
           <p className="text-sm text-muted-foreground text-center">
             Chỉ tài khoản nội bộ (quản trị, kho, kinh doanh…). Khách / đại lý vui
             lòng dùng trang cửa hàng.

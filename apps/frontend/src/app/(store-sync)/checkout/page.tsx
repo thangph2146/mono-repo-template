@@ -150,7 +150,7 @@ export default function CheckoutPage() {
                     {isEmpty ? (
                       <div className="text-center py-20 space-y-4">
                         <Package2 className="w-20 h-20 mx-auto text-outline-variant opacity-30" />
-                        <p className="text-2xl font-bold text-on-surface-variant">
+                        <p className="text-2xl font-bold text-muted-foreground">
                           Giỏ hàng trống
                         </p>
                         <p className="text-muted-foreground">
@@ -251,7 +251,7 @@ export default function CheckoutPage() {
                     <CheckoutPromoField />
 
                     <div className="flex justify-between text-lg">
-                      <span className="text-on-surface-variant font-medium">
+                      <span className="text-muted-foreground font-medium">
                         Tạm tính ({cart.unitCount} đơn vị)
                       </span>
                       <span className="font-bold text-foreground">
@@ -279,7 +279,7 @@ export default function CheckoutPage() {
                     )}
 
                     <div className="flex justify-between text-lg items-center">
-                      <span className="text-on-surface-variant flex items-center gap-2 font-medium">
+                      <span className="text-muted-foreground flex items-center gap-2 font-medium">
                         <Truck className="w-5 h-5 text-primary" /> Phí vận chuyển
                       </span>
                       <span className="font-bold text-success uppercase tracking-wider text-sm">
@@ -289,7 +289,7 @@ export default function CheckoutPage() {
 
                     <div className="border-t border-outline-variant/40 border-dashed pt-6 mt-2 space-y-6">
                       <div className="flex flex-col gap-2">
-                        <span className="text-xl font-bold text-on-surface-variant">
+                        <span className="text-xl font-bold text-muted-foreground">
                           Thành tiền
                         </span>
                         <div className="flex items-baseline justify-between">
@@ -317,7 +317,7 @@ export default function CheckoutPage() {
                           <Banknote className="w-6 h-6 text-primary" />
                           Thanh toán khi nhận hàng (COD)
                         </div>
-                        <p className="text-sm text-on-surface-variant mt-2 leading-relaxed">
+                        <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
                           Nhân viên kho xác nhận xuất hàng → shipper giao tận
                           nơi → đại lý kiểm hàng &amp; trả tiền mặt → shipper
                           xác nhận đã giao &amp; thu tiền.

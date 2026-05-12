@@ -32,6 +32,11 @@ import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { downloadCsvFile } from "@/lib/export-csv";
 import { downloadXlsxFile } from "@/lib/export-xlsx";
 import { cn } from "@ui/lib/utils";
+import {
+  ADMIN_PAGE_SUBTITLE_CLASS,
+  ADMIN_PAGE_TITLE_ICON_CLASS,
+  ADMIN_PAGE_TITLE_PRIMARY_CLASS,
+} from "@ui/lib/layout-shell";
 
 type DealerStatus = "Hoạt động" | "Chưa đủ thông tin" | "Ngưng";
 
@@ -164,15 +169,15 @@ export default function StoreLocationsPage() {
     >
       <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
         <div>
-          <h1 className="flex items-center gap-3 text-4xl font-extrabold tracking-tight text-foreground">
-            <Building2 className="size-9 shrink-0 text-primary" aria-hidden />
+          <h1 className={ADMIN_PAGE_TITLE_PRIMARY_CLASS}>
+            <Building2 className={ADMIN_PAGE_TITLE_ICON_CLASS} aria-hidden />
             Đại lý &amp; Cửa hàng
           </h1>
-          <p className="mt-1 font-medium text-on-surface-variant">
+          <p className={ADMIN_PAGE_SUBTITLE_CLASS}>
             Phân bố địa lý các tài khoản đại lý (role Khách / đại lý) trong hệ
             thống.
           </p>
-          <p className="mt-2 flex gap-2 text-sm text-on-surface-variant">
+          <p className="mt-2 flex gap-2 text-sm text-muted-foreground">
             <Info
               className="mt-0.5 size-4 shrink-0 text-primary/80"
               aria-hidden
@@ -243,7 +248,7 @@ export default function StoreLocationsPage() {
           <p className="text-lg font-bold text-destructive">
             Không tải được danh sách đại lý
           </p>
-          <p className="mt-1 text-sm text-on-surface-variant">
+          <p className="mt-1 text-sm text-muted-foreground">
             {error instanceof Error ? error.message : "Lỗi không xác định"}
           </p>
         </div>
@@ -300,14 +305,15 @@ export default function StoreLocationsPage() {
               filtered.map((u) => {
                 const st = dealerStatus(u);
                 return (
-                  <button
+                  <Button
                     key={u.id}
                     type="button"
+                    variant="ghost"
                     onClick={() => setSelectedId(u.id)}
                     className={cn(
-                      "w-full rounded-xl border p-4 text-left transition-all duration-200",
+                      "h-auto w-full justify-start rounded-xl border p-4 text-left font-normal transition-all duration-200",
                       selected?.id === u.id
-                        ? "border-primary bg-primary/5 shadow-sm"
+                        ? "border-primary bg-primary/5 shadow-sm hover:bg-primary/5"
                         : "border-transparent hover:bg-muted/50",
                     )}
                   >
@@ -349,7 +355,7 @@ export default function StoreLocationsPage() {
                         <span className="truncate tabular-nums">{u.phone}</span>
                       </p>
                     ) : null}
-                  </button>
+                  </Button>
                 );
               })
             )}

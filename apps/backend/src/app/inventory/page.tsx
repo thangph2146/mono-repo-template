@@ -113,6 +113,9 @@ import { cn } from "@ui/lib/utils";
 import {
   ADMIN_ALERT_DIALOG_CONTENT_CLASS,
   ADMIN_DIALOG_CONTENT_INVENTORY_FULL_CLASS,
+  ADMIN_PAGE_SUBTITLE_CLASS,
+  ADMIN_PAGE_TITLE_ICON_CLASS,
+  ADMIN_PAGE_TITLE_PRIMARY_CLASS,
 } from "@ui/lib/layout-shell";
 import { resolveCategoryIcon } from "@/lib/category-icons";
 import {
@@ -1083,11 +1086,11 @@ export default function InventoryPage() {
     <PageSection max="full" className="min-w-0 space-y-6">
       <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
         <div>
-          <h1 className="flex items-center gap-3 text-4xl font-extrabold tracking-tight text-foreground">
-            <Package className="size-9 shrink-0 text-primary" aria-hidden />
+          <h1 className={ADMIN_PAGE_TITLE_PRIMARY_CLASS}>
+            <Package className={ADMIN_PAGE_TITLE_ICON_CLASS} aria-hidden />
             Quản lý Hàng hóa &amp; Kho
           </h1>
-          <p className="mt-1 font-medium text-on-surface-variant">
+          <p className={ADMIN_PAGE_SUBTITLE_CLASS}>
             Phân loại danh mục, quản lý đơn vị (thùng / can / chai / lốc / gói)
             và theo dõi tồn kho theo thời gian thực
           </p>
@@ -1551,7 +1554,7 @@ export default function InventoryPage() {
                   <p className="font-bold text-sm text-foreground">
                     Đơn vị tính &amp; giá theo loại hàng
                   </p>
-                  <p className="text-xs text-on-surface-variant">
+                  <p className="text-xs text-muted-foreground">
                     Mỗi loại hàng chọn một cơ chế khuyến mãi:{" "}
                     <strong>Giá khuyến mãi</strong> hoặc{" "}
                     <strong>Quà tặng</strong>. &quot;SL tối thiểu (KM)&quot; áp cho{" "}
@@ -1962,15 +1965,17 @@ export default function InventoryPage() {
                   ? [...usageMap.values()].reduce((a, b) => a + b, 0)
                   : (usageMap.get(cat.group) ?? 0);
               return (
-                <button
+                <Button
                   key={cat.group}
                   type="button"
+                  variant="ghost"
                   onClick={() => applyCategoryTab(cat.group)}
-                  className={`flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-bold transition-all ${
+                  className={cn(
+                    "h-auto gap-2 rounded-xl border px-4 py-2 text-sm font-bold shadow-none",
                     active
-                      ? "border-primary bg-primary text-primary-foreground shadow-md"
-                      : "border-outline-variant bg-background text-on-surface-variant hover:bg-muted"
-                  }`}
+                      ? "border-primary bg-primary text-primary-foreground shadow-md hover:bg-primary/90 hover:text-primary-foreground"
+                      : "border-outline-variant bg-background text-muted-foreground hover:bg-muted",
+                  )}
                 >
                   <Icon className="h-4 w-4" />
                   {cat.key}
@@ -1979,7 +1984,7 @@ export default function InventoryPage() {
                   >
                     {count}
                   </Badge>
-                </button>
+                </Button>
               );
             })}
           </div>
@@ -1987,7 +1992,7 @@ export default function InventoryPage() {
           <div className="rounded-2xl border border-outline-variant bg-surface-container-low p-4 shadow-sm">
             <p className="flex items-start gap-2 text-sm text-muted-foreground">
               <Info className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
-              <span className="text-on-surface-variant">
+              <span className="text-muted-foreground">
                 Dòng <span className="font-semibold text-foreground">sản phẩm</span>{" "}
                 mở rộng thành cây{" "}
                 <span className="font-semibold text-foreground">đơn vị tính</span>{" "}
@@ -2092,7 +2097,7 @@ export default function InventoryPage() {
               </div>
             ) : (
               <>
-                <p className="flex items-start gap-2 text-sm text-on-surface-variant">
+                <p className="flex items-start gap-2 text-sm text-muted-foreground">
                   <Info className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
                   <span>
                     Sản phẩm trong thùng rác không hiển thị ở kho chính và không bán

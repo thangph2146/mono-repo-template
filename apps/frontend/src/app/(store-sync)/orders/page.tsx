@@ -220,11 +220,12 @@ export default function OrdersPage() {
                 const active = statusFilter === opt.key;
                 const Icon = opt.icon;
                 return (
-                  <button
+                  <Button
                     key={opt.key}
                     type="button"
+                    variant="ghost"
                     onClick={() => setStatusFilter(opt.key)}
-                    className="text-left rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                    className="h-auto w-full whitespace-normal p-0 text-left font-normal text-foreground shadow-none hover:bg-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                   >
                     <Card
                       className={`border-outline-variant bg-background h-full transition-all cursor-pointer ${
@@ -249,7 +250,7 @@ export default function OrdersPage() {
                         </div>
                       </CardContent>
                     </Card>
-                  </button>
+                  </Button>
                 );
               })}
             </div>

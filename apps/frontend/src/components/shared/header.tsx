@@ -88,7 +88,7 @@ export function Header() {
           <Link
             href="/cart"
             aria-label={`Giỏ hàng${unitCount > 0 ? `, ${unitCount} món` : ""}`}
-            className="relative inline-flex items-center justify-center rounded-lg size-10 text-on-surface-variant hover:text-primary hover:bg-muted transition-colors"
+            className="relative inline-flex items-center justify-center rounded-lg size-10 text-muted-foreground hover:text-primary hover:bg-muted transition-colors"
           >
             <ShoppingCart className="size-5" />
             {unitCount > 0 && (
@@ -104,7 +104,7 @@ export function Header() {
                   type="button"
                   variant="ghost"
                   size="icon"
-                  className="text-on-surface-variant shrink-0"
+                  className="text-muted-foreground shrink-0"
                   aria-label="Mở menu"
                 />
               }
@@ -161,7 +161,7 @@ export function Header() {
                   "relative flex items-center gap-1.5 px-1 py-1 transition-all duration-200 " +
                   (isActive
                     ? "text-primary font-semibold"
-                    : "text-on-surface-variant hover:text-primary")
+                    : "text-muted-foreground hover:text-primary")
                 }
               >
                 <Text as="span" variant="label" className="font-bold">{item.label}</Text>
@@ -178,7 +178,7 @@ export function Header() {
             <Link
               href="/cart"
               aria-label="Giỏ hàng"
-              className="relative inline-flex items-center justify-center rounded-lg size-9 text-on-surface-variant hover:text-primary hover:bg-muted transition-colors"
+              className="relative inline-flex items-center justify-center rounded-lg size-9 text-muted-foreground hover:text-primary hover:bg-muted transition-colors"
             >
               <ShoppingCart className="size-5" />
               {unitCount > 0 && (
@@ -187,7 +187,7 @@ export function Header() {
                 </Badge>
               )}
             </Link>
-            <Button variant="ghost" size="icon" className="text-on-surface-variant hover:text-primary">
+            <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary">
               <Bell className="size-5" />
             </Button>
             {session ? (
@@ -222,7 +222,7 @@ export function Header() {
               </DropdownMenu>
             ) : (
               <Link href="/login">
-                <Button variant="ghost" size="icon" className="text-on-surface-variant hover:text-primary">
+                <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary">
                   <UserCircle className="size-5" />
                 </Button>
               </Link>

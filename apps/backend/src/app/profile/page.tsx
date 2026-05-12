@@ -24,6 +24,7 @@ import {
 import { ApiError } from "@/lib/api";
 import { patchAdminSessionProfile } from "@/lib/auth-session";
 import { Container } from "@ui/components/layout";
+import { ADMIN_PAGE_TITLE_PROFILE_CLASS } from "@ui/lib/layout-shell";
 
 export default function AdminProfilePage() {
   const { user: sessionUser } = useAuth();
@@ -121,7 +122,7 @@ export default function AdminProfilePage() {
   return (
     <Container max="4xl" className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Hồ sơ tài khoản</h1>
+        <h1 className={ADMIN_PAGE_TITLE_PROFILE_CLASS}>Hồ sơ tài khoản</h1>
         <p className="text-muted-foreground mt-1 text-sm sm:text-base">
           Cập nhật tên, liên hệ, địa chỉ làm việc và mật khẩu đăng nhập admin.
         </p>
