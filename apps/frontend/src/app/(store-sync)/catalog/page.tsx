@@ -742,7 +742,7 @@ function ProductCardWithUnitSelector({
                 {listPrice != null ? "Giá KM (đủ SL)" : "Giá ban đầu"}
               </Badge>
             ) : (
-              <Badge className="bg-secondary/10 text-secondary border-secondary/20 font-bold text-xs">
+              <Badge className="bg-secondary/10 text-muted-foreground border-secondary/20 font-bold text-xs p-0">
                 Giá ban đầu
               </Badge>
             )}

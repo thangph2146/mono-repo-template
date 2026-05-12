@@ -87,7 +87,7 @@ export default async function SupportPage() {
                       "h-20 w-full gap-3 rounded-2xl text-2xl font-black shadow-xl transition-all active:scale-95",
                     )}
                   >
-                    <Phone className="h-7 w-7 shrink-0" aria-hidden />
+                    <Phone className="size-10 shrink-0" aria-hidden />
                     {p.hotline.ctaLabel}
                   </a>
                 </CardContent>
@@ -124,7 +124,7 @@ export default async function SupportPage() {
                       "h-20 w-full gap-3 rounded-2xl bg-emerald-600 text-2xl font-black text-white shadow-sm transition-all hover:bg-emerald-700 active:scale-95",
                     )}
                   >
-                    <MessageCircle className="h-7 w-7 shrink-0" aria-hidden />
+                    <MessageCircle className="size-10 shrink-0" aria-hidden />
                     {p.zalo.ctaLabel}
                   </a>
                 </CardContent>
