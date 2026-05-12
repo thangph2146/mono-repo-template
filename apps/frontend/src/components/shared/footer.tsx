@@ -4,14 +4,14 @@ import { Text } from "@ui/components/typography";
 
 export function Footer() {
   return (
-    <footer className="w-full border-t border-outline-variant bg-surface-container-low py-4 px-6 opacity-90 mt-auto">
+    <footer className="mt-auto w-full border-t border-outline-variant bg-surface-container-low/95 px-6 py-6 text-foreground">
       <div className="mx-auto max-w-full">
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="flex flex-col items-center justify-between gap-6 md:flex-row md:gap-4">
           {/* Brand & Copyright */}
           <div className="flex items-center gap-4">
             <Link href="/" className="flex items-center gap-2 text-primary hover:opacity-80 transition-opacity">
               <Store className="size-5" />
-              <Text as="span" variant="label" className="font-bold">StoreSync B2B Management</Text>
+              <Text as="span" variant="label" className="font-bold">Hub B2B</Text>
             </Link>
             <span className="hidden md:inline text-outline-variant">|</span>
             <Text variant="small">

@@ -1,14 +1,18 @@
-import { Module } from '@nestjs/common';
-import { MikroOrmModule } from '@mikro-orm/nestjs';
-import { AuthModule } from '../auth/auth.module';
-import { User } from '../entities';
+import { Module, forwardRef } from '@nestjs/common';
+import { NotificationsModule } from '../notifications/notifications.module';
+import { SocketModule } from '../socket/socket.module';
+import { SessionsModule } from '../sessions/sessions.module';
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 
 @Module({
-  imports: [MikroOrmModule.forFeature([User]), AuthModule],
-  providers: [UsersService],
+  imports: [
+    NotificationsModule,
+    forwardRef(() => SocketModule),
+    forwardRef(() => SessionsModule),
+  ],
   controllers: [UsersController],
+  providers: [UsersService],
   exports: [UsersService],
 })
 export class UsersModule {}

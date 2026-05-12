@@ -1,14 +1,12 @@
 import { Module } from '@nestjs/common';
-import { MikroOrmModule } from '@mikro-orm/nestjs';
-import { AuthModule } from '../auth/auth.module';
-import { Category, Product } from '../entities';
+import { NotificationsModule } from '../notifications/notifications.module';
 import { CategoriesService } from './categories.service';
 import { CategoriesController } from './categories.controller';
 
 @Module({
-  imports: [MikroOrmModule.forFeature([Category, Product]), AuthModule],
-  providers: [CategoriesService],
+  imports: [NotificationsModule],
   controllers: [CategoriesController],
+  providers: [CategoriesService],
   exports: [CategoriesService],
 })
 export class CategoriesModule {}

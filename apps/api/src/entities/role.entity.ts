@@ -1,29 +1,33 @@
-import {
-  Collection,
-  Entity,
-  OneToMany,
-  Property,
-  Unique,
-} from '@mikro-orm/core';
+import { Entity, Property, OneToMany } from '@mikro-orm/core';
 import { BaseEntity } from './base.entity';
-import { RolePermissionLink } from './role-permission-link.entity';
-import { UserRoleLink } from './user-role-link.entity';
+import { UserRole } from './user-role.entity';
 
 @Entity({ tableName: 'roles' })
 export class Role extends BaseEntity {
-  @Property()
-  @Unique()
-  code!: string;
+  @Property({ unique: true })
+  name!: string;
 
   @Property()
-  name!: string;
+  displayName!: string;
 
   @Property({ type: 'text', nullable: true })
   description?: string | null;
 
-  @OneToMany(() => RolePermissionLink, (link) => link.role)
-  permissionLinks = new Collection<RolePermissionLink>(this);
+  @Property({ type: 'json', nullable: true })
+  permissions?: unknown;
 
-  @OneToMany(() => UserRoleLink, (link) => link.role)
-  userLinks = new Collection<UserRoleLink>(this);
+  @Property({ default: true })
+  isActive: boolean = true;
+
+  @Property({ onCreate: () => new Date() })
+  createdAt!: Date;
+
+  @Property({ onCreate: () => new Date(), onUpdate: () => new Date() })
+  updatedAt!: Date;
+
+  @Property({ nullable: true })
+  deletedAt?: Date | null;
+
+  @OneToMany(() => UserRole, (userRole) => userRole.role)
+  userRoles!: UserRole[];
 }

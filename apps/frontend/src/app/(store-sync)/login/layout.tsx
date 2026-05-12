@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 
 export const metadata: Metadata = {
   title: "Đăng nhập",
-  description: "Đăng nhập tài khoản đại lý StoreSync B2B.",
+  description: "Đăng nhập tài khoản đại lý Hub B2B.",
 };
 
 export default function LoginLayout({ children }: { children: ReactNode }) {

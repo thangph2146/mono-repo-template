@@ -45,7 +45,7 @@ export default function HelpPage() {
           Trung tâm trợ giúp
         </h1>
         <p className="text-muted-foreground text-lg">
-          Hướng dẫn nhanh để đại lý thao tác đúng flow trên StoreSync B2B.
+          Hướng dẫn nhanh để đại lý thao tác đúng flow trên Hub B2B.
         </p>
       </div>
 

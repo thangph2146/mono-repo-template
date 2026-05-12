@@ -23,7 +23,7 @@ const sections = [
   {
     title: "Điều khoản Đổi trả và khiếu nại",
     content:
-      "StoreSync hỗ trợ đổi trả theo chính sách từng nhóm hàng. Khiếu nại cần được gửi trong thời hạn quy định kèm chứng từ và hình ảnh liên quan.",
+      "Hub B2B hỗ trợ đổi trả theo chính sách từng nhóm hàng. Khiếu nại cần được gửi trong thời hạn quy định kèm chứng từ và hình ảnh liên quan.",
   },
 ];
 
@@ -40,7 +40,7 @@ export default function TermsPage() {
                   Terms of Service
                 </div>
                 <CardTitle className="text-4xl font-black tracking-tight">
-                  Điều khoản sử dụng StoreSync B2B
+                  Điều khoản sử dụng Hub B2B
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">

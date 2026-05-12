@@ -1,0 +1,189 @@
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Headers,
+  Res,
+  Logger,
+} from '@nestjs/common';
+import type { Response } from 'express';
+import { AuthService } from './auth.service';
+import {
+  createSuccessResponse,
+  createErrorResponse,
+} from '../common/api-response';
+import { APP_HEADERS, ADMIN_ROUTES } from '../config/constants';
+
+/**
+ * Auth API cho Admin (tuyen-sinh-admin).
+ * Đăng nhập CMS với email/password, trả về user + permissions + roles.
+ * Sau này có thể thêm AuthPublicController (auth/public) cho đăng nhập public.
+ */
+@Controller(ADMIN_ROUTES.AUTH)
+export class AuthAdminController {
+  private readonly logger = new Logger(AuthAdminController.name);
+
+  constructor(private readonly authService: AuthService) {}
+
+  /**
+   * GET /auth/admin/me - Lấy payload session hiện tại (permissions, roles) theo X-User-Id.
+   * Dùng để refresh session khi role/user được cập nhật (realtime cho tài khoản đang đăng nhập).
+   */
+  @Get('me')
+  async me(
+    @Res() res: Response,
+    @Headers() headers: Record<string, string | undefined>,
+  ) {
+    const userId = headers[APP_HEADERS.USER_ID]?.trim();
+    if (!userId) {
+      const { statusCode, body } = createErrorResponse(
+        `Thiếu header ${APP_HEADERS.USER_ID}`,
+        { status: 401 },
+      );
+      return res.status(statusCode).json(body);
+    }
+
+    try {
+      const { payload: user, reason } =
+        await this.authService.tryAuthPayloadByUserId(userId);
+      if (!user) {
+        const byReason: Record<
+          NonNullable<typeof reason>,
+          { status: number; message: string }
+        > = {
+          not_found: {
+            status: 404,
+            message:
+              'Không tìm thấy tài khoản (đã xóa hoặc sai id). Đăng nhập lại.',
+          },
+          inactive: {
+            status: 404,
+            message:
+              'Tài khoản đã bị vô hiệu hóa hoặc xóa mềm. Liên hệ quản trị.',
+          },
+          no_roles: {
+            status: 404,
+            message:
+              'Không tìm thấy tài khoản hợp lệ cho phiên đăng nhập: thiếu user_roles. Sau import, cần gửi user + userRole trong một request hoặc khôi phục bảng user_roles, rồi đăng nhập lại.',
+          },
+        };
+        const fallback = byReason.not_found;
+        const picked = reason ? byReason[reason] : fallback;
+        const { statusCode, body } = createErrorResponse(picked.message, {
+          status: picked.status,
+        });
+        return res.status(statusCode).json(body);
+      }
+      const { statusCode, body } = createSuccessResponse(user);
+      return res.status(statusCode).json(body);
+    } catch (error) {
+      this.logger.error(
+        'Auth me error',
+        error instanceof Error ? error : String(error),
+      );
+      const { statusCode, body } = createErrorResponse(
+        'Lỗi khi lấy thông tin session',
+        { status: 500 },
+      );
+      return res.status(statusCode).json(body);
+    }
+  }
+
+  @Post('login')
+  async login(
+    @Body() body: { email?: string; password?: string },
+    @Res() res: Response,
+  ) {
+    this.logger.log(`login email=${body?.email ?? '-'}`);
+    try {
+      const user = await this.authService.login({
+        email: body.email ?? '',
+        password: body.password ?? '',
+      });
+
+      if (!user) {
+        const { statusCode, body: errBody } = createErrorResponse(
+          'Email hoặc mật khẩu không đúng.',
+          { status: 401 },
+        );
+        return res.status(statusCode).json(errBody);
+      }
+
+      const { statusCode, body: okBody } = createSuccessResponse(user, {
+        message: 'Đăng nhập thành công',
+      });
+      return res.status(statusCode).json(okBody);
+    } catch (error) {
+      this.logger.error(
+        'Admin login error',
+        error instanceof Error ? error : String(error),
+      );
+      const { statusCode, body } = createErrorResponse(
+        'Đã xảy ra lỗi khi đăng nhập.',
+        { status: 500 },
+      );
+      return res.status(statusCode).json(body);
+    }
+  }
+
+  @Post('google')
+  async google(
+    @Body() body: { email?: string; name?: string; image?: string },
+    @Res() res: Response,
+  ) {
+    this.logger.log(`google email=${body?.email ?? '-'}`);
+    try {
+      const user = await this.authService.loginWithGoogle({
+        email: body.email ?? '',
+        name: body.name ?? null,
+        image: body.image ?? null,
+      });
+
+      if (!user) {
+        const { statusCode, body: errBody } = createErrorResponse(
+          'Không thể xác thực tài khoản Google.',
+          { status: 401 },
+        );
+        return res.status(statusCode).json(errBody);
+      }
+
+      const { statusCode, body: okBody } = createSuccessResponse(user, {
+        message: 'Đăng nhập Google thành công',
+      });
+      return res.status(statusCode).json(okBody);
+    } catch (error) {
+      this.logger.error(
+        'Admin Google login error',
+        error instanceof Error ? error : String(error),
+      );
+      const { statusCode, body } = createErrorResponse(
+        'Đã xảy ra lỗi khi đăng nhập Google.',
+        { status: 500 },
+      );
+      return res.status(statusCode).json(body);
+    }
+  }
+
+  @Post('logout')
+  async logout(@Body() body: { userId?: string }, @Res() res: Response) {
+    this.logger.log(`logout userId=${body?.userId ?? '-'}`);
+    try {
+      const result = await this.authService.logout(body?.userId);
+      const { statusCode, body: okBody } = createSuccessResponse(result, {
+        message: 'Đăng xuất thành công',
+      });
+      return res.status(statusCode).json(okBody);
+    } catch (error) {
+      this.logger.error(
+        'Admin logout error',
+        error instanceof Error ? error : String(error),
+      );
+      const { statusCode, body } = createErrorResponse(
+        'Đã xảy ra lỗi khi đăng xuất.',
+        { status: 500 },
+      );
+      return res.status(statusCode).json(body);
+    }
+  }
+}

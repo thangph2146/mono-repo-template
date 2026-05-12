@@ -16,13 +16,13 @@ import { defineConfig } from '@mikro-orm/core';
 import { Migrator } from '@mikro-orm/migrations';
 import { SeedManager } from '@mikro-orm/seeder';
 import { ConfigService } from '@nestjs/config';
-import { getMikroOrmConfig } from './src/config/database.config';
+import { createMikroConfig } from './src/mikro-orm/mikro-orm.module';
 
 const configService = new ConfigService(process.env);
-const baseConfig = getMikroOrmConfig(configService);
+const baseConfig = createMikroConfig(configService);
 
 export default defineConfig({
-  ...baseConfig,
+  ...(baseConfig as any),
   // Use compiled JS entities when running against `dist/`, fall back to TS
   // when using ts-node for the CLI.
   entities: ['./dist/entities/*.entity.js'],
@@ -44,4 +44,4 @@ export default defineConfig({
     glob: '!(*.d).{js,ts}',
     emit: 'ts',
   },
-});
+} as any);

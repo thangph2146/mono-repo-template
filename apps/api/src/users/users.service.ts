@@ -1,345 +1,419 @@
+import { Injectable } from '@nestjs/common';
+import { EntityManager, type FilterQuery } from '@mikro-orm/core';
+import { hash } from 'bcryptjs';
+import { normalizePageLimit, paginationMeta } from '../common/pagination';
 import {
-  Injectable,
-  NotFoundException,
-  ConflictException,
-  BadRequestException,
-  UnauthorizedException,
-  Inject,
-} from '@nestjs/common';
-import { InjectRepository } from '@mikro-orm/nestjs';
-import {
-  EntityRepository,
-  EntityManager,
-  type FilterQuery,
-  type RequiredEntityData,
-} from '@mikro-orm/core';
-import { User } from '../entities/user.entity';
+  getOptionsFromModel,
+  type GetOptionsConfig,
+} from '../common/get-options';
+import { safeIsoString, safeIsoStringNow } from '../common/date-utils';
 import { Role } from '../entities/role.entity';
-import { UserRoleLink } from '../entities/user-role-link.entity';
-import { Order } from '../entities/order.entity';
+import { UserRole } from '../entities/user-role.entity';
+import { User } from '../entities/user.entity';
 
-export type CreateUserDto = Partial<User> & {
+export interface UserRowDto {
+  id: string;
   email: string;
-  password: string;
-  fullName: string;
-  roleCodes?: string[];
-};
+  name: string | null;
+  bio: string | null;
+  avatar: string | null;
+  emailVerified: string | null;
+  phone: string | null;
+  address: string | null;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+  roles: Array<{ id: string; name: string; displayName: string }>;
+}
 
-/** Chỉ tên / SĐT / địa chỉ — dùng cho storefront tự cập nhật hồ sơ. */
-export type UpdateProfileDto = {
-  fullName?: string;
-  phone?: string;
-  address?: string;
-};
+export interface ListUsersParams {
+  page: number;
+  limit: number;
+  search?: string;
+  status?: 'active' | 'deleted' | 'all';
+  filters?: Record<string, string>;
+}
 
-export type ChangePasswordDto = {
-  currentPassword: string;
-  newPassword: string;
+export interface ListUsersResult {
+  data: UserRowDto[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
+function mapRow(user: User): UserRowDto {
+  const roles =
+    user.userRoles?.map((userRole) => ({
+      id: userRole.role.id,
+      name: userRole.role.name,
+      displayName: userRole.role.displayName,
+    })) ?? [];
+
+  return {
+    id: user.id,
+    email: user.email ?? '',
+    name: user.name ?? null,
+    bio: user.bio ?? null,
+    avatar: user.avatar ?? null,
+    emailVerified: safeIsoString(user.emailVerified),
+    phone: user.phone ?? null,
+    address: user.address ?? null,
+    isActive: user.isActive,
+    createdAt: safeIsoStringNow(user.createdAt),
+    updatedAt: safeIsoStringNow(user.updatedAt),
+    deletedAt: safeIsoString(user.deletedAt),
+    roles,
+  };
+}
+
+function buildWhere(params: ListUsersParams): Record<string, unknown> {
+  const where: Record<string, unknown> = {};
+  const status = params.status ?? 'active';
+
+  if (status === 'deleted') {
+    where.deletedAt = { $ne: null };
+  } else if (status === 'active') {
+    where.deletedAt = null;
+  }
+
+  if (params.search?.trim()) {
+    const search = `%${params.search.trim()}%`;
+    where.$or = [
+      { email: { $like: search } },
+      { name: { $like: search } },
+      { phone: { $like: search } },
+    ];
+  }
+
+  if (params.filters) {
+    for (const [key, raw] of Object.entries(params.filters)) {
+      const value = (
+        Array.isArray(raw)
+          ? raw.length
+            ? String(raw[0])
+            : ''
+          : raw != null
+            ? String(raw)
+            : ''
+      ).trim();
+
+      if (!value) continue;
+
+      if (key === 'email') {
+        where.email = { $like: `%${value}%` };
+      } else if (key === 'name') {
+        where.name = { $like: `%${value}%` };
+      } else if (key === 'isActive') {
+        where.isActive = value === 'true';
+      }
+    }
+  }
+
+  return where;
+}
+
+const USER_OPTIONS_CONFIG: GetOptionsConfig = {
+  id: { valueField: 'id', labelField: 'email', searchField: 'name' },
+  name: { valueField: 'name', searchField: 'name' },
+  email: { valueField: 'email', searchField: 'email' },
+  '*': { valueField: 'email', searchField: 'email' },
 };
 
 @Injectable()
 export class UsersService {
-  constructor(
-    @InjectRepository(User)
-    private readonly userRepository: EntityRepository<User>,
-    @Inject(EntityManager)
-    private readonly em: EntityManager,
-  ) {}
+  constructor(private readonly em: EntityManager) {}
 
-  private static readonly userPopulate = ['userRoleLinks.role'] as const;
-
-  private visible(): FilterQuery<User> {
-    return { deletedAt: null };
-  }
-
-  async findAll(): Promise<User[]> {
-    return this.userRepository.find(this.visible(), {
-      populate: [...UsersService.userPopulate],
-      orderBy: { id: 'asc' },
-    });
-  }
-
-  async findPage(opts: {
-    q?: string;
-    page: number;
-    limit: number;
-  }): Promise<{ items: User[]; total: number }> {
-    const page = Math.max(1, opts.page);
-    const limit = Math.min(200, Math.max(1, opts.limit));
-    const offset = (page - 1) * limit;
-    const q = opts.q?.trim();
-    const where: FilterQuery<User> = { deletedAt: null };
-    if (q) {
-      const like = `%${q}%`;
-      where.$or = [
-        { email: { $like: like } },
-        { fullName: { $like: like } },
-        { phone: { $like: like } },
-      ];
-    }
-    const [items, total] = await this.userRepository.findAndCount(where, {
-      populate: [...UsersService.userPopulate],
-      orderBy: { id: 'asc' },
-      limit,
-      offset,
-    });
-    return { items, total };
-  }
-
-  async listTrashed(opts?: {
-    page?: number;
-    limit?: number;
-    q?: string;
-  }): Promise<{ items: User[]; total: number }> {
-    const page = Math.max(1, opts?.page ?? 1);
-    const limit = Math.min(200, Math.max(1, opts?.limit ?? 20));
-    const offset = (page - 1) * limit;
-    const where: FilterQuery<User> = { deletedAt: { $ne: null } };
-    const q = opts?.q?.trim();
-    if (q) {
-      const like = `%${q}%`;
-      where.$or = [
-        { email: { $like: like } },
-        { fullName: { $like: like } },
-        { phone: { $like: like } },
-      ];
-    }
-    const [items, total] = await this.userRepository.findAndCount(where, {
-      populate: [...UsersService.userPopulate],
-      orderBy: { updatedAt: 'desc' },
-      limit,
-      offset,
-    });
-    return { items, total };
-  }
-
-  async findByIdAny(id: number): Promise<User | null> {
-    return this.userRepository.findOne(
+  private async getUserWithRoles(id: string): Promise<User | null> {
+    return this.em.findOne(
+      User,
       { id },
-      { populate: [...UsersService.userPopulate] },
+      {
+        populate: ['userRoles', 'userRoles.role'],
+        orderBy: { userRoles: { role: { name: 'ASC' } } },
+      },
     );
   }
 
-  async findOne(id: number): Promise<User> {
-    const user = await this.userRepository.findOne(
-      { id, deletedAt: null },
-      { populate: [...UsersService.userPopulate] },
+  async list(params: ListUsersParams): Promise<ListUsersResult> {
+    const { page, limit, skip } = normalizePageLimit(
+      params.page,
+      params.limit,
+      100,
     );
+
+    const where = buildWhere(params) as FilterQuery<User>;
+
+    const [rows, total] = await Promise.all([
+      this.em.find(User, where, {
+        populate: ['userRoles', 'userRoles.role'],
+        orderBy: { updatedAt: 'DESC' },
+        offset: skip,
+        limit,
+      }),
+      this.em.count(User, where),
+    ]);
+
+    return {
+      data: rows.map(mapRow),
+      pagination: paginationMeta(page, limit, total),
+    };
+  }
+
+  async getOptions(
+    column: string,
+    search?: string,
+    limit = 50,
+  ): Promise<Array<{ label: string; value: string }>> {
+    return getOptionsFromModel(
+      this.em.getRepository(User),
+      { deletedAt: null },
+      column,
+      USER_OPTIONS_CONFIG,
+      search,
+      limit,
+    );
+  }
+
+  async getById(id: string): Promise<UserRowDto | null> {
+    const user = await this.getUserWithRoles(id);
+    return user ? mapRow(user) : null;
+  }
+
+  async create(data: {
+    email: string;
+    name?: string | null;
+    password: string;
+    bio?: string | null;
+    avatar?: string | null;
+    phone?: string | null;
+    address?: string | null;
+    isActive?: boolean;
+    roleIds?: string[];
+  }): Promise<UserRowDto> {
+    const email = data.email.trim().toLowerCase();
+    const passwordHash = await hash(data.password, 10);
+
+    const created = new User();
+    created.email = email;
+    created.name = data.name?.trim() ?? null;
+    created.password = passwordHash;
+    created.bio = data.bio?.trim() ?? null;
+    created.avatar = data.avatar?.trim() ?? null;
+    created.phone = data.phone?.trim() ?? null;
+    created.address = data.address?.trim() ?? null;
+    created.isActive = data.isActive ?? true;
+    this.em.persist(created);
+    await this.em.flush();
+
+    if (data.roleIds?.length) {
+      for (const roleId of data.roleIds) {
+        const userRole = new UserRole();
+        userRole.user = created as any;
+        userRole.role = roleId as any;
+        this.em.persist(userRole);
+      }
+      await this.em.flush();
+    } else {
+      const defaultRole = await this.em.findOne(Role, { name: 'user' });
+
+      if (defaultRole) {
+        const userRole = new UserRole();
+        userRole.user = created as any;
+        userRole.role = defaultRole as any;
+        this.em.persist(userRole);
+        await this.em.flush();
+      }
+    }
+
+    const user = await this.getUserWithRoles(created.id);
     if (!user) {
-      throw new NotFoundException(`User with id ${id} not found`);
+      throw new Error(`Failed to refetch user ${created.id}`);
     }
-    return user;
-  }
 
-  async findByEmail(
-    email: string,
-    opts?: { includeTrashed?: boolean },
-  ): Promise<User | null> {
-    const cond: FilterQuery<User> = { email: email.trim() };
-    if (!opts?.includeTrashed) {
-      cond.deletedAt = null;
-    }
-    return this.userRepository.findOne(cond, {
-      populate: [...UsersService.userPopulate],
-    });
-  }
-
-  async findByRoleCode(roleCode: string): Promise<User[]> {
-    const role = await this.em.findOne(Role, { code: roleCode });
-    if (!role) return [];
-    const links = await this.em.find(
-      UserRoleLink,
-      { role: role.id },
-      { populate: ['user.userRoleLinks.role'] },
-    );
-    const users = links.map((l) => l.user).filter(Boolean) as User[];
-    return users.filter((u) => u.deletedAt == null);
-  }
-
-  async create(userData: CreateUserDto): Promise<User> {
-    const existing = await this.findByEmail(userData.email, {
-      includeTrashed: true,
-    });
-    if (existing) {
-      if (existing.deletedAt == null) {
-        throw new ConflictException(
-          `User with email ${userData.email} already exists`,
-        );
-      }
-      throw new ConflictException(
-        `Email ${userData.email} đang ở thùng rác — khôi phục tài khoản đó hoặc dùng email khác.`,
-      );
-    }
-    const { roleCodes, ...rest } = userData;
-    const user = this.userRepository.create({
-      ...rest,
-      deletedAt: null,
-    } as RequiredEntityData<User>);
-    await this.em.persistAndFlush(user);
-    if (roleCodes?.length) {
-      await this.setRoleCodes(user.id, roleCodes);
-    }
-    return this.findOne(user.id);
-  }
-
-  async updateProfile(id: number, dto: UpdateProfileDto): Promise<User> {
-    const user = await this.findOne(id);
-    if (dto.fullName !== undefined) {
-      const t = dto.fullName.trim();
-      if (!t) {
-        throw new BadRequestException('fullName không được để trống');
-      }
-      user.fullName = t;
-    }
-    if (dto.phone !== undefined) {
-      user.phone = dto.phone.trim() || undefined;
-    }
-    if (dto.address !== undefined) {
-      user.address = dto.address.trim() || undefined;
-    }
-    await this.em.flush();
-    return this.findOne(id);
-  }
-
-  async changePassword(id: number, dto: ChangePasswordDto): Promise<void> {
-    const user = await this.findOne(id);
-    if (user.password !== dto.currentPassword.trim()) {
-      throw new UnauthorizedException('Mật khẩu hiện tại không đúng');
-    }
-    const next = dto.newPassword.trim();
-    if (next.length < 6) {
-      throw new BadRequestException('Mật khẩu mới tối thiểu 6 ký tự');
-    }
-    if (next === dto.currentPassword.trim()) {
-      throw new BadRequestException('Mật khẩu mới phải khác mật khẩu hiện tại');
-    }
-    user.password = next;
-    await this.em.flush();
+    return mapRow(user);
   }
 
   async update(
-    id: number,
-    userData: Partial<User> & { roleCodes?: string[] },
-  ): Promise<User> {
-    const user = await this.findOne(id);
-    const { roleCodes, ...rest } = userData;
-    this.userRepository.assign(user, rest as Partial<User>);
-    if (roleCodes !== undefined) {
-      await this.setRoleCodes(id, roleCodes);
+    id: string,
+    data: {
+      email?: string;
+      name?: string | null;
+      password?: string;
+      bio?: string | null;
+      avatar?: string | null;
+      phone?: string | null;
+      address?: string | null;
+      isActive?: boolean;
+      roleIds?: string[];
+    },
+  ): Promise<UserRowDto | null> {
+    const existing = await this.em.findOne(User, { id });
+    if (!existing) return null;
+
+    if (data.email != null) existing.email = data.email.trim().toLowerCase();
+    if (data.name !== undefined) existing.name = data.name?.trim() ?? null;
+    if (data.password != null && data.password !== '') {
+      existing.password = await hash(data.password, 10);
     }
+    if (data.bio !== undefined) existing.bio = data.bio?.trim() ?? null;
+    if (data.avatar !== undefined)
+      existing.avatar = data.avatar?.trim() ?? null;
+    if (data.phone !== undefined) existing.phone = data.phone?.trim() ?? null;
+    if (data.address !== undefined) {
+      existing.address = data.address?.trim() ?? null;
+    }
+    if (data.isActive !== undefined) existing.isActive = data.isActive;
+
+    this.em.persist(existing);
     await this.em.flush();
-    return this.findOne(id);
-  }
 
-  async delete(id: number): Promise<void> {
-    const user = await this.findByIdAny(id);
-    if (!user || user.deletedAt != null) {
-      throw new NotFoundException(`User with id ${id} not found`);
-    }
-    user.deletedAt = new Date();
-    await this.em.flush();
-  }
-
-  async restore(id: number): Promise<User> {
-    const user = await this.userRepository.findOne(
-      { id, deletedAt: { $ne: null } },
-      { populate: [...UsersService.userPopulate] },
-    );
-    if (!user) {
-      throw new NotFoundException(
-        `No trashed user with id ${id} (or already active)`,
-      );
-    }
-    const clash = await this.userRepository.findOne({
-      email: user.email,
-      deletedAt: null,
-    });
-    if (clash && clash.id !== user.id) {
-      throw new ConflictException(
-        'Email đã được dùng bởi tài khoản khác — không thể khôi phục.',
-      );
-    }
-    user.deletedAt = null;
-    await this.em.flush();
-    return user;
-  }
-
-  /**
-   * Xóa hẳn tài khoản đang ở thùng rác — gỡ FK đơn hàng (khách / shipper), xóa liên kết role.
-   */
-  async purgeTrashed(id: number): Promise<void> {
-    const user = await this.userRepository.findOne({
-      id,
-      deletedAt: { $ne: null },
-    });
-    if (!user) {
-      throw new NotFoundException(
-        `Không có tài khoản id ${id} trong thùng rác — chỉ xóa vĩnh viễn bản đã xóa tạm.`,
-      );
-    }
-    await this.em.transactional(async (em) => {
-      await em.nativeDelete(UserRoleLink, { user: id });
-      await em.nativeUpdate(Order, { customer: id }, { customer: null });
-      await em.nativeUpdate(
-        Order,
-        { assignedShipper: id },
-        {
-          assignedShipper: null,
-        },
-      );
-      em.remove(user);
-      await em.flush();
-    });
-  }
-
-  async validateUser(email: string, password: string): Promise<User | null> {
-    const user = await this.findByEmail(email, { includeTrashed: false });
-    if (user && user.password === password) {
-      return user;
-    }
-    return null;
-  }
-
-  async setRoleCodes(userId: number, codes: string[]): Promise<void> {
-    const user = await this.findOne(userId);
-    const roles =
-      codes.length > 0
-        ? await this.em.find(Role, { code: { $in: [...new Set(codes)] } })
+    if (data.roleIds !== undefined) {
+      const roleIds = Array.isArray(data.roleIds)
+        ? data.roleIds.filter((roleId) => String(roleId ?? '').trim() !== '')
         : [];
-    await this.em.nativeDelete(UserRoleLink, { user: userId });
-    for (const role of roles) {
-      const link = this.em.create(
-        UserRoleLink,
-        { user, role },
-        { partial: true },
+
+      await this.em.nativeDelete(UserRole, { user: id });
+
+      if (roleIds.length > 0) {
+        for (const roleId of roleIds) {
+          const userRole = new UserRole();
+          userRole.user = existing as any;
+          userRole.role = roleId as any;
+          this.em.persist(userRole);
+        }
+        await this.em.flush();
+      }
+    }
+
+    const user = await this.getUserWithRoles(id);
+    return user ? mapRow(user) : null;
+  }
+
+  async softDelete(id: string): Promise<boolean> {
+    const user = await this.em.findOne(User, { id });
+    if (!user || user.deletedAt) return false;
+    user.deletedAt = new Date();
+    this.em.persist(user);
+    await this.em.flush();
+    return true;
+  }
+
+  async restore(id: string): Promise<boolean> {
+    const user = await this.em.findOne(User, { id });
+    if (!user || !user.deletedAt) return false;
+    user.deletedAt = null;
+    this.em.persist(user);
+    await this.em.flush();
+    return true;
+  }
+
+  async hardDelete(id: string): Promise<boolean> {
+    const user = await this.em.findOne(User, { id });
+    if (!user) return false;
+    this.em.remove(user);
+    await this.em.flush();
+    return true;
+  }
+
+  async bulk(
+    action: 'delete' | 'restore' | 'hard-delete' | 'active' | 'unactive',
+    ids: string[],
+  ): Promise<{
+    affected: number;
+    message: string;
+    affectedUserIds?: string[];
+  }> {
+    if (!ids.length) {
+      return { affected: 0, message: 'Không có bản ghi nào' };
+    }
+
+    if (action === 'delete') {
+      const result = await this.em.nativeUpdate(
+        User,
+        { id: { $in: ids }, deletedAt: null },
+        { deletedAt: new Date() },
       );
-      this.em.persist(link);
+      return {
+        affected: result ?? 0,
+        message: `Đã xóa ${result ?? 0} người dùng`,
+      };
     }
-    await this.em.flush();
-  }
 
-  async getCartSnapshot(id: number): Promise<{ lines: unknown[] }> {
-    const user = await this.findOne(id);
-    const raw = user.cartJson?.trim();
-    if (!raw) return { lines: [] };
-    try {
-      const parsed = JSON.parse(raw) as { lines?: unknown[] };
-      if (!parsed || !Array.isArray(parsed.lines)) return { lines: [] };
-      return { lines: parsed.lines };
-    } catch {
-      return { lines: [] };
+    if (action === 'restore') {
+      const result = await this.em.nativeUpdate(
+        User,
+        { id: { $in: ids }, deletedAt: { $ne: null } },
+        { deletedAt: null },
+      );
+      return {
+        affected: result ?? 0,
+        message: `Đã khôi phục ${result ?? 0} người dùng`,
+      };
     }
-  }
 
-  async saveCartSnapshot(
-    id: number,
-    payload: { lines: unknown[] },
-  ): Promise<void> {
-    const user = await this.findOne(id);
-    if (!Array.isArray(payload.lines)) {
-      throw new BadRequestException('cart.lines must be an array');
+    if (action === 'hard-delete') {
+      const users = await this.em.find(User, { id: { $in: ids } });
+      if (users.length > 0) {
+        for (const user of users) {
+          this.em.remove(user);
+        }
+        await this.em.flush();
+      }
+      return {
+        affected: users.length,
+        message: `Đã xóa vĩnh viễn ${users.length} người dùng`,
+      };
     }
-    user.cartJson = JSON.stringify({ lines: payload.lines });
-    await this.em.flush();
+
+    if (action === 'active') {
+      const result = await this.em.nativeUpdate(
+        User,
+        { id: { $in: ids } },
+        { isActive: true },
+      );
+      return {
+        affected: result ?? 0,
+        message: `Đã kích hoạt ${result ?? 0} người dùng`,
+      };
+    }
+
+    if (action === 'unactive') {
+      const superAdminRows = await this.em.find(
+        UserRole,
+        { role: { name: 'super_admin' } },
+        { populate: ['user', 'role'] },
+      );
+
+      const superAdminIds = new Set(
+        superAdminRows.map((userRole) => userRole.user.id),
+      );
+      const idsToUnactive = ids.filter((id) => !superAdminIds.has(id));
+
+      if (!idsToUnactive.length) {
+        return {
+          affected: 0,
+          message: 'Không thể hủy kích hoạt tài khoản Super Admin',
+          affectedUserIds: [],
+        };
+      }
+
+      const result = await this.em.nativeUpdate(
+        User,
+        { id: { $in: idsToUnactive } },
+        { isActive: false },
+      );
+
+      return {
+        affected: result ?? 0,
+        message: `Đã hủy kích hoạt ${result ?? 0} người dùng`,
+        affectedUserIds: idsToUnactive,
+      };
+    }
+
+    return { affected: 0, message: 'Action không hợp lệ' };
   }
 }

@@ -1,15 +1,16 @@
-# AGENTS Quick Guide (store-sync)
+# AGENTS Quick Guide (hub-parent-template)
 
-Tài liệu này là **entry point ngắn gọn** cho agent. Chi tiết đầy đủ nằm trong `docs/ai/`.
+Tài liệu này là **entry point ngắn gọn** cho agent. Chi tiết đầy đủ nằm trong `docs/hub-parent/`.
 
 ## Đọc trước khi sửa
 
-1. `docs/ai/README.md`
-2. `docs/ai/MICROSERVICE_SYSTEM_MAP.md`
-3. `docs/ai/AGENTS_GUIDE.md`
-4. `apps/frontend/.graphify/SUMMARY_FOR_AI.md`
-5. `apps/backend/.graphify/SUMMARY_FOR_AI.md`
-6. `apps/api/.graphify/SUMMARY_FOR_AI.md`
+1. `docs/hub-parent/README.md`
+2. `docs/hub-parent/MICROSERVICE_SYSTEM_MAP.md`
+3. `docs/hub-parent/AGENTS_GUIDE.md`
+4. `docs/hub-parent/FRONTEND_UX.md` (khi chỉnh `apps/frontend`)
+5. `apps/frontend/.graphify/SUMMARY_FOR_AI.md`
+6. `apps/backend/.graphify/SUMMARY_FOR_AI.md`
+7. `apps/api/.graphify/SUMMARY_FOR_AI.md`
 
 Lưu ý: chỉ mở `apps/*/.graphify/context.json` khi cần trích đoạn cụ thể (file lớn, nhúng full source).
 

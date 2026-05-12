@@ -1,35 +1,37 @@
-import { Entity, Index, Property, Unique } from '@mikro-orm/core';
+import { Entity, ManyToOne, OneToMany, Property } from '@mikro-orm/core';
 import { BaseEntity } from './base.entity';
+import { PostCategory } from './post-category.entity';
 
-/**
- * Product category dictionary. Products reference a category by its `slug`
- * (kept as a free-form string on `Product.category` to avoid a hard FK and
- * to make the API portable across data stores).
- */
 @Entity({ tableName: 'categories' })
 export class Category extends BaseEntity {
-  @Property({ length: 120 })
-  @Index()
+  @Property({ unique: true })
   name!: string;
 
-  @Property({ length: 120 })
-  @Unique()
+  @Property({ unique: true })
   slug!: string;
 
   @Property({ type: 'text', nullable: true })
-  description?: string;
+  description?: string | null;
 
-  /** Lucide icon name (e.g. "Droplets", "Soup", "Milk", "Package2"). */
-  @Property({ length: 60, nullable: true })
-  icon?: string;
+  @Property({ onCreate: () => new Date() })
+  createdAt!: Date;
 
-  @Property({ default: 0 })
-  sortOrder: number = 0;
+  @Property({ onCreate: () => new Date(), onUpdate: () => new Date() })
+  updatedAt!: Date;
 
-  @Property({ default: true })
-  isActive: boolean = true;
-
-  /** Xóa tạm (thùng rác admin); null = đang hiển thị. */
-  @Property({ type: 'datetime', nullable: true })
+  @Property({ nullable: true })
   deletedAt?: Date | null;
+
+  /** FK `parentId` — không thêm @Property parentId trùng cột (import insertMany sinh cột `parent` sai). */
+  @ManyToOne(() => Category, {
+    nullable: true,
+    fieldName: 'parentId',
+  })
+  parent?: Category | null;
+
+  @OneToMany(() => Category, (category) => category.parent)
+  children!: Category[];
+
+  @OneToMany(() => PostCategory, (postCategory) => postCategory.category)
+  posts!: PostCategory[];
 }

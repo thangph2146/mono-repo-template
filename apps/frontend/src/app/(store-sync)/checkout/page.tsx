@@ -328,7 +328,7 @@ export default function CheckoutPage() {
                         <HelpCircle className="w-4 h-4 shrink-0 mt-0.5" />
                         <p>
                           Bằng cách đặt hàng, bạn đồng ý với điều khoản mua sỉ
-                          của StoreSync B2B.
+                          của Hub B2B.
                         </p>
                       </div>
                     </div>

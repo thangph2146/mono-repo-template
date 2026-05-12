@@ -154,8 +154,8 @@ export default function Home() {
                 </Badge>
                 <Heading as="h1" size="display" className="leading-tight tracking-tighter">
                   Nâng Tầm Cửa Hàng <br />
-                  <span className="bg-gradient-to-r from-primary to-teal-500 bg-clip-text text-transparent">
-                    Với StoreSync B2B
+                  <span className="bg-gradient-to-r from-primary to-gradient-hero-end bg-clip-text text-transparent">
+                    Với Hub B2B
                   </span>
                 </Heading>
                 <Text variant="muted" className="text-2xl leading-relaxed">
@@ -193,10 +193,10 @@ export default function Home() {
                 <div className="absolute inset-0 bg-primary/20 blur-[120px] rounded-full scale-75 opacity-50"></div>
                 <img
                   src="/storesync_b2b_hero_banner_1778054250920.png"
-                  alt="StoreSync B2B"
-                  className="relative z-10 w-full rounded-[2.5rem] shadow-2xl border border-white/20 transform rotate-2 hover:rotate-0 transition-transform duration-700"
+                  alt="Hub B2B — nhập hàng sỉ"
+                  className="relative z-10 w-full rotate-2 rounded-[2.5rem] border border-border/40 shadow-2xl transition-transform duration-700 hover:rotate-0"
                 />
-                <div className="absolute -bottom-6 -left-6 z-20 bg-white dark:bg-zinc-900 p-6 rounded-3xl shadow-2xl border border-border animate-bounce-subtle">
+                <div className="animate-bounce-subtle absolute -bottom-6 -left-6 z-20 rounded-3xl border border-border bg-card p-6 shadow-2xl">
                   <div className="flex items-center gap-4">
                     <div className="bg-success/10 p-3 rounded-2xl">
                       <TrendingUp className="text-success size-8" />
@@ -322,7 +322,7 @@ export default function Home() {
                       className="group cursor-pointer"
                     >
                       <div className="aspect-square bg-primary/5 text-primary rounded-[2.5rem] flex flex-col items-center justify-center gap-4 transition-all duration-300 group-hover:scale-105 group-hover:shadow-xl group-hover:shadow-primary/5 border border-transparent group-hover:border-primary/20">
-                        <div className="p-4 bg-white dark:bg-zinc-800 rounded-2xl shadow-sm transition-transform group-hover:rotate-12">
+                        <div className="rounded-2xl border border-border/60 bg-card p-4 shadow-sm transition-transform group-hover:rotate-12">
                           <Icon className="size-7" />
                         </div>
                         <div className="text-center px-4">
@@ -437,19 +437,19 @@ export default function Home() {
             <div className="relative z-10 space-y-10">
               <Heading as="h2" size="display" className="text-primary-foreground leading-tight tracking-tighter">
                 Sẵn sàng bùng nổ doanh số <br />
-                cùng StoreSync B2B?
+                cùng Hub B2B?
               </Heading>
               <Text variant="lead" align="center" className="text-primary-foreground/90 max-w-4xl mx-auto font-medium leading-relaxed">
                 Đăng ký tài khoản đại lý ngay hôm nay để nhận bảng báo giá khuyến mãi độc quyền và ưu đãi miễn phí vận chuyển cho đơn hàng đầu tiên.
               </Text>
               <div className="flex flex-col sm:flex-row gap-8 justify-center pt-8">
                 <Link href="/register">
-                  <Button size="lg" className="h-20 px-12 text-3xl font-black rounded-3xl bg-white text-primary hover:bg-white/90 shadow-2xl transition-all hover:scale-105 active:scale-95">
+                  <Button size="lg" className="h-20 rounded-3xl bg-primary-foreground px-12 text-3xl font-black text-primary shadow-2xl transition-all hover:bg-primary-foreground/90 hover:scale-105 active:scale-95">
                     Đăng ký ngay
                   </Button>
                 </Link>
                 <Link href="/support">
-                  <Button size="lg" variant="outline" className="h-20 px-12 text-3xl font-black rounded-3xl border-2 border-white/20 text-foreground-primary hover:bg-white/10 hover:text-primary-foreground transition-all active:scale-95">
+                  <Button size="lg" variant="outline" className="h-20 rounded-3xl border-2 border-primary-foreground/30 bg-transparent px-12 text-3xl font-black text-primary-foreground transition-all hover:bg-primary-foreground/10 active:scale-95">
                     Tư vấn trực tiếp
                   </Button>
                 </Link>

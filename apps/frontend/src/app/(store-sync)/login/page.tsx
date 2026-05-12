@@ -152,7 +152,7 @@ function LoginFormInner() {
                   <div className="mx-auto bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mb-2">
                     <Store className="text-primary w-8 h-8" />
                   </div>
-                  <CardTitle className="text-3xl font-bold text-foreground">StoreSync B2B</CardTitle>
+                  <CardTitle className="text-3xl font-bold text-foreground">Hub B2B</CardTitle>
                   <CardDescription className="text-base text-muted-foreground">
                     Hệ thống quản lý đại lý và mua sỉ
                   </CardDescription>

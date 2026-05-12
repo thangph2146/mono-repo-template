@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 
 export const metadata: Metadata = {
   title: "Sơ đồ mã nguồn",
-  description: "Khám phá cấu trúc mã nguồn StoreSync (Graphify).",
+  description: "Khám phá cấu trúc mã nguồn Hub B2B (Graphify).",
 };
 
 export default function GraphLayout({ children }: { children: ReactNode }) {

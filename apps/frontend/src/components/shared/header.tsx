@@ -76,14 +76,14 @@ export function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-outline-variant bg-surface/80 backdrop-blur shadow-sm">
+    <header className="sticky top-0 z-50 w-full border-b border-outline-variant bg-surface/85 backdrop-blur-md shadow-level-1 supports-[backdrop-filter]:bg-surface/70">
       <div className="mx-auto flex h-16 max-w-full items-center gap-2 px-4 sm:px-6">
         {/* Brand */}
         <Link href="/" className="flex items-center gap-2 group min-w-0 shrink">
           <div className="bg-primary/10 p-1.5 rounded-lg transition-colors group-hover:bg-primary/20 shrink-0">
             <Store className="size-6 text-primary" />
           </div>
-          <Heading as="span" size="title" className="text-primary tracking-tight truncate max-w-[9rem] sm:max-w-none">StoreSync B2B</Heading>
+          <Heading as="span" size="title" className="text-primary tracking-tight truncate max-w-[9rem] sm:max-w-none">Hub B2B</Heading>
         </Link>
 
         <div className="ml-auto flex items-center gap-1 md:hidden">

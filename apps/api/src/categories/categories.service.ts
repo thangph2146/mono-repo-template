@@ -1,296 +1,417 @@
-import {
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
-import { InjectRepository } from '@mikro-orm/nestjs';
-import {
-  EntityRepository,
-  type FilterQuery,
-  type RequiredEntityData,
-  UniqueConstraintViolationException,
-} from '@mikro-orm/core';
-import { Category, Product } from '../entities';
+/**
+ * Categories Admin API Service.
+ * List, options, getById, create, update, softDelete, restore, hardDelete, bulk.
+ */
+import { Injectable } from '@nestjs/common';
+import { EntityManager, type FilterQuery } from '@mikro-orm/core';
+import { normalizePageLimit, paginationMeta } from '../common/pagination';
+import { Category } from '../entities/category.entity';
+import { PostCategory } from '../entities/post-category.entity';
 
-export interface CategoryUsage {
+type CategoryWithParent = Category & {
+  parent?: Category | null;
+  childrenCount?: number;
+};
+
+export interface CategoryRowDto {
+  id: string;
+  name: string;
   slug: string;
-  productCount: number;
+  parentId: string | null;
+  parentName?: string | null;
+  description: string | null;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+  _count?: { children: number };
+  postCount?: number;
+}
+
+export interface ListCategoriesParams {
+  page: number;
+  limit: number;
+  search?: string;
+  status?: 'active' | 'deleted' | 'all';
+  filters?: Record<string, string>;
+}
+
+export interface ListCategoriesResult {
+  data: CategoryRowDto[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
+function mapRow(r: CategoryWithParent): CategoryRowDto {
+  return {
+    id: r.id,
+    name: r.name,
+    slug: r.slug,
+    parentId: r.parent?.id ?? null,
+    parentName: r.parent?.name ?? null,
+    description: r.description ?? null,
+    createdAt: r.createdAt.toISOString(),
+    updatedAt: r.updatedAt.toISOString(),
+    deletedAt: r.deletedAt?.toISOString() ?? null,
+    _count: { children: r.childrenCount ?? 0 },
+    postCount: 0,
+  };
+}
+
+function buildWhere(params: ListCategoriesParams): Record<string, unknown> {
+  const where: Record<string, unknown> = {};
+  const status = params.status ?? 'active';
+
+  if (status === 'deleted') {
+    where.deletedAt = { $ne: null };
+  } else if (status === 'active') {
+    where.deletedAt = null;
+  }
+
+  if (params.search?.trim()) {
+    const q = `%${params.search.trim()}%`;
+    where.$or = [
+      { name: { $like: q } },
+      { slug: { $like: q } },
+      { description: { $like: q } },
+    ];
+  }
+
+  if (params.filters) {
+    for (const [key, value] of Object.entries(params.filters)) {
+      if (!value?.trim()) continue;
+      const trimmed = value.trim();
+
+      if (key === 'name') {
+        where.name = { $like: `%${trimmed}%` };
+      } else if (key === 'slug') {
+        where.slug = { $like: `%${trimmed}%` };
+      } else if (key === 'parentId') {
+        where.parent = trimmed;
+      }
+    }
+  }
+
+  return where;
 }
 
 @Injectable()
 export class CategoriesService {
-  constructor(
-    @InjectRepository(Category)
-    private readonly categoryRepository: EntityRepository<Category>,
-    @InjectRepository(Product)
-    private readonly productRepository: EntityRepository<Product>,
-  ) {}
+  constructor(private readonly em: EntityManager) {}
 
-  private static visible(): FilterQuery<Category> {
-    return { deletedAt: null };
-  }
+  private async collectCategoryDescendantIds(
+    rootId: string,
+  ): Promise<string[]> {
+    const start = String(rootId ?? '').trim();
+    if (!start) return [];
 
-  async findAll(): Promise<Category[]> {
-    return this.categoryRepository.find(CategoriesService.visible(), {
-      orderBy: { sortOrder: 'asc', name: 'asc' },
-    });
-  }
+    const visited = new Set<string>([start]);
+    let frontier = [start];
+    let safety = 0;
 
-  async findActive(): Promise<Category[]> {
-    return this.categoryRepository.find(
-      { isActive: true, deletedAt: null },
-      { orderBy: { sortOrder: 'asc', name: 'asc' } },
-    );
-  }
+    while (frontier.length > 0 && safety < 50 && visited.size < 10000) {
+      safety += 1;
 
-  async findPage(opts: {
-    q?: string;
-    page: number;
-    limit: number;
-  }): Promise<{ items: Category[]; total: number }> {
-    const page = Math.max(1, opts.page);
-    const limit = Math.min(200, Math.max(1, opts.limit));
-    const offset = (page - 1) * limit;
-    const q = opts.q?.trim();
-    const where: FilterQuery<Category> = { deletedAt: null };
-    if (q) {
-      const like = `%${q}%`;
-      where.$or = [
-        { name: { $like: like } },
-        { slug: { $like: like } },
-        { description: { $like: like } },
-      ];
-    }
-    const [items, total] = await this.categoryRepository.findAndCount(where, {
-      orderBy: { sortOrder: 'asc', name: 'asc' },
-      limit,
-      offset,
-    });
-    return { items, total };
-  }
-
-  async listTrashed(opts?: {
-    page?: number;
-    limit?: number;
-    q?: string;
-  }): Promise<{ items: Category[]; total: number }> {
-    const page = Math.max(1, opts?.page ?? 1);
-    const limit = Math.min(200, Math.max(1, opts?.limit ?? 20));
-    const offset = (page - 1) * limit;
-    const where: FilterQuery<Category> = { deletedAt: { $ne: null } };
-    const q = opts?.q?.trim();
-    if (q) {
-      const like = `%${q}%`;
-      where.$or = [
-        { name: { $like: like } },
-        { slug: { $like: like } },
-        { description: { $like: like } },
-      ];
-    }
-    const [items, total] = await this.categoryRepository.findAndCount(where, {
-      orderBy: { updatedAt: 'desc' },
-      limit,
-      offset,
-    });
-    return { items, total };
-  }
-
-  /** Bản ghi bất kỳ (kể cả thùng rác) — nội bộ cập nhật / khôi phục. */
-  async findById(id: number): Promise<Category | null> {
-    return this.categoryRepository.findOne({ id });
-  }
-
-  async findOnePublished(id: number): Promise<Category> {
-    const category = await this.categoryRepository.findOne({
-      id,
-      deletedAt: null,
-    });
-    if (!category) {
-      throw new NotFoundException(`Category with id ${id} not found`);
-    }
-    return category;
-  }
-
-  async findBySlug(slug: string): Promise<Category> {
-    const category = await this.categoryRepository.findOne({
-      slug,
-      deletedAt: null,
-    });
-    if (!category) {
-      throw new NotFoundException(`Category with slug "${slug}" not found`);
-    }
-    return category;
-  }
-
-  async create(data: Partial<Category>): Promise<Category> {
-    const payload = this.normalize(data);
-    if (!payload.name || !payload.slug) {
-      throw new ConflictException('Category name and slug are required');
-    }
-    const existing = await this.categoryRepository.findOne({
-      slug: payload.slug,
-    });
-    if (existing) {
-      if (existing.deletedAt == null) {
-        throw new ConflictException(
-          `Category with slug "${payload.slug}" already exists`,
-        );
-      }
-      throw new ConflictException(
-        `Slug "${payload.slug}" đang ở thùng rác — khôi phục hoặc đổi slug.`,
-      );
-    }
-    try {
-      const category = this.categoryRepository.create({
-        ...payload,
-        deletedAt: null,
-      } as RequiredEntityData<Category>);
-      await this.categoryRepository
-        .getEntityManager()
-        .persistAndFlush(category);
-      return category;
-    } catch (error) {
-      if (error instanceof UniqueConstraintViolationException) {
-        throw new ConflictException(
-          `Category with slug "${payload.slug}" already exists`,
-        );
-      }
-      throw error;
-    }
-  }
-
-  async update(id: number, data: Partial<Category>): Promise<Category> {
-    const category = await this.findById(id);
-    if (!category) {
-      throw new NotFoundException(`Category with id ${id} not found`);
-    }
-    const previousSlug = category.slug;
-    const payload = this.normalize(data);
-
-    try {
-      this.categoryRepository.assign(category, payload);
-      await this.categoryRepository.getEntityManager().flush();
-    } catch (error) {
-      if (error instanceof UniqueConstraintViolationException) {
-        throw new ConflictException(
-          `Category with slug "${payload.slug ?? ''}" already exists`,
-        );
-      }
-      throw error;
-    }
-
-    if (payload.slug && payload.slug !== previousSlug) {
-      await this.productRepository
-        .getEntityManager()
-        .nativeUpdate(
-          Product,
-          { category: previousSlug },
-          { category: payload.slug },
-        );
-    }
-    return category;
-  }
-
-  async delete(id: number): Promise<void> {
-    const category = await this.findById(id);
-    if (!category || category.deletedAt != null) {
-      throw new NotFoundException(`Category with id ${id} not found`);
-    }
-    const inUse = await this.productRepository.count({
-      category: category.slug,
-      deletedAt: null,
-    });
-    if (inUse > 0) {
-      throw new ConflictException(
-        `Cannot delete category "${category.slug}" because ${inUse} product(s) still reference it`,
-      );
-    }
-    category.deletedAt = new Date();
-    await this.categoryRepository.getEntityManager().flush();
-  }
-
-  async restore(id: number): Promise<Category> {
-    const category = await this.categoryRepository.findOne({
-      id,
-      deletedAt: { $ne: null },
-    });
-    if (!category) {
-      throw new NotFoundException(
-        `No trashed category with id ${id} (or already restored)`,
-      );
-    }
-    const clash = await this.categoryRepository.findOne({
-      slug: category.slug,
-      deletedAt: null,
-    });
-    if (clash && clash.id !== category.id) {
-      throw new ConflictException(
-        `Slug "${category.slug}" đã được dùng bởi danh mục khác — đổi slug trước khi khôi phục.`,
-      );
-    }
-    category.deletedAt = null;
-    await this.categoryRepository.getEntityManager().flush();
-    return category;
-  }
-
-  /** Xóa hẳn danh mục đang ở thùng rác (không thể hoàn tác). */
-  async purgeTrashed(id: number): Promise<void> {
-    const category = await this.categoryRepository.findOne({
-      id,
-      deletedAt: { $ne: null },
-    });
-    if (!category) {
-      throw new NotFoundException(
-        `Không có danh mục id ${id} trong thùng rác — chỉ xóa vĩnh viễn bản đã xóa tạm.`,
-      );
-    }
-    const inUse = await this.productRepository.count({
-      category: category.slug,
-      deletedAt: null,
-    });
-    if (inUse > 0) {
-      throw new ConflictException(
-        `Không xóa vĩnh viễn: còn ${inUse} sản phẩm đang hoạt động dùng slug "${category.slug}".`,
-      );
-    }
-    await this.categoryRepository.getEntityManager().removeAndFlush(category);
-  }
-
-  async usageStats(): Promise<CategoryUsage[]> {
-    const categories = await this.categoryRepository.find(
-      CategoriesService.visible(),
-      { orderBy: { sortOrder: 'asc', name: 'asc' } },
-    );
-    const usage = await Promise.all(
-      categories.map(async (c) => ({
-        slug: c.slug,
-        productCount: await this.productRepository.count({
-          category: c.slug,
+      const children = await this.em.find(
+        Category,
+        {
+          parent: { id: { $in: frontier } },
           deletedAt: null,
-        }),
-      })),
-    );
-    return usage;
-  }
+        },
+        { fields: ['id'] },
+      );
 
-  private normalize(data: Partial<Category>): Partial<Category> {
-    const next: Partial<Category> = { ...data };
-    if (typeof next.name === 'string') next.name = next.name.trim();
-    if (typeof next.slug === 'string') next.slug = this.slugify(next.slug);
-    if (!next.slug && typeof next.name === 'string') {
-      next.slug = this.slugify(next.name);
+      const next: string[] = [];
+      for (const child of children) {
+        if (!visited.has(child.id)) {
+          visited.add(child.id);
+          next.push(child.id);
+        }
+      }
+      frontier = next;
     }
-    return next;
+
+    return Array.from(visited);
   }
 
-  private slugify(input: string): string {
-    return input
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/đ/g, 'd')
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-+|-+$/g, '')
-      .slice(0, 120);
+  private async countPostsByCategoryTree(categoryId: string): Promise<number> {
+    const ids = await this.collectCategoryDescendantIds(categoryId);
+    const categoryIds = ids.length > 0 ? ids : [categoryId];
+
+    return this.em.count(PostCategory, {
+      category: { id: { $in: categoryIds } },
+      post: { deletedAt: null },
+    });
+  }
+
+  async list(params: ListCategoriesParams): Promise<ListCategoriesResult> {
+    const { page, limit, skip } = normalizePageLimit(
+      params.page,
+      params.limit,
+      1000,
+    );
+    const where = buildWhere(params) as FilterQuery<Category>;
+
+    const [rows, total] = await Promise.all([
+      this.em.find(Category, where, {
+        populate: ['parent', 'children'],
+        orderBy: { updatedAt: 'DESC' },
+        offset: skip,
+        limit,
+      }),
+      this.em.count(Category, where),
+    ]);
+
+    const counts = await Promise.all(
+      rows.map((row) => this.countPostsByCategoryTree(row.id)),
+    );
+
+    const data = rows.map((row, index) => {
+      const dto = mapRow(row as CategoryWithParent);
+      dto.postCount = counts[index] ?? 0;
+      return dto;
+    });
+
+    return {
+      data,
+      pagination: paginationMeta(page, limit, total),
+    };
+  }
+
+  async getOptions(
+    column: string,
+    search?: string,
+    limit = 50,
+  ): Promise<Array<{ label: string; value: string }>> {
+    const where: Record<string, unknown> = { deletedAt: null };
+    if (search?.trim()) {
+      const q = search.trim();
+      if (column === 'name') where.name = { $like: `%${q}%` };
+      else if (column === 'slug') where.slug = { $like: `%${q}%` };
+      else if (column === 'parentId') where.parent = q;
+      else where.name = { $like: `%${q}%` };
+    }
+    const rows = await this.em.find(Category, where as FilterQuery<Category>, {
+      fields: [column as any],
+      orderBy: { [column]: 'ASC' },
+      limit,
+    });
+    const seen = new Set<string>();
+    return rows
+      .map((r) => {
+        const val = r[column as keyof Category];
+        return typeof val === 'string' || typeof val === 'number'
+          ? String(val)
+          : null;
+      })
+      .filter(
+        (v): v is string => v !== null && !seen.has(v) && (seen.add(v), true),
+      )
+      .map((value) => ({ label: value, value }));
+  }
+
+  async getById(id: string): Promise<CategoryRowDto | null> {
+    const row = await this.em.findOne(
+      Category,
+      { id },
+      { populate: ['parent', 'children'] },
+    );
+
+    if (!row) return null;
+
+    const dto = mapRow(row as CategoryWithParent);
+    dto.postCount = await this.countPostsByCategoryTree(row.id);
+    return dto;
+  }
+
+  async create(data: {
+    name: string;
+    slug: string;
+    description?: string | null;
+    parentId?: string | null;
+  }): Promise<CategoryRowDto> {
+    const entity = new Category();
+    entity.name = data.name;
+    entity.slug = data.slug;
+    entity.description = data.description ?? null;
+    entity.parent = data.parentId
+      ? this.em.getReference(Category, data.parentId)
+      : null;
+    this.em.persist(entity);
+    await this.em.flush();
+
+    const refetched = await this.getById(entity.id);
+    if (!refetched) {
+      throw new Error(`Failed to refetch category ${entity.id}`);
+    }
+
+    return refetched;
+  }
+
+  async update(
+    id: string,
+    data: {
+      name?: string;
+      slug?: string;
+      description?: string | null;
+      parentId?: string | null;
+    },
+  ): Promise<CategoryRowDto | null> {
+    const existing = await this.em.findOne(Category, { id });
+    if (!existing) return null;
+
+    if (data.name != null) existing.name = data.name;
+    if (data.slug != null) existing.slug = data.slug;
+    if (data.description !== undefined)
+      existing.description = data.description ?? null;
+    if (data.parentId !== undefined) {
+      existing.parent = data.parentId
+        ? this.em.getReference(Category, data.parentId)
+        : null;
+    }
+
+    this.em.persist(existing);
+    await this.em.flush();
+
+    return this.getById(id);
+  }
+
+  async softDelete(id: string): Promise<boolean> {
+    const row = await this.em.findOne(Category, { id });
+    if (!row || row.deletedAt) return false;
+
+    row.deletedAt = new Date();
+    this.em.persist(row);
+    await this.em.flush();
+    return true;
+  }
+
+  async restore(id: string): Promise<boolean> {
+    const row = await this.em.findOne(Category, { id });
+    if (!row || !row.deletedAt) return false;
+
+    row.deletedAt = null;
+    this.em.persist(row);
+    await this.em.flush();
+    return true;
+  }
+
+  async hardDelete(id: string): Promise<boolean> {
+    const row = await this.em.findOne(Category, { id });
+    if (!row) return false;
+
+    this.em.remove(row);
+    await this.em.flush();
+    return true;
+  }
+
+  async bulk(
+    action: 'delete' | 'restore' | 'hard-delete' | 'set-parent',
+    ids: string[],
+    parentId?: string | null,
+  ): Promise<{ affected: number; message: string }> {
+    if (!ids.length) return { affected: 0, message: 'Không có bản ghi nào' };
+
+    if (action === 'delete') {
+      const result = await this.em.nativeUpdate(
+        Category,
+        { id: { $in: ids }, deletedAt: null },
+        { deletedAt: new Date() },
+      );
+      return {
+        affected: result ?? 0,
+        message: `Đã xóa ${result ?? 0} danh mục`,
+      };
+    }
+
+    if (action === 'restore') {
+      const result = await this.em.nativeUpdate(
+        Category,
+        { id: { $in: ids }, deletedAt: { $ne: null } },
+        { deletedAt: null },
+      );
+      return {
+        affected: result ?? 0,
+        message: `Đã khôi phục ${result ?? 0} danh mục`,
+      };
+    }
+
+    if (action === 'hard-delete') {
+      const entities = await this.em.find(Category, { id: { $in: ids } });
+      for (const e of entities) {
+        this.em.remove(e);
+      }
+      await this.em.flush();
+      return {
+        affected: entities.length,
+        message: `Đã xóa vĩnh viễn ${entities.length} danh mục`,
+      };
+    }
+
+    const uniqueIds = [
+      ...new Set(ids.map((id) => String(id ?? '').trim())),
+    ].filter(Boolean);
+
+    if (!uniqueIds.length) {
+      return {
+        affected: 0,
+        message: 'Không có danh mục hợp lệ để cập nhật',
+      };
+    }
+
+    const normalizedParentId =
+      parentId == null || String(parentId).trim() === ''
+        ? null
+        : String(parentId).trim();
+
+    if (normalizedParentId && uniqueIds.includes(normalizedParentId)) {
+      return {
+        affected: 0,
+        message: 'Danh mục cha không được nằm trong danh sách đang chọn',
+      };
+    }
+
+    if (normalizedParentId) {
+      const parent = await this.em.findOne(
+        Category,
+        { id: normalizedParentId, deletedAt: null },
+        { fields: ['id'] },
+      );
+
+      if (!parent) {
+        return {
+          affected: 0,
+          message: 'Danh mục cha không tồn tại hoặc đã bị xóa',
+        };
+      }
+
+      for (const categoryId of uniqueIds) {
+        const descendants = await this.collectCategoryDescendantIds(categoryId);
+        if (descendants.includes(normalizedParentId)) {
+          return {
+            affected: 0,
+            message:
+              'Không thể đổi danh mục cha vì sẽ tạo vòng lặp cây danh mục',
+          };
+        }
+      }
+    }
+
+    const result = await this.em.nativeUpdate(
+      Category,
+      { id: { $in: uniqueIds }, deletedAt: null },
+      { parent: normalizedParentId },
+    );
+
+    return {
+      affected: result ?? 0,
+      message:
+        normalizedParentId == null
+          ? `Đã chuyển ${result ?? 0} danh mục về cấp gốc`
+          : `Đã cập nhật danh mục cha cho ${result ?? 0} danh mục`,
+    };
   }
 }
