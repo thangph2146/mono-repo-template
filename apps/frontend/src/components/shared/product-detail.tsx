@@ -24,63 +24,13 @@ import { formatVND } from "@/lib/format";
 import { unitSellingAndListPrice } from "@/lib/product-price";
 import { useCategoryBySlug } from "@/hooks/queries";
 import { cartLineQuantity, useCart } from "@/hooks/use-cart";
+import { getActiveGiftRuleForUnit } from "@/lib/gift-rules-from-fulfillment-note";
 
 type ProductDetailProps = {
   product: Product;
   backHref?: string;
   supportHref?: string;
 };
-
-type GiftRule = {
-  minQty: number;
-  unitType: string;
-  giftQty: number;
-  giftName: string;
-  giftSku: string;
-  giftUnitType: string;
-};
-
-function normalizeUnitType(raw: string): string {
-  return raw.trim().toLocaleLowerCase("vi");
-}
-
-function parseGiftRulesFromFulfillmentNote(note: string | null | undefined): GiftRule[] {
-  if (!note) return [];
-  const out: GiftRule[] = [];
-  for (const rawLine of note.split("\n")) {
-    const line = rawLine.trim();
-    if (!line.startsWith("- Từ ")) continue;
-    const m = line.match(/^- Từ\s+(\d+)\s+(.+?):\s+tặng\s+(\d+)\s+(.+)\.$/);
-    if (!m) continue;
-
-    const minQty = Math.max(1, Number(m[1]) || 1);
-    const unitType = m[2].trim();
-    const giftQty = Math.max(1, Number(m[3]) || 1);
-
-    let giftPayload = m[4].trim();
-    let giftUnitType = "";
-    let giftSku = "";
-
-    const unitMarker = " - đơn vị quà: ";
-    const unitAt = giftPayload.lastIndexOf(unitMarker);
-    if (unitAt >= 0) {
-      giftUnitType = giftPayload.slice(unitAt + unitMarker.length).trim();
-      giftPayload = giftPayload.slice(0, unitAt).trim();
-    }
-
-    const skuMatch = giftPayload.match(/\(SKU:\s*([^)]+)\)\s*$/);
-    if (skuMatch) {
-      giftSku = skuMatch[1].trim();
-      giftPayload = giftPayload.slice(0, skuMatch.index).trim();
-    }
-
-    const giftName = giftPayload.trim();
-    if (!giftName) continue;
-
-    out.push({ minQty, unitType, giftQty, giftName, giftSku, giftUnitType });
-  }
-  return out;
-}
 
 export function ProductDetail({
   product,
@@ -126,11 +76,10 @@ export function ProductDetail({
     selectedUnit.type,
   );
   const pricingQty = qtyInCart + qty;
-  const activeGiftRule = useMemo(() => {
-    const rules = parseGiftRulesFromFulfillmentNote(product.fulfillmentNote);
-    const key = normalizeUnitType(selectedUnit.type);
-    return rules.find((r) => normalizeUnitType(r.unitType) === key) ?? null;
-  }, [product.fulfillmentNote, selectedUnit.type]);
+  const activeGiftRule = useMemo(
+    () => getActiveGiftRuleForUnit(product.fulfillmentNote, selectedUnit.type),
+    [product.fulfillmentNote, selectedUnit.type],
+  );
   const isGiftUnlocked = activeGiftRule != null && pricingQty >= activeGiftRule.minQty;
 
   const isWholesale = selectedUnit.wholesalePrice !== null;

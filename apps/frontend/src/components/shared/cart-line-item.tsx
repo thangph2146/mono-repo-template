@@ -5,6 +5,7 @@ import { Badge } from "@ui/components/badge";
 import { Minus, Package2, Plus, Trash2 } from "lucide-react";
 import type { CartLine } from "@/hooks/use-cart";
 import { formatVND } from "@/lib/format";
+import { getActiveGiftRuleForUnit } from "@/lib/gift-rules-from-fulfillment-note";
 
 export function cartLineMaxQty(line: CartLine): number {
   return Math.max(1, Math.floor(line.stock / Math.max(line.qtyPerUnit, 1)));
@@ -25,6 +26,12 @@ export function CartLineItem({
   const maxQty = cartLineMaxQty(line);
   const listUnit = line.listUnitPrice ?? line.unitPrice;
   const showListStrike = listUnit > line.unitPrice;
+  const giftRule = getActiveGiftRuleForUnit(
+    line.fulfillmentNote,
+    line.unitType,
+  );
+  const giftUnlocked =
+    giftRule != null && line.quantity >= giftRule.minQty;
 
   return (
     <div className="flex flex-col items-center gap-6 p-6 transition-colors hover:bg-muted/5 sm:flex-row">
@@ -58,6 +65,22 @@ export function CartLineItem({
             × {line.quantity} {line.unitType}
           </span>
         </div>
+        {giftRule && (
+          <p
+            className={`mt-2 text-xs font-medium ${
+              giftUnlocked
+                ? "text-emerald-700 dark:text-emerald-400"
+                : "text-amber-800 dark:text-amber-300"
+            }`}
+          >
+            {giftUnlocked ? "Đủ điều kiện quà: " : "Quà tặng: "}
+            từ {giftRule.minQty} {giftRule.unitType} — {giftRule.giftQty}{" "}
+            {giftRule.giftName}
+            {!giftUnlocked &&
+              ` (cần thêm ${Math.max(0, giftRule.minQty - line.quantity)} ${giftRule.unitType})`}
+            .
+          </p>
+        )}
       </div>
       <div className="flex items-center gap-4">
         <div className="flex h-12 items-center overflow-hidden rounded-2xl border border-outline-variant bg-surface shadow-sm">

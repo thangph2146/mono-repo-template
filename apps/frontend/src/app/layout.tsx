@@ -9,6 +9,7 @@ import { Toaster } from "sonner";
 import NextTopLoader from "nextjs-toploader";
 import { QueryProvider } from "@/providers/query-provider";
 import { CartSyncBridge } from "@/components/shared/cart-sync-bridge";
+import { CartDrawerHost } from "@/components/shared/cart-drawer";
 import { PromoRulesSync } from "@/components/shared/promo-rules-sync";
 
 const roboto = Roboto({
@@ -55,7 +56,9 @@ export default function RootLayout({
             <QueryProvider>
               <PromoRulesSync />
               <CartSyncBridge />
-              <Header />
+              <CartDrawerHost>
+                <Header />
+              </CartDrawerHost>
               <main className="flex-1">{children}</main>
               <Footer />
               <Toaster position="top-right" richColors />

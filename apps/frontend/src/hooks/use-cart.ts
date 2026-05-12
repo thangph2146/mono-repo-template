@@ -31,6 +31,11 @@ export interface CartLine {
   quantity: number;
   isWholesale: boolean;
   stock: number;
+  /**
+   * Ghi chú kho / quà KM (`Product.fulfillmentNote`) — cập nhật khi thêm SP;
+   * parser quà đọc chung với CTSP.
+   */
+  fulfillmentNote?: string | null;
 }
 
 interface CartState {
@@ -124,6 +129,7 @@ function mergeDuplicateCartLines(lines: CartLine[]): CartLine[] {
       prev.promoUnitPrice = l.promoUnitPrice;
       prev.minPromoQty = l.minPromoQty;
       prev.listUnitPrice = l.listUnitPrice;
+      prev.fulfillmentNote = l.fulfillmentNote ?? prev.fulfillmentNote;
       if (l.image) prev.image = l.image;
       map.set(key, repriceLine(clamp(prev)));
     }
@@ -218,6 +224,10 @@ function normalizeCartState(raw: unknown): CartState {
       quantity: Math.max(1, Math.floor(row.quantity)),
       isWholesale: row.isWholesale,
       stock: row.stock,
+      fulfillmentNote:
+        typeof row.fulfillmentNote === "string"
+          ? row.fulfillmentNote
+          : null,
     };
     out.push(repriceLine(clamp(base)));
   }
@@ -326,6 +336,7 @@ const lineFromUnit = (
     quantity,
     isWholesale: eff.isSaleActive,
     stock: product.stock,
+    fulfillmentNote: product.fulfillmentNote ?? null,
   };
 };
 
@@ -356,6 +367,7 @@ export const cartStore = {
       existing.unitLabel = unit.label;
       existing.qtyPerUnit = unit.qtyPerUnit;
       existing.stock = product.stock;
+      existing.fulfillmentNote = product.fulfillmentNote ?? existing.fulfillmentNote;
       const fresh = lineFromUnit(product, unit, existing.quantity);
       existing.listUnitPrice = fresh.listUnitPrice;
       existing.promoUnitPrice = fresh.promoUnitPrice;

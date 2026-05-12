@@ -41,6 +41,7 @@ import {
   SheetTrigger,
 } from "@ui/components/sheet";
 import { useSession } from "@/hooks/use-session";
+import { useOpenCartDrawer } from "@/components/shared/cart-drawer";
 
 export function Header() {
   const isDevelopment = process.env.NODE_ENV === "development";
@@ -48,6 +49,7 @@ export function Header() {
   const router = useRouter();
   const session = useSession();
   const { unitCount } = useCart();
+  const openCart = useOpenCartDrawer();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   const nav = useMemo(() => {
@@ -85,18 +87,21 @@ export function Header() {
         </Link>
 
         <div className="ml-auto flex items-center gap-1 md:hidden">
-          <Link
-            href="/cart"
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={openCart}
             aria-label={`Giỏ hàng${unitCount > 0 ? `, ${unitCount} món` : ""}`}
-            className="relative inline-flex items-center justify-center rounded-lg size-10 text-muted-foreground hover:text-primary hover:bg-muted transition-colors"
+            className="relative inline-flex size-10 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-primary"
           >
             <ShoppingCart className="size-5" />
             {unitCount > 0 && (
-              <Badge className="absolute -top-0.5 -right-0.5 h-4 min-w-4 px-1 rounded-full bg-primary text-primary-foreground text-[9px] font-bold flex items-center justify-center border border-background">
+              <Badge className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full border border-background bg-primary px-1 text-[9px] font-bold text-primary-foreground">
                 {unitCount > 99 ? "99+" : unitCount}
               </Badge>
             )}
-          </Link>
+          </Button>
           <Sheet open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
             <SheetTrigger
               render={
@@ -175,18 +180,23 @@ export function Header() {
           <Separator orientation="vertical" className="mx-2 h-6 bg-outline-variant/50" />
 
           <div className="flex items-center gap-1">
-            <Link
-              href="/cart"
-              aria-label="Giỏ hàng"
-              className="relative inline-flex items-center justify-center rounded-lg size-9 text-muted-foreground hover:text-primary hover:bg-muted transition-colors"
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={openCart}
+              aria-label={
+                unitCount > 0 ? `Giỏ hàng, ${unitCount} món` : "Giỏ hàng"
+              }
+              className="relative inline-flex size-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-primary"
             >
               <ShoppingCart className="size-5" />
               {unitCount > 0 && (
-                <Badge className="absolute -top-1 -right-1 h-5 min-w-5 px-1.5 rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center border border-background">
+                <Badge className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full border border-background bg-primary px-1.5 text-[10px] font-bold text-primary-foreground">
                   {unitCount}
                 </Badge>
               )}
-            </Link>
+            </Button>
             <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary">
               <Bell className="size-5" />
             </Button>
