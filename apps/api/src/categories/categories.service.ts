@@ -46,6 +46,13 @@ export interface ListCategoriesResult {
 }
 
 function mapRow(r: CategoryWithParent): CategoryRowDto {
+  const toIsoString = (value: unknown): string | null => {
+    if (value == null) return null;
+    if (value instanceof Date) return value.toISOString();
+    const parsed = new Date(String(value));
+    return Number.isNaN(parsed.getTime()) ? null : parsed.toISOString();
+  };
+
   return {
     id: r.id,
     name: r.name,
@@ -53,9 +60,9 @@ function mapRow(r: CategoryWithParent): CategoryRowDto {
     parentId: r.parent?.id ?? null,
     parentName: r.parent?.name ?? null,
     description: r.description ?? null,
-    createdAt: r.createdAt.toISOString(),
-    updatedAt: r.updatedAt.toISOString(),
-    deletedAt: r.deletedAt?.toISOString() ?? null,
+    createdAt: toIsoString(r.createdAt) ?? new Date(0).toISOString(),
+    updatedAt: toIsoString(r.updatedAt) ?? new Date(0).toISOString(),
+    deletedAt: toIsoString(r.deletedAt),
     _count: { children: r.childrenCount ?? 0 },
     postCount: 0,
   };
@@ -154,10 +161,14 @@ export class CategoriesService {
       1000,
     );
     const where = buildWhere(params) as FilterQuery<Category>;
+    const status = params.status ?? 'active';
+    const shouldResolveTreePostCount = status === 'active';
 
     const [rows, total] = await Promise.all([
       this.em.find(Category, where, {
-        populate: ['parent', 'children'],
+        populate: shouldResolveTreePostCount
+          ? ['parent', 'children']
+          : ['parent'],
         orderBy: { updatedAt: 'DESC' },
         offset: skip,
         limit,
@@ -165,9 +176,9 @@ export class CategoriesService {
       this.em.count(Category, where),
     ]);
 
-    const counts = await Promise.all(
-      rows.map((row) => this.countPostsByCategoryTree(row.id)),
-    );
+    const counts = shouldResolveTreePostCount
+      ? await Promise.all(rows.map((row) => this.countPostsByCategoryTree(row.id)))
+      : rows.map(() => 0);
 
     const data = rows.map((row, index) => {
       const dto = mapRow(row as CategoryWithParent);

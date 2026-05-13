@@ -168,7 +168,7 @@ export const ADMIN_DIALOG_CONTENT_MD_CLASS =
 export const ADMIN_DIALOG_CONTENT_LG_CLASS = "rounded-lg sm:max-w-3xl";
 
 /** Dialog form danh mục. */
-export const ADMIN_DIALOG_CONTENT_CATEGORY_CLASS = "sm:max-w-[90vw]";
+export const ADMIN_DIALOG_CONTENT_CATEGORY_CLASS = "max-w-[90vw] sm:max-w-[600px]";
 
 /** Dialog toàn màn hình kho (bảng chi tiết). */
 export const ADMIN_DIALOG_CONTENT_INVENTORY_FULL_CLASS =

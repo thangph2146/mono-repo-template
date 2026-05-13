@@ -32,7 +32,19 @@ type UsersListParams = {
   q?: string;
   page?: number;
   limit?: number;
+  filters?: Record<string, string>;
 };
+
+function toApiFilterQuery(filters?: Record<string, string>): Record<string, string> {
+  if (!filters) return {};
+  const query: Record<string, string> = {};
+  for (const [key, value] of Object.entries(filters)) {
+    const normalized = String(value ?? "").trim();
+    if (!normalized) continue;
+    query[`filter[${key}]`] = normalized;
+  }
+  return query;
+}
 
 function mapRole(role: ApiUserRole): UserRoleRef {
   const code = role.name?.trim() || "";
@@ -43,8 +55,9 @@ function mapRole(role: ApiUserRole): UserRoleRef {
 }
 
 function mapUserRow(row: ApiUserRow): User {
+  const id = row.id != null && row.id !== "" ? String(row.id) : "";
   return {
-    id: Number(row.id),
+    id,
     email: row.email ?? "",
     fullName: row.name?.trim() || row.email || "",
     phone: row.phone ?? null,
@@ -81,6 +94,7 @@ export class UsersApi {
         limit: params?.limit ?? 20,
         search: params?.q,
         status: "active",
+        ...toApiFilterQuery(params?.filters),
       },
     });
     const normalized = normalizePagedResult<ApiUserRow>(payload);
@@ -94,6 +108,7 @@ export class UsersApi {
         limit: params?.limit ?? 20,
         search: params?.q,
         status: "deleted",
+        ...toApiFilterQuery(params?.filters),
       },
     });
     const normalized = normalizePagedResult<ApiUserRow>(payload);

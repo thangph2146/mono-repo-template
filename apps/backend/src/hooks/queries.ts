@@ -218,7 +218,7 @@ export const useRbacCatalog = (opts?: { enabled?: boolean }) =>
 
 export const useStaffUserList = (opts?: {
   enabled?: boolean;
-  listParams?: { q?: string; page?: number; limit?: number };
+  listParams?: { q?: string; page?: number; limit?: number; filters?: Record<string, string> };
 }): UseQueryResult<UsersListData, Error> =>
   useQuery({
     queryKey: [...queryKeys.staffUserList(), opts?.listParams ?? null] as const,
@@ -227,6 +227,7 @@ export const useStaffUserList = (opts?: {
         q: opts?.listParams?.q,
         page: opts?.listParams?.page,
         limit: opts?.listParams?.limit,
+        filters: opts?.listParams?.filters,
       });
       return { items: res.items, total: res.total };
     },
@@ -235,7 +236,7 @@ export const useStaffUserList = (opts?: {
 
 export const useTrashedStaffUsers = (opts?: {
   enabled?: boolean;
-  listParams?: { page?: number; limit?: number; q?: string };
+  listParams?: { page?: number; limit?: number; q?: string; filters?: Record<string, string> };
 }): UseQueryResult<UsersListData, Error> =>
   useQuery({
     queryKey: [...queryKeys.usersTrashed(), opts?.listParams ?? null] as const,
@@ -245,6 +246,7 @@ export const useTrashedStaffUsers = (opts?: {
         page: lp?.page ?? 1,
         limit: lp?.limit ?? 25,
         q: lp?.q,
+        filters: lp?.filters,
       });
       return { items: res.items, total: res.total };
     },
@@ -269,7 +271,7 @@ export const useCreateStaffUser = (): UseMutationResult<
 export const useUpdateStaffUser = (): UseMutationResult<
   User,
   Error,
-  { id: number; input: UpdateUserInput }
+  { id: string | number; input: UpdateUserInput }
 > => {
   const qc = useQueryClient();
   return useMutation({
@@ -282,7 +284,11 @@ export const useUpdateStaffUser = (): UseMutationResult<
   });
 };
 
-export const useDeleteStaffUser = (): UseMutationResult<void, Error, number> => {
+export const useDeleteStaffUser = (): UseMutationResult<
+  void,
+  Error,
+  string | number
+> => {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (id) => api.users.remove(id),
@@ -294,7 +300,11 @@ export const useDeleteStaffUser = (): UseMutationResult<void, Error, number> => 
   });
 };
 
-export const useRestoreStaffUser = (): UseMutationResult<User, Error, number> => {
+export const useRestoreStaffUser = (): UseMutationResult<
+  User,
+  Error,
+  string | number
+> => {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (id) => api.users.restore(id),
@@ -308,7 +318,7 @@ export const useRestoreStaffUser = (): UseMutationResult<User, Error, number> =>
 export const usePurgeTrashedStaffUser = (): UseMutationResult<
   void,
   Error,
-  number
+  string | number
 > => {
   const qc = useQueryClient();
   return useMutation({

@@ -19,16 +19,6 @@ import {
 } from "@ui/components/dialog";
 import { PageSection } from "@ui/components/layout";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@ui/components/alert-dialog";
-import {
   Select,
   SelectContent,
   SelectItem,
@@ -52,6 +42,7 @@ import {
 } from "lucide-react";
 import { AdminDataTable } from "@/components/admin-data-table";
 import { AdminTablePaginationFooter } from "@/components/admin-table-pagination-footer";
+import { AdminConfirmActionDialog } from "@/components/admin-confirm-action-dialog";
 import { type Category, ApiError } from "@/lib/api";
 import { useAuth } from "@/providers/auth-provider";
 import { canUserAccess, PERMISSION_CODES } from "@workspace/api-client";
@@ -522,7 +513,7 @@ export default function CategoriesPage() {
                 onClick={() => requestDelete(c)}
                 disabled={childCount > 0 || linkedPosts > 0}
               >
-                <Trash2 className="w-4 h-4" /> Xóa
+                <Trash2 className="w-4 h-4" /> Xóa tạm
               </Button>
             </div>
           );
@@ -1018,132 +1009,76 @@ export default function CategoriesPage() {
         ) : null}
       </Tabs>
 
-      <AlertDialog
+      <AdminConfirmActionDialog
         open={deleteTarget != null}
-        onOpenChange={(o) => {
-          if (!o) setDeleteTarget(null);
+        onOpenChange={(open) => {
+          if (!open) setDeleteTarget(null);
         }}
-      >
-        <AlertDialogContent className={ADMIN_ALERT_DIALOG_CONTENT_CLASS}>
-          <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2 text-left">
-              <Archive className="size-5 shrink-0 text-muted-foreground" aria-hidden />
-              Đưa danh mục vào thùng rác?
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              {deleteTarget ? (
-                <>
-                  <strong className="text-foreground">{deleteTarget.name}</strong>{" "}
-                  (slug <span className="font-mono">{deleteTarget.slug}</span>) sẽ
-                  ẩn khỏi hệ thống cho đến khi khôi phục.
-                </>
-              ) : null}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="rounded-lg">Huỷ</AlertDialogCancel>
-            <AlertDialogAction
-              className="rounded-lg bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              onClick={(e) => {
-                e.preventDefault();
-                confirmDelete();
-              }}
-              disabled={deleteMutation.isPending}
-            >
-              {deleteMutation.isPending ? (
-                <Loader2 className="size-4 animate-spin" />
-              ) : (
-                "Xóa tạm"
-              )}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        contentClassName={ADMIN_ALERT_DIALOG_CONTENT_CLASS}
+        icon={<Archive className="size-5 shrink-0 text-muted-foreground" aria-hidden />}
+        title="Đưa danh mục vào thùng rác?"
+        description={
+          deleteTarget ? (
+            <>
+              <strong className="text-foreground">{deleteTarget.name}</strong> (slug{" "}
+              <span className="font-mono">{deleteTarget.slug}</span>) sẽ ẩn khỏi hệ thống cho
+              đến khi khôi phục.
+            </>
+          ) : null
+        }
+        confirmLabel="Xóa tạm"
+        confirmDestructive
+        confirmDisabled={deleteMutation.isPending}
+        confirmLoading={deleteMutation.isPending}
+        onConfirm={confirmDelete}
+      />
 
-      <AlertDialog
+      <AdminConfirmActionDialog
         open={purgeTarget != null}
-        onOpenChange={(o) => {
-          if (!o) setPurgeTarget(null);
+        onOpenChange={(open) => {
+          if (!open) setPurgeTarget(null);
         }}
-      >
-        <AlertDialogContent className={ADMIN_ALERT_DIALOG_CONTENT_CLASS}>
-          <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2 text-left text-destructive">
-              <Trash2 className="size-5 shrink-0" aria-hidden />
-              Xóa vĩnh viễn danh mục?
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              {purgeTarget ? (
-                <>
-                  <strong className="text-foreground">{purgeTarget.name}</strong>{" "}
-                  (slug <span className="font-mono">{purgeTarget.slug}</span>) sẽ bị
-                  xoá khỏi cơ sở dữ liệu. Không thể hoàn tác. API từ chối nếu còn sản
-                  phẩm đang hoạt động dùng slug này.
-                </>
-              ) : null}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="rounded-lg">Huỷ</AlertDialogCancel>
-            <AlertDialogAction
-              className="rounded-lg bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              onClick={(e) => {
-                e.preventDefault();
-                confirmPurgeTrashed();
-              }}
-              disabled={purgeTrashedMutation.isPending}
-            >
-              {purgeTrashedMutation.isPending ? (
-                <Loader2 className="size-4 animate-spin" />
-              ) : (
-                "Xóa vĩnh viễn"
-              )}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        contentClassName={ADMIN_ALERT_DIALOG_CONTENT_CLASS}
+        titleClassName="flex items-center gap-2 text-left text-destructive"
+        icon={<Trash2 className="size-5 shrink-0" aria-hidden />}
+        title="Xóa vĩnh viễn danh mục?"
+        description={
+          purgeTarget ? (
+            <>
+              <strong className="text-foreground">{purgeTarget.name}</strong> (slug{" "}
+              <span className="font-mono">{purgeTarget.slug}</span>) sẽ bị xoá khỏi cơ sở dữ liệu.
+              Không thể hoàn tác. API từ chối nếu còn sản phẩm đang hoạt động dùng slug này.
+            </>
+          ) : null
+        }
+        confirmLabel="Xóa vĩnh viễn"
+        confirmDestructive
+        confirmDisabled={purgeTrashedMutation.isPending}
+        confirmLoading={purgeTrashedMutation.isPending}
+        onConfirm={confirmPurgeTrashed}
+      />
 
-      <AlertDialog
+      <AdminConfirmActionDialog
         open={restoreTarget != null}
-        onOpenChange={(o) => {
-          if (!o) setRestoreTarget(null);
+        onOpenChange={(open) => {
+          if (!open) setRestoreTarget(null);
         }}
-      >
-        <AlertDialogContent className={ADMIN_ALERT_DIALOG_CONTENT_CLASS}>
-          <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2 text-left">
-              <ArchiveRestore className="size-5 shrink-0 text-primary" aria-hidden />
-              Khôi phục danh mục?
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              {restoreTarget ? (
-                <>
-                  Đưa{" "}
-                  <strong className="text-foreground">{restoreTarget.name}</strong>{" "}
-                  trở lại danh sách đang hoạt động.
-                </>
-              ) : null}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="rounded-lg">Huỷ</AlertDialogCancel>
-            <AlertDialogAction
-              className="rounded-lg"
-              onClick={(e) => {
-                e.preventDefault();
-                confirmRestore();
-              }}
-              disabled={restoreMutation.isPending}
-            >
-              {restoreMutation.isPending ? (
-                <Loader2 className="size-4 animate-spin" />
-              ) : (
-                "Khôi phục"
-              )}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        contentClassName={ADMIN_ALERT_DIALOG_CONTENT_CLASS}
+        icon={<ArchiveRestore className="size-5 shrink-0 text-primary" aria-hidden />}
+        title="Khôi phục danh mục?"
+        description={
+          restoreTarget ? (
+            <>
+              Đưa <strong className="text-foreground">{restoreTarget.name}</strong> trở lại danh
+              sách đang hoạt động.
+            </>
+          ) : null
+        }
+        confirmLabel="Khôi phục"
+        confirmDisabled={restoreMutation.isPending}
+        confirmLoading={restoreMutation.isPending}
+        onConfirm={confirmRestore}
+      />
     </PageSection>
   );
 }

@@ -28,6 +28,12 @@ export const PERMISSION_CODES = {
   CONTACT_REQUESTS_EXPORT: "contact_requests:export",
   CONTACT_REQUESTS_ASSIGN: "contact_requests:assign",
   CONTACT_REQUESTS_RESTORE: "contact_requests:restore",
+  TAGS_VIEW: "tags:view",
+  TAGS_CREATE: "tags:create",
+  TAGS_UPDATE: "tags:update",
+  TAGS_DELETE: "tags:delete",
+  TAGS_MANAGE: "tags:manage",
+  TAGS_EXPORT: "tags:export",
 } as const;
 
 export type PermissionCode =
@@ -82,6 +88,8 @@ const STAFF_PANEL_PERMISSION_CODES: PermissionCode[] = [
   PERMISSION_CODES.SUPPORT_WRITE,
   PERMISSION_CODES.CONTACT_REQUESTS_VIEW,
   PERMISSION_CODES.CONTACT_REQUESTS_MANAGE,
+  PERMISSION_CODES.TAGS_VIEW,
+  PERMISSION_CODES.TAGS_MANAGE,
 ];
 
 /**

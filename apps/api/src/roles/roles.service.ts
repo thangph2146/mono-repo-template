@@ -37,6 +37,28 @@ export interface ListRolesResult {
   };
 }
 
+/** MikroORM/driver đôi khi hydrate datetime thành chuỗi (nhất là cột nullable). */
+function toIsoString(
+  value: Date | string | number | undefined | null,
+): string | null {
+  if (value == null) return null;
+  if (value instanceof Date) {
+    return Number.isNaN(value.getTime()) ? null : value.toISOString();
+  }
+  if (typeof value === 'number') {
+    return Number.isNaN(value) ? null : new Date(value).toISOString();
+  }
+  if (typeof value === 'string' && value.trim()) {
+    const ms = Date.parse(value);
+    return Number.isNaN(ms) ? null : new Date(ms).toISOString();
+  }
+  return null;
+}
+
+function toIsoStringRequired(value: Date | string | number): string {
+  return toIsoString(value) ?? new Date(0).toISOString();
+}
+
 function mapRow(r: Role): RoleRowDto {
   return {
     id: r.id,
@@ -45,9 +67,9 @@ function mapRow(r: Role): RoleRowDto {
     description: r.description ?? null,
     permissions: r.permissions,
     isActive: r.isActive,
-    createdAt: r.createdAt.toISOString(),
-    updatedAt: r.updatedAt.toISOString(),
-    deletedAt: r.deletedAt?.toISOString() ?? null,
+    createdAt: toIsoStringRequired(r.createdAt),
+    updatedAt: toIsoStringRequired(r.updatedAt),
+    deletedAt: toIsoString(r.deletedAt),
   };
 }
 

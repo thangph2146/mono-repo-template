@@ -30,9 +30,13 @@ import {
 } from "lucide-react";
 import { AdminDataTable } from "@/components/admin-data-table";
 import { AdminTablePaginationFooter } from "@/components/admin-table-pagination-footer";
+import { AdminConfirmActionDialog } from "@/components/admin-confirm-action-dialog";
 import { api } from "@/lib/api";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
+import { useAuth } from "@/providers/auth-provider";
+import { canUserAccess, PERMISSION_CODES } from "@workspace/api-client";
 import {
+  ADMIN_ALERT_DIALOG_CONTENT_CLASS,
   ADMIN_DIALOG_CONTENT_CATEGORY_CLASS,
   ADMIN_PAGE_SUBTITLE_CLASS,
   ADMIN_PAGE_TITLE_ICON_CLASS,
@@ -214,6 +218,20 @@ async function fetchAllActiveTags(): Promise<TagRow[]> {
 
 export default function TagsPage() {
   const queryClient = useQueryClient();
+  const { user: session } = useAuth();
+  const canRead =
+    session != null &&
+    (canUserAccess(session, PERMISSION_CODES.TAGS_VIEW) ||
+      canUserAccess(session, PERMISSION_CODES.TAGS_MANAGE));
+  const canWrite =
+    session != null &&
+    (canUserAccess(session, PERMISSION_CODES.TAGS_UPDATE) ||
+      canUserAccess(session, PERMISSION_CODES.TAGS_CREATE) ||
+      canUserAccess(session, PERMISSION_CODES.TAGS_MANAGE));
+  const canDelete =
+    session != null &&
+    (canUserAccess(session, PERMISSION_CODES.TAGS_DELETE) ||
+      canUserAccess(session, PERMISSION_CODES.TAGS_MANAGE));
   const [mainTab, setMainTab] = useState<"list" | "trash">("list");
   const [globalFilter, setGlobalFilter] = useState("");
   const [trashPage, setTrashPage] = useState(1);
@@ -221,16 +239,20 @@ export default function TagsPage() {
   const [trashGlobalFilter, setTrashGlobalFilter] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
+  const [deleteTarget, setDeleteTarget] = useState<TagRow | null>(null);
+  const [restoreTarget, setRestoreTarget] = useState<TagRow | null>(null);
+  const [purgeTarget, setPurgeTarget] = useState<TagRow | null>(null);
   const debouncedTrashQ = useDebouncedValue(trashGlobalFilter, 350);
 
   const listQuery = useQuery({
     queryKey: ["media", "tags", "tree"],
     queryFn: fetchAllActiveTags,
+    enabled: canRead,
   });
 
   const trashQuery = useQuery({
     queryKey: ["media", "tags", "trash", trashPage, trashPageSize, debouncedTrashQ],
-    enabled: mainTab === "trash",
+    enabled: canRead && mainTab === "trash",
     queryFn: async (): Promise<PagedResult<TagRow>> =>
       normalizePaged(
         await api.http.get("/admin/tags", {
@@ -409,6 +431,7 @@ export default function TagsPage() {
                 size="sm"
                 className="h-8 gap-1 rounded-lg"
                 onClick={() => openEdit(row.original)}
+                disabled={!canWrite}
               >
                 <Pencil className="size-3.5" />
                 Sửa
@@ -418,7 +441,8 @@ export default function TagsPage() {
                 variant="outline"
                 size="sm"
                 className="h-8 gap-1 rounded-lg border-destructive/40 text-destructive hover:bg-destructive/10"
-                onClick={() => void handleDelete(row.original)}
+                onClick={() => setDeleteTarget(row.original)}
+                disabled={!canDelete}
               >
                 <Trash2 className="size-3.5" />
                 Xóa
@@ -427,7 +451,7 @@ export default function TagsPage() {
           ),
       },
     ],
-    [handleDelete],
+    [canDelete, canWrite],
   );
 
   const trashColumns = useMemo<ColumnDef<TagRow>[]>(
@@ -454,7 +478,8 @@ export default function TagsPage() {
               variant="outline"
               size="sm"
               className="h-8 gap-1 rounded-lg"
-              onClick={() => void handleRestore(row.original)}
+              onClick={() => setRestoreTarget(row.original)}
+              disabled={!canDelete}
             >
               <ArchiveRestore className="size-3.5" />
               Khôi phục
@@ -464,7 +489,8 @@ export default function TagsPage() {
               variant="outline"
               size="sm"
               className="h-8 gap-1 rounded-lg border-destructive/40 text-destructive hover:bg-destructive/10"
-              onClick={() => void handlePurge(row.original)}
+              onClick={() => setPurgeTarget(row.original)}
+              disabled={!canDelete}
             >
               <Trash2 className="size-3.5" />
               Xóa hẳn
@@ -473,8 +499,21 @@ export default function TagsPage() {
         ),
       },
     ],
-    [handlePurge, handleRestore],
+    [canDelete],
   );
+
+  if (!canRead) {
+    return (
+      <PageSection max="full" className="min-w-0 space-y-6">
+        <div className="rounded-lg border border-outline-variant bg-surface-container p-6">
+          <h2 className="text-lg font-semibold">Không có quyền truy cập</h2>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Bạn cần quyền <code>tags:view</code> hoặc <code>tags:manage</code> để xem trang này.
+          </p>
+        </div>
+      </PageSection>
+    );
+  }
 
   return (
     <PageSection max="full" className="min-w-0 space-y-6">
@@ -503,7 +542,11 @@ export default function TagsPage() {
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger
               render={
-                <Button onClick={openCreate} className="flex h-12 items-center gap-2 rounded-lg px-6 font-bold shadow-md" />
+                <Button
+                  onClick={openCreate}
+                  className="flex h-12 items-center gap-2 rounded-lg px-6 font-bold shadow-md"
+                  disabled={!canWrite}
+                />
               }
             >
               <Plus className="size-5" />
@@ -564,7 +607,7 @@ export default function TagsPage() {
                   type="button"
                   className="rounded-lg font-bold"
                   onClick={() => void handleSave()}
-                  disabled={submitting}
+                  disabled={!canWrite || submitting}
                 >
                   {submitting ? "Đang lưu..." : "Lưu"}
                 </Button>
@@ -649,6 +692,79 @@ export default function TagsPage() {
           />
         </TabsContent>
       </Tabs>
+
+      <AdminConfirmActionDialog
+        open={deleteTarget != null}
+        onOpenChange={(open) => {
+          if (!open) setDeleteTarget(null);
+        }}
+        contentClassName={ADMIN_ALERT_DIALOG_CONTENT_CLASS}
+        icon={<Trash2 className="size-5 shrink-0 text-destructive" />}
+        title="Đưa thẻ vào thùng rác?"
+        description={
+          deleteTarget ? (
+            <>
+              Thẻ <strong className="text-foreground">{deleteTarget.name}</strong> (slug{" "}
+              <span className="font-mono">{deleteTarget.slug}</span>) sẽ được ẩn khỏi danh sách
+              đang dùng.
+            </>
+          ) : null
+        }
+        confirmLabel="Xóa tạm"
+        confirmDestructive
+        onConfirm={() => {
+          if (!deleteTarget) return;
+          void handleDelete(deleteTarget).finally(() => setDeleteTarget(null));
+        }}
+      />
+
+      <AdminConfirmActionDialog
+        open={restoreTarget != null}
+        onOpenChange={(open) => {
+          if (!open) setRestoreTarget(null);
+        }}
+        contentClassName={ADMIN_ALERT_DIALOG_CONTENT_CLASS}
+        icon={<ArchiveRestore className="size-5 shrink-0 text-primary" />}
+        title="Khôi phục thẻ?"
+        description={
+          restoreTarget ? (
+            <>
+              Đưa thẻ <strong className="text-foreground">{restoreTarget.name}</strong> trở lại danh
+              sách hoạt động.
+            </>
+          ) : null
+        }
+        confirmLabel="Khôi phục"
+        onConfirm={() => {
+          if (!restoreTarget) return;
+          void handleRestore(restoreTarget).finally(() => setRestoreTarget(null));
+        }}
+      />
+
+      <AdminConfirmActionDialog
+        open={purgeTarget != null}
+        onOpenChange={(open) => {
+          if (!open) setPurgeTarget(null);
+        }}
+        contentClassName={ADMIN_ALERT_DIALOG_CONTENT_CLASS}
+        titleClassName="flex items-center gap-2 text-left text-destructive"
+        icon={<Trash2 className="size-5 shrink-0" />}
+        title="Xóa vĩnh viễn thẻ?"
+        description={
+          purgeTarget ? (
+            <>
+              Thẻ <strong className="text-foreground">{purgeTarget.name}</strong> sẽ bị xóa khỏi hệ
+              thống và không thể hoàn tác.
+            </>
+          ) : null
+        }
+        confirmLabel="Xóa vĩnh viễn"
+        confirmDestructive
+        onConfirm={() => {
+          if (!purgeTarget) return;
+          void handlePurge(purgeTarget).finally(() => setPurgeTarget(null));
+        }}
+      />
     </PageSection>
   );
 }

@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { LexicalEditor } from "@thangph2146/lexical-editor";
 import type { SerializedEditorState } from "lexical";
-import type { ColumnDef } from "@tanstack/react-table";
+import type { ColumnDef, ColumnFiltersState, OnChangeFn } from "@tanstack/react-table";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Badge } from "@ui/components/badge";
@@ -452,6 +452,17 @@ function normalizeContentForEditor(value: unknown): SerializedEditorState {
   return EMPTY_EDITOR_STATE;
 }
 
+function buildPostsFilterQuery(columnFilters: ColumnFiltersState): Record<string, string> {
+  const query: Record<string, string> = {};
+  for (const filter of columnFilters) {
+    const value = String(filter.value ?? "").trim();
+    if (!value) continue;
+    if (filter.id === "title") query.title = value;
+    else if (filter.id === "published") query.published = value;
+  }
+  return query;
+}
+
 function SummaryBadges({ items }: { items: TaxonomyOption[] }) {
   if (!items.length) {
     return <span className="text-xs text-muted-foreground">—</span>;
@@ -482,14 +493,19 @@ export default function PostsPage() {
   const [trashPage, setTrashPage] = useState(1);
   const [trashPageSize, setTrashPageSize] = useState(10);
   const [trashGlobalFilter, setTrashGlobalFilter] = useState("");
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [loadingDetail, setLoadingDetail] = useState(false);
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const debouncedQ = useDebouncedValue(globalFilter, 350);
   const debouncedTrashQ = useDebouncedValue(trashGlobalFilter, 350);
+  const postColumnFilterQuery = useMemo(
+    () => buildPostsFilterQuery(columnFilters),
+    [columnFilters],
+  );
 
   const postsQuery = useQuery({
-    queryKey: ["media", "posts", "list", page, pageSize, debouncedQ],
+    queryKey: ["media", "posts", "list", page, pageSize, debouncedQ, postColumnFilterQuery],
     queryFn: async (): Promise<PagedResult<PostListRow>> =>
       normalizePaged(
         await api.http.get("/admin/posts", {
@@ -498,6 +514,12 @@ export default function PostsPage() {
             limit: pageSize,
             search: debouncedQ.trim() || undefined,
             status: "active",
+            ...Object.fromEntries(
+              Object.entries(postColumnFilterQuery).map(([key, value]) => [
+                `filter[${key}]`,
+                value,
+              ]),
+            ),
           },
         }),
       ),
@@ -610,11 +632,20 @@ export default function PostsPage() {
 
   useEffect(() => {
     setPage(1);
-  }, [debouncedQ, pageSize]);
+  }, [columnFilters, debouncedQ, pageSize]);
 
   useEffect(() => {
     setTrashPage(1);
   }, [debouncedTrashQ, trashPageSize]);
+
+  const handleColumnFiltersChange = useCallback<OnChangeFn<ColumnFiltersState>>(
+    (updater) => {
+      setColumnFilters((prev) =>
+        typeof updater === "function" ? updater(prev) : updater,
+      );
+    },
+    [],
+  );
 
   const openCreate = useCallback(() => {
     setForm(EMPTY_FORM);
@@ -722,6 +753,7 @@ export default function PostsPage() {
       {
         accessorKey: "title",
         header: "Tiêu đề",
+        meta: { filterPlaceholder: "Lọc tiêu đề…" },
         cell: ({ row }) => (
           <div className="space-y-1">
             <p className="font-medium">{row.original.title}</p>
@@ -750,6 +782,17 @@ export default function PostsPage() {
               Bản nháp
             </Badge>
           ),
+        filterFn: (row, id, v) => {
+          if (v == null || v === "") return true;
+          return String(row.getValue(id)) === String(v);
+        },
+        meta: {
+          filterVariant: "select",
+          selectOptions: [
+            { value: "true", label: "Đã xuất bản" },
+            { value: "false", label: "Bản nháp" },
+          ],
+        },
       },
       {
         accessorKey: "updatedAt",
@@ -785,7 +828,7 @@ export default function PostsPage() {
               onClick={() => void handleDelete(row.original)}
             >
               <Trash2 className="size-3.5" />
-              Xóa
+              Xóa tạm
             </Button>
           </div>
         ),
@@ -1309,6 +1352,8 @@ export default function PostsPage() {
             isLoading={postsQuery.isLoading}
             emptyLabel='Chưa có bài viết — bấm "Thêm bài viết".'
             manualFiltering
+            columnFilters={columnFilters}
+            onColumnFiltersChange={handleColumnFiltersChange}
             globalFilter={globalFilter}
             onGlobalFilterChange={setGlobalFilter}
             globalFilterPlaceholder="Tìm theo tiêu đề, slug..."

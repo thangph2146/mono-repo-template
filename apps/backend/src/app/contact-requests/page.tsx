@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import type { ColumnDef } from "@tanstack/react-table";
+import type { ColumnDef, ColumnFiltersState, OnChangeFn } from "@tanstack/react-table";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
@@ -20,7 +20,6 @@ import {
   ShieldCheck,
   Trash2,
   UserCircle,
-  UserRoundCog,
   X,
 } from "lucide-react";
 import { Badge } from "@ui/components/badge";
@@ -40,16 +39,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@ui/components/dialog";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@ui/components/alert-dialog";
 import { Input } from "@ui/components/input";
 import { Label } from "@ui/components/label";
 import { PageSection } from "@ui/components/layout";
@@ -68,8 +57,15 @@ import {
   TabsTrigger,
 } from "@ui/components/tabs";
 import { Textarea } from "@ui/components/textarea";
+import {
+  TypographyH1,
+  TypographyPLargeMuted,
+  TypographyPSmall,
+  TypographyPSmallMuted,
+} from "@ui/components/typography";
 import { AdminDataTable } from "@/components/admin-data-table";
 import { AdminTablePaginationFooter } from "@/components/admin-table-pagination-footer";
+import { AdminConfirmActionDialog } from "@/components/admin-confirm-action-dialog";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { api } from "@/lib/api";
 import { useAuth } from "@/providers/auth-provider";
@@ -115,6 +111,11 @@ type PagedResult<T> = {
   items: T[];
   total: number;
 };
+
+type ContactRequestConfirmAction =
+  | { kind: "delete"; row: ContactRequestRow }
+  | { kind: "restore"; row: ContactRequestRow }
+  | { kind: "purge"; row: ContactRequestRow };
 
 type ApiEnvelope<T> = {
   success?: boolean;
@@ -264,6 +265,21 @@ function priorityBadgeClass(value: ContactPriority): string {
   }
 }
 
+function buildContactFilterQuery(columnFilters: ColumnFiltersState): Record<string, string> {
+  const query: Record<string, string> = {};
+  for (const filter of columnFilters) {
+    const value = String(filter.value ?? "").trim();
+    if (!value) continue;
+    if (filter.id === "name") query.name = value;
+    else if (filter.id === "phone") query.phone = value;
+    else if (filter.id === "subject") query.subject = value;
+    else if (filter.id === "status") query.status = value;
+    else if (filter.id === "priority") query.priority = value;
+    else if (filter.id === "isRead") query.isRead = value === "read" ? "true" : "false";
+  }
+  return query;
+}
+
 function StatCard({
   label,
   value,
@@ -330,20 +346,19 @@ export default function ContactRequestsPage() {
   const [statusFilter, setStatusFilter] = useState<
     "all" | ContactStatus
   >("all");
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [detailOpen, setDetailOpen] = useState(false);
   const [form, setForm] = useState<ContactFormState>(EMPTY_FORM);
-  const [deleteTarget, setDeleteTarget] = useState<ContactRequestRow | null>(null);
-  const [restoreTarget, setRestoreTarget] = useState<ContactRequestRow | null>(
+  const [confirmAction, setConfirmAction] = useState<ContactRequestConfirmAction | null>(
     null,
   );
-  const [purgeTarget, setPurgeTarget] = useState<ContactRequestRow | null>(null);
 
   const debouncedGlobalFilter = useDebouncedValue(globalFilter, 300);
   const debouncedTrashGlobalFilter = useDebouncedValue(trashGlobalFilter, 300);
 
   useEffect(() => {
     setPage(1);
-  }, [debouncedGlobalFilter, pageSize, statusFilter]);
+  }, [columnFilters, debouncedGlobalFilter, pageSize, statusFilter]);
 
   useEffect(() => {
     setTrashPage(1);
@@ -357,6 +372,7 @@ export default function ContactRequestsPage() {
       pageSize,
       debouncedGlobalFilter,
       statusFilter,
+      columnFilters,
     ],
     queryFn: async (): Promise<PagedResult<ContactRequestRow>> =>
       normalizePaged(
@@ -366,6 +382,12 @@ export default function ContactRequestsPage() {
             limit: pageSize,
             search: debouncedGlobalFilter.trim() || undefined,
             status: statusFilter === "all" ? "active" : statusFilter,
+            ...Object.fromEntries(
+              Object.entries(buildContactFilterQuery(columnFilters)).map(([key, value]) => [
+                `filter[${key}]`,
+                value,
+              ]),
+            ),
           },
         }),
       ),
@@ -534,48 +556,47 @@ export default function ContactRequestsPage() {
     }
   };
 
-  const handleDelete = async (): Promise<void> => {
-    if (!deleteTarget) return;
+  const handleConfirmAction = useCallback(async (): Promise<void> => {
+    if (!confirmAction) return;
+    const { kind, row } = confirmAction;
     try {
-      await deleteMutation.mutateAsync(deleteTarget.id);
-      toast.success(`Đã đưa "${deleteTarget.subject}" vào thùng rác`);
-      setDeleteTarget(null);
+      if (kind === "delete") {
+        await deleteMutation.mutateAsync(row.id);
+        toast.success(`Đã đưa "${row.subject}" vào thùng rác`);
+      } else if (kind === "restore") {
+        await restoreMutation.mutateAsync(row.id);
+        toast.success(`Đã khôi phục "${row.subject}"`);
+      } else {
+        await purgeMutation.mutateAsync(row.id);
+        toast.success(`Đã xóa vĩnh viễn "${row.subject}"`);
+      }
+      setConfirmAction(null);
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Không xóa được liên hệ");
+      const fallback =
+        kind === "delete"
+          ? "Không xóa được liên hệ"
+          : kind === "restore"
+            ? "Không khôi phục được liên hệ"
+            : "Không xóa vĩnh viễn được liên hệ";
+      toast.error(error instanceof Error ? error.message : fallback);
     }
-  };
-
-  const handleRestore = async (): Promise<void> => {
-    if (!restoreTarget) return;
-    try {
-      await restoreMutation.mutateAsync(restoreTarget.id);
-      toast.success(`Đã khôi phục "${restoreTarget.subject}"`);
-      setRestoreTarget(null);
-    } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "Không khôi phục được liên hệ",
-      );
-    }
-  };
-
-  const handlePurge = async (): Promise<void> => {
-    if (!purgeTarget) return;
-    try {
-      await purgeMutation.mutateAsync(purgeTarget.id);
-      toast.success(`Đã xóa vĩnh viễn "${purgeTarget.subject}"`);
-      setPurgeTarget(null);
-    } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "Không xóa vĩnh viễn được liên hệ",
-      );
-    }
-  };
+  }, [confirmAction, deleteMutation, purgeMutation, restoreMutation]);
 
   const clearListFilters = useCallback(() => {
     setGlobalFilter("");
     setStatusFilter("all");
+    setColumnFilters([]);
     setPage(1);
   }, []);
+
+  const handleColumnFiltersChange = useCallback<OnChangeFn<ColumnFiltersState>>(
+    (updater) => {
+      setColumnFilters((prev) =>
+        typeof updater === "function" ? updater(prev) : updater,
+      );
+    },
+    [],
+  );
 
   const clearTrashFilters = useCallback(() => {
     setTrashGlobalFilter("");
@@ -587,6 +608,7 @@ export default function ContactRequestsPage() {
       {
         accessorKey: "name",
         header: "Người gửi",
+        meta: { filterPlaceholder: "Lọc theo tên…" },
         cell: ({ row }) => (
           <div className="min-w-0">
             <div className="flex items-center gap-2 min-w-0">
@@ -603,6 +625,7 @@ export default function ContactRequestsPage() {
       {
         accessorKey: "phone",
         header: "Liên hệ",
+        meta: { filterPlaceholder: "Lọc số điện thoại…" },
         cell: ({ row }) =>
           row.original.phone ? (
             <span className="flex items-center gap-2 font-mono text-xs">
@@ -616,6 +639,7 @@ export default function ContactRequestsPage() {
       {
         accessorKey: "subject",
         header: "Chủ đề",
+        meta: { filterPlaceholder: "Lọc chủ đề…" },
         cell: ({ row }) => (
           <div className="min-w-0">
             <p className="truncate font-medium">{row.original.subject}</p>
@@ -633,6 +657,13 @@ export default function ContactRequestsPage() {
             {statusLabel(row.original.status)}
           </Badge>
         ),
+        meta: {
+          filterVariant: "select",
+          selectOptions: STATUS_OPTIONS.map((item) => ({
+            value: item.value,
+            label: item.label,
+          })),
+        },
       },
       {
         accessorKey: "priority",
@@ -645,11 +676,19 @@ export default function ContactRequestsPage() {
             {priorityLabel(row.original.priority)}
           </Badge>
         ),
+        meta: {
+          filterVariant: "select",
+          selectOptions: PRIORITY_OPTIONS.map((item) => ({
+            value: item.value,
+            label: item.label,
+          })),
+        },
       },
       {
         id: "assignedToName",
         accessorFn: (row) => row.assignedToName ?? "",
         header: "Phụ trách",
+        enableColumnFilter: false,
         cell: ({ row }) =>
           row.original.assignedTo ? (
             <div className="min-w-0">
@@ -689,6 +728,13 @@ export default function ContactRequestsPage() {
               Chưa đọc
             </Badge>
           ),
+        meta: {
+          filterVariant: "select",
+          selectOptions: [
+            { value: "read", label: "Đã đọc" },
+            { value: "unread", label: "Chưa đọc" },
+          ],
+        },
       },
       {
         id: "actions",
@@ -714,10 +760,10 @@ export default function ContactRequestsPage() {
                 variant="outline"
                 size="sm"
                 className="h-8 gap-1 rounded-lg border-destructive/40 text-destructive hover:bg-destructive/10"
-                onClick={() => setDeleteTarget(row.original)}
+                onClick={() => setConfirmAction({ kind: "delete", row: row.original })}
               >
                 <Trash2 className="size-3.5" />
-                Xóa
+                Xóa tạm
               </Button>
             ) : null}
           </div>
@@ -773,7 +819,7 @@ export default function ContactRequestsPage() {
                 variant="outline"
                 size="sm"
                 className="h-8 gap-1 rounded-lg"
-                onClick={() => setRestoreTarget(row.original)}
+                onClick={() => setConfirmAction({ kind: "restore", row: row.original })}
               >
                 <ArchiveRestore className="size-3.5" />
                 Khôi phục
@@ -785,7 +831,7 @@ export default function ContactRequestsPage() {
                 variant="outline"
                 size="sm"
                 className="h-8 gap-1 rounded-lg border-destructive/40 text-destructive hover:bg-destructive/10"
-                onClick={() => setPurgeTarget(row.original)}
+                onClick={() => setConfirmAction({ kind: "purge", row: row.original })}
               >
                 <Trash2 className="size-3.5" />
                 Xóa hẳn
@@ -831,10 +877,10 @@ export default function ContactRequestsPage() {
   if (!canRead) {
     return (
       <div className={ADMIN_PAGE_FORM_COLUMN_CLASS}>
-        <h1 className={ADMIN_PAGE_TITLE_PRIMARY_CLASS}>
+        <TypographyH1 className={ADMIN_PAGE_TITLE_PRIMARY_CLASS}>
           <Headset className={ADMIN_PAGE_TITLE_ICON_SM_CLASS} aria-hidden />
           Liên hệ hỗ trợ
-        </h1>
+        </TypographyH1>
         <Card className="border-destructive/30 bg-destructive/5">
           <CardHeader className="flex flex-row items-start gap-3 space-y-0">
             <AlertCircle className="mt-0.5 size-5 shrink-0 text-destructive" />
@@ -857,41 +903,14 @@ export default function ContactRequestsPage() {
   return (
     <PageSection max="full" className="mx-auto min-w-0 space-y-6">
       <div>
-        <h1 className={ADMIN_PAGE_TITLE_PRIMARY_CLASS}>
+        <TypographyH1 className={ADMIN_PAGE_TITLE_PRIMARY_CLASS}>
           <Headset className={ADMIN_PAGE_TITLE_ICON_CLASS} aria-hidden />
           Liên hệ hỗ trợ
-        </h1>
-        <p className={ADMIN_PAGE_SUBTITLE_CLASS}>
+        </TypographyH1>
+        <TypographyPLargeMuted className={ADMIN_PAGE_SUBTITLE_CLASS}>
           Quản lý các yêu cầu liên hệ hỗ trợ từ hệ thống, theo dõi trạng thái xử lý,
           mức độ ưu tiên và người phụ trách.
-        </p>
-      </div>
-
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <StatCard
-          label="Liên hệ hiện tại"
-          value={String(listTotal)}
-          hint="Tổng số bản ghi theo bộ lọc active hiện tại"
-          icon={Headset}
-        />
-        <StatCard
-          label="Chưa đọc"
-          value={String(unreadCount)}
-          hint="Cần phản hồi hoặc rà soát sớm"
-          icon={Mail}
-        />
-        <StatCard
-          label="Khẩn cấp"
-          value={String(urgentCount)}
-          hint="Ưu tiên mức URGENT trong trang hiện tại"
-          icon={AlertCircle}
-        />
-        <StatCard
-          label="Đã phân công"
-          value={String(assignedCount)}
-          hint="Đã có người phụ trách xử lý"
-          icon={UserRoundCog}
-        />
+        </TypographyPLargeMuted>
       </div>
 
       <Tabs
@@ -940,26 +959,17 @@ export default function ContactRequestsPage() {
         </div>
 
         <TabsContent value="list" className="mt-0 space-y-4">
-          <p className="flex items-start gap-2 text-sm text-muted-foreground">
-            <AlertCircle className="mt-0.5 size-4 shrink-0 text-primary/80" />
-            <span>
-              Tìm kiếm đang gọi API theo phân trang. Mở từng dòng để cập nhật trạng
-              thái, ưu tiên, cờ đã đọc và người phụ trách theo đúng contract
-              `contact_requests`.
-            </span>
-          </p>
-
           {listQuery.isError ? (
             <div className="rounded-lg border border-destructive/20 bg-destructive/5 py-12 text-center">
               <AlertCircle className="mx-auto mb-2 size-10 text-destructive" />
-              <p className="text-lg font-bold text-destructive">
+              <TypographyPSmall className="text-lg font-bold text-destructive">
                 Không tải được danh sách liên hệ hỗ trợ
-              </p>
-              <p className="mt-1 text-sm text-muted-foreground">
+              </TypographyPSmall>
+              <TypographyPLargeMuted className="mt-1 text-sm">
                 {listQuery.error instanceof Error
                   ? listQuery.error.message
                   : "Lỗi không xác định"}
-              </p>
+              </TypographyPLargeMuted>
             </div>
           ) : (
             <AdminDataTable<ContactRequestRow>
@@ -968,34 +978,13 @@ export default function ContactRequestsPage() {
               isLoading={listQuery.isLoading}
               emptyLabel="Không có liên hệ hỗ trợ khớp bộ lọc."
               manualFiltering
+              columnFilters={columnFilters}
+              onColumnFiltersChange={handleColumnFiltersChange}
               globalFilter={globalFilter}
               onGlobalFilterChange={setGlobalFilter}
               globalFilterPlaceholder="Tìm theo người gửi, email, SĐT, chủ đề..."
               filterToolbarExtra={
                 <div className="flex flex-wrap items-end gap-2">
-                  <div className="flex flex-col gap-1.5">
-                    <span className="text-xs font-semibold text-muted-foreground">
-                      Trạng thái
-                    </span>
-                    <Select
-                      value={statusFilter}
-                      onValueChange={(value) =>
-                        setStatusFilter((value as "all" | ContactStatus) ?? "all")
-                      }
-                    >
-                      <SelectTrigger className="h-9 min-w-[12rem] rounded-lg">
-                        <SelectValue placeholder="Trạng thái" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">Tất cả active</SelectItem>
-                        {STATUS_OPTIONS.map((option) => (
-                          <SelectItem key={option.value} value={option.value}>
-                            {option.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
                   <Button
                     type="button"
                     variant="outline"
@@ -1018,14 +1007,14 @@ export default function ContactRequestsPage() {
           {trashQuery.isError ? (
             <div className="rounded-lg border border-destructive/20 bg-destructive/5 py-12 text-center">
               <AlertCircle className="mx-auto mb-2 size-10 text-destructive" />
-              <p className="text-lg font-bold text-destructive">
+              <TypographyPSmall className="text-lg font-bold text-destructive">
                 Không tải được thùng rác liên hệ hỗ trợ
-              </p>
-              <p className="mt-1 text-sm text-muted-foreground">
+              </TypographyPSmall>
+              <TypographyPLargeMuted className="mt-1 text-sm">
                 {trashQuery.error instanceof Error
                   ? trashQuery.error.message
                   : "Lỗi không xác định"}
-              </p>
+              </TypographyPLargeMuted>
             </div>
           ) : (
             <AdminDataTable<ContactRequestRow>
@@ -1226,10 +1215,12 @@ export default function ContactRequestsPage() {
             </div>
             <div className="flex items-center justify-between gap-3 rounded-lg border border-border px-4 py-3 md:col-span-2">
               <div className="min-w-0">
-                <p className="text-sm font-semibold">Đánh dấu đã đọc</p>
-                <p className="text-xs text-muted-foreground">
+                <TypographyPSmall className="text-sm font-semibold">
+                  Đánh dấu đã đọc
+                </TypographyPSmall>
+                <TypographyPSmallMuted>
                   Bật khi yêu cầu đã được tiếp nhận và mở xem.
-                </p>
+                </TypographyPSmallMuted>
               </div>
               <Switch
                 checked={form.isRead}
@@ -1270,137 +1261,68 @@ export default function ContactRequestsPage() {
         </DialogContent>
       </Dialog>
 
-      <AlertDialog
-        open={deleteTarget != null}
+      <AdminConfirmActionDialog
+        open={confirmAction != null}
         onOpenChange={(open) => {
-          if (!open) setDeleteTarget(null);
+          if (!open) setConfirmAction(null);
         }}
-      >
-        <AlertDialogContent className={ADMIN_ALERT_DIALOG_CONTENT_CLASS}>
-          <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2 text-left">
-              <Archive className="size-5 shrink-0 text-destructive" />
-              Đưa liên hệ vào thùng rác?
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              {deleteTarget
-                ? `"${deleteTarget.subject}" sẽ bị xóa tạm. Có thể khôi phục từ tab Thùng rác.`
-                : null}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter className="gap-2 sm:gap-0">
-            <AlertDialogCancel className="gap-2 rounded-lg">
-              <X className="size-4" />
-              Hủy
-            </AlertDialogCancel>
-            <AlertDialogAction
-              className="gap-2 rounded-lg bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              onClick={(event) => {
-                event.preventDefault();
-                void handleDelete();
-              }}
-              disabled={deleteMutation.isPending}
-            >
-              {deleteMutation.isPending ? (
-                <Loader2 className="size-4 animate-spin" />
-              ) : (
-                <>
-                  <Archive className="size-4" />
-                  Xóa tạm
-                </>
-              )}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      <AlertDialog
-        open={restoreTarget != null}
-        onOpenChange={(open) => {
-          if (!open) setRestoreTarget(null);
+        contentClassName={ADMIN_ALERT_DIALOG_CONTENT_CLASS}
+        footerClassName="gap-2"
+        icon={
+          confirmAction?.kind === "delete" ? (
+            <Archive className="size-5 shrink-0 text-destructive" />
+          ) : confirmAction?.kind === "restore" ? (
+            <ArchiveRestore className="size-5 shrink-0 text-primary" />
+          ) : confirmAction?.kind === "purge" ? (
+            <Trash2 className="size-5 shrink-0 text-destructive" />
+          ) : null
+        }
+        title={
+          confirmAction?.kind === "delete"
+            ? "Đưa liên hệ vào thùng rác?"
+            : confirmAction?.kind === "restore"
+              ? "Khôi phục liên hệ?"
+              : confirmAction?.kind === "purge"
+                ? "Xóa vĩnh viễn liên hệ?"
+                : ""
+        }
+        description={
+          confirmAction?.kind === "delete"
+            ? `"${confirmAction.row.subject}" sẽ bị xóa tạm. Có thể khôi phục từ tab Thùng rác.`
+            : confirmAction?.kind === "restore"
+              ? `Khôi phục "${confirmAction.row.subject}" về danh sách đang xử lý.`
+              : confirmAction?.kind === "purge"
+                ? `"${confirmAction.row.subject}" sẽ bị xóa khỏi cơ sở dữ liệu và không thể hoàn tác.`
+                : null
+        }
+        confirmLabel={
+          confirmAction?.kind === "delete"
+            ? "Xóa tạm"
+            : confirmAction?.kind === "restore"
+              ? "Khôi phục"
+              : confirmAction?.kind === "purge"
+                ? "Xóa vĩnh viễn"
+                : "Xác nhận"
+        }
+        confirmDestructive={
+          confirmAction?.kind === "delete" || confirmAction?.kind === "purge"
+        }
+        confirmDisabled={
+          deleteMutation.isPending || restoreMutation.isPending || purgeMutation.isPending
+        }
+        confirmLoading={
+          confirmAction?.kind === "delete"
+            ? deleteMutation.isPending
+            : confirmAction?.kind === "restore"
+              ? restoreMutation.isPending
+              : confirmAction?.kind === "purge"
+                ? purgeMutation.isPending
+                : false
+        }
+        onConfirm={() => {
+          void handleConfirmAction();
         }}
-      >
-        <AlertDialogContent className={ADMIN_ALERT_DIALOG_CONTENT_CLASS}>
-          <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2 text-left">
-              <ArchiveRestore className="size-5 shrink-0 text-primary" />
-              Khôi phục liên hệ?
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              {restoreTarget
-                ? `Khôi phục "${restoreTarget.subject}" về danh sách đang xử lý.`
-                : null}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter className="gap-2 sm:gap-0">
-            <AlertDialogCancel className="gap-2 rounded-lg">
-              <X className="size-4" />
-              Hủy
-            </AlertDialogCancel>
-            <AlertDialogAction
-              className="gap-2 rounded-lg"
-              onClick={(event) => {
-                event.preventDefault();
-                void handleRestore();
-              }}
-              disabled={restoreMutation.isPending}
-            >
-              {restoreMutation.isPending ? (
-                <Loader2 className="size-4 animate-spin" />
-              ) : (
-                <>
-                  <ArchiveRestore className="size-4" />
-                  Khôi phục
-                </>
-              )}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      <AlertDialog
-        open={purgeTarget != null}
-        onOpenChange={(open) => {
-          if (!open) setPurgeTarget(null);
-        }}
-      >
-        <AlertDialogContent className={ADMIN_ALERT_DIALOG_CONTENT_CLASS}>
-          <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2 text-left">
-              <Trash2 className="size-5 shrink-0 text-destructive" />
-              Xóa vĩnh viễn liên hệ?
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              {purgeTarget
-                ? `"${purgeTarget.subject}" sẽ bị xóa khỏi cơ sở dữ liệu và không thể hoàn tác.`
-                : null}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter className="gap-2 sm:gap-0">
-            <AlertDialogCancel className="gap-2 rounded-lg">
-              <X className="size-4" />
-              Hủy
-            </AlertDialogCancel>
-            <AlertDialogAction
-              className="gap-2 rounded-lg bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              onClick={(event) => {
-                event.preventDefault();
-                void handlePurge();
-              }}
-              disabled={purgeMutation.isPending}
-            >
-              {purgeMutation.isPending ? (
-                <Loader2 className="size-4 animate-spin" />
-              ) : (
-                <>
-                  <Trash2 className="size-4" />
-                  Xóa vĩnh viễn
-                </>
-              )}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      />
     </PageSection>
   );
 }

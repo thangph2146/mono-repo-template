@@ -12,12 +12,14 @@ import {
   type ExpandedState,
   type Header,
   type OnChangeFn,
+  type RowSelectionState,
   type Row,
   type SortingState,
 } from "@tanstack/react-table";
 import { ChevronDown, ChevronRight, Download } from "lucide-react";
 import { useCallback, useMemo, useState, type ReactNode } from "react";
 import { Button } from "@ui/components/button";
+import { Checkbox } from "@ui/components/checkbox";
 import { Input } from "@ui/components/input";
 import {
   Select,
@@ -42,13 +44,28 @@ import {
   csvBaseToXlsxFilename,
   downloadXlsxFile,
 } from "@/lib/export-xlsx";
+import { Separator } from "@ui/components/separator";
+import { TypographyPSmall } from "@ui/components/typography";
 
 const ALL_SELECT = "__all__";
+
+export type AdminDataTableBulkAction<TData> = {
+  id: string;
+  label: string;
+  onAction: (selectedRows: TData[]) => void | Promise<void>;
+  icon?: ReactNode;
+  variant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link";
+  className?: string;
+  requiresSelection?: boolean;
+  clearSelectionOnSuccess?: boolean;
+  disabled?: (selectedRows: TData[]) => boolean;
+};
 
 export type AdminDataTableProps<TData> = {
   data: TData[];
   columns: ColumnDef<TData, unknown>[];
   getSubRows?: (row: TData) => TData[] | undefined;
+  getRowId?: (originalRow: TData, index: number, parent?: Row<TData>) => string;
   isLoading?: boolean;
   emptyLabel?: string;
   /** Mở toàn bộ nhánh cây lúc đầu */
@@ -71,6 +88,13 @@ export type AdminDataTableProps<TData> = {
    * Hiện nút xuất CSV + Excel (dữ liệu đúng mảng `data` hiện tại — thường là một trang/lớp đã lọc).
    */
   csvExport?: boolean | { fileName?: string; sheetName?: string };
+  /** Bật cột chọn dòng cho thao tác hàng loạt */
+  rowSelectionEnabled?: boolean;
+  /** Kiểm soát dòng nào được phép tick */
+  canSelectRow?: (row: Row<TData>) => boolean;
+  selectedRowIds?: RowSelectionState;
+  onSelectedRowIdsChange?: OnChangeFn<RowSelectionState>;
+  bulkActions?: AdminDataTableBulkAction<TData>[];
 };
 
 function includesText(a: unknown, q: string): boolean {
@@ -107,19 +131,30 @@ export function AdminDataTable<TData>({
   filterToolbarExtra,
   footer,
   csvExport,
+  rowSelectionEnabled = false,
+  canSelectRow,
+  getRowId,
+  selectedRowIds: selectedRowIdsControlled,
+  onSelectedRowIdsChange,
+  bulkActions = [],
 }: AdminDataTableProps<TData>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFiltersInternal, setColumnFiltersInternal] =
     useState<ColumnFiltersState>([]);
   const [globalFilterInternal, setGlobalFilterInternal] = useState("");
+  const [selectedRowIdsInternal, setSelectedRowIdsInternal] = useState<RowSelectionState>({});
+  const [runningBulkActionId, setRunningBulkActionId] = useState<string | null>(null);
   const columnFilters = columnFiltersControlled ?? columnFiltersInternal;
   const setColumnFilters =
     onColumnFiltersChange ?? setColumnFiltersInternal;
   const globalFilter = globalFilterControlled ?? globalFilterInternal;
   const setGlobalFilter = onGlobalFilterChange ?? setGlobalFilterInternal;
+  const selectedRowIds = selectedRowIdsControlled ?? selectedRowIdsInternal;
+  const setSelectedRowIds = onSelectedRowIdsChange ?? setSelectedRowIdsInternal;
   const showGlobalFilter =
     getGlobalFilterText != null || onGlobalFilterChange != null;
   const csvExportEnabled = Boolean(csvExport);
+  const hasBulkActions = bulkActions.length > 0;
   const exportFileNameProp =
     typeof csvExport === "object" && csvExport != null
       ? csvExport.fileName?.trim()
@@ -196,20 +231,63 @@ export function AdminDataTable<TData>({
     [],
   );
 
+  const selectionColumn = useMemo<ColumnDef<TData, unknown>>(
+    () => ({
+      id: "_select",
+      header: ({ table }) => (
+        <Checkbox
+          checked={table.getIsAllPageRowsSelected()}
+          indeterminate={
+            !table.getIsAllPageRowsSelected() && table.getIsSomePageRowsSelected()
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(value === true)}
+          aria-label="Chọn tất cả dòng"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(value === true)}
+          disabled={!row.getCanSelect()}
+          aria-label="Chọn dòng"
+        />
+      ),
+      enableSorting: false,
+      enableColumnFilter: false,
+      meta: { disableColumnFilter: true },
+      size: 44,
+    }),
+    [],
+  );
+
   const tableColumns = useMemo(
-    () => (getSubRows ? [expanderColumn, ...columns] : columns),
-    [columns, expanderColumn, getSubRows],
+    () => {
+      const built: ColumnDef<TData, unknown>[] = [];
+      if (rowSelectionEnabled) built.push(selectionColumn);
+      if (getSubRows) built.push(expanderColumn);
+      built.push(...columns);
+      return built;
+    },
+    [columns, expanderColumn, getSubRows, rowSelectionEnabled, selectionColumn],
   );
 
   const table = useReactTable({
     data,
     columns: tableColumns,
-    state: { sorting, columnFilters, globalFilter, expanded },
+    state: {
+      sorting,
+      columnFilters,
+      globalFilter,
+      expanded,
+      rowSelection: selectedRowIds,
+    },
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onGlobalFilterChange: setGlobalFilter,
     onExpandedChange: setExpanded,
+    onRowSelectionChange: setSelectedRowIds,
     getSubRows,
+    getRowId,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -235,10 +313,34 @@ export function AdminDataTable<TData>({
         return includesText(row.getValue(columnId), String(filterValue));
       },
     },
+    enableRowSelection: rowSelectionEnabled
+      ? (row) => (canSelectRow ? canSelectRow(row) : true)
+      : false,
   });
 
   const headerGroups = table.getHeaderGroups();
   const rows = table.getRowModel().rows;
+  const selectedRows = table.getSelectedRowModel().rows.map((row) => row.original);
+  const selectedCount = selectedRows.length;
+
+  const runBulkAction = useCallback(
+    async (action: AdminDataTableBulkAction<TData>) => {
+      if (runningBulkActionId != null) return;
+      const requiresSelection = action.requiresSelection ?? true;
+      if (requiresSelection && selectedRows.length === 0) return;
+      if (action.disabled?.(selectedRows)) return;
+      setRunningBulkActionId(action.id);
+      try {
+        await action.onAction(selectedRows);
+        if (action.clearSelectionOnSuccess ?? true) {
+          table.resetRowSelection();
+        }
+      } finally {
+        setRunningBulkActionId(null);
+      }
+    },
+    [runningBulkActionId, selectedRows, table],
+  );
 
   const filterableHeaders = table
     .getFlatHeaders()
@@ -333,7 +435,8 @@ export function AdminDataTable<TData>({
       {(showGlobalFilter ||
         filterableHeaders.length > 0 ||
         filterToolbarExtra ||
-        csvExportEnabled) && (
+        csvExportEnabled ||
+        (rowSelectionEnabled && hasBulkActions)) && (
         <div className="rounded-lg border border-border bg-card p-3 sm:p-4 space-y-4">
           {showGlobalFilter || filterToolbarExtra || csvExportEnabled ? (
             <div className="flex flex-wrap items-end gap-3">
@@ -390,11 +493,48 @@ export function AdminDataTable<TData>({
               </div>
             </div>
           ) : null}
+          {rowSelectionEnabled && hasBulkActions ? (
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border/70 bg-muted/20 px-3 py-2">
+              <p className="text-xs font-medium text-muted-foreground">
+                Đã chọn <span className="font-semibold text-foreground">{selectedCount}</span> dòng
+              </p>
+              <div className="flex flex-wrap items-center gap-2">
+                {bulkActions.map((action) => {
+                  const requiresSelection = action.requiresSelection ?? true;
+                  const disabledBySelection = requiresSelection && selectedCount === 0;
+                  const disabledByAction = action.disabled?.(selectedRows) ?? false;
+                  const isRunning = runningBulkActionId === action.id;
+                  return (
+                    <Button
+                      key={action.id}
+                      type="button"
+                      size="sm"
+                      variant={action.variant ?? "outline"}
+                      className={cn("h-8 gap-1.5 rounded-lg", action.className)}
+                      disabled={
+                        isRunning ||
+                        runningBulkActionId != null ||
+                        disabledBySelection ||
+                        disabledByAction
+                      }
+                      onClick={() => {
+                        void runBulkAction(action);
+                      }}
+                    >
+                      {action.icon}
+                      {action.label}
+                    </Button>
+                  );
+                })}
+              </div>
+            </div>
+          ) : null}
           {filterableHeaders.length > 0 && (
             <div className="space-y-2">
-              <p className="text-xs font-semibold text-muted-foreground">
+              <Separator />
+              <TypographyPSmall className="font-semibold">
                 Lọc theo cột
-              </p>
+              </TypographyPSmall>
               <div className="flex flex-wrap gap-x-4 gap-y-3 items-end">
                 {filterableHeaders.map((header) => (
                   <div

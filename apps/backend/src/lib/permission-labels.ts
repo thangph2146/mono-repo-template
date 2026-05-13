@@ -24,10 +24,16 @@ export const PERMISSION_LABEL_VI: Record<string, string> = {
   [PERMISSION_CODES.CONTACT_REQUESTS_EXPORT]: "Xuất liên hệ hỗ trợ",
   [PERMISSION_CODES.CONTACT_REQUESTS_ASSIGN]: "Phân công liên hệ hỗ trợ",
   [PERMISSION_CODES.CONTACT_REQUESTS_RESTORE]: "Khôi phục liên hệ hỗ trợ",
+  [PERMISSION_CODES.TAGS_VIEW]: "Xem thẻ nội dung",
+  [PERMISSION_CODES.TAGS_CREATE]: "Tạo thẻ nội dung",
+  [PERMISSION_CODES.TAGS_UPDATE]: "Cập nhật thẻ nội dung",
+  [PERMISSION_CODES.TAGS_DELETE]: "Xóa thẻ nội dung",
+  [PERMISSION_CODES.TAGS_MANAGE]: "Quản lý thẻ nội dung",
+  [PERMISSION_CODES.TAGS_EXPORT]: "Xuất danh sách thẻ",
 };
 
 const RESOURCE_LABEL_VI: Record<string, string> = {
-  accounts: "tài khoản",
+  accounts: "tài khoản quản trị",
   admission_results: "kết quả trúng tuyển",
   posts: "bài viết",
   comments: "bình luận",
@@ -95,4 +101,20 @@ function buildDynamicPermissionLabel(code: string): string {
 
 export function permissionLabelVi(code: string): string {
   return PERMISSION_LABEL_VI[code] ?? buildDynamicPermissionLabel(code);
+}
+
+/** Phần resource trước dấu `:`, ví dụ `accounts:manage` → `accounts`. */
+export function permissionGroupKey(code: string): string {
+  const i = code.indexOf(":");
+  if (i <= 0) return code.trim() || "other";
+  return code.slice(0, i);
+}
+
+/** Tiêu đề nhóm (resource) cho UI ma trận quyền. */
+export function permissionGroupLabelVi(groupKey: string): string {
+  const mapped = RESOURCE_LABEL_VI[groupKey];
+  if (mapped) {
+    return mapped.charAt(0).toUpperCase() + mapped.slice(1);
+  }
+  return titleCaseToken(groupKey);
 }

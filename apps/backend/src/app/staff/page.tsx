@@ -56,16 +56,6 @@ import {
   DialogTitle,
 } from "@ui/components/dialog";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@ui/components/alert-dialog";
-import {
   Select,
   SelectContent,
   SelectItem,
@@ -78,13 +68,9 @@ import {
   TabsList,
   TabsTrigger,
 } from "@ui/components/tabs";
-import {
-  Table,
-  TableBody,
-  TableCell,
-} from "@ui/components/table";
 import { AdminDataTable } from "@/components/admin-data-table";
 import { AdminTablePaginationFooter } from "@/components/admin-table-pagination-footer";
+import { AdminConfirmActionDialog } from "@/components/admin-confirm-action-dialog";
 import { ApiError, type User } from "@/lib/api";
 import { useAuth } from "@/providers/auth-provider";
 import {
@@ -115,6 +101,18 @@ import {
   ADMIN_PAGE_TITLE_ICON_SM_CLASS,
   ADMIN_PAGE_TITLE_PRIMARY_CLASS,
 } from "@ui/lib/layout-shell";
+
+function buildUsersFilterQuery(columnFilters: ColumnFiltersState): Record<string, string> {
+  const query: Record<string, string> = {};
+  for (const filter of columnFilters) {
+    const value = String(filter.value ?? "").trim();
+    if (!value) continue;
+    if (filter.id === "fullName") query.name = value;
+    else if (filter.id === "email") query.email = value;
+    else if (filter.id === "isActive") query.isActive = value;
+  }
+  return query;
+}
 
 export default function StaffPage() {
   const { user: session } = useAuth();
@@ -154,8 +152,9 @@ export default function StaffPage() {
       q: debouncedGlobalFilter.trim() || undefined,
       page: staffPage,
       limit: staffPageSize,
+      filters: buildUsersFilterQuery(columnFilters),
     }),
-    [debouncedGlobalFilter, staffPage, staffPageSize],
+    [columnFilters, debouncedGlobalFilter, staffPage, staffPageSize],
   );
 
   const trashListParams = useMemo(
@@ -524,7 +523,7 @@ export default function StaffPage() {
                     : "Xoá tạm"
                 }
               >
-                <Trash2 className="size-3.5" aria-hidden /> Xóa
+                <Trash2 className="size-3.5" aria-hidden /> Xóa tạm
               </Button>
             </div>
           );
@@ -1177,147 +1176,83 @@ export default function StaffPage() {
         </DialogContent>
       </Dialog>
 
-      <AlertDialog
+      <AdminConfirmActionDialog
         open={deleteTarget != null}
-        onOpenChange={(o) => {
-          if (!o) setDeleteTarget(null);
+        onOpenChange={(open) => {
+          if (!open) setDeleteTarget(null);
         }}
-      >
-        <AlertDialogContent className={ADMIN_ALERT_DIALOG_CONTENT_CLASS}>
-          <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2 text-left">
-              <Archive className="size-5 shrink-0 text-destructive" aria-hidden />
-              Đưa tài khoản vào thùng rác?
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              {deleteTarget ? (
-                <>
-                  <strong>{deleteTarget.fullName}</strong> ({deleteTarget.email}
-                  ) sẽ không đăng nhập được. Có thể khôi phục trong tab Thùng rác.
-                </>
-              ) : null}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter className="gap-2">
-            <AlertDialogCancel className="rounded-lg gap-2">
-              <X className="size-4" aria-hidden />
-              Huỷ
-            </AlertDialogCancel>
-            <AlertDialogAction
-              className="rounded-lg gap-2 bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              onClick={(e) => {
-                e.preventDefault();
-                void handleDelete();
-              }}
-              disabled={deleteUser.isPending}
-            >
-              {deleteUser.isPending ? (
-                <Loader2 className="size-4 animate-spin" aria-hidden />
-              ) : (
-                <>
-                  <Archive className="size-4" aria-hidden />
-                  Xóa tạm
-                </>
-              )}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        contentClassName={ADMIN_ALERT_DIALOG_CONTENT_CLASS}
+        footerClassName="gap-2"
+        icon={<Archive className="size-5 shrink-0 text-destructive" aria-hidden />}
+        title="Đưa tài khoản vào thùng rác?"
+        description={
+          deleteTarget ? (
+            <>
+              <strong>{deleteTarget.fullName}</strong> ({deleteTarget.email}) sẽ không đăng nhập
+              được. Có thể khôi phục trong tab Thùng rác.
+            </>
+          ) : null
+        }
+        confirmLabel="Xóa tạm"
+        confirmDestructive
+        confirmDisabled={deleteUser.isPending}
+        confirmLoading={deleteUser.isPending}
+        onConfirm={() => {
+          void handleDelete();
+        }}
+      />
 
-      <AlertDialog
+      <AdminConfirmActionDialog
         open={purgeTarget != null}
-        onOpenChange={(o) => {
-          if (!o) setPurgeTarget(null);
+        onOpenChange={(open) => {
+          if (!open) setPurgeTarget(null);
         }}
-      >
-        <AlertDialogContent className={ADMIN_ALERT_DIALOG_CONTENT_CLASS}>
-          <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2 text-left">
-              <Trash2 className="size-5 shrink-0 text-destructive" aria-hidden />
-              Xóa vĩnh viễn tài khoản?
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              {purgeTarget ? (
-                <>
-                  Tài khoản <strong>{purgeTarget.fullName}</strong> (
-                  {purgeTarget.email}) sẽ bị xoá khỏi cơ sở dữ liệu. Các đơn hàng
-                  liên quan sẽ được gỡ liên kết khách / shipper. Không thể hoàn tác.
-                </>
-              ) : null}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter className="gap-2 sm:gap-0">
-            <AlertDialogCancel className="rounded-lg gap-2">
-              <X className="size-4" aria-hidden />
-              Huỷ
-            </AlertDialogCancel>
-            <AlertDialogAction
-              className="rounded-lg gap-2 bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              onClick={(e) => {
-                e.preventDefault();
-                void handlePurgeTrashedUser();
-              }}
-              disabled={purgeTrashedUser.isPending}
-            >
-              {purgeTrashedUser.isPending ? (
-                <Loader2 className="size-4 animate-spin" aria-hidden />
-              ) : (
-                <>
-                  <Trash2 className="size-4" aria-hidden />
-                  Xóa vĩnh viễn
-                </>
-              )}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        contentClassName={ADMIN_ALERT_DIALOG_CONTENT_CLASS}
+        footerClassName="gap-2 sm:gap-0"
+        icon={<Trash2 className="size-5 shrink-0 text-destructive" aria-hidden />}
+        title="Xóa vĩnh viễn tài khoản?"
+        description={
+          purgeTarget ? (
+            <>
+              Tài khoản <strong>{purgeTarget.fullName}</strong> ({purgeTarget.email}) sẽ bị xoá khỏi
+              cơ sở dữ liệu. Các đơn hàng liên quan sẽ được gỡ liên kết khách / shipper. Không thể
+              hoàn tác.
+            </>
+          ) : null
+        }
+        confirmLabel="Xóa vĩnh viễn"
+        confirmDestructive
+        confirmDisabled={purgeTrashedUser.isPending}
+        confirmLoading={purgeTrashedUser.isPending}
+        onConfirm={() => {
+          void handlePurgeTrashedUser();
+        }}
+      />
 
-      <AlertDialog
+      <AdminConfirmActionDialog
         open={restoreTarget != null}
-        onOpenChange={(o) => {
-          if (!o) setRestoreTarget(null);
+        onOpenChange={(open) => {
+          if (!open) setRestoreTarget(null);
         }}
-      >
-        <AlertDialogContent className={ADMIN_ALERT_DIALOG_CONTENT_CLASS}>
-          <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2 text-left">
-              <ArchiveRestore className="size-5 shrink-0 text-primary" aria-hidden />
-              Khôi phục tài khoản?
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              {restoreTarget ? (
-                <>
-                  Đưa <strong>{restoreTarget.fullName}</strong> (
-                  {restoreTarget.email}) trở lại hoạt động.
-                </>
-              ) : null}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter className="gap-2 sm:gap-0">
-            <AlertDialogCancel className="rounded-lg gap-2">
-              <X className="size-4" aria-hidden />
-              Huỷ
-            </AlertDialogCancel>
-            <AlertDialogAction
-              className="rounded-lg gap-2"
-              onClick={(e) => {
-                e.preventDefault();
-                void handleRestoreUser();
-              }}
-              disabled={restoreUser.isPending}
-            >
-              {restoreUser.isPending ? (
-                <Loader2 className="size-4 animate-spin" aria-hidden />
-              ) : (
-                <>
-                  <ArchiveRestore className="size-4" aria-hidden />
-                  Khôi phục
-                </>
-              )}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        contentClassName={ADMIN_ALERT_DIALOG_CONTENT_CLASS}
+        footerClassName="gap-2 sm:gap-0"
+        icon={<ArchiveRestore className="size-5 shrink-0 text-primary" aria-hidden />}
+        title="Khôi phục tài khoản?"
+        description={
+          restoreTarget ? (
+            <>
+              Đưa <strong>{restoreTarget.fullName}</strong> ({restoreTarget.email}) trở lại hoạt
+              động.
+            </>
+          ) : null
+        }
+        confirmLabel="Khôi phục"
+        confirmDisabled={restoreUser.isPending}
+        confirmLoading={restoreUser.isPending}
+        onConfirm={() => {
+          void handleRestoreUser();
+        }}
+      />
     </PageSection>
   );
 }

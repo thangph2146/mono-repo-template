@@ -1,6 +1,6 @@
 /**
  * Roles Admin API Controller.
- * GET list, options, :id; POST (create); PUT :id; DELETE :id; POST :id/restore; DELETE :id/hard-delete; POST bulk.
+ * GET list, options, :id; POST (create); PUT :id; DELETE :id/hard-delete; DELETE :id (soft); POST :id/restore; POST bulk.
  * Header: X-User-Id (bắt buộc).
  */
 import {
@@ -280,6 +280,43 @@ export class RolesController {
     return res.status(statusCode).json(okBody);
   }
 
+  @Delete(':id/hard-delete')
+  async hardDelete(
+    @Res() res: Response,
+    @Headers() headers: Record<string, string | undefined>,
+    @Param('id') id: string,
+  ) {
+    const userId = this.getUserId(headers);
+    if (!userId) {
+      return this.unauthorized(res);
+    }
+    const ok = await this.rolesService.hardDelete(id);
+    if (!ok) {
+      const { statusCode, body } = createErrorResponse(
+        'Không tìm thấy vai trò',
+        { status: 404 },
+      );
+      return res.status(statusCode).json(body);
+    }
+    if (userId) {
+      this.logActivity(
+        userId,
+        'Đã xóa vĩnh viễn vai trò',
+        `Xóa vĩnh viễn vai trò id: ${id}`,
+        ADMIN_ROUTES.ROLES,
+        {
+          resource: RESOURCES.ROLES,
+          action: ACTIONS.HARD_DELETE,
+          resourceId: id,
+        },
+      );
+    }
+    const { statusCode, body } = createSuccessResponse(undefined, {
+      message: 'Đã xóa vĩnh viễn vai trò',
+    });
+    return res.status(statusCode).json(body);
+  }
+
   @Delete(':id')
   async softDelete(
     @Res() res: Response,
@@ -414,43 +451,6 @@ export class RolesController {
     }
     const { statusCode, body } = createSuccessResponse(undefined, {
       message: 'Đã khôi phục vai trò',
-    });
-    return res.status(statusCode).json(body);
-  }
-
-  @Delete(':id/hard-delete')
-  async hardDelete(
-    @Res() res: Response,
-    @Headers() headers: Record<string, string | undefined>,
-    @Param('id') id: string,
-  ) {
-    const userId = this.getUserId(headers);
-    if (!userId) {
-      return this.unauthorized(res);
-    }
-    const ok = await this.rolesService.hardDelete(id);
-    if (!ok) {
-      const { statusCode, body } = createErrorResponse(
-        'Không tìm thấy vai trò',
-        { status: 404 },
-      );
-      return res.status(statusCode).json(body);
-    }
-    if (userId) {
-      this.logActivity(
-        userId,
-        'Đã xóa vĩnh viễn vai trò',
-        `Xóa vĩnh viễn vai trò id: ${id}`,
-        ADMIN_ROUTES.ROLES,
-        {
-          resource: RESOURCES.ROLES,
-          action: ACTIONS.HARD_DELETE,
-          resourceId: id,
-        },
-      );
-    }
-    const { statusCode, body } = createSuccessResponse(undefined, {
-      message: 'Đã xóa vĩnh viễn vai trò',
     });
     return res.status(statusCode).json(body);
   }

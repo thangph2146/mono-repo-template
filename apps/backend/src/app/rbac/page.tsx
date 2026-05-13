@@ -1,29 +1,22 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import type { ColumnDef, RowSelectionState } from "@tanstack/react-table";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   AlertCircle,
-  Check,
+  ArchiveRestore,
   Loader2,
+  Pencil,
   Plus,
   RefreshCw,
-  Search,
   Shield,
-  Sparkles,
-  UserCircle,
-  Users,
+  Trash2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@ui/components/badge";
 import { Button } from "@ui/components/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@ui/components/card";
+import { Card, CardDescription, CardHeader, CardTitle } from "@ui/components/card";
 import { Checkbox } from "@ui/components/checkbox";
 import {
   Dialog,
@@ -38,57 +31,133 @@ import { Label } from "@ui/components/label";
 import { PageSection } from "@ui/components/layout";
 import { ScrollArea } from "@ui/components/scroll-area";
 import { Switch } from "@ui/components/switch";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@ui/components/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@ui/components/tabs";
 import { Textarea } from "@ui/components/textarea";
+import { TypographyH1, TypographyPLargeMuted, TypographyPSmallMuted } from "@ui/components/typography";
 import { canUserAccess, isSuperAdminRoleCode, PERMISSION_CODES } from "@workspace/api-client";
-import { api } from "@/lib/api";
+import { AdminConfirmActionDialog } from "@/components/admin-confirm-action-dialog";
+import { AdminDataTable } from "@/components/admin-data-table";
+import { AdminTablePaginationFooter } from "@/components/admin-table-pagination-footer";
+import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { useRbacCatalog } from "@/hooks/queries";
-import { useAuth } from "@/providers/auth-provider";
-import { permissionLabelVi } from "@/lib/permission-labels";
+import { api, type RbacPermission } from "@/lib/api";
 import {
+  permissionGroupKey,
+  permissionGroupLabelVi,
+  permissionLabelVi,
+} from "@/lib/permission-labels";
+import { useAuth } from "@/providers/auth-provider";
+import {
+  ADMIN_ALERT_DIALOG_CONTENT_CLASS,
   ADMIN_DIALOG_CONTENT_LG_CLASS,
   ADMIN_PAGE_FORM_COLUMN_CLASS,
   ADMIN_PAGE_SUBTITLE_CLASS,
-  ADMIN_PAGE_TITLE_FORM_CLASS,
   ADMIN_PAGE_TITLE_ICON_CLASS,
   ADMIN_PAGE_TITLE_ICON_SM_CLASS,
   ADMIN_PAGE_TITLE_PRIMARY_CLASS,
 } from "@ui/lib/layout-shell";
-
-type CreateRoleInput = {
-  name: string;
-  displayName: string;
-  description: string;
-  isActive: boolean;
-  permissions: string[];
-};
-
-type CreateRoleResponse = {
-  id?: string | number;
-  name?: string;
-  displayName?: string;
-  description?: string | null;
-  permissions?: unknown;
-  isActive?: boolean;
-};
 
 type ApiEnvelope<T> = {
   success?: boolean;
   message?: string;
   error?: string | null;
   data?: T;
+  pagination?: { page?: number; limit?: number; total?: number };
 };
 
-function roleHasPermission(role: { permissions: string[] }, permCode: string): boolean {
-  if (role.permissions.includes("*")) return true;
-  return role.permissions.includes(permCode);
+type RoleRow = {
+  id: string;
+  code: string;
+  name: string;
+  description: string | null;
+  permissions: string[];
+  isActive: boolean;
+  deletedAt: string | null;
+};
+
+type PagedResult<T> = {
+  items: T[];
+  total: number;
+  page: number;
+  limit: number;
+};
+
+type RoleFormState = {
+  id: string | null;
+  code: string;
+  name: string;
+  description: string;
+  isActive: boolean;
+  permissions: string[];
+};
+
+const EMPTY_FORM: RoleFormState = {
+  id: null,
+  code: "",
+  name: "",
+  description: "",
+  isActive: true,
+  permissions: [],
+};
+
+function unwrapEnvelope<T>(payload: unknown): T {
+  if (!payload || typeof payload !== "object") return payload as T;
+  const envelope = payload as ApiEnvelope<T>;
+  if (envelope.success === false) {
+    throw new Error(envelope.message || envelope.error || "Yeu cau that bai");
+  }
+  return "data" in envelope ? (envelope.data as T) : (payload as T);
+}
+
+function normalizePermissionCodes(value: unknown): string[] {
+  const visit = (input: unknown): string[] => {
+    if (Array.isArray(input)) return input.flatMap((item) => visit(item));
+    if (typeof input !== "string") return [];
+    const trimmed = input.trim();
+    if (!trimmed) return [];
+    if (
+      (trimmed.startsWith("[") && trimmed.endsWith("]")) ||
+      (trimmed.startsWith('"') && trimmed.endsWith('"'))
+    ) {
+      try {
+        return visit(JSON.parse(trimmed));
+      } catch {
+        return [trimmed];
+      }
+    }
+    return [trimmed];
+  };
+  return [...new Set(visit(value))].sort((a, b) => a.localeCompare(b));
+}
+
+function normalizePagedRoles(payload: unknown): PagedResult<RoleRow> {
+  const envelope =
+    payload && typeof payload === "object" ? (payload as ApiEnvelope<unknown>) : {};
+  const raw = envelope.data;
+  const rows = Array.isArray(raw)
+    ? raw
+    : raw && typeof raw === "object" && Array.isArray((raw as { data?: unknown }).data)
+      ? ((raw as { data: unknown[] }).data ?? [])
+      : [];
+
+  const items: RoleRow[] = rows.map((row) => {
+    const record = row as Record<string, unknown>;
+    return {
+      id: String(record.id ?? ""),
+      code: String(record.name ?? ""),
+      name: String(record.displayName ?? record.name ?? ""),
+      description: (record.description as string | null | undefined) ?? null,
+      permissions: normalizePermissionCodes(record.permissions),
+      isActive: Boolean(record.isActive ?? true),
+      deletedAt: (record.deletedAt as string | null | undefined) ?? null,
+    };
+  });
+
+  const pagination = envelope.pagination ?? {};
+  const page = Number(pagination.page ?? 1);
+  const limit = Number(pagination.limit ?? (items.length || 10));
+  const total = Number(pagination.total ?? items.length);
+  return { items, total, page, limit };
 }
 
 function roleCodeify(input: string): string {
@@ -101,195 +170,386 @@ function roleCodeify(input: string): string {
     .replace(/^_+|_+$/g, "");
 }
 
-function unwrapEnvelope<T>(payload: unknown): T {
-  if (!payload || typeof payload !== "object") return payload as T;
-  const envelope = payload as ApiEnvelope<T>;
-  if (envelope.success === false) {
-    throw new Error(envelope.message || envelope.error || "Yeu cau that bai");
-  }
-  return "data" in envelope ? (envelope.data as T) : (payload as T);
-}
-
-function groupPermissions(
-  permissionCodes: string[],
-  descriptions?: Record<string, string | null>,
-): Array<{ resource: string; label: string; codes: Array<{ code: string; label: string; description: string | null }> }> {
-  const grouped = new Map<
-    string,
-    Array<{ code: string; label: string; description: string | null }>
-  >();
-
-  for (const code of permissionCodes) {
-    const [resource] = code.split(":");
-    const bucket = grouped.get(resource) ?? [];
-    bucket.push({
-      code,
-      label: permissionLabelVi(code),
-      description: descriptions?.[code] ?? null,
-    });
-    grouped.set(resource, bucket);
-  }
-
-  return [...grouped.entries()]
-    .sort((a, b) => a[0].localeCompare(b[0]))
-    .map(([resource, codes]) => ({
-      resource,
-      label: resource
-        .split(/[_-]+/)
-        .filter(Boolean)
-        .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-        .join(" "),
-      codes: codes.sort((a, b) => a.code.localeCompare(b.code)),
-    }));
-}
-
-function StatCard({
-  icon: Icon,
-  label,
-  value,
-  hint,
-}: {
-  icon: typeof Shield;
-  label: string;
-  value: string;
-  hint: string;
-}) {
-  return (
-    <Card className="border-border/70 bg-card/95 shadow-sm">
-      <CardContent className="flex items-start gap-4 p-5">
-        <div className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-          <Icon className="size-5" />
-        </div>
-        <div className="min-w-0">
-          <p className="text-sm font-medium text-muted-foreground">{label}</p>
-          <p className="mt-1 text-2xl font-bold tracking-tight text-foreground">{value}</p>
-          <p className="mt-1 text-xs text-muted-foreground">{hint}</p>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
 export default function RbacPage() {
   const queryClient = useQueryClient();
   const { user: session } = useAuth();
-  const canReadRbac =
-    session != null && canUserAccess(session, PERMISSION_CODES.RBAC_READ);
-  const canCreateRole =
+  const canReadRbac = session != null && canUserAccess(session, PERMISSION_CODES.RBAC_READ);
+  const canManageRoles =
     session != null &&
     (session.roles.some((role) => isSuperAdminRoleCode(role.name)) ||
       session.permissions.includes("roles:create") ||
+      session.permissions.includes("roles:update") ||
+      session.permissions.includes("roles:delete") ||
       session.permissions.includes("roles:manage"));
 
-  const rbacQuery = useRbacCatalog({
+  const permissionCatalog = useRbacCatalog({
     enabled: Boolean(session) && canReadRbac,
   });
+  const permissions = useMemo(
+    () => permissionCatalog.data?.permissions ?? [],
+    [permissionCatalog.data?.permissions],
+  );
 
-  const [selectedRoleCode, setSelectedRoleCode] = useState<string>("");
-  const [roleSearch, setRoleSearch] = useState("");
+  const [tab, setTab] = useState<"list" | "trash">("list");
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(15);
+  const [trashPage, setTrashPage] = useState(1);
+  const [trashPageSize, setTrashPageSize] = useState(15);
+  const [globalFilter, setGlobalFilter] = useState("");
+  const [trashGlobalFilter, setTrashGlobalFilter] = useState("");
+  const [selectedRoleId, setSelectedRoleId] = useState<string>("");
+  const [selectedRowIds, setSelectedRowIds] = useState<RowSelectionState>({});
+  const [trashSelectedRowIds, setTrashSelectedRowIds] = useState<RowSelectionState>({});
+  const [dialogOpen, setDialogOpen] = useState(false);
   const [permissionSearch, setPermissionSearch] = useState("");
-  const [createOpen, setCreateOpen] = useState(false);
-  const [createPermissionSearch, setCreatePermissionSearch] = useState("");
-  const [form, setForm] = useState<CreateRoleInput>({
-    name: "",
-    displayName: "",
-    description: "",
-    isActive: true,
-    permissions: [],
+  const [form, setForm] = useState<RoleFormState>(EMPTY_FORM);
+  const [deleteTarget, setDeleteTarget] = useState<RoleRow | null>(null);
+  const [restoreTarget, setRestoreTarget] = useState<RoleRow | null>(null);
+  const [purgeTarget, setPurgeTarget] = useState<RoleRow | null>(null);
+
+  const debouncedQ = useDebouncedValue(globalFilter, 300);
+  const debouncedTrashQ = useDebouncedValue(trashGlobalFilter, 300);
+
+  const listQuery = useQuery({
+    queryKey: ["rbac", "roles", "list", page, pageSize, debouncedQ],
+    queryFn: async (): Promise<PagedResult<RoleRow>> =>
+      normalizePagedRoles(
+        await api.http.get("/admin/roles", {
+          query: {
+            page,
+            limit: pageSize,
+            search: debouncedQ.trim() || undefined,
+            status: "active",
+          },
+        }),
+      ),
+    enabled: Boolean(session) && canReadRbac && tab === "list",
   });
 
-  const createRole = useMutation({
-    mutationFn: async (input: CreateRoleInput) =>
-      unwrapEnvelope<CreateRoleResponse>(
+  const trashQuery = useQuery({
+    queryKey: ["rbac", "roles", "trash", trashPage, trashPageSize, debouncedTrashQ],
+    queryFn: async (): Promise<PagedResult<RoleRow>> =>
+      normalizePagedRoles(
+        await api.http.get("/admin/roles", {
+          query: {
+            page: trashPage,
+            limit: trashPageSize,
+            search: debouncedTrashQ.trim() || undefined,
+            status: "deleted",
+          },
+        }),
+      ),
+    enabled: Boolean(session) && canReadRbac && tab === "trash",
+  });
+
+  const invalidateRoles = useCallback(async () => {
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: ["rbac", "roles", "list"] }),
+      queryClient.invalidateQueries({ queryKey: ["rbac", "roles", "trash"] }),
+      queryClient.invalidateQueries({ queryKey: ["rbac", "catalog"] }),
+    ]);
+  }, [queryClient]);
+
+  const createMutation = useMutation({
+    mutationFn: async (input: RoleFormState) =>
+      unwrapEnvelope<RoleRow>(
         await api.http.post("/admin/roles", {
-          name: input.name,
-          displayName: input.displayName,
+          name: input.code,
+          displayName: input.name,
           description: input.description || null,
           isActive: input.isActive,
           permissions: input.permissions,
         }),
       ),
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["rbac", "catalog"] });
-    },
+    onSuccess: invalidateRoles,
   });
 
-  const roles = rbacQuery.data?.roles ?? [];
-  const permissions = rbacQuery.data?.permissions ?? [];
-  const permissionDescriptions = useMemo(
-    () =>
-      Object.fromEntries(
-        permissions.map((permission) => [permission.code, permission.description ?? null]),
+  const updateMutation = useMutation({
+    mutationFn: async (input: RoleFormState) =>
+      unwrapEnvelope<RoleRow>(
+        await api.http.put(`/admin/roles/${input.id}`, {
+          name: input.code,
+          displayName: input.name,
+          description: input.description || null,
+          isActive: input.isActive,
+          permissions: input.permissions,
+        }),
       ),
-    [permissions],
-  );
+    onSuccess: invalidateRoles,
+  });
 
+  const deleteMutation = useMutation({
+    /** Luôn dùng bulk soft-delete để tránh nhầm route DELETE (soft vs hard-delete). */
+    mutationFn: async (id: string) =>
+      api.http.post("/admin/roles/bulk", { action: "delete", ids: [id] }),
+    onSuccess: invalidateRoles,
+  });
+  const restoreMutation = useMutation({
+    mutationFn: async (id: string) => api.http.post(`/admin/roles/${id}/restore`),
+    onSuccess: invalidateRoles,
+  });
+  const purgeMutation = useMutation({
+    mutationFn: async (id: string) => api.http.delete(`/admin/roles/${id}/hard-delete`),
+    onSuccess: invalidateRoles,
+  });
+  const bulkMutation = useMutation({
+    mutationFn: async ({ action, ids }: { action: "delete" | "restore" | "hard-delete"; ids: string[] }) =>
+      api.http.post("/admin/roles/bulk", { action, ids }),
+    onSuccess: invalidateRoles,
+  });
+
+  const listItems = useMemo(() => listQuery.data?.items ?? [], [listQuery.data?.items]);
+  const trashItems = useMemo(() => trashQuery.data?.items ?? [], [trashQuery.data?.items]);
   useEffect(() => {
-    if (!roles.length) {
-      setSelectedRoleCode("");
+    if (!listItems.length) {
+      setSelectedRoleId("");
       return;
     }
-    if (!selectedRoleCode || !roles.some((role) => role.code === selectedRoleCode)) {
-      setSelectedRoleCode(roles[0].code);
+    if (!selectedRoleId || !listItems.some((role) => role.id === selectedRoleId)) {
+      setSelectedRoleId(listItems[0].id);
     }
-  }, [roles, selectedRoleCode]);
+  }, [listItems, selectedRoleId]);
 
-  const filteredRoles = useMemo(() => {
-    const q = roleSearch.trim().toLowerCase();
-    if (!q) return roles;
-    return roles.filter((role) =>
-      [role.name, role.code, role.description ?? ""].some((value) =>
-        value.toLowerCase().includes(q),
-      ),
-    );
-  }, [roles, roleSearch]);
-
-  const filteredPermissions = useMemo(() => {
+  const visiblePermissions = useMemo(() => {
     const q = permissionSearch.trim().toLowerCase();
     if (!q) return permissions;
     return permissions.filter((permission) =>
-      [permission.code, permissionLabelVi(permission.code), permission.description ?? ""].some((value) =>
-        value.toLowerCase().includes(q),
-      ),
+      [permission.code, permissionLabelVi(permission.code), permission.description ?? ""]
+        .join(" ")
+        .toLowerCase()
+        .includes(q),
     );
-  }, [permissions, permissionSearch]);
+  }, [permissionSearch, permissions]);
 
-  const selectedRole =
-    roles.find((role) => role.code === selectedRoleCode) ?? filteredRoles[0] ?? null;
+  const permissionGroups = useMemo(() => {
+    const buckets = new Map<string, RbacPermission[]>();
+    for (const permission of visiblePermissions) {
+      const key = permissionGroupKey(permission.code);
+      const arr = buckets.get(key);
+      if (arr) arr.push(permission);
+      else buckets.set(key, [permission]);
+    }
+    return Array.from(buckets.entries())
+      .map(([key, items]) => ({
+        key,
+        label: permissionGroupLabelVi(key),
+        items: [...items].sort((a, b) => a.code.localeCompare(b.code)),
+      }))
+      .sort((a, b) => a.key.localeCompare(b.key));
+  }, [visiblePermissions]);
 
-  const selectedRolePermissionGroups = useMemo(
-    () =>
-      selectedRole
-        ? groupPermissions(selectedRole.permissions, permissionDescriptions)
-        : [],
-    [permissionDescriptions, selectedRole],
+  const openCreateDialog = () => {
+    setForm(EMPTY_FORM);
+    setPermissionSearch("");
+    setDialogOpen(true);
+  };
+
+  const openEditDialog = (role: RoleRow) => {
+    setForm({
+      id: role.id,
+      code: role.code,
+      name: role.name,
+      description: role.description ?? "",
+      isActive: role.isActive,
+      permissions: role.permissions,
+    });
+    setPermissionSearch("");
+    setDialogOpen(true);
+  };
+
+  const handleSave = async () => {
+    const code = roleCodeify(form.code || form.name);
+    const name = form.name.trim();
+    if (!code) {
+      toast.error("Mã vai trò không hợp lệ");
+      return;
+    }
+    if (!name) {
+      toast.error("Tên vai trò là bắt buộc");
+      return;
+    }
+    if (form.permissions.length === 0) {
+      toast.error("Chọn ít nhất một quyền");
+      return;
+    }
+
+    const payload: RoleFormState = {
+      ...form,
+      code,
+      name,
+      description: form.description.trim(),
+    };
+    try {
+      if (form.id) {
+        await updateMutation.mutateAsync(payload);
+        toast.success(`Đã cập nhật role "${name}"`);
+      } else {
+        const created = await createMutation.mutateAsync(payload);
+        toast.success(`Đã tạo role "${created.name || name}"`);
+      }
+      setDialogOpen(false);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Không lưu được role");
+    }
+  };
+
+  const columns = useMemo<ColumnDef<RoleRow>[]>(
+    () => [
+      {
+        accessorKey: "name",
+        header: "Vai trò",
+        meta: { filterPlaceholder: "Lọc tên vai trò…" },
+        cell: ({ row }) => (
+          <button
+            type="button"
+            onClick={() => setSelectedRoleId(row.original.id)}
+            className="min-w-0 text-left"
+          >
+            <div className="truncate font-medium">{row.original.name}</div>
+            <div className="truncate text-xs font-mono text-muted-foreground">
+              {row.original.code}
+            </div>
+          </button>
+        ),
+      },
+      {
+        id: "permissionCount",
+        header: "Số quyền",
+        accessorFn: (row) => row.permissions.length,
+        enableColumnFilter: false,
+        cell: ({ row }) => (
+          <Badge variant="secondary" className="rounded-lg">
+            {row.original.permissions.length}
+          </Badge>
+        ),
+      },
+      {
+        accessorKey: "isActive",
+        header: "Trạng thái",
+        meta: {
+          filterVariant: "select",
+          selectOptions: [
+            { value: "true", label: "Hoạt động" },
+            { value: "false", label: "Tạm tắt" },
+          ],
+        },
+        filterFn: (row, id, value) => {
+          if (!value) return true;
+          return String(row.getValue(id)) === String(value);
+        },
+        cell: ({ row }) =>
+          row.original.isActive ? (
+            <Badge variant="outline" className="border-emerald-300 text-emerald-700">
+              Hoạt động
+            </Badge>
+          ) : (
+            <Badge variant="outline">Tạm tắt</Badge>
+          ),
+      },
+      {
+        id: "actions",
+        header: "Thao tác",
+        enableSorting: false,
+        enableColumnFilter: false,
+        meta: { disableColumnFilter: true },
+        cell: ({ row }) => (
+          <div className="flex flex-wrap gap-1">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="h-8 gap-1 rounded-lg"
+              onClick={() => openEditDialog(row.original)}
+              disabled={!canManageRoles}
+            >
+              <Pencil className="size-3.5" />
+              Sửa
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="h-8 gap-1 rounded-lg border-destructive/40 text-destructive hover:bg-destructive/10"
+              onClick={() => setDeleteTarget(row.original)}
+              disabled={!canManageRoles}
+            >
+              <Trash2 className="size-3.5" />
+              Xóa tạm
+            </Button>
+          </div>
+        ),
+      },
+    ],
+    [canManageRoles],
   );
 
-  const createPermissionGroups = useMemo(() => {
-    const q = createPermissionSearch.trim().toLowerCase();
-    const visibleCodes = permissions
-      .filter((permission) =>
-        !q
-          ? true
-          : [permission.code, permissionLabelVi(permission.code), permission.description ?? ""].some(
-              (value) => value.toLowerCase().includes(q),
-            ),
-      )
-      .map((permission) => permission.code);
-    return groupPermissions(visibleCodes, permissionDescriptions);
-  }, [createPermissionSearch, permissionDescriptions, permissions]);
+  const trashColumns = useMemo<ColumnDef<RoleRow>[]>(
+    () => [
+      {
+        accessorKey: "name",
+        header: "Vai trò",
+        cell: ({ row }) => (
+          <div>
+            <div className="font-medium">{row.original.name}</div>
+            <div className="text-xs font-mono text-muted-foreground">{row.original.code}</div>
+          </div>
+        ),
+      },
+      {
+        accessorKey: "deletedAt",
+        header: "Xóa lúc",
+        cell: ({ row }) => (
+          <TypographyPSmallMuted>
+            {row.original.deletedAt ? new Date(row.original.deletedAt).toLocaleString("vi-VN") : "—"}
+          </TypographyPSmallMuted>
+        ),
+      },
+      {
+        id: "actions",
+        header: "Thao tác",
+        enableSorting: false,
+        enableColumnFilter: false,
+        meta: { disableColumnFilter: true },
+        cell: ({ row }) => (
+          <div className="flex flex-wrap gap-1">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="h-8 gap-1 rounded-lg"
+              onClick={() => setRestoreTarget(row.original)}
+              disabled={!canManageRoles}
+            >
+              <ArchiveRestore className="size-3.5" />
+              Khôi phục
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="h-8 gap-1 rounded-lg border-destructive/40 text-destructive hover:bg-destructive/10"
+              onClick={() => setPurgeTarget(row.original)}
+              disabled={!canManageRoles}
+            >
+              <Trash2 className="size-3.5" />
+              Xóa hẳn
+            </Button>
+          </div>
+        ),
+      },
+    ],
+    [canManageRoles],
+  );
 
-  if (!session) {
-    return null;
-  }
+  if (!session) return null;
 
   if (!canReadRbac) {
     return (
       <div className={ADMIN_PAGE_FORM_COLUMN_CLASS}>
-        <h1 className={ADMIN_PAGE_TITLE_FORM_CLASS}>
+        <TypographyH1 className={ADMIN_PAGE_TITLE_PRIMARY_CLASS}>
           <Shield className={ADMIN_PAGE_TITLE_ICON_SM_CLASS} aria-hidden />
           Phân quyền
-        </h1>
+        </TypographyH1>
         <Card className="border-destructive/30 bg-destructive/5">
           <CardHeader className="flex flex-row items-start gap-3 space-y-0">
             <AlertCircle className="mt-0.5 size-5 shrink-0 text-destructive" />
@@ -297,7 +557,6 @@ export default function RbacPage() {
               <CardTitle className="text-base">Không có quyền truy cập</CardTitle>
               <CardDescription className="mt-1">
                 Cần quyền <span className="font-mono text-xs">rbac.read</span>.
-                Liên hệ quản trị để được gán vai trò phù hợp.
               </CardDescription>
             </div>
           </CardHeader>
@@ -306,450 +565,175 @@ export default function RbacPage() {
     );
   }
 
-  const handleOpenCreate = () => {
-    setForm({
-      name: "",
-      displayName: "",
-      description: "",
-      isActive: true,
-      permissions: [],
-    });
-    setCreatePermissionSearch("");
-    setCreateOpen(true);
-  };
-
-  const handleTogglePermission = (code: string, checked: boolean) => {
-    setForm((current) => ({
-      ...current,
-      permissions: checked
-        ? [...new Set([...current.permissions, code])]
-        : current.permissions.filter((item) => item !== code),
-    }));
-  };
-
-  const handleCreateRole = async () => {
-    const name = roleCodeify(form.name || form.displayName);
-    const displayName = form.displayName.trim();
-
-    if (!name) {
-      toast.error("Vui lòng nhập mã vai trò hợp lệ");
-      return;
-    }
-    if (!displayName) {
-      toast.error("Vui lòng nhập tên hiển thị");
-      return;
-    }
-    if (form.permissions.length === 0) {
-      toast.error("Chọn ít nhất một quyền cho role mới");
-      return;
-    }
-
-    try {
-      const created = await createRole.mutateAsync({
-        ...form,
-        name,
-        displayName,
-        description: form.description.trim(),
-      });
-      toast.success(
-        `Đã tạo role ${created.displayName ?? displayName}`,
-      );
-      setCreateOpen(false);
-      setSelectedRoleCode(created.name ?? name);
-    } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "Không tạo được role mới",
-      );
-    }
-  };
-
   return (
     <PageSection max="full" className="mx-auto min-w-0 space-y-6">
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+      <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className={ADMIN_PAGE_TITLE_PRIMARY_CLASS}>
+          <TypographyH1 className={ADMIN_PAGE_TITLE_PRIMARY_CLASS}>
             <Shield className={ADMIN_PAGE_TITLE_ICON_CLASS} aria-hidden />
             Phân quyền
-          </h1>
-          <p className={ADMIN_PAGE_SUBTITLE_CLASS}>
-            Quản trị vai trò và ma trận quyền của hệ thống. Chọn một role để xem
-            quyền hiệu lực, sau đó đối chiếu nhanh với toàn bộ permission runtime.
-          </p>
+          </TypographyH1>
+          <TypographyPLargeMuted className={ADMIN_PAGE_SUBTITLE_CLASS}>
+            Quản lý vai trò bằng bảng dùng chung, đầy đủ luồng tạo/sửa/xóa/khôi phục/xóa hẳn.
+          </TypographyPLargeMuted>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <Button
-            type="button"
-            variant="outline"
-            className="h-11 rounded-lg px-4"
-            onClick={() => void rbacQuery.refetch()}
-          >
-            <RefreshCw className={rbacQuery.isFetching ? "size-4 animate-spin" : "size-4"} />
+        <div className="flex gap-2">
+          <Button type="button" variant="outline" className="h-11 rounded-lg" onClick={() => void invalidateRoles()}>
+            <RefreshCw className={(listQuery.isFetching || trashQuery.isFetching) ? "size-4 animate-spin" : "size-4"} />
             Làm mới
           </Button>
-          {canCreateRole ? (
-            <Button
-              type="button"
-              className="h-11 rounded-lg px-5 font-semibold"
-              onClick={handleOpenCreate}
-            >
+          {canManageRoles ? (
+            <Button type="button" className="h-11 rounded-lg" onClick={openCreateDialog}>
               <Plus className="size-4" />
-              Tạo role mới
+              Tạo role
             </Button>
           ) : null}
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
-        <StatCard
-          icon={Shield}
-          label="Tổng số vai trò"
-          value={String(roles.length)}
-          hint="Số role đang có trong hệ thống"
-        />
-        <StatCard
-          icon={Sparkles}
-          label="Permission runtime"
-          value={String(permissions.length)}
-          hint="Số quyền đang được cấu hình từ dữ liệu runtime"
-        />
-        <StatCard
-          icon={Users}
-          label="Role đang chọn"
-          value={selectedRole ? String(selectedRole.permissions.length) : "0"}
-          hint={
-            selectedRole
-              ? `${selectedRole.name} có ${selectedRole.permissions.length} quyền`
-              : "Chưa có role nào được chọn"
-          }
-        />
-      </div>
+      <Tabs value={tab} onValueChange={(value) => value === "list" || value === "trash" ? setTab(value) : null}>
+        <TabsList className="h-auto min-h-9 flex-wrap gap-1 rounded-lg p-1">
+          <TabsTrigger value="list" className="rounded-lg">Danh sách</TabsTrigger>
+          <TabsTrigger value="trash" className="rounded-lg">
+            Thùng rác
+            {(trashQuery.data?.total ?? 0) > 0 ? (
+              <Badge variant="secondary" className="ml-2 px-1.5 py-0 text-[10px]">
+                {trashQuery.data?.total}
+              </Badge>
+            ) : null}
+          </TabsTrigger>
+        </TabsList>
 
-      {rbacQuery.isLoading ? (
-        <Card className="border-border shadow-sm">
-          <CardContent className="flex flex-col items-center justify-center gap-3 py-16 text-sm text-muted-foreground">
-            <Loader2 className="size-8 animate-spin text-primary" aria-hidden />
-            <span className="flex items-center gap-2 font-medium">
-              <Shield className="size-4 opacity-60" aria-hidden />
-              Đang tải dữ liệu phân quyền…
-            </span>
-          </CardContent>
-        </Card>
-      ) : rbacQuery.isError ? (
-        <Card className="border-destructive/30 bg-destructive/5">
-          <CardContent className="py-10 text-center">
-            <AlertCircle className="mx-auto mb-2 size-9 text-destructive" aria-hidden />
-            <p className="text-sm font-semibold text-destructive">
-              {rbacQuery.error instanceof Error ? rbacQuery.error.message : "Lỗi tải dữ liệu"}
-            </p>
-          </CardContent>
-        </Card>
-      ) : (
-        <>
-          <div className="grid gap-6 xl:grid-cols-[340px_minmax(0,1fr)]">
-            <Card className="border-border/70 bg-card/95 shadow-sm">
-              <CardHeader className="space-y-3">
-                <div>
-                  <CardTitle className="flex items-center gap-2 text-lg">
-                    <Users className="size-5 text-primary" />
-                    Danh sách role
-                  </CardTitle>
-                  <CardDescription>
-                    Chọn nhanh một role để xem mô tả và tập quyền đang có.
-                  </CardDescription>
-                </div>
-                <div className="relative">
-                  <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-                  <Input
-                    value={roleSearch}
-                    onChange={(e) => setRoleSearch(e.target.value)}
-                    placeholder="Tìm theo tên, mã role..."
-                    className="pl-9"
-                  />
-                </div>
-              </CardHeader>
-              <CardContent>
-                <ScrollArea className="h-[420px] rounded-lg">
-                  <div className="space-y-2 pr-3">
-                    {filteredRoles.length === 0 ? (
-                      <div className="rounded-lg border border-dashed border-border/70 bg-muted/20 p-4 text-sm text-muted-foreground">
-                        Không có role nào khớp bộ lọc hiện tại.
-                      </div>
-                    ) : (
-                      filteredRoles.map((role) => {
-                        const active = role.code === selectedRole?.code;
-                        return (
-                          <button
-                            key={role.code}
-                            type="button"
-                            onClick={() => setSelectedRoleCode(role.code)}
-                            className={
-                              active
-                                ? "w-full rounded-lg border border-primary/30 bg-primary/8 p-4 text-left shadow-sm transition-all"
-                                : "w-full rounded-lg border border-border/60 bg-background/60 p-4 text-left transition-all hover:border-primary/20 hover:bg-primary/5"
-                            }
-                          >
-                            <div className="flex items-start justify-between gap-3">
-                              <div className="min-w-0">
-                                <p className="truncate text-sm font-semibold text-foreground">
-                                  {role.name}
-                                </p>
-                                <p className="mt-1 truncate font-mono text-[11px] text-muted-foreground">
-                                  {role.code}
-                                </p>
-                              </div>
-                              <Badge variant={active ? "default" : "secondary"} className="shrink-0 text-[10px]">
-                                {role.permissions.length} quyền
-                              </Badge>
-                            </div>
-                            {role.description ? (
-                              <p className="mt-3 line-clamp-2 text-xs leading-relaxed text-muted-foreground">
-                                {role.description}
-                              </p>
-                            ) : (
-                              <p className="mt-3 text-xs text-muted-foreground">
-                                Chưa có mô tả cho role này.
-                              </p>
-                            )}
-                          </button>
-                        );
-                      })
-                    )}
-                  </div>
-                </ScrollArea>
-              </CardContent>
-            </Card>
+        <TabsContent value="list" className="mt-4 space-y-4">
+          <AdminDataTable<RoleRow>
+            data={listItems}
+            getRowId={(row) => row.id}
+            columns={columns}
+            isLoading={listQuery.isLoading || permissionCatalog.isLoading}
+            emptyLabel="Chưa có vai trò."
+            manualFiltering
+            globalFilter={globalFilter}
+            onGlobalFilterChange={setGlobalFilter}
+            globalFilterPlaceholder="Tìm theo tên, mã role..."
+            rowSelectionEnabled
+            selectedRowIds={selectedRowIds}
+            onSelectedRowIdsChange={setSelectedRowIds}
+            bulkActions={
+              canManageRoles
+                ? [
+                    {
+                      id: "bulk-delete",
+                      label: "Xóa tạm đã chọn",
+                      variant: "outline",
+                      className: "border-destructive/40 text-destructive",
+                      onAction: async (rows) => {
+                        await bulkMutation.mutateAsync({ action: "delete", ids: rows.map((row) => row.id) });
+                        toast.success("Đã xóa tạm các role đã chọn (chuyển vào thùng rác)");
+                      },
+                    },
+                  ]
+                : []
+            }
+            footer={
+              <AdminTablePaginationFooter
+                page={page}
+                pageSize={pageSize}
+                total={listQuery.data?.total ?? 0}
+                isLoading={listQuery.isLoading}
+                onPageChange={setPage}
+                onPageSizeChange={setPageSize}
+                emptySummary="Không có vai trò"
+                itemLabel="vai trò"
+              />
+            }
+          />
 
-            <Card className="border-border/70 bg-card/95 shadow-sm">
-              <CardHeader className="space-y-4">
-                <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-                  <div>
-                    <CardTitle className="flex items-center gap-2 text-lg">
-                      <Shield className="size-5 text-primary" />
-                      {selectedRole ? selectedRole.name : "Chi tiết role"}
-                    </CardTitle>
-                    <CardDescription>
-                      {selectedRole
-                        ? "Tổng hợp mô tả và danh sách quyền hiệu lực của role đang chọn."
-                        : "Chọn một role ở danh sách bên trái để xem chi tiết."}
-                    </CardDescription>
-                  </div>
-                  {selectedRole ? (
-                    <div className="flex flex-wrap gap-2">
-                      <Badge variant="outline" className="rounded-lg px-3 py-1 text-[11px] font-mono">
-                        {selectedRole.code}
-                      </Badge>
-                      <Badge className="rounded-lg px-3 py-1 text-[11px]">
-                        {selectedRole.permissions.length} quyền
-                      </Badge>
-                    </div>
-                  ) : null}
-                </div>
-                {selectedRole ? (
-                  <div className="grid gap-4 md:grid-cols-2">
-                    <div className="rounded-lg border border-border/60 bg-muted/15 p-4">
-                      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                        Mô tả role
-                      </p>
-                      <p className="mt-2 text-sm leading-relaxed text-foreground">
-                        {selectedRole.description?.trim() || "Chưa có mô tả. Nên bổ sung để đội vận hành hiểu rõ vai trò này dùng trong tình huống nào."}
-                      </p>
-                    </div>
-                    <div className="rounded-lg border border-border/60 bg-muted/15 p-4">
-                      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                        Gợi ý sử dụng
-                      </p>
-                      <p className="mt-2 text-sm leading-relaxed text-foreground">
-                        Dùng trang này để đối chiếu nhanh role với permission. Việc gán role
-                        cho từng tài khoản được thực hiện ở trang `Nhân sự`.
-                      </p>
-                    </div>
-                  </div>
-                ) : null}
-              </CardHeader>
-              <CardContent>
-                {!selectedRole ? (
-                  <div className="rounded-lg border border-dashed border-border/70 bg-muted/15 p-8 text-center text-sm text-muted-foreground">
-                    Chưa có role nào để hiển thị.
-                  </div>
-                ) : (
-                  <ScrollArea className="h-[420px] rounded-lg border border-border/60 bg-muted/10">
-                    <div className="space-y-5 p-4 pr-6">
-                      {selectedRolePermissionGroups.map((group) => (
-                        <div key={group.resource} className="space-y-2">
-                          <div className="flex items-center gap-2">
-                            <Badge variant="outline" className="rounded-lg px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide">
-                              {group.label}
-                            </Badge>
-                            <span className="text-xs text-muted-foreground">
-                              {group.codes.length} quyền
-                            </span>
-                          </div>
-                          <div className="flex flex-wrap gap-2">
-                            {group.codes.map((permission) => (
-                              <div
-                                key={permission.code}
-                                className="rounded-lg border border-border/60 bg-background/85 px-3 py-2"
-                                title={permission.description ?? permission.code}
-                              >
-                                <p className="text-xs font-medium text-foreground">
-                                  {permission.label}
-                                </p>
-                                <p className="mt-1 font-mono text-[10px] text-muted-foreground">
-                                  {permission.code}
-                                </p>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </ScrollArea>
-                )}
-              </CardContent>
-            </Card>
-          </div>
+        </TabsContent>
 
-          <Card className="border-border/70 bg-card/95 shadow-sm">
-            <CardHeader className="space-y-4">
-              <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-                <div>
-                  <CardTitle className="flex items-center gap-2 text-lg">
-                    <Shield className="size-5 text-primary" />
-                    Ma trận vai trò → quyền
-                  </CardTitle>
-                  <CardDescription>
-                    Đối chiếu nhanh role nào đang có permission nào. Có thể lọc theo mã hoặc nhãn quyền.
-                  </CardDescription>
-                </div>
-                <div className="relative w-full max-w-sm">
-                  <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-                  <Input
-                    value={permissionSearch}
-                    onChange={(e) => setPermissionSearch(e.target.value)}
-                    placeholder="Lọc permission trong bảng..."
-                    className="pl-9"
-                  />
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <ScrollArea className="w-full rounded-lg border border-border/60">
-                <div className="min-w-max">
-                  <Table>
-                    <TableHeader>
-                      <TableRow className="bg-muted/40 hover:bg-muted/40">
-                        <TableHead className="sticky left-0 z-[2] min-w-[220px] bg-muted/90 font-semibold backdrop-blur">
-                          <span className="flex items-center gap-2">
-                            <Shield className="size-4 shrink-0 text-primary" aria-hidden />
-                            Vai trò
-                          </span>
-                        </TableHead>
-                        {filteredPermissions.map((permission) => (
-                          <TableHead
-                            key={permission.code}
-                            className="min-w-[140px] max-w-[160px] px-2 text-center align-bottom"
-                            title={permission.description ?? permission.code}
-                          >
-                            <span className="block text-xs font-medium leading-snug">
-                              {permissionLabelVi(permission.code)}
-                            </span>
-                            <span className="mt-1 block truncate font-mono text-[10px] leading-tight text-muted-foreground">
-                              {permission.code}
-                            </span>
-                          </TableHead>
-                        ))}
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {filteredRoles.map((role) => (
-                        <TableRow
-                          key={role.code}
-                          className={role.code === selectedRole?.code ? "bg-primary/5" : undefined}
-                        >
-                          <TableCell className="sticky left-0 z-[1] bg-background font-medium">
-                            <button
-                              type="button"
-                              onClick={() => setSelectedRoleCode(role.code)}
-                              className="flex w-full items-start gap-2 text-left"
-                            >
-                              <UserCircle
-                                className="mt-0.5 size-4 shrink-0 text-muted-foreground"
-                                aria-hidden
-                              />
-                              <div>
-                                <div>{role.name}</div>
-                                <div className="text-[10px] font-mono text-muted-foreground">
-                                  {role.code}
-                                </div>
-                              </div>
-                            </button>
-                          </TableCell>
-                          {filteredPermissions.map((permission) => {
-                            const on = roleHasPermission(role, permission.code);
-                            return (
-                              <TableCell key={permission.code} className="p-1 text-center">
-                                {on ? (
-                                  <span className="inline-flex size-8 items-center justify-center rounded-lg bg-primary/15 text-primary">
-                                    <Check className="size-4" aria-label="Có" />
-                                  </span>
-                                ) : (
-                                  <span className="inline-flex size-8 items-center justify-center rounded-lg bg-muted/50 text-muted-foreground/30">
-                                    —
-                                  </span>
-                                )}
-                              </TableCell>
-                            );
-                          })}
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-              </ScrollArea>
-            </CardContent>
-          </Card>
-        </>
-      )}
+        <TabsContent value="trash" className="mt-4">
+          <AdminDataTable<RoleRow>
+            data={trashItems}
+            getRowId={(row) => row.id}
+            columns={trashColumns}
+            isLoading={trashQuery.isLoading}
+            emptyLabel="Thùng rác trống."
+            manualFiltering
+            globalFilter={trashGlobalFilter}
+            onGlobalFilterChange={setTrashGlobalFilter}
+            globalFilterPlaceholder="Tìm trong thùng rác..."
+            rowSelectionEnabled
+            selectedRowIds={trashSelectedRowIds}
+            onSelectedRowIdsChange={setTrashSelectedRowIds}
+            bulkActions={
+              canManageRoles
+                ? [
+                    {
+                      id: "bulk-restore",
+                      label: "Khôi phục đã chọn",
+                      onAction: async (rows) => {
+                        await bulkMutation.mutateAsync({ action: "restore", ids: rows.map((row) => row.id) });
+                        toast.success("Đã khôi phục các role đã chọn");
+                      },
+                    },
+                    {
+                      id: "bulk-purge",
+                      label: "Xóa hẳn đã chọn",
+                      variant: "outline",
+                      className: "border-destructive/40 text-destructive",
+                      onAction: async (rows) => {
+                        await bulkMutation.mutateAsync({ action: "hard-delete", ids: rows.map((row) => row.id) });
+                        toast.success("Đã xóa vĩnh viễn các role đã chọn");
+                      },
+                    },
+                  ]
+                : []
+            }
+            footer={
+              <AdminTablePaginationFooter
+                page={trashPage}
+                pageSize={trashPageSize}
+                total={trashQuery.data?.total ?? 0}
+                isLoading={trashQuery.isLoading}
+                onPageChange={setTrashPage}
+                onPageSizeChange={setTrashPageSize}
+                emptySummary="Không có vai trò trong thùng rác"
+                itemLabel="vai trò"
+              />
+            }
+          />
+        </TabsContent>
+      </Tabs>
 
-      <Dialog open={createOpen} onOpenChange={setCreateOpen}>
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className={ADMIN_DIALOG_CONTENT_LG_CLASS}>
           <DialogHeader>
-            <DialogTitle className="text-2xl font-extrabold">Tạo role mới</DialogTitle>
+            <DialogTitle>{form.id ? "Cập nhật role" : "Tạo role mới"}</DialogTitle>
             <DialogDescription>
-              Tạo role và chọn các permission runtime đang có trong hệ thống để gán ngay từ đầu.
+              Thiết lập thông tin vai trò và chọn permission phù hợp.
             </DialogDescription>
           </DialogHeader>
-
           <div className="space-y-4 py-2">
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="role-name">Mã vai trò</Label>
+                <Label>Mã vai trò</Label>
                 <Input
-                  id="role-name"
-                  value={form.name}
-                  placeholder="vd: content_editor"
-                  onChange={(e) =>
-                    setForm((current) => ({
-                      ...current,
-                      name: roleCodeify(e.target.value),
-                    }))
+                  value={form.code}
+                  placeholder="content_editor"
+                  onChange={(event) =>
+                    setForm((current) => ({ ...current, code: roleCodeify(event.target.value) }))
                   }
                 />
-                <p className="text-xs text-muted-foreground">
-                  Dùng trong kỹ thuật và mapping với tài khoản.
-                </p>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="role-display-name">Tên hiển thị</Label>
+                <Label>Tên hiển thị</Label>
                 <Input
-                  id="role-display-name"
-                  value={form.displayName}
+                  value={form.name}
                   placeholder="Biên tập nội dung"
-                  onChange={(e) =>
+                  onChange={(event) =>
                     setForm((current) => ({
                       ...current,
-                      displayName: e.target.value,
-                      name: current.name || roleCodeify(e.target.value),
+                      name: event.target.value,
+                      code: current.code || roleCodeify(event.target.value),
                     }))
                   }
                 />
@@ -757,120 +741,183 @@ export default function RbacPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="role-description">Mô tả</Label>
+              <Label>Mô tả</Label>
               <Textarea
-                id="role-description"
                 value={form.description}
-                placeholder="Mô tả rõ role này dùng cho bộ phận nào, được phép thao tác gì..."
-                onChange={(e) =>
-                  setForm((current) => ({ ...current, description: e.target.value }))
-                }
+                onChange={(event) => setForm((current) => ({ ...current, description: event.target.value }))}
+                placeholder="Mô tả rõ vai trò này phục vụ bộ phận nào..."
               />
             </div>
 
             <div className="flex items-center justify-between rounded-lg border border-border px-4 py-3">
               <div>
-                <p className="text-sm font-semibold">Kích hoạt ngay</p>
-                <p className="text-xs text-muted-foreground">
-                  Nếu tắt, role được tạo nhưng ở trạng thái không hoạt động.
-                </p>
+                <div className="text-sm font-semibold">Kích hoạt ngay</div>
+                <TypographyPSmallMuted>
+                  Nếu tắt, role tạo ra ở trạng thái không hoạt động.
+                </TypographyPSmallMuted>
               </div>
               <Switch
                 checked={form.isActive}
-                onCheckedChange={(checked) =>
-                  setForm((current) => ({ ...current, isActive: checked }))
-                }
+                onCheckedChange={(checked) => setForm((current) => ({ ...current, isActive: checked }))}
               />
             </div>
 
-            <div className="space-y-3">
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <Label className="text-sm font-semibold">Permission</Label>
-                  <p className="text-xs text-muted-foreground">
-                    Đã chọn {form.permissions.length} / {permissions.length} quyền
-                  </p>
-                </div>
-                <div className="relative w-full sm:max-w-xs">
-                  <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-                  <Input
-                    value={createPermissionSearch}
-                    onChange={(e) => setCreatePermissionSearch(e.target.value)}
-                    placeholder="Tìm permission..."
-                    className="pl-9"
-                  />
-                </div>
-              </div>
-
+            <div className="space-y-2">
+              <Label>Permission ({form.permissions.length}/{permissions.length})</Label>
+              <Input
+                value={permissionSearch}
+                onChange={(event) => setPermissionSearch(event.target.value)}
+                placeholder="Tìm permission..."
+              />
               <ScrollArea className="h-[320px] rounded-lg border border-border/60 bg-muted/10">
-                <div className="space-y-5 p-4 pr-6">
-                  {createPermissionGroups.map((group) => (
-                    <div key={group.resource} className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <Badge variant="outline" className="rounded-lg px-2.5 py-1 text-[10px] uppercase tracking-wide">
-                          {group.label}
-                        </Badge>
-                        <span className="text-xs text-muted-foreground">
-                          {group.codes.length} quyền
-                        </span>
-                      </div>
-                      <div className="grid gap-2 sm:grid-cols-2">
-                        {group.codes.map((permission) => (
-                          <label
-                            key={permission.code}
-                            className="flex items-start gap-3 rounded-lg border border-border/60 bg-background/80 p-3 transition-colors hover:border-primary/20 hover:bg-primary/5"
+                <div className="space-y-4 p-3">
+                  {permissionGroups.length === 0 ? (
+                    <p className="py-8 text-center text-sm text-muted-foreground">
+                      Không có permission khớp tìm kiếm.
+                    </p>
+                  ) : (
+                    permissionGroups.map((group) => {
+                      const selectedInGroup = group.items.filter((p) =>
+                        form.permissions.includes(p.code),
+                      ).length;
+                      return (
+                        <section
+                          key={group.key}
+                          className="overflow-hidden rounded-lg border border-border/50 bg-background/70 shadow-sm"
+                          aria-labelledby={`perm-group-${group.key}`}
+                        >
+                          <header
+                            id={`perm-group-${group.key}`}
+                            className="flex items-center justify-between gap-3 border-b border-border/50 bg-muted/25 px-3 py-2"
                           >
-                            <Checkbox
-                              checked={form.permissions.includes(permission.code)}
-                              onCheckedChange={(checked) =>
-                                handleTogglePermission(permission.code, checked === true)
-                              }
-                              className="mt-0.5"
-                            />
-                            <span className="min-w-0">
-                              <span className="block text-sm font-medium text-foreground">
-                                {permission.label}
-                              </span>
-                              <span className="mt-1 block font-mono text-[10px] text-muted-foreground">
-                                {permission.code}
-                              </span>
+                            <div className="min-w-0">
+                              <p className="truncate font-mono text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                                {group.key}
+                              </p>
+                              <p className="truncate text-sm font-semibold text-foreground">{group.label}</p>
+                            </div>
+                            <span className="shrink-0 rounded-md border border-border/60 bg-background/90 px-2 py-0.5 text-xs tabular-nums text-muted-foreground">
+                              {selectedInGroup}/{group.items.length}
                             </span>
-                          </label>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
+                          </header>
+                          <div className="grid gap-2 p-2 sm:grid-cols-2">
+                            {group.items.map((permission) => (
+                              <label
+                                key={permission.code}
+                                className="flex items-start gap-2 rounded-lg border border-border/60 bg-background/90 p-2"
+                              >
+                                <Checkbox
+                                  checked={form.permissions.includes(permission.code)}
+                                  onCheckedChange={(checked) =>
+                                    setForm((current) => ({
+                                      ...current,
+                                      permissions:
+                                        checked === true
+                                          ? [...new Set([...current.permissions, permission.code])]
+                                          : current.permissions.filter((item) => item !== permission.code),
+                                    }))
+                                  }
+                                />
+                                <span className="min-w-0">
+                                  <span className="block text-sm font-medium">
+                                    {permissionLabelVi(permission.code)}
+                                  </span>
+                                  <span className="block font-mono text-xs text-muted-foreground">
+                                    {permission.code}
+                                  </span>
+                                </span>
+                              </label>
+                            ))}
+                          </div>
+                        </section>
+                      );
+                    })
+                  )}
                 </div>
               </ScrollArea>
             </div>
           </div>
 
           <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              className="mr-auto rounded-lg"
-              onClick={() => setCreateOpen(false)}
-              disabled={createRole.isPending}
-            >
+            <Button type="button" variant="outline" className="mr-auto rounded-lg" onClick={() => setDialogOpen(false)}>
               Hủy
             </Button>
             <Button
               type="button"
-              className="rounded-lg font-bold"
-              onClick={() => void handleCreateRole()}
-              disabled={createRole.isPending}
+              className="rounded-lg"
+              onClick={() => void handleSave()}
+              disabled={createMutation.isPending || updateMutation.isPending}
             >
-              {createRole.isPending ? (
+              {createMutation.isPending || updateMutation.isPending ? (
                 <Loader2 className="size-4 animate-spin" />
               ) : (
                 <Plus className="size-4" />
               )}
-              Tạo role
+              {form.id ? "Lưu thay đổi" : "Tạo role"}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <AdminConfirmActionDialog
+        open={deleteTarget != null}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+        title="Xóa role?"
+        description={
+          deleteTarget ? `Role "${deleteTarget.name}" sẽ được xóa tạm và chuyển vào thùng rác.` : undefined
+        }
+        icon={<Trash2 className="size-4 text-destructive" />}
+        confirmLabel="Xóa tạm"
+        confirmDestructive
+        confirmLoading={deleteMutation.isPending}
+        onConfirm={async () => {
+          if (!deleteTarget) return;
+          await deleteMutation.mutateAsync(deleteTarget.id);
+          toast.success(`Đã xóa role "${deleteTarget.name}"`);
+          setDeleteTarget(null);
+        }}
+        contentClassName={ADMIN_ALERT_DIALOG_CONTENT_CLASS}
+      />
+
+      <AdminConfirmActionDialog
+        open={restoreTarget != null}
+        onOpenChange={(open) => !open && setRestoreTarget(null)}
+        title="Khôi phục role?"
+        description={
+          restoreTarget ? `Role "${restoreTarget.name}" sẽ quay lại danh sách hoạt động.` : undefined
+        }
+        icon={<ArchiveRestore className="size-4 text-primary" />}
+        confirmLabel="Khôi phục"
+        confirmLoading={restoreMutation.isPending}
+        onConfirm={async () => {
+          if (!restoreTarget) return;
+          await restoreMutation.mutateAsync(restoreTarget.id);
+          toast.success(`Đã khôi phục role "${restoreTarget.name}"`);
+          setRestoreTarget(null);
+        }}
+        contentClassName={ADMIN_ALERT_DIALOG_CONTENT_CLASS}
+      />
+
+      <AdminConfirmActionDialog
+        open={purgeTarget != null}
+        onOpenChange={(open) => !open && setPurgeTarget(null)}
+        title="Xóa vĩnh viễn role?"
+        description={
+          purgeTarget ? `Role "${purgeTarget.name}" sẽ bị xóa vĩnh viễn và không thể hoàn tác.` : undefined
+        }
+        icon={<Trash2 className="size-4 text-destructive" />}
+        confirmLabel="Xóa vĩnh viễn"
+        confirmDestructive
+        confirmLoading={purgeMutation.isPending}
+        onConfirm={async () => {
+          if (!purgeTarget) return;
+          await purgeMutation.mutateAsync(purgeTarget.id);
+          toast.success(`Đã xóa vĩnh viễn role "${purgeTarget.name}"`);
+          setPurgeTarget(null);
+        }}
+        contentClassName={ADMIN_ALERT_DIALOG_CONTENT_CLASS}
+      />
     </PageSection>
   );
 }
+

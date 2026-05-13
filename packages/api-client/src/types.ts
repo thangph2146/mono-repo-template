@@ -27,7 +27,9 @@ export interface AuthRoleRef {
   displayName: string;
 }
 
-export interface User extends AuditFields {
+/** Admin user — `id` chuỗi (trùng `BaseEntity` API), không dùng số tự tăng. */
+export interface User extends Omit<AuditFields, "id"> {
+  id: string;
   email: string;
   fullName: string;
   phone?: string | null;

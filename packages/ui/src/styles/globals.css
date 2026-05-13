@@ -339,6 +339,67 @@
   html[data-text-size="lg"] {
     font-size: 18px;
   }
+
+  /* Scrollbar theme (global + Base UI overlays) */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in oklab, var(--color-scrollbar) 78%, transparent)
+      var(--color-scrollbar-track);
+  }
+
+  *::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: var(--color-scrollbar-track);
+  }
+
+  *::-webkit-scrollbar-thumb {
+    border: 2px solid transparent;
+    border-radius: 9999px;
+    background-clip: padding-box;
+    background: color-mix(in oklab, var(--color-scrollbar) 78%, transparent);
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background: color-mix(
+      in oklab,
+      var(--color-scrollbar-hover) 82%,
+      transparent
+    );
+  }
+
+  *::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+
+  [data-base-ui-inert] {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in oklab, var(--color-scrollbar) 68%, transparent)
+      transparent;
+  }
+
+  [data-base-ui-inert]::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  [data-base-ui-inert]::-webkit-scrollbar-thumb {
+    border: 1px solid transparent;
+    border-radius: 9999px;
+    background-clip: padding-box;
+    background: color-mix(in oklab, var(--color-scrollbar) 68%, transparent);
+  }
+
+  [data-base-ui-inert]::-webkit-scrollbar-thumb:hover {
+    background: color-mix(
+      in oklab,
+      var(--color-scrollbar-hover) 76%,
+      transparent
+    );
+  }
 }
 
 /* ── Typography utilities — Responsive rem scale ──────────────────────── */

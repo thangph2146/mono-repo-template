@@ -80,6 +80,10 @@ const menuTree: MenuTreeItem[] = [
         label: "Thẻ",
         icon: Tags,
         permission: null,
+        anyPermission: [
+          PERMISSION_CODES.TAGS_VIEW,
+          PERMISSION_CODES.TAGS_MANAGE,
+        ],
       },
     ],
   },
