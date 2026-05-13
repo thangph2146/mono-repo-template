@@ -15,8 +15,6 @@ import { cn } from "../lib/utils"
 import { ActionsPlugin } from "../plugins/actions/actions-plugin"
 import { AlignPlugin } from "../plugins/align-plugin"
 import { CounterCharacterPlugin } from "../plugins/actions/counter-character-plugin"
-import { AutoLinkPlugin } from "../plugins/auto-link-plugin"
-import { CodeHighlightPlugin } from "../plugins/code-highlight-plugin"
 import { ComponentPickerMenuPlugin } from "../plugins/component-picker-menu-plugin"
 import { ContextMenuPlugin } from "../plugins/context-menu-plugin"
 import { DragDropPastePlugin } from "../plugins/drag-drop-paste-plugin"
@@ -28,8 +26,6 @@ import { EmojiPickerPlugin } from "../plugins/emoji-picker-plugin"
 import { FloatingLinkEditorPlugin } from "../plugins/floating-link-editor-plugin"
 import { FloatingTextFormatToolbarPlugin } from "../plugins/floating-text-format-plugin"
 import { ImagesPlugin } from "../plugins/images-plugin"
-import { KeywordsPlugin } from "../plugins/keywords-plugin"
-import { LayoutPlugin } from "../plugins/layout-plugin"
 import {
   LIST_TOOLBAR_BULLET_MARKER_ITEMS,
 } from "../config/editor-list-config"
@@ -231,7 +227,6 @@ export function Plugins({
               hasTabHandler
             />
             <InsertTableCommandPlugin />
-            <LayoutPlugin />
             <TableColumnResizerPlugin anchorElem={floatingAnchorElem ?? document.body} />
             <EditorListPlugins />
             <TabIndentationPlugin />
@@ -242,7 +237,6 @@ export function Plugins({
 
         <MentionsPlugin />
         {!readOnly && <DraggableBlockPlugin anchorElem={floatingAnchorElem} />}
-        <KeywordsPlugin />
         {!readOnly && <ImagesPlugin />}
 
         {!readOnly && (
@@ -253,13 +247,10 @@ export function Plugins({
           </>
         )}
 
-        <CodeHighlightPlugin />
-
         {!readOnly && (
           <>
             <TypingPerfPlugin />
             <TabFocusPlugin />
-            <AutoLinkPlugin />
             <LinkPlugin />
             <ClearEditorPlugin />
 

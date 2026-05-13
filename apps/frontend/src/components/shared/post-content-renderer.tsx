@@ -2,25 +2,14 @@
 
 import {
   type MouseEvent,
-  type PointerEvent as ReactPointerEvent,
   type ReactNode,
   useCallback,
-  useEffect,
   useMemo,
-  useRef,
   useState,
 } from "react";
 import type { SerializedEditorState } from "lexical";
-import { ChevronLeft, ChevronRight, RotateCcw, ZoomIn, ZoomOut } from "lucide-react";
-import { Dialog, DialogContent } from "@ui/components/dialog";
+import { ImageLightboxDialog, type LightboxImage } from "@thangph2146/lexical-editor";
 import { Text } from "@ui/components/typography";
-import { cn } from "@ui/lib/utils";
-
-type LightboxImage = {
-  key: string;
-  src: string;
-  altText: string;
-};
 
 type SerializedNode = {
   type?: string;
@@ -38,6 +27,14 @@ type SerializedNode = {
   listType?: "bullet" | "number" | "check";
   checked?: boolean;
   direction?: "ltr" | "rtl" | null;
+  caption?: {
+    editorState?: {
+      root?: {
+        children?: SerializedNode[];
+      };
+    };
+  };
+  showCaption?: boolean;
 };
 
 const TEXT_FORMAT_BOLD = 1;
@@ -47,6 +44,49 @@ const TEXT_FORMAT_UNDERLINE = 1 << 3;
 const TEXT_FORMAT_CODE = 1 << 4;
 const TEXT_FORMAT_SUBSCRIPT = 1 << 5;
 const TEXT_FORMAT_SUPERSCRIPT = 1 << 6;
+const GENERIC_IMAGE_CAPTIONS = new Set([
+  "image",
+  "img",
+  "photo",
+  "hinh",
+  "hinh anh",
+  "anh",
+  "hình",
+  "hình ảnh",
+  "ảnh",
+]);
+
+function normalizeImageCaption(value?: string | null): string {
+  const raw = value?.trim() ?? "";
+  if (!raw) return "";
+  const normalized = raw.toLowerCase().replace(/\s+/g, " ");
+  return GENERIC_IMAGE_CAPTIONS.has(normalized) ? "" : raw;
+}
+
+function flattenSerializedText(nodes: SerializedNode[]): string {
+  const chunks: string[] = [];
+
+  const visit = (node: SerializedNode) => {
+    if (typeof node.text === "string") {
+      const value = node.text.trim();
+      if (value) chunks.push(value);
+    }
+
+    if (Array.isArray(node.children) && node.children.length > 0) {
+      for (const child of node.children) visit(child);
+    }
+  };
+
+  for (const node of nodes) visit(node);
+  return chunks.join(" ").replace(/\s+/g, " ").trim();
+}
+
+function extractImageCaption(node: SerializedNode): string {
+  if (node.showCaption !== true) return "";
+  const captionNodes = node.caption?.editorState?.root?.children;
+  if (!Array.isArray(captionNodes) || captionNodes.length === 0) return "";
+  return flattenSerializedText(captionNodes);
+}
 
 function isSerializedEditorState(value: unknown): value is SerializedEditorState {
   return (
@@ -95,7 +135,7 @@ function collectHtmlImages(html: string): LightboxImage[] {
       return {
         key: `${index}-${src}`,
         src,
-        altText: extractAttribute(tag, "alt").trim(),
+        altText: normalizeImageCaption(extractAttribute(tag, "alt")),
       } satisfies LightboxImage;
     })
     .filter((image): image is LightboxImage => image != null);
@@ -104,10 +144,11 @@ function collectHtmlImages(html: string): LightboxImage[] {
 function collectSerializedImages(nodes: SerializedNode[], images: LightboxImage[] = []): LightboxImage[] {
   for (const node of nodes) {
     if (node.type === "image" && typeof node.src === "string" && node.src.trim()) {
+      const captionText = extractImageCaption(node);
       images.push({
         key: `${images.length}-${node.src}`,
         src: node.src.trim(),
-        altText: node.altText?.trim() ?? "",
+        altText: captionText || normalizeImageCaption(node.altText),
       });
     }
 
@@ -307,7 +348,8 @@ function renderSerializedNodes(
         const imageSrc = node.src?.trim();
         if (!imageSrc) return null;
 
-        const imageAlt = node.altText?.trim() || "image";
+        const imageCaption = extractImageCaption(node) || normalizeImageCaption(node.altText);
+        const imageAlt = normalizeImageCaption(node.altText) || imageCaption || "image";
         return (
           <figure key={key} className="my-4">
             <button
@@ -322,9 +364,9 @@ function renderSerializedNodes(
                 className="h-auto max-w-full rounded-lg"
               />
             </button>
-            {node.altText?.trim() ? (
+            {imageCaption ? (
               <figcaption className="mt-2 text-center text-sm text-muted-foreground">
-                {node.altText.trim()}
+                {imageCaption}
               </figcaption>
             ) : null}
           </figure>
@@ -336,286 +378,6 @@ function renderSerializedNodes(
         return children ? <div key={key}>{children}</div> : null;
     }
   });
-}
-
-function PostImageLightbox({
-  open,
-  images,
-  index,
-  onIndexChange,
-  onClose,
-}: {
-  open: boolean;
-  images: LightboxImage[];
-  index: number;
-  onIndexChange: (index: number) => void;
-  onClose: () => void;
-}) {
-  const ZOOM_STEP = 0.25;
-  const MIN_ZOOM = 0.5;
-  const MAX_ZOOM = 3;
-  const safeIndex = useMemo(() => {
-    if (!Number.isFinite(index) || images.length === 0) return 0;
-    return Math.min(images.length - 1, Math.max(0, index));
-  }, [images.length, index]);
-
-  const current = images[safeIndex];
-  const canNavigate = images.length > 1;
-  const [zoomScale, setZoomScale] = useState(1);
-  const [offset, setOffset] = useState({ x: 0, y: 0 });
-  const [isDraggingImage, setIsDraggingImage] = useState(false);
-  const dragStateRef = useRef<{
-    active: boolean;
-    pointerId: number | null;
-    startX: number;
-    startY: number;
-    originX: number;
-    originY: number;
-  }>({
-    active: false,
-    pointerId: null,
-    startX: 0,
-    startY: 0,
-    originX: 0,
-    originY: 0,
-  });
-
-  const goPrev = useCallback(() => {
-    if (!canNavigate) return;
-    onIndexChange((safeIndex - 1 + images.length) % images.length);
-  }, [canNavigate, images.length, onIndexChange, safeIndex]);
-
-  const goNext = useCallback(() => {
-    if (!canNavigate) return;
-    onIndexChange((safeIndex + 1) % images.length);
-  }, [canNavigate, images.length, onIndexChange, safeIndex]);
-
-  const zoomOut = useCallback(() => {
-    setZoomScale((prev) => Math.max(MIN_ZOOM, Number((prev - ZOOM_STEP).toFixed(2))));
-  }, []);
-
-  const zoomIn = useCallback(() => {
-    setZoomScale((prev) => Math.min(MAX_ZOOM, Number((prev + ZOOM_STEP).toFixed(2))));
-  }, []);
-
-  const resetZoom = useCallback(() => {
-    setZoomScale(1);
-    setOffset({ x: 0, y: 0 });
-  }, []);
-
-  useEffect(() => {
-    if (!open) return;
-    setZoomScale(1);
-    setOffset({ x: 0, y: 0 });
-  }, [open, safeIndex]);
-
-  useEffect(() => {
-    if (zoomScale > 1) return;
-    setOffset({ x: 0, y: 0 });
-    setIsDraggingImage(false);
-    dragStateRef.current.active = false;
-    dragStateRef.current.pointerId = null;
-  }, [zoomScale]);
-
-  useEffect(() => {
-    if (!open) return;
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        event.preventDefault();
-        onClose();
-        return;
-      }
-      if (event.key === "ArrowLeft") {
-        event.preventDefault();
-        goPrev();
-        return;
-      }
-      if (event.key === "ArrowRight") {
-        event.preventDefault();
-        goNext();
-        return;
-      }
-      if (event.key === "+" || event.key === "=") {
-        event.preventDefault();
-        zoomIn();
-        return;
-      }
-      if (event.key === "-") {
-        event.preventDefault();
-        zoomOut();
-        return;
-      }
-      if (event.key === "0") {
-        event.preventDefault();
-        resetZoom();
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [goNext, goPrev, onClose, open, resetZoom, zoomIn, zoomOut]);
-
-  if (!open || !current) return null;
-
-  const handleImagePointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
-    if (zoomScale <= 1) return;
-    event.preventDefault();
-    event.currentTarget.setPointerCapture(event.pointerId);
-    dragStateRef.current = {
-      active: true,
-      pointerId: event.pointerId,
-      startX: event.clientX,
-      startY: event.clientY,
-      originX: offset.x,
-      originY: offset.y,
-    };
-    setIsDraggingImage(true);
-  };
-
-  const handleImagePointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
-    const dragState = dragStateRef.current;
-    if (!dragState.active || dragState.pointerId !== event.pointerId) return;
-    event.preventDefault();
-    const deltaX = event.clientX - dragState.startX;
-    const deltaY = event.clientY - dragState.startY;
-    setOffset({
-      x: dragState.originX + deltaX,
-      y: dragState.originY + deltaY,
-    });
-  };
-
-  const stopImageDragging = (event: ReactPointerEvent<HTMLDivElement>) => {
-    const dragState = dragStateRef.current;
-    if (dragState.pointerId !== event.pointerId) return;
-    dragStateRef.current.active = false;
-    dragStateRef.current.pointerId = null;
-    setIsDraggingImage(false);
-    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
-      event.currentTarget.releasePointerCapture(event.pointerId);
-    }
-  };
-
-  return (
-    <Dialog
-      open={open}
-      onOpenChange={(nextOpen) => {
-        if (!nextOpen) onClose();
-      }}
-    >
-      <DialogContent className="editor-dialog-content--lightbox">
-        <div className="editor-lightbox">
-          <div className="editor-lightbox__stage px-12 md:px-14">
-            <div className="absolute right-10 top-3 z-30 flex items-center gap-2 rounded-full border border-white/20 bg-black/45 px-2 py-1 text-xs text-white">
-              <button
-                type="button"
-                className="inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
-                onClick={zoomOut}
-                disabled={zoomScale <= MIN_ZOOM}
-                aria-label="Thu nho anh"
-              >
-                <ZoomOut className="size-4" />
-              </button>
-              <span className="min-w-12 text-center font-medium">{Math.round(zoomScale * 100)}%</span>
-              <button
-                type="button"
-                className="inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
-                onClick={zoomIn}
-                disabled={zoomScale >= MAX_ZOOM}
-                aria-label="Phong to anh"
-              >
-                <ZoomIn className="size-4" />
-              </button>
-              <button
-                type="button"
-                className="inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
-                onClick={resetZoom}
-                disabled={zoomScale === 1}
-                aria-label="Dat lai ty le anh"
-              >
-                <RotateCcw className="size-4" />
-              </button>
-            </div>
-
-            <button
-              type="button"
-              className={cn("editor-lightbox__nav z-20", "prev", !canNavigate && "is-disabled")}
-              onClick={goPrev}
-              disabled={!canNavigate}
-              aria-label="Anh truoc"
-            >
-              <ChevronLeft />
-            </button>
-
-            <div
-              className={cn(
-                "editor-lightbox__image mx-auto max-h-[calc(100%-1rem)] max-w-[calc(100%-5rem)] overflow-hidden md:max-w-[calc(100%-7rem)]",
-                zoomScale > 1 ? (isDraggingImage ? "cursor-grabbing" : "cursor-grab") : "cursor-default",
-              )}
-              onPointerDown={handleImagePointerDown}
-              onPointerMove={handleImagePointerMove}
-              onPointerUp={stopImageDragging}
-              onPointerCancel={stopImageDragging}
-            >
-              <img
-                src={current.src}
-                alt={current.altText || "image"}
-                title={current.altText || "image"}
-                className="h-full w-full select-none object-contain transition-transform duration-150 ease-out"
-                style={{ transform: `translate(${offset.x}px, ${offset.y}px) scale(${zoomScale})` }}
-                draggable={false}
-              />
-            </div>
-
-            <button
-              type="button"
-              className={cn("editor-lightbox__nav z-20", "next", !canNavigate && "is-disabled")}
-              onClick={goNext}
-              disabled={!canNavigate}
-              aria-label="Anh tiep theo"
-            >
-              <ChevronRight />
-            </button>
-          </div>
-
-          <div className="editor-lightbox__footer">
-            <div className="editor-lightbox__meta">
-              <span className="editor-lightbox__counter">
-                {safeIndex + 1} / {images.length}
-              </span>
-              {current.altText ? (
-                <span className="editor-lightbox__caption">{current.altText}</span>
-              ) : null}
-            </div>
-
-            {images.length > 1 ? (
-              <div className="editor-lightbox__thumbs" role="list">
-                {images.map((image, imageIndex) => (
-                  <button
-                    key={image.key}
-                    type="button"
-                    className={cn(
-                      "editor-lightbox__thumb",
-                      imageIndex === safeIndex && "is-active",
-                    )}
-                    onClick={() => onIndexChange(imageIndex)}
-                    aria-label={`Chon anh ${imageIndex + 1}`}
-                    role="listitem"
-                  >
-                    <img
-                      src={image.src}
-                      alt={image.altText || `Anh ${imageIndex + 1}`}
-                      className="h-full w-full object-cover"
-                    />
-                  </button>
-                ))}
-              </div>
-            ) : null}
-          </div>
-        </div>
-      </DialogContent>
-    </Dialog>
-  );
 }
 
 export function PostContentRenderer({ content }: { content?: unknown | null }) {
@@ -681,7 +443,7 @@ export function PostContentRenderer({ content }: { content?: unknown | null }) {
       <>
         {renderSerializedNodes(serializedNodes, { onImageClick: openSerializedImage })}
         {serializedLightbox ? (
-          <PostImageLightbox
+          <ImageLightboxDialog
             open={true}
             images={serializedLightbox.images}
             index={serializedLightbox.index}
@@ -708,7 +470,7 @@ export function PostContentRenderer({ content }: { content?: unknown | null }) {
             dangerouslySetInnerHTML={{ __html: htmlContent }}
           />
           {htmlLightbox ? (
-            <PostImageLightbox
+            <ImageLightboxDialog
               open={true}
               images={htmlLightbox.images}
               index={htmlLightbox.index}

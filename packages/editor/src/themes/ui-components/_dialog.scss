@@ -29,7 +29,7 @@
   animation: editor-dialog-zoom-in $editor-transition-normal cubic-bezier(0.16, 1, 0.3, 1);
 
   @media (min-width: 640px) {
-    max-width: $editor-dialog-max-width-lg;
+    max-width: 700px;
   }
 
   &__close {
@@ -86,21 +86,98 @@
   align-items: center;
   justify-content: center;
   background: rgba(0, 0, 0, 0.35);
+  padding: 0 48px;
+
+  @media (min-width: 768px) {
+    padding: 0 56px;
+  }
 }
 
 .editor-lightbox__image {
-  position: relative;
+  max-height: 70vh;
+  max-width: 80vw;
+  width: 80vw;
+  height: 70vh;
+  margin: 0 auto;
+  margin-top: 2rem;
+  overflow: hidden;
+  cursor: default;
+
+  @media (min-width: 768px) {
+    max-width: calc(100% - 7rem);
+  }
+
+  &.is-zoomable {
+    cursor: grab;
+  }
+
+  &.is-dragging {
+    cursor: grabbing;
+  }
+
+}
+
+.editor-lightbox__image-content {
   width: 100%;
   height: 100%;
+  object-fit: contain;
+  user-select: none;
+  transition: transform 150ms ease-out;
+}
 
-  img {
-    object-fit: contain;
+.editor-lightbox__zoom-controls {
+  position: absolute;
+  right: 40px;
+  top: 12px;
+  z-index: 30;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.45);
+  color: #ffffff;
+}
+
+.editor-lightbox__zoom-button {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 9999px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+
+  svg {
+    width: 16px;
+    height: 16px;
   }
+
+  &:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+.editor-lightbox__zoom-value {
+  min-width: 48px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
 }
 
 .editor-lightbox__nav {
   position: absolute;
   top: 50%;
+  z-index: 20;
   transform: translateY(-50%);
   width: 44px;
   height: 44px;
@@ -181,13 +258,15 @@
   cursor: pointer;
   flex: 0 0 auto;
 
-  img {
-    object-fit: cover;
-  }
-
   &.is-active {
     border-color: rgba(255, 255, 255, 0.62);
   }
+}
+
+.editor-lightbox__thumb-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .editor-dialog-header {

@@ -99,6 +99,12 @@ export default function ImageComponent({
   src,
   width,
 }: ImageComponentProps): JSX.Element {
+  const resolveReplaceDialogTab = useCallback(() => {
+    const currentSrc = src.trim().toLowerCase()
+    if (currentSrc.startsWith("data:")) return "file"
+    return "url"
+  }, [src])
+
   const imageRef = useRef<null | HTMLImageElement>(null)
   const buttonRef = useRef<HTMLButtonElement | null>(null)
   const [isResizing, setIsResizing] = useState<boolean>(false)
@@ -372,7 +378,9 @@ export default function ImageComponent({
               </DialogHeader>
               <InsertImageDialog
                 activeEditor={editor}
-                activeTab="url"
+                activeTab={resolveReplaceDialogTab()}
+                initialValues={{ src, altText }}
+                confirmLabel="Thay thế hình ảnh"
                 onClose={() => setIsReplaceDialogOpen(false)}
                 onInsert={(payload) => {
                   handleReplaceImage(payload)

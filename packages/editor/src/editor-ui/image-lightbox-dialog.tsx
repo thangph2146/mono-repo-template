@@ -1,7 +1,12 @@
-import * as React from "react"
-import { useEffect, useMemo } from "react"
-import Image from "next/image"
-import { ChevronLeft, ChevronRight } from "lucide-react"
+import {
+  type PointerEvent as ReactPointerEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react"
+import { ChevronLeft, ChevronRight, RotateCcw, ZoomIn, ZoomOut } from "lucide-react"
 import { Dialog, DialogContent } from "../ui/dialog"
 import { cn } from "../lib/utils"
 
@@ -24,6 +29,10 @@ export function ImageLightboxDialog({
   onIndexChange: (index: number) => void
   onClose: () => void
 }) {
+  const ZOOM_STEP = 0.25
+  const MIN_ZOOM = 0.5
+  const MAX_ZOOM = 3
+
   const safeIndex = useMemo(() => {
     if (!Number.isFinite(index) || images.length === 0) return 0
     return Math.min(images.length - 1, Math.max(0, index))
@@ -31,16 +40,61 @@ export function ImageLightboxDialog({
 
   const current = images[safeIndex]
   const canNavigate = images.length > 1
+  const [zoomScale, setZoomScale] = useState(1)
+  const [offset, setOffset] = useState({ x: 0, y: 0 })
+  const [isDraggingImage, setIsDraggingImage] = useState(false)
+  const dragStateRef = useRef<{
+    active: boolean
+    pointerId: number | null
+    startX: number
+    startY: number
+    originX: number
+    originY: number
+  }>({
+    active: false,
+    pointerId: null,
+    startX: 0,
+    startY: 0,
+    originX: 0,
+    originY: 0,
+  })
 
-  const goPrev = React.useCallback(() => {
+  const goPrev = useCallback(() => {
     if (!canNavigate) return
     onIndexChange((safeIndex - 1 + images.length) % images.length)
   }, [canNavigate, images.length, onIndexChange, safeIndex])
 
-  const goNext = React.useCallback(() => {
+  const goNext = useCallback(() => {
     if (!canNavigate) return
     onIndexChange((safeIndex + 1) % images.length)
   }, [canNavigate, images.length, onIndexChange, safeIndex])
+
+  const zoomOut = useCallback(() => {
+    setZoomScale((prev) => Math.max(MIN_ZOOM, Number((prev - ZOOM_STEP).toFixed(2))))
+  }, [])
+
+  const zoomIn = useCallback(() => {
+    setZoomScale((prev) => Math.min(MAX_ZOOM, Number((prev + ZOOM_STEP).toFixed(2))))
+  }, [])
+
+  const resetZoom = useCallback(() => {
+    setZoomScale(1)
+    setOffset({ x: 0, y: 0 })
+  }, [])
+
+  useEffect(() => {
+    if (!open) return
+    setZoomScale(1)
+    setOffset({ x: 0, y: 0 })
+  }, [open, safeIndex])
+
+  useEffect(() => {
+    if (zoomScale > 1) return
+    setOffset({ x: 0, y: 0 })
+    setIsDraggingImage(false)
+    dragStateRef.current.active = false
+    dragStateRef.current.pointerId = null
+  }, [zoomScale])
 
   useEffect(() => {
     if (!open) return
@@ -58,13 +112,66 @@ export function ImageLightboxDialog({
       if (e.key === "ArrowRight") {
         e.preventDefault()
         goNext()
+        return
+      }
+      if (e.key === "+" || e.key === "=") {
+        e.preventDefault()
+        zoomIn()
+        return
+      }
+      if (e.key === "-") {
+        e.preventDefault()
+        zoomOut()
+        return
+      }
+      if (e.key === "0") {
+        e.preventDefault()
+        resetZoom()
       }
     }
     window.addEventListener("keydown", handler)
     return () => window.removeEventListener("keydown", handler)
-  }, [goNext, goPrev, onClose, open])
+  }, [goNext, goPrev, onClose, open, resetZoom, zoomIn, zoomOut])
 
   if (!open || !current) return null
+
+  const handleImagePointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (zoomScale <= 1) return
+    event.preventDefault()
+    event.currentTarget.setPointerCapture(event.pointerId)
+    dragStateRef.current = {
+      active: true,
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      originX: offset.x,
+      originY: offset.y,
+    }
+    setIsDraggingImage(true)
+  }
+
+  const handleImagePointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
+    const dragState = dragStateRef.current
+    if (!dragState.active || dragState.pointerId !== event.pointerId) return
+    event.preventDefault()
+    const deltaX = event.clientX - dragState.startX
+    const deltaY = event.clientY - dragState.startY
+    setOffset({
+      x: dragState.originX + deltaX,
+      y: dragState.originY + deltaY,
+    })
+  }
+
+  const stopImageDragging = (event: ReactPointerEvent<HTMLDivElement>) => {
+    const dragState = dragStateRef.current
+    if (dragState.pointerId !== event.pointerId) return
+    dragStateRef.current.active = false
+    dragStateRef.current.pointerId = null
+    setIsDraggingImage(false)
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId)
+    }
+  }
 
   return (
     <Dialog
@@ -76,6 +183,36 @@ export function ImageLightboxDialog({
       <DialogContent className="editor-dialog-content--lightbox">
         <div className="editor-lightbox">
           <div className="editor-lightbox__stage">
+            <div className="editor-lightbox__zoom-controls">
+              <button
+                type="button"
+                className="editor-lightbox__zoom-button"
+                onClick={zoomOut}
+                disabled={zoomScale <= MIN_ZOOM}
+                aria-label="Thu nho anh"
+              >
+                <ZoomOut />
+              </button>
+              <span className="editor-lightbox__zoom-value">{Math.round(zoomScale * 100)}%</span>
+              <button
+                type="button"
+                className="editor-lightbox__zoom-button"
+                onClick={zoomIn}
+                disabled={zoomScale >= MAX_ZOOM}
+                aria-label="Phong to anh"
+              >
+                <ZoomIn />
+              </button>
+              <button
+                type="button"
+                className="editor-lightbox__zoom-button"
+                onClick={resetZoom}
+                disabled={zoomScale === 1}
+                aria-label="Dat lai ty le anh"
+              >
+                <RotateCcw />
+              </button>
+            </div>
             <button
               type="button"
               className={cn("editor-lightbox__nav", "prev", !canNavigate && "is-disabled")}
@@ -86,15 +223,24 @@ export function ImageLightboxDialog({
               <ChevronLeft />
             </button>
 
-            <div className="editor-lightbox__image">
-              <Image
+            <div
+              className={cn(
+                "editor-lightbox__image",
+                zoomScale > 1 && "is-zoomable",
+                isDraggingImage && "is-dragging",
+              )}
+              onPointerDown={handleImagePointerDown}
+              onPointerMove={handleImagePointerMove}
+              onPointerUp={stopImageDragging}
+              onPointerCancel={stopImageDragging}
+            >
+              <img
                 src={current.src}
                 alt={current.altText || "image"}
                 title={current.altText || "image"}
-                fill
-                sizes="(max-width: 768px) 96vw, 92vw"
-                unoptimized
-                priority
+                className="editor-lightbox__image-content"
+                style={{ transform: `translate(${offset.x}px, ${offset.y}px) scale(${zoomScale})` }}
+                draggable={false}
               />
             </div>
 
@@ -128,7 +274,7 @@ export function ImageLightboxDialog({
                     aria-label={`Chọn ảnh ${idx + 1}`}
                     role="listitem"
                   >
-                    <Image src={img.src} alt={img.altText || "image"} fill sizes="64px" unoptimized />
+                    <img src={img.src} alt={img.altText || "image"} className="editor-lightbox__thumb-image" />
                   </button>
                 ))}
               </div>

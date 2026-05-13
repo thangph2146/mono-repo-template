@@ -57,6 +57,17 @@ type PublicPostsPayload = {
   meta: PaginationMeta;
 };
 
+export type PublicCategoryItem = {
+  id: string;
+  name: string;
+  slug: string;
+  description: string | null;
+  parentId: string | null;
+  parentName: string | null;
+  _count: { children: number };
+  postCount: number;
+};
+
 function getApiBaseUrl() {
   return (process.env.NEXT_PUBLIC_API_URL ?? DEFAULT_API_URL).replace(/\/$/, "");
 }
@@ -118,6 +129,10 @@ export async function getPublicPosts(params?: {
   search?: string;
 }) {
   return fetchPublicApi<PublicPostsPayload>("/public/posts", params);
+}
+
+export async function getPublicCategories(params?: { slug?: string }) {
+  return fetchPublicApi<PublicCategoryItem[]>("/public/categories", params);
 }
 
 export async function getPublicPostBySlug(slug: string) {

@@ -48,12 +48,11 @@ import {
   TabsList,
   TabsTrigger,
 } from "../ui/tabs"
-import { useEditorUploads, FolderNode } from "../context/uploads-context"
-import { Loader2 } from "lucide-react"
-import Image from "next/image"
+import { logger } from "../lib/logger"
 import { TypographySpanSmallMuted } from "../ui/typography"
 
 export type InsertImagePayload = Readonly<ImagePayload>
+const MAX_IMAGE_UPLOAD_BYTES = 5 * 1024 * 1024
 
 const getDOMSelection = (targetWindow: Window | null): Selection | null =>
   CAN_USE_DOM ? (targetWindow || window).getSelection() : null
@@ -63,11 +62,24 @@ export const INSERT_IMAGE_COMMAND: LexicalCommand<InsertImagePayload> =
 
 export function InsertImageUriDialogBody({
   onClick,
+  initialSrc = "",
+  initialAltText = "",
+  confirmLabel = "Confirm",
 }: {
   onClick: (payload: InsertImagePayload) => void
+  initialSrc?: string
+  initialAltText?: string
+  confirmLabel?: string
 }) {
-  const [src, setSrc] = useState("")
-  const [altText, setAltText] = useState("")
+  const [src, setSrc] = useState(initialSrc)
+  const [altText, setAltText] = useState(initialAltText)
+  const normalizedSrc = src.trim()
+  const canPreview = /^https?:\/\//i.test(normalizedSrc) || normalizedSrc.startsWith("/api/uploads")
+
+  useEffect(() => {
+    setSrc(initialSrc)
+    setAltText(initialAltText)
+  }, [initialAltText, initialSrc])
 
   const isDisabled = src === ""
 
@@ -93,14 +105,32 @@ export function InsertImageUriDialogBody({
           data-test-id="image-modal-alt-text-input"
         />
       </div>
+      {canPreview ? (
+        <div className="editor-form-item">
+          <Label>Xem trước</Label>
+          <div className="editor-image-preview">
+            <img
+              src={normalizedSrc}
+              alt={altText || "image-preview-url"}
+              className="editor-image-preview__image"
+            />
+          </div>
+        </div>
+      ) : null}
       <DialogFooter>
         <Button
           type="submit"
           disabled={isDisabled}
-          onClick={() => onClick({ altText, src })}
+          onClick={() => {
+            logger.debug("[InsertImageDialog] Confirm image by URL", {
+              srcType: normalizedSrc.startsWith("/api/uploads") ? "uploads" : "url",
+              hasAltText: Boolean(altText.trim()),
+            })
+            onClick({ altText, src })
+          }}
           data-test-id="image-modal-confirm-btn"
         >
-          Confirm
+          {confirmLabel}
         </Button>
       </DialogFooter>
     </div>
@@ -109,15 +139,38 @@ export function InsertImageUriDialogBody({
 
 export function InsertImageUploadedDialogBody({
   onClick,
+  initialSrc = "",
+  initialAltText = "",
+  confirmLabel = "Confirm",
 }: {
   onClick: (payload: InsertImagePayload) => void
+  initialSrc?: string
+  initialAltText?: string
+  confirmLabel?: string
 }) {
-  const [src, setSrc] = useState("")
-  const [altText, setAltText] = useState("")
+  const [src, setSrc] = useState(initialSrc.startsWith("data:") ? initialSrc : "")
+  const [altText, setAltText] = useState(initialAltText)
+  const [uploadError, setUploadError] = useState("")
+
+  useEffect(() => {
+    setSrc(initialSrc.startsWith("data:") ? initialSrc : "")
+    setAltText(initialAltText)
+    setUploadError("")
+  }, [initialAltText, initialSrc])
 
   const isDisabled = src === ""
 
   const loadImage = (files: FileList | null) => {
+    const file = files?.[0]
+    if (!file) return
+
+    if (file.size > MAX_IMAGE_UPLOAD_BYTES) {
+      setUploadError("Kích thước ảnh vượt quá 5MB. Vui lòng chọn ảnh nhỏ hơn.")
+      setSrc("")
+      return
+    }
+
+    setUploadError("")
     const reader = new FileReader()
     reader.onload = function () {
       if (typeof reader.result === "string") {
@@ -125,9 +178,7 @@ export function InsertImageUploadedDialogBody({
       }
       return ""
     }
-    if (files && files[0]) {
-      reader.readAsDataURL(files[0])  
-    }
+    reader.readAsDataURL(file)
   }
 
   return (
@@ -141,6 +192,15 @@ export function InsertImageUploadedDialogBody({
           accept="image/*"
           data-test-id="image-modal-file-upload"
         />
+        {uploadError ? (
+          <TypographySpanSmallMuted className="editor-text-destructive">
+            {uploadError}
+          </TypographySpanSmallMuted>
+        ) : (
+          <TypographySpanSmallMuted>
+            Dung lượng tối đa: 5MB
+          </TypographySpanSmallMuted>
+        )}
       </div>
       <div className="editor-form-item">
         <Label htmlFor="alt-text">Alt Text</Label>
@@ -152,173 +212,32 @@ export function InsertImageUploadedDialogBody({
           data-test-id="image-modal-alt-text-input"
         />
       </div>
+      {src.trim() ? (
+        <div className="editor-form-item">
+          <Label>Xem trước</Label>
+          <div className="editor-image-preview">
+            <img
+              src={src.trim()}
+              alt={altText || "image-preview-file"}
+              className="editor-image-preview__image"
+            />
+          </div>
+        </div>
+      ) : null}
       <DialogFooter>
         <Button
           type="submit"
           disabled={isDisabled}
-          onClick={() => onClick({ altText, src })}
+          onClick={() => {
+            logger.debug("[InsertImageDialog] Confirm image by file/base64", {
+              hasBase64: src.trim().startsWith("data:"),
+              hasAltText: Boolean(altText.trim()),
+            })
+            onClick({ altText, src })
+          }}
           data-test-id="image-modal-file-upload-btn"
         >
-          Confirm
-        </Button>
-      </DialogFooter>
-    </div>
-  )
-}
-
-function flattenImages(folder: FolderNode | undefined): Array<{
-  fileName: string
-  originalName: string
-  url: string
-  path?: string
-}> {
-  if (!folder) return []
-  const result: Array<{ fileName: string; originalName: string; url: string; path?: string }> = []
-
-  const walk = (node: FolderNode) => {
-    node.images.forEach((image) => {
-      result.push({
-        fileName: image.fileName,
-        originalName: image.originalName,
-        url: image.url,
-        path: node.path || undefined,
-      })
-    })
-    node.subfolders.forEach(walk)
-  }
-
-  walk(folder)
-  return result
-}
-
-export function InsertImageUploadsDialogBody({
-  onClick,
-}: {
-  onClick: (payload: InsertImagePayload) => void
-}) {
-  const [selectedImage, setSelectedImage] = useState<string | null>(null)
-  const [altText, setAltText] = useState("")
-
-  const { folderTree, isLoading } = useEditorUploads()
-  const allImages = React.useMemo(() => flattenImages(folderTree), [folderTree])
-
-  const isDisabled = !selectedImage
-
-  const handleImageSelect = React.useCallback((imageUrl: string, originalName: string) => {
-    setSelectedImage(imageUrl)
-    setAltText((prev) => prev || originalName)
-  }, [])
-
-  const handleConfirm = React.useCallback(() => {
-    if (selectedImage) {
-      // Đảm bảo URL là absolute nếu là relative URL từ uploads
-      let imageUrl = selectedImage
-      if (imageUrl.startsWith("/api/uploads")) {
-        // Relative URL từ uploads - giữ nguyên vì nó sẽ hoạt động với same-origin
-        imageUrl = selectedImage
-      } else if (!imageUrl.startsWith("http://") && !imageUrl.startsWith("https://") && !imageUrl.startsWith("data:")) {
-        // Nếu không phải absolute URL và không phải data URL, thêm protocol
-        imageUrl = `https://${imageUrl}`
-      }
-      
-      onClick({ altText: altText || "", src: imageUrl })
-    }
-  }, [selectedImage, altText, onClick])
-
-  // Listen for double-click confirm event
-  React.useEffect(() => {
-    const handleDoubleClickConfirm = () => {
-      // Use a ref to get the latest selectedImage
-      setTimeout(() => {
-        handleConfirm()
-      }, 50)
-    }
-    
-    document.addEventListener("confirm-image-insert", handleDoubleClickConfirm)
-    return () => {
-      document.removeEventListener("confirm-image-insert", handleDoubleClickConfirm)
-    }
-  }, [handleConfirm])
-
-  return (
-    <div className="editor-form-grid">
-      <div className="editor-form-item">
-        <Label>Chọn hình ảnh từ thư viện</Label>
-        {isLoading ? (
-          <Flex align="center" justify="center" className="editor-py-8">
-            <Loader2 className="editor-loader" />
-          </Flex>
-        ) : allImages.length === 0 ? (
-          <div className="editor-empty-state">
-            <TypographySpanSmallMuted>Chưa có hình ảnh nào được upload</TypographySpanSmallMuted>
-          </div>
-        ) : (
-          <div className="editor-scroll-area editor-flex editor-flex-col editor-gap-1">
-            <div className="editor-image-list">
-              {allImages.map((image) => (
-                <button
-                  key={`${image.path || "root"}-${image.fileName}`}
-                  type="button"
-                  onClick={() => handleImageSelect(image.url, image.originalName)}
-                  onDoubleClick={() => {
-                    handleImageSelect(image.url, image.originalName)
-                    setTimeout(() => {
-                      const event = new Event("confirm-image-insert", { bubbles: true })
-                      document.dispatchEvent(event)
-                    }, 100)
-                  }}
-                  className={`editor-image-btn ${
-                    selectedImage === image.url
-                      ? "editor-image-btn--selected"
-                      : ""
-                  }`}
-                  title={`${image.originalName} - Double-click để chèn ngay`}
-                >
-                  <span className="editor-image-btn__thumb">
-                    <Image
-                      src={image.url}
-                      alt={image.originalName}
-                      title={image.originalName}
-                      fill
-                      className="editor-object-cover editor-article-image editor-article-image-ux-impr editor-article-image-new editor-expandable"
-                      sizes="64px"
-                      unoptimized
-                      loading="eager"
-                    />
-                  </span>
-                  <span className="editor-image-btn__meta">
-                    <span className="editor-image-btn__name">{image.originalName}</span>
-                    <span className="editor-image-btn__path">
-                      {image.path ? `${image.path}/` : ""}
-                      {image.fileName}
-                    </span>
-                  </span>
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-      {selectedImage && (
-        <div className="editor-form-item">
-          <Label htmlFor="alt-text-uploads">Alt Text</Label>
-          <Input
-            id="alt-text-uploads"
-            placeholder="Mô tả hình ảnh"
-            onChange={(e) => setAltText(e.target.value)}
-            value={altText}
-            data-test-id="image-modal-uploads-alt-text-input"
-          />
-        </div>
-      )}
-      <DialogFooter>
-        <Button
-          type="submit"
-          disabled={isDisabled}
-          onClick={handleConfirm}
-          data-test-id="image-modal-uploads-confirm-btn"
-        >
-          Chèn hình ảnh
+          {confirmLabel}
         </Button>
       </DialogFooter>
     </div>
@@ -329,12 +248,16 @@ export function InsertImageDialog({
   activeEditor,
   onClose,
   onInsert,
-  activeTab = "uploads",
+  activeTab = "url",
+  initialValues,
+  confirmLabel = "Confirm",
 }: {
   activeEditor: LexicalEditor
   onClose: () => void
   onInsert?: (payload: InsertImagePayload, close: () => void) => void
   activeTab?: string
+  initialValues?: { src?: string; altText?: string }
+  confirmLabel?: string
 }): JSX.Element {
   const hasModifier = useRef(false)
 
@@ -361,9 +284,6 @@ export function InsertImageDialog({
   return (
     <Tabs defaultValue={activeTab}>
       <TabsList className="editor-tabs-list">
-        <TabsTrigger value="uploads" className="editor-tabs-trigger">
-          Thư viện
-        </TabsTrigger>
         <TabsTrigger value="url" className="editor-tabs-trigger">
           URL
         </TabsTrigger>
@@ -371,14 +291,21 @@ export function InsertImageDialog({
           File
         </TabsTrigger>
       </TabsList>
-      <TabsContent value="uploads">
-        <InsertImageUploadsDialogBody onClick={onClick} />
-      </TabsContent>
       <TabsContent value="url">
-        <InsertImageUriDialogBody onClick={onClick} />
+        <InsertImageUriDialogBody
+          onClick={onClick}
+          initialSrc={initialValues?.src ?? ""}
+          initialAltText={initialValues?.altText ?? ""}
+          confirmLabel={confirmLabel}
+        />
       </TabsContent>
       <TabsContent value="file">
-        <InsertImageUploadedDialogBody onClick={onClick} />
+        <InsertImageUploadedDialogBody
+          onClick={onClick}
+          initialSrc={initialValues?.src ?? ""}
+          initialAltText={initialValues?.altText ?? ""}
+          confirmLabel={confirmLabel}
+        />
       </TabsContent>
     </Tabs>
   )

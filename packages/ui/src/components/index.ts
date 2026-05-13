@@ -23,6 +23,7 @@ export * from "./hover-card";
 export * from "./input-group";
 export * from "./input-otp";
 export * from "./input";
+export * from "./image-lightbox";
 export * from "./label";
 export * from "./menubar";
 export * from "./native-select";
