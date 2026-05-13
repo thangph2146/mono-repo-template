@@ -1,0 +1,20 @@
+@use "../variables" as *;
+@use "../mixins" as *;
+
+.editor-table-dialog {
+  display: grid;
+  gap: $editor-gap-5;
+  padding: $editor-gap-2 0;
+  animation: editor-fade-in $editor-transition-slow;
+
+  &__group {
+    @include flex-col;
+    gap: $editor-gap-2;
+  }
+
+  &__checkbox-group {
+    @include flex-center;
+    gap: $editor-gap-3;
+    margin-top: $editor-gap-2;
+  }
+}

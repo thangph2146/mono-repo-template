@@ -1,0 +1,27 @@
+@use "../variables" as *;
+@use "../mixins" as *;
+
+/* --- BACKGROUNDS --- */
+.editor-bg-background {
+  background-color: var(--background);
+}
+
+.editor-bg-primary {
+  background-color: $editor-primary-color;
+}
+
+.editor-bg-muted {
+  background-color: var(--muted);
+}
+
+.editor-bg-accent {
+  background-color: $editor-accent-color;
+}
+
+.editor-bg-transparent {
+  background-color: transparent;
+}
+
+.editor-bg-none {
+  background: none;
+}

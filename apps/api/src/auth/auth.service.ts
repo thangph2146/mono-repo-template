@@ -112,6 +112,17 @@ export class AuthService {
     return this.mapUserToPayload(user);
   }
 
+  async loginAsDevelopmentUser(
+    userId: string,
+  ): Promise<AuthUserPayload | null> {
+    if (process.env.NODE_ENV !== 'development') {
+      return null;
+    }
+
+    const { payload } = await this.tryAuthPayloadByUserId(userId.trim());
+    return payload;
+  }
+
   async loginWithGoogle(
     profile: GoogleProfileDto,
   ): Promise<AuthUserPayload | null> {

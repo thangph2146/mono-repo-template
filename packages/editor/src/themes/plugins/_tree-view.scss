@@ -1,0 +1,11 @@
+@use "../variables" as *;
+@use "../mixins" as *;
+
+.editor-tree-view-scroll-area {
+  background-color: var(--foreground);
+  color: var(--background);
+  height: 24rem; // h-96
+  overflow: hidden;
+  @include rounded-lg;
+  padding: $editor-gap-2;
+}

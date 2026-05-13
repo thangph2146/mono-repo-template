@@ -1,0 +1,22 @@
+@use "../variables" as *;
+@use "../mixins" as *;
+
+/* --- TYPOGRAPHY --- */
+.editor-typography-p {
+  line-height: $editor-line-height-base;
+
+  &:not(:first-child) {
+    margin-top: calc(#{$editor-paragraph-margin-vertical} * 2);
+  }
+}
+
+.editor-typography-p-small {
+  @include text-sm;
+  font-weight: $editor-font-weight-medium;
+  line-height: 1;
+}
+
+.editor-typography-span-small-muted {
+  @include text-sm;
+  color: var(--muted-foreground);
+}

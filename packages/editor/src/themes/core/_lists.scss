@@ -1,0 +1,315 @@
+@use "../variables" as *;
+@use "../mixins" as *;
+
+.lexical-editor-root {
+  // Trong list item: không chồng indent block (Lexical Tab/Indent) với thụt nested list — tránh từng nhánh lệch nhau
+  .editor-listitem > .editor-paragraph,
+  .editor-listitem > .editor-h1,
+  .editor-listitem > .editor-h2,
+  .editor-listitem > .editor-h3,
+  .editor-listitem > .editor-h4,
+  .editor-listitem > .editor-h5,
+  .editor-listitem > .editor-h6,
+  .editor-listitem > .editor-quote {
+    padding-inline-start: 0 !important;
+    margin-inline-start: 0 !important;
+  }
+
+  // Ordered Lists — outside + gutter đủ rộng; ul thêm $editor-ul-marker-align-extra để khớp trục marker với ol (Chromium)
+  .editor-ol {
+    display: flow-root;
+    list-style-position: outside !important;
+    list-style-type: decimal !important;
+    padding-inline-start: $editor-list-padding-left !important;
+    margin-top: $editor-list-margin-vertical !important;
+    margin-bottom: $editor-list-margin-vertical !important;
+
+    &[data-list-marker="alpha"] {
+      list-style-type: lower-alpha !important;
+    }
+
+    &[data-list-marker="alpha-upper"] {
+      list-style-type: upper-alpha !important;
+    }
+
+    &[data-list-marker="roman"] {
+      list-style-type: lower-roman !important;
+    }
+
+    &[data-list-marker="roman-upper"] {
+      list-style-type: upper-roman !important;
+    }
+
+    &[data-list-marker]:not([data-list-marker="alpha"]):not([data-list-marker="alpha-upper"]):not([data-list-marker="roman"]):not([data-list-marker="roman-upper"]):not([data-list-marker="multi-level"]) {
+      list-style-type: none !important;
+      > li:not(.editor-nested-listitem)::marker {
+        content: attr(data-list-marker) !important;
+      }
+    }
+
+    &[data-list-marker="multi-level"] {
+      list-style-type: none !important;
+      counter-reset: item;
+    }
+
+    &[data-list-marker="multi-level"] > li {
+      counter-increment: item;
+    }
+
+    &[data-list-marker="multi-level"] > li.editor-nested-listitem {
+      counter-increment: none !important;
+    }
+
+    &[data-list-marker="multi-level"] > li:not(.editor-nested-listitem)::marker {
+      content: counters(item, ".") ". " !important;
+    }
+
+    &[data-list-marker="multi-level"] .editor-ol {
+      list-style-type: none !important;
+      counter-reset: item;
+    }
+
+    &[data-list-marker="multi-level"] .editor-ol > li {
+      counter-increment: item;
+    }
+
+    &[data-list-marker="multi-level"] .editor-ol > li.editor-nested-listitem {
+      counter-increment: none !important;
+    }
+
+    &[data-list-marker="multi-level"] .editor-ol > li:not(.editor-nested-listitem)::marker {
+      content: counters(item, ".") ". " !important;
+    }
+
+
+
+    &[data-list-color] {
+      li::marker { color: var(--list-marker-color, currentColor) !important; }
+    }
+
+    > .editor-listitem:not(.editor-nested-listitem)::marker {
+      font-variant-numeric: tabular-nums;
+    }
+  }
+
+  // Nested ol/ul: bỏ margin mặc định một số UA, giữ cùng bước padding với cấp trên
+  .editor-listitem .editor-ol,
+  .editor-listitem .editor-ul:not(.editor-checklist),
+  .editor-listitem .editor-checklist {
+    margin-inline: 0 !important;
+  }
+
+  // Unordered Lists
+  .editor-ul:not(.editor-checklist) {
+    display: flow-root;
+    list-style-position: outside !important;
+    padding-inline-start: calc(
+      #{$editor-list-padding-left} + #{$editor-ul-marker-align-extra}
+    ) !important;
+    margin-top: $editor-list-margin-vertical !important;
+    margin-bottom: $editor-list-margin-vertical !important;
+
+    &:not([data-list-marker]) {
+      list-style-type: disc !important;
+    }
+
+    &[data-list-marker="-"] {
+      list-style-type: none !important;
+      > li:not(.editor-nested-listitem)::marker { content: "- " !important; }
+    }
+    &[data-list-marker="+"] {
+      list-style-type: none !important;
+      > li:not(.editor-nested-listitem)::marker { content: "+ " !important; }
+    }
+
+    &[data-list-marker]:not([data-list-marker="-"]):not([data-list-marker="+"]) {
+      list-style-type: none !important;
+      > li:not(.editor-nested-listitem)::marker {
+        content: attr(data-list-marker) !important;
+      }
+    }
+
+    &[data-list-color] {
+      li::marker { color: var(--list-marker-color, currentColor) !important; }
+    }
+  }
+
+  .editor-listitem {
+    margin-bottom: $editor-list-item-margin-bottom !important;
+    line-height: $editor-line-height-relaxed !important;
+  }
+
+  // Checklists
+  // Checklist: ô chọn là ::before (Lexical); không thêm role/aria tùy tiện — xem editor-list-config.ts
+  .editor-checklist {
+    list-style: none !important;
+    padding-block: 0 !important;
+    padding-inline: 0 !important;
+    padding-inline-start: $editor-list-padding-left !important;
+    margin-top: $editor-list-margin-vertical !important;
+    margin-bottom: $editor-list-margin-vertical !important;
+    margin-inline: 0 !important;
+    outline: none !important;
+    box-shadow: none !important;
+
+    .editor-listitem-checked,
+    .editor-listitem-unchecked {
+      @include flex-center;
+      align-items: flex-start;
+      margin-inline-start: 0;
+      padding: $editor-checklist-item-padding-vertical 0;
+      list-style: none;
+      outline: none;
+      gap: $editor-checklist-gap;
+
+      &::before {
+        content: "";
+        @include control-size($editor-checklist-icon-size);
+        flex-shrink: 0;
+        margin-top: $editor-checklist-icon-margin-top;
+        cursor: pointer;
+        display: block;
+        border: $editor-border-width-thick solid var(--list-marker-color, #{$editor-link-color}) !important;
+        border-radius: $editor-checklist-icon-border-radius;
+        box-sizing: border-box;
+        transition: all $editor-transition-fast;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: $editor-checklist-icon-checkmark-size;
+      }
+    }
+
+    .editor-listitem-checked {
+      text-decoration: line-through;
+      color: $editor-muted-foreground-color;
+      
+      &::before {
+        background-color: var(--list-marker-color, #{$editor-link-color}) !important;
+        border-color: var(--list-marker-color, #{$editor-link-color}) !important;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Cpath fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='M3 7.5L5.5 10L11 4.5'/%3E%3C/svg%3E");
+      }
+
+      &::after {
+        display: none;
+      }
+    }
+  }
+
+  .editor-nested-listitem {
+    list-style: none;
+    &::before, &::after { display: none; }
+  }
+
+  // Độ sâu ol: gần ISO 2145 — cấp 1 số, 2 chữ thường, 3 La Mã thường, rồi lặp chuỗi hợp lý
+  $ol-depth-styles: (
+    1: decimal,
+    2: lower-alpha,
+    3: lower-roman,
+    4: decimal,
+    5: lower-alpha
+  );
+
+  @each $depth, $style in $ol-depth-styles {
+    .editor-ol-depth-#{$depth} {
+      list-style-type: $style !important;
+
+      &[data-list-marker="alpha"] {
+        list-style-type: lower-alpha !important;
+      }
+      
+      &[data-list-marker="alpha-upper"] {
+        list-style-type: upper-alpha !important;
+      }
+    }
+  }
+
+  // Roman list (Lower/Upper): show correct marker for Lexical nested wrapper li.editor-nested-listitem
+  // so the visible sequence doesn't look like "I -> III" (missing "II").
+  ol.editor-ol-depth-1[data-list-marker="roman"] {
+    list-style-type: lower-roman !important;
+  }
+
+  ol.editor-ol-depth-1[data-list-marker="roman-upper"] {
+    list-style-type: upper-roman !important;
+  }
+
+  ol[data-list-marker="roman"] > li.editor-nested-listitem {
+    list-style-type: lower-roman !important;
+  }
+
+  ol[data-list-marker="roman-upper"] > li.editor-nested-listitem {
+    list-style-type: upper-roman !important;
+  }
+
+  // Roman list indent behavior: depth 2 uses ordered (decimal) as the next level
+  ol[data-list-marker="roman"] ol.editor-ol-depth-2,
+  ol[data-list-marker="roman-upper"] ol.editor-ol-depth-2 {
+    list-style-type: decimal !important;
+  }
+
+  // Outline list: propagate to nested levels even when nested <ol> doesn't have data-list-marker.
+  ol[data-list-marker="multi-level"] {
+    list-style-type: none !important;
+    counter-reset: item;
+  }
+
+  ol[data-list-marker="multi-level"] > li:not(.editor-nested-listitem) {
+    counter-increment: item;
+  }
+
+  ol[data-list-marker="multi-level"] > li.editor-nested-listitem {
+    counter-increment: none !important;
+  }
+
+  ol[data-list-marker="multi-level"] > li:not(.editor-nested-listitem)::marker {
+    content: counters(item, ".") ". " !important;
+  }
+
+  ol[data-list-marker="multi-level"] ol {
+    list-style-type: none !important;
+    counter-reset: item;
+  }
+
+  ol[data-list-marker="multi-level"] ol > li:not(.editor-nested-listitem) {
+    counter-increment: item;
+  }
+
+  ol[data-list-marker="multi-level"] ol > li.editor-nested-listitem {
+    counter-increment: none !important;
+  }
+
+  ol[data-list-marker="multi-level"] ol > li:not(.editor-nested-listitem)::marker {
+    content: counters(item, ".") ". " !important;
+  }
+
+  // Độ sâu ul: chu kỳ disc / circle / square (gần hành vi UA mặc định)
+  $ul-depth-styles: (
+    1: disc,
+    2: circle,
+    3: square,
+    4: disc,
+    5: circle
+  );
+
+  @each $depth, $style in $ul-depth-styles {
+    .editor-ul-depth-#{$depth}:not(.editor-checklist) {
+      &[data-list-marker="-"] {
+        list-style-type: none !important;
+        > li:not(.editor-nested-listitem)::marker { content: "- " !important; }
+      }
+      &[data-list-marker="+"] {
+        list-style-type: none !important;
+        > li:not(.editor-nested-listitem)::marker { content: "+ " !important; }
+      }
+      &[data-list-marker]:not([data-list-marker="-"]):not([data-list-marker="+"]) {
+        list-style-type: none !important;
+        > li:not(.editor-nested-listitem)::marker {
+          content: attr(data-list-marker) !important;
+        }
+      }
+      &:not([data-list-marker]) {
+        list-style-type: $style !important;
+      }
+    }
+  }
+}

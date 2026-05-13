@@ -1,0 +1,58 @@
+@use "../variables" as *;
+@use "../mixins" as *;
+
+.editor-list-color-dialog {
+  @include flex-col;
+  gap: $editor-gap-4;
+  padding: $editor-gap-2 0;
+  animation: editor-fade-in $editor-transition-slow;
+  width: 100%;
+  min-width: 0;
+
+  [data-slot="color-picker-content"] {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .editor-input-wrapper {
+    width: 100%;
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  [data-slot="color-picker-format-select-trigger"] {
+    flex: 0 0 auto;
+  }
+
+  .editor-input-group-item {
+    min-width: 0;
+  }
+
+  @media (max-width: 640px) {
+    .editor-flex.editor-items-center.editor-gap-2 {
+      flex-wrap: wrap;
+      align-items: stretch;
+    }
+
+    [data-slot="color-picker-format-select-trigger"] {
+      width: 100%;
+    }
+  }
+}
+
+.editor-list-color-trigger {
+  height: $editor-control-size-xl;
+  width: 100%;
+  @include flex-center;
+  justify-content: flex-start;
+  gap: $editor-gap-3;
+  @include rounded-md;
+  border: $editor-border-width solid var(--input);
+  padding: 0 $editor-gap-4;
+  background-color: var(--background);
+  transition: all $editor-transition-normal;
+  @include shadow-sm;
+
+  @include editor-button-interactive;
+}

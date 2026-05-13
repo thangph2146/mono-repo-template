@@ -198,3 +198,79 @@ export function LiveDot({ className }: { className?: string }) {
     />
   );
 }
+
+interface IconSizeProps extends React.HTMLAttributes<HTMLSpanElement> {
+  size?: "xs" | "sm" | "md" | "lg";
+}
+
+const iconSizeMap: Record<NonNullable<IconSizeProps["size"]>, string> = {
+  xs: "size-3",
+  sm: "size-4",
+  md: "size-5",
+  lg: "size-6",
+};
+
+export function IconSize({
+  size = "md",
+  className,
+  children,
+  ...props
+}: IconSizeProps) {
+  return (
+    <span className={cn("inline-flex items-center justify-center", iconSizeMap[size], className)} {...props}>
+      {children}
+    </span>
+  );
+}
+
+export function TypographyH1(props: Omit<HeadingProps, "as" | "size">) {
+  return <Heading as="h1" size="display" {...props} />;
+}
+
+export function TypographyH2(props: Omit<HeadingProps, "as" | "size">) {
+  return <Heading as="h2" size="section" {...props} />;
+}
+
+export function TypographyH3(props: Omit<HeadingProps, "as" | "size">) {
+  return <Heading as="h3" size="title" {...props} />;
+}
+
+export function TypographyDescriptionLarge(
+  props: Omit<TextProps, "variant"> & { as?: React.ElementType }
+) {
+  return <Text variant="lead" {...props} />;
+}
+
+export function TypographyPLargeMuted(
+  props: Omit<TextProps, "variant"> & { as?: React.ElementType }
+) {
+  return <Text variant="muted" {...props} />;
+}
+
+export function TypographyPSmallMuted(
+  props: Omit<TextProps, "variant"> & { as?: React.ElementType }
+) {
+  return <Text variant="small" {...props} />;
+}
+
+export function TypographyPSmall(
+  props: Omit<TextProps, "variant"> & { as?: React.ElementType }
+) {
+  const { className, ...rest } = props;
+  return <Text variant="small" className={cn("text-foreground", className)} {...rest} />;
+}
+
+export function TypographySpanSmall(
+  props: React.HTMLAttributes<HTMLSpanElement>
+) {
+  const { className, ...rest } = props;
+  return (
+    <span
+      className={cn(
+        "text-[clamp(0.75rem,0.2vw+0.55rem,0.875rem)] font-medium",
+        className
+      )}
+      {...rest}
+    />
+  );
+}

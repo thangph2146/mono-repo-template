@@ -1,4 +1,7 @@
 // Role data
+const DEV_LOGIN_PASSWORD_HASH =
+  '$2b$10$rWympviVCbsie490UxBN0u0kEc3Yz/A2C9AXGJv.5emb3NMhYtHMK';
+
 export const SUPERADMIN_ROLES_DATA = [
   {
     id: 'cmmxj94yt0000a6j8qbuclr5v',
@@ -272,7 +275,7 @@ export const SUPERADMIN_USERS_DATA = [
     id: 'cmmxj951o0002a6j80hysxdq0',
     email: 'superadmin@hub.edu.vn',
     name: 'Super Administrator',
-    password: '$2a$10$HKxTCz7JvLH2qCCnliTkleWtPEu.tdp/f/AjPrSaHDigfWlnxDRIe',
+    password: DEV_LOGIN_PASSWORD_HASH,
     bio: null,
     avatar: null,
     emailVerified: null,
@@ -284,7 +287,7 @@ export const SUPERADMIN_USERS_DATA = [
     id: 'cmmxj951v0004a6j8h24tmaz4',
     email: 'admin@hub.edu.vn',
     name: 'Administrator',
-    password: '$2a$10$HKxTCz7JvLH2qCCnliTkleWtPEu.tdp/f/AjPrSaHDigfWlnxDRIe',
+    password: DEV_LOGIN_PASSWORD_HASH,
     bio: null,
     avatar: null,
     emailVerified: null,
@@ -296,7 +299,7 @@ export const SUPERADMIN_USERS_DATA = [
     id: 'cmmynf6dm0003rbj85j7dxyb6',
     email: 'lamvtt@hub.edu.vn',
     name: 'Thanh Lâm',
-    password: '$2a$10$ZyMAt131fh53zI6mcko0geo4nVkBUOhFbiKYpJdipTbMt7vc.E2jm',
+    password: DEV_LOGIN_PASSWORD_HASH,
     bio: '',
     avatar: null,
     emailVerified: null,
@@ -308,7 +311,7 @@ export const SUPERADMIN_USERS_DATA = [
     id: 'cmnfr1pql000jy3j8s7ghzrv7',
     email: 'thang.ph2146@gmail.com',
     name: 'Thắng Phạm',
-    password: '$2a$10$WQoUVWZ/dNbtfFqSx6bR..B8wcvqr15VM60iHpSNfItzjBoaApVMi',
+    password: DEV_LOGIN_PASSWORD_HASH,
     bio: '',
     avatar:
       'https://lh3.googleusercontent.com/a/ACg8ocLhicj6TqxKzF0hVnmJ5OueMMe-zdEgZT_U9b3iIzjTQP3ZerqO=s96-c',
@@ -321,7 +324,7 @@ export const SUPERADMIN_USERS_DATA = [
     id: 'cmnzoz4oi009hyrj8fto16kbz',
     email: 'thangph@hub.edu.vn',
     name: 'Thang Pham Hoang',
-    password: '$2a$10$HK/fJOsuGXReYyEJhRGiK.Hv7fX9pOUbvZ4axupu/pv90o073M7oy',
+    password: DEV_LOGIN_PASSWORD_HASH,
     bio: '',
     avatar:
       'https://lh3.googleusercontent.com/a/ACg8ocK8ybfPbsmaejqRrCM1q1hKxnsAi5KclkMWiMmEdb3Q2KveHw=s96-c',

@@ -57,7 +57,6 @@ import { useAuth } from "@/providers/auth-provider";
 import { canUserAccess, PERMISSION_CODES } from "@workspace/api-client";
 import {
   useCategoriesAdmin,
-  useCategoryUsage,
   useCreateCategory,
   useDeleteCategory,
   usePurgeTrashedCategory,
@@ -80,14 +79,18 @@ import {
 } from "@ui/lib/layout-shell";
 
 interface FormState {
-  id?: number;
+  id?: string;
   name: string;
   slug: string;
   description: string;
   icon: string;
   sortOrder: number;
   isActive: boolean;
+  parentId: string;
 }
+
+const ROOT_PARENT_VALUE = "__root__";
+const CATEGORY_TREE_LIMIT = 1000;
 
 const EMPTY_FORM: FormState = {
   name: "",
@@ -96,6 +99,7 @@ const EMPTY_FORM: FormState = {
   icon: "Package2",
   sortOrder: 0,
   isActive: true,
+  parentId: ROOT_PARENT_VALUE,
 };
 
 const slugify = (input: string): string =>
@@ -107,31 +111,83 @@ const slugify = (input: string): string =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
 
-type CategoryRow = Category & { productCount: number };
+type CategoryRow = Category & { subRows?: CategoryRow[] };
+
+function sortCategoriesByName<T extends Pick<Category, "name">>(rows: T[]): T[] {
+  return [...rows].sort((a, b) => a.name.localeCompare(b.name, "vi"));
+}
+
+function buildCategoryTree(rows: Category[]): CategoryRow[] {
+  const byId = new Map<string, CategoryRow>();
+
+  for (const row of rows) {
+    byId.set(row.id, {
+      ...row,
+      subRows: [],
+    });
+  }
+
+  const roots: CategoryRow[] = [];
+  for (const row of byId.values()) {
+    const parentId = row.parentId ?? null;
+    if (parentId && byId.has(parentId)) {
+      byId.get(parentId)?.subRows?.push(row);
+      continue;
+    }
+    roots.push(row);
+  }
+
+  const sortTree = (items: CategoryRow[]): CategoryRow[] =>
+    sortCategoriesByName(items).map((item) => ({
+      ...item,
+      subRows: sortTree(item.subRows ?? []),
+    }));
+
+  return sortTree(roots);
+}
+
+function buildDescendantMap(rows: CategoryRow[]): Map<string, Set<string>> {
+  const descendants = new Map<string, Set<string>>();
+
+  const walk = (row: CategoryRow): Set<string> => {
+    const ids = new Set<string>();
+    for (const child of row.subRows ?? []) {
+      ids.add(child.id);
+      for (const nestedId of walk(child)) ids.add(nestedId);
+    }
+    descendants.set(row.id, ids);
+    return ids;
+  };
+
+  for (const row of rows) walk(row);
+  return descendants;
+}
+
+function flattenCategoryOptions(
+  rows: CategoryRow[],
+  depth = 0,
+): Array<{ id: string; name: string; depth: number }> {
+  const options: Array<{ id: string; name: string; depth: number }> = [];
+  for (const row of rows) {
+    options.push({ id: row.id, name: row.name, depth });
+    options.push(...flattenCategoryOptions(row.subRows ?? [], depth + 1));
+  }
+  return options;
+}
 
 export default function CategoriesPage() {
   const { user } = useAuth();
   const canWriteCategories = user
     ? canUserAccess(user, PERMISSION_CODES.CATEGORIES_WRITE)
     : false;
-  const { data: usageData } = useCategoryUsage();
   const createMutation = useCreateCategory();
   const updateMutation = useUpdateCategory();
   const deleteMutation = useDeleteCategory();
   const restoreMutation = useRestoreCategory();
   const purgeTrashedMutation = usePurgeTrashedCategory();
 
-  const usageMap = useMemo(() => {
-    const map = new Map<string, number>();
-    for (const u of usageData ?? []) map.set(u.slug, u.productCount);
-    return map;
-  }, [usageData]);
-
   const [mainTab, setMainTab] = useState<"list" | "trash">("list");
-  const [page, setPage] = useState(1);
-  const [listPageSize, setListPageSize] = useState(15);
   const [globalFilter, setGlobalFilter] = useState("");
-  const debouncedQ = useDebouncedValue(globalFilter, 350);
   const [trashPage, setTrashPage] = useState(1);
   const [trashPageSize, setTrashPageSize] = useState(15);
   const [trashGlobalFilter, setTrashGlobalFilter] = useState("");
@@ -140,16 +196,12 @@ export default function CategoriesPage() {
 
   const listParams = useMemo(
     () => ({
-      q: debouncedQ.trim() || undefined,
-      page,
-      limit: listPageSize,
+      page: 1,
+      limit: CATEGORY_TREE_LIMIT,
+      activeOnly: true,
     }),
-    [debouncedQ, page, listPageSize],
+    [],
   );
-
-  useEffect(() => {
-    setPage(1);
-  }, [debouncedQ, listPageSize]);
 
   useEffect(() => {
     setTrashPage(1);
@@ -165,7 +217,6 @@ export default function CategoriesPage() {
     listParams,
   });
   const categories = useMemo(() => data?.items ?? [], [data?.items]);
-  const total = data?.total ?? 0;
 
   const trashListParams = useMemo(
     () => ({
@@ -201,13 +252,22 @@ export default function CategoriesPage() {
   }, [canWriteCategories, mainTab]);
 
   const tableRows = useMemo<CategoryRow[]>(
-    () =>
-      categories.map((c) => ({
-        ...c,
-        productCount: usageMap.get(c.slug) ?? 0,
-      })),
-    [categories, usageMap],
+    () => buildCategoryTree(categories),
+    [categories],
   );
+  const descendantMap = useMemo(
+    () => buildDescendantMap(tableRows),
+    [tableRows],
+  );
+  const parentOptions = useMemo(() => {
+    const excludedIds = form.id
+      ? new Set([form.id, ...(descendantMap.get(form.id) ?? [])])
+      : new Set<string>();
+
+    return flattenCategoryOptions(tableRows).filter(
+      (option) => !excludedIds.has(option.id),
+    );
+  }, [descendantMap, form.id, tableRows]);
 
   const openCreate = () => {
     setForm(EMPTY_FORM);
@@ -223,6 +283,7 @@ export default function CategoriesPage() {
       icon: c.icon ?? "Package2",
       sortOrder: c.sortOrder,
       isActive: c.isActive,
+      parentId: c.parentId ?? ROOT_PARENT_VALUE,
     });
     setDialogOpen(true);
   }, []);
@@ -239,7 +300,16 @@ export default function CategoriesPage() {
       icon: form.icon || null,
       sortOrder: Number.isFinite(form.sortOrder) ? form.sortOrder : 0,
       isActive: form.isActive,
+      parentId:
+        form.parentId === ROOT_PARENT_VALUE ? null : form.parentId,
     };
+    if (form.id) {
+      const invalidParentIds = descendantMap.get(form.id) ?? new Set<string>();
+      if (payload.parentId === form.id || invalidParentIds.has(payload.parentId ?? "")) {
+        toast.error("Không thể chọn danh mục con làm danh mục cha");
+        return;
+      }
+    }
     try {
       if (form.id) {
         await updateMutation.mutateAsync({ id: form.id, input: payload });
@@ -259,15 +329,22 @@ export default function CategoriesPage() {
   };
 
   const requestDelete = useCallback((c: Category): void => {
-    const inUse = usageMap.get(c.slug) ?? 0;
-    if (inUse > 0) {
+    const childCount = c._count?.children ?? 0;
+    if (childCount > 0) {
       toast.error(
-        `Không thể xoá: còn ${inUse} sản phẩm đang sử dụng danh mục này`,
+        `Không thể xoá: "${c.name}" vẫn còn ${childCount} danh mục con`,
+      );
+      return;
+    }
+    const linkedPosts = c.postCount ?? 0;
+    if (linkedPosts > 0) {
+      toast.error(
+        `Không thể xoá: còn ${linkedPosts} bài viết đang gắn với cây danh mục này`,
       );
       return;
     }
     setDeleteTarget(c);
-  }, [usageMap]);
+  }, []);
 
   const confirmDelete = (): void => {
     if (!deleteTarget) return;
@@ -314,7 +391,6 @@ export default function CategoriesPage() {
   const clearAllFilters = useCallback((): void => {
     setColumnFilters([]);
     setGlobalFilter("");
-    setPage(1);
   }, []);
 
   const clearTrashFilters = useCallback((): void => {
@@ -336,12 +412,37 @@ export default function CategoriesPage() {
       {
         accessorKey: "name",
         header: "Tên",
+        cell: ({ row, getValue }) => (
+          <div className="flex min-w-0 items-center gap-2">
+            <span className="truncate font-medium">{String(getValue())}</span>
+            {row.depth === 0 ? (
+              <Badge variant="outline" className="text-[10px]">
+                Gốc
+              </Badge>
+            ) : null}
+          </div>
+        ),
         meta: { filterPlaceholder: "Lọc tên" },
       },
       {
         accessorKey: "slug",
         header: "Slug",
+        cell: ({ getValue }) => (
+          <span className="font-mono text-xs">{String(getValue())}</span>
+        ),
         meta: { filterPlaceholder: "Lọc slug" },
+      },
+      {
+        id: "parentName",
+        accessorFn: (row) => row.parentName ?? "Gốc",
+        header: "Danh mục cha",
+        cell: ({ row }) =>
+          row.original.parentName ? (
+            row.original.parentName
+          ) : (
+            <span className="text-muted-foreground">Gốc</span>
+          ),
+        meta: { filterPlaceholder: "Lọc danh mục cha" },
       },
       {
         accessorKey: "description",
@@ -350,34 +451,24 @@ export default function CategoriesPage() {
         meta: { filterPlaceholder: "Lọc mô tả" },
       },
       {
-        id: "icon",
-        accessorFn: (r) => r.icon ?? "Package2",
-        header: "Icon",
-        cell: ({ row }) => {
-          const I = resolveCategoryIcon(row.original.icon);
-          return <I className="size-4 text-primary shrink-0" />;
-        },
-        filterFn: (row, id, v) => {
-          if (v == null || v === "") return true;
-          return String(row.getValue(id)) === String(v);
-        },
-        meta: {
-          filterVariant: "select",
-          filterLabel: "Icon (Lucide)",
-          selectOptions: CATEGORY_ICON_OPTIONS.map((name) => ({
-            value: name,
-            label: name,
-          })),
-        },
-      },
-      {
-        accessorKey: "sortOrder",
-        header: "Thứ tự",
+        id: "childrenCount",
+        accessorFn: (row) => row._count?.children ?? 0,
+        header: "Nhánh con",
+        cell: ({ row }) => row.original._count?.children ?? 0,
         filterFn: (row, id, v) => {
           if (v == null || v === "") return true;
           return Number(row.getValue(id)) === Number(v);
         },
-        meta: { filterVariant: "number", filterPlaceholder: "Bằng…" },
+        meta: { filterVariant: "number", filterPlaceholder: "Nhánh con = …" },
+      },
+      {
+        accessorKey: "postCount",
+        header: "Bài viết",
+        filterFn: (row, id, v) => {
+          if (v == null || v === "") return true;
+          return Number(row.getValue(id)) === Number(v);
+        },
+        meta: { filterVariant: "number", filterPlaceholder: "Bài viết = …" },
       },
       {
         id: "isActive",
@@ -404,15 +495,6 @@ export default function CategoriesPage() {
         },
       },
       {
-        accessorKey: "productCount",
-        header: "Số SP",
-        filterFn: (row, id, v) => {
-          if (v == null || v === "") return true;
-          return Number(row.getValue(id)) === Number(v);
-        },
-        meta: { filterVariant: "number", filterPlaceholder: "Số SP = …" },
-      },
-      {
         id: "actions",
         header: "Thao tác",
         enableColumnFilter: false,
@@ -420,7 +502,8 @@ export default function CategoriesPage() {
         meta: { disableColumnFilter: true },
         cell: ({ row }) => {
           const c = row.original;
-          const usage = c.productCount;
+          const childCount = c._count?.children ?? 0;
+          const linkedPosts = c.postCount ?? 0;
           if (!canWriteCategories) return null;
           return (
             <div className="flex flex-wrap gap-1">
@@ -437,7 +520,7 @@ export default function CategoriesPage() {
                 size="sm"
                 className="h-8 gap-1 rounded-lg border-destructive/40 text-destructive hover:bg-destructive/10"
                 onClick={() => requestDelete(c)}
-                disabled={usage > 0}
+                disabled={childCount > 0 || linkedPosts > 0}
               >
                 <Trash2 className="w-4 h-4" /> Xóa
               </Button>
@@ -534,29 +617,16 @@ export default function CategoriesPage() {
     />
   );
 
-  const paginationFooter = (
-    <AdminTablePaginationFooter
-      page={page}
-      pageSize={listPageSize}
-      total={total}
-      isLoading={loading}
-      onPageChange={setPage}
-      onPageSizeChange={setListPageSize}
-      emptySummary="Không có danh mục"
-      itemLabel="danh mục"
-    />
-  );
-
   return (
     <PageSection max="full" className="min-w-0 space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className={ADMIN_PAGE_TITLE_PRIMARY_CLASS}>
             <Tags className={ADMIN_PAGE_TITLE_ICON_CLASS} aria-hidden />
-            Loại sản phẩm
+            Danh mục dùng chung
           </h1>
           <p className={ADMIN_PAGE_SUBTITLE_CLASS}>
-            Quản lý danh mục dùng chung cho cả storefront và quản trị viên
+            Quản lý taxonomy dùng chung để gắn cho bài viết, thẻ và các nội dung truyền thông
           </p>
           {user && !canWriteCategories && (
             <p className="mt-2 text-sm font-medium text-amber-800 dark:text-amber-200/90">
@@ -569,7 +639,7 @@ export default function CategoriesPage() {
           <Button
             type="button"
             variant="outline"
-            className="flex h-12 items-center gap-2 rounded-xl border-outline-variant px-4 font-semibold hover:bg-muted"
+            className="flex h-12 items-center gap-2 rounded-lg border-outline-variant px-4 font-semibold hover:bg-muted"
             onClick={() => {
               void refetch();
               void refetchTrashedCategories();
@@ -590,7 +660,7 @@ export default function CategoriesPage() {
                 render={
                   <Button
                     onClick={openCreate}
-                    className="flex h-12 items-center gap-2 rounded-xl px-6 font-bold shadow-md"
+                    className="flex h-12 items-center gap-2 rounded-lg px-6 font-bold shadow-md"
                   />
                 }
               >
@@ -604,7 +674,7 @@ export default function CategoriesPage() {
               </DialogTitle>
               <DialogDescription>
                 Slug được tự động sinh từ tên. Cập nhật slug sẽ tự đồng bộ lại
-                tham chiếu trên các sản phẩm liên quan.
+                tham chiếu trên các nội dung liên quan.
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-2">
@@ -613,7 +683,7 @@ export default function CategoriesPage() {
                   <Label htmlFor="cat-name">Tên hiển thị</Label>
                   <Input
                     id="cat-name"
-                    placeholder="VD: Đồ uống"
+                    placeholder="VD: Tin tuyển sinh"
                     value={form.name}
                     onChange={(e) => {
                       const name = e.target.value;
@@ -647,7 +717,7 @@ export default function CategoriesPage() {
                       setForm((f) => ({ ...f, icon: v ?? "Package2" }))
                     }
                   >
-                    <SelectTrigger className="w-full rounded-xl">
+                    <SelectTrigger className="w-full rounded-lg">
                       <SelectValue placeholder="Chọn biểu tượng" />
                     </SelectTrigger>
                     <SelectContent>
@@ -689,12 +759,40 @@ export default function CategoriesPage() {
                     }
                   />
                 </div>
-                <div className="flex items-center justify-between rounded-xl border border-outline-variant px-4 py-3 sm:col-span-2">
+                <div className="space-y-2 sm:col-span-2">
+                  <Label>Danh mục cha</Label>
+                  <Select
+                    value={form.parentId}
+                    onValueChange={(value) =>
+                      setForm((current) => ({
+                        ...current,
+                        parentId: value || ROOT_PARENT_VALUE,
+                      }))
+                    }
+                  >
+                    <SelectTrigger className="w-full rounded-lg">
+                      <SelectValue placeholder="Chọn danh mục cha" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value={ROOT_PARENT_VALUE}>
+                        Cấp gốc
+                      </SelectItem>
+                      {parentOptions.map((option) => (
+                        <SelectItem key={option.id} value={option.id}>
+                          {`${".. ".repeat(option.depth)}${option.name}`}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-muted-foreground">
+                    Danh mục con sẽ hiển thị lùi cấp trong bảng tree.
+                  </p>
+                </div>
+                <div className="flex items-center justify-between rounded-lg border border-outline-variant px-4 py-3 sm:col-span-2">
                   <div>
                     <p className="text-sm font-semibold">Đang hoạt động</p>
                     <p className="text-xs text-muted-foreground">
-                      Khi tắt, danh mục sẽ ẩn khỏi storefront nhưng giữ lại
-                      tham chiếu sản phẩm.
+                      Khi tắt, danh mục sẽ ẩn khỏi các bộ chọn nội dung nhưng vẫn giữ lại tham chiếu cũ.
                     </p>
                   </div>
                   <Switch
@@ -709,14 +807,14 @@ export default function CategoriesPage() {
             <DialogFooter>
               <Button
                 variant="outline"
-                className="mr-auto rounded-xl"
+                className="mr-auto rounded-lg"
                 onClick={() => setDialogOpen(false)}
                 disabled={submitting}
               >
                 Hủy
               </Button>
               <Button
-                className="rounded-xl font-bold"
+                className="rounded-lg font-bold"
                 onClick={() => void handleSave()}
                 disabled={submitting}
               >
@@ -735,7 +833,7 @@ export default function CategoriesPage() {
         }}
         className="space-y-6"
       >
-        <TabsList className="h-auto min-h-9 flex-wrap gap-1 rounded-xl p-1">
+        <TabsList className="h-auto min-h-9 flex-wrap gap-1 rounded-lg p-1">
           <TabsTrigger
             value="list"
             className="flex items-center gap-2 rounded-lg px-4 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
@@ -763,18 +861,17 @@ export default function CategoriesPage() {
         </TabsList>
 
         <TabsContent value="list" className="mt-0 space-y-4">
-          <div className="rounded-2xl border border-outline-variant bg-surface-container-low p-4 shadow-sm">
+          <div className="rounded-lg border border-outline-variant bg-surface-container-low p-4 shadow-sm">
             <p className="flex items-start gap-2 text-sm text-muted-foreground">
               <Info className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
               <span className="text-muted-foreground">
-                Tìm nhanh và lọc cột gọi API phân trang (chọn số dòng/trang ở cuối bảng).
-                Cột «Số SP» lấy từ thống kê toàn hệ thống.
+                Danh sách active tải toàn bộ cây để hiển thị đúng quan hệ cha-con.
+                Có thể tìm nhanh hoặc lọc cột trực tiếp trên bảng tree.
                 {canWriteCategories ? (
                   <>
                     {" "}
-                    Xóa là{" "}
-                    <span className="font-semibold text-foreground">xóa tạm</span> (không
-                    còn SP tham chiếu).
+                    Chỉ cho xóa tạm khi danh mục không còn nhánh con và không còn
+                    bài viết gắn vào cây đó.
                   </>
                 ) : null}
               </span>
@@ -782,7 +879,7 @@ export default function CategoriesPage() {
           </div>
 
           {error && (
-            <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-4 text-destructive">
+            <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-destructive">
               <div className="flex items-start gap-3">
                 <AlertCircle className="mt-0.5 size-5 shrink-0" aria-hidden />
                 <div>
@@ -803,13 +900,21 @@ export default function CategoriesPage() {
                   ? 'Chưa có danh mục — bấm "Thêm danh mục".'
                   : "Chưa có dữ liệu hoặc không khớp bộ lọc."
               }
-              defaultExpandedAll={false}
-              manualFiltering
+              getSubRows={(row) => row.subRows}
+              defaultExpandedAll
               columnFilters={columnFilters}
               onColumnFiltersChange={handleColumnFiltersChange}
+              getGlobalFilterText={(row) =>
+                [
+                  row.name,
+                  row.slug,
+                  row.description ?? "",
+                  row.parentName ?? "",
+                ].join(" ")
+              }
               globalFilter={globalFilter}
               onGlobalFilterChange={setGlobalFilter}
-              globalFilterPlaceholder="Tìm theo tên, slug, mô tả (API)…"
+              globalFilterPlaceholder="Tìm theo tên, slug, mô tả hoặc danh mục cha…"
               filterToolbarExtra={
                 <div className="flex flex-wrap items-center gap-2">
                   <Button
@@ -838,7 +943,6 @@ export default function CategoriesPage() {
                 </div>
               }
               csvExport={{ fileName: "danh-muc-dang-hoat-dong.csv" }}
-              footer={paginationFooter}
             />
           )}
         </TabsContent>
@@ -846,7 +950,7 @@ export default function CategoriesPage() {
         {canWriteCategories ? (
           <TabsContent value="trash" className="mt-0 space-y-4">
             {trashedError ? (
-              <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-4 text-destructive">
+              <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-destructive">
                 <div className="flex items-start gap-3">
                   <AlertCircle className="mt-0.5 size-5 shrink-0" aria-hidden />
                   <div>
@@ -862,7 +966,7 @@ export default function CategoriesPage() {
                 <p className="flex items-start gap-2 text-sm text-muted-foreground">
                   <Info className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
                   <span>
-                    Danh mục trong thùng rác không hiển thị trên storefront.
+                    Danh mục trong thùng rác sẽ bị ẩn khỏi bộ chọn truyền thông.
                   </span>
                 </p>
                 <AdminDataTable<Category>
@@ -937,9 +1041,9 @@ export default function CategoriesPage() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="rounded-xl">Huỷ</AlertDialogCancel>
+            <AlertDialogCancel className="rounded-lg">Huỷ</AlertDialogCancel>
             <AlertDialogAction
-              className="rounded-xl bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              className="rounded-lg bg-destructive text-destructive-foreground hover:bg-destructive/90"
               onClick={(e) => {
                 e.preventDefault();
                 confirmDelete();
@@ -980,9 +1084,9 @@ export default function CategoriesPage() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="rounded-xl">Huỷ</AlertDialogCancel>
+            <AlertDialogCancel className="rounded-lg">Huỷ</AlertDialogCancel>
             <AlertDialogAction
-              className="rounded-xl bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              className="rounded-lg bg-destructive text-destructive-foreground hover:bg-destructive/90"
               onClick={(e) => {
                 e.preventDefault();
                 confirmPurgeTrashed();
@@ -1022,9 +1126,9 @@ export default function CategoriesPage() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="rounded-xl">Huỷ</AlertDialogCancel>
+            <AlertDialogCancel className="rounded-lg">Huỷ</AlertDialogCancel>
             <AlertDialogAction
-              className="rounded-xl"
+              className="rounded-lg"
               onClick={(e) => {
                 e.preventDefault();
                 confirmRestore();

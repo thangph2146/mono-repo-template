@@ -1,0 +1,224 @@
+@use "../variables" as *;
+@use "../mixins" as *;
+
+.lexical-editor-root {
+  // Table Styles
+  .editor-table {
+    border-collapse: collapse;
+    border-spacing: 0;
+    width: 100%;
+    margin: $editor-table-margin-vertical 0;
+    border-radius: $editor-border-radius;
+    border: $editor-border-width solid $editor-border-color;
+    margin-bottom: 20px;
+    
+    .editor-table-cell {
+      min-width: 0;
+      border: $editor-border-width solid $editor-table-border-color;
+      padding: $editor-table-cell-padding-y $editor-table-cell-padding-x;
+      position: relative;
+      text-align: inherit;
+      vertical-align: top;
+      white-space: normal;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
+    // Keep alignment classes effective on table cells.
+    .editor-table-cell.editor-text-align-left {
+      text-align: left;
+    }
+
+    .editor-table-cell.editor-text-align-center {
+      text-align: center;
+    }
+
+    .editor-table-cell.editor-text-align-right {
+      text-align: right;
+    }
+
+    .editor-table-cell.editor-text-align-justify {
+      text-align: justify;
+    }
+
+    .editor-table-cell * {
+      white-space: normal;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+      max-width: 100%;
+    }
+
+    .editor-table-cell .editor-truncate {
+      overflow: visible;
+      text-overflow: clip;
+      white-space: normal;
+      word-break: break-word;
+    }
+
+    .editor-table-cell-header {
+      @extend .editor-table-cell;
+      background-color: $editor-table-header-bg;
+      font-weight: $editor-font-weight-semibold;
+      color: $editor-text-color;
+    }
+
+    // Không set background-color trên <td> khi selected: !important sẽ thắng cả inline Lexical.
+    // Dùng inset box-shadow + color-mix (hợp lệ với var(--primary, ...)), không dùng rgba(var(...), a).
+    $editor-table-cell-selected-mix-pct: max(
+      $editor-table-cell-selection-opacity - 0.1,
+      0
+    ) * 100%;
+
+    .editor-table-cell-selected {
+      outline: 2px solid $editor-primary-color;
+      outline-offset: -2px;
+      box-shadow: inset 0 0 0 9999px
+        color-mix(
+          in srgb,
+          $editor-primary-color $editor-table-cell-selected-mix-pct,
+          transparent
+        );
+    }
+    
+    .editor-table-cell-action-button-container {
+      display: block;
+      right: $editor-table-action-button-right;
+      top: $editor-table-action-button-top;
+      position: absolute;
+      z-index: $editor-z-index-layer-10;
+      width: $editor-table-action-button-size;
+      height: $editor-table-action-button-size;
+    }
+
+    .editor-table-cell-action-button {
+      background-color: $editor-muted-color;
+      display: block;
+      border: 0;
+      @include rounded-full;
+      @include control-size($editor-table-action-button-size);
+      color: $editor-text-color;
+      cursor: pointer;
+      transition: all $editor-transition-fast;
+
+      @include editor-button-interactive;
+    }
+    
+    .editor-table-cell-editing {
+      box-shadow: 0 0 $editor-shadow-blur-sm $editor-table-cell-editing-shadow;
+      border-radius: calc($editor-gap-1 / 2);
+    }
+    
+    .editor-table-cell-primary-selected {
+      border: $editor-outline-width solid $editor-primary-color;
+      display: block;
+      height: calc(100% - #{$editor-outline-width});
+      width: calc(100% - #{$editor-outline-width});
+      position: absolute;
+      left: -#{$editor-border-width};
+      top: -#{$editor-border-width};
+      z-index: $editor-z-index-layer-10;
+    }
+    
+    .editor-table-cell-sorted-indicator {
+      display: block;
+      opacity: 0.5;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: $editor-table-sorted-indicator-height;
+      background-color: $editor-muted-color;
+    }
+    
+    .editor-table-row-striping {
+      margin: 0;
+      border-top: $editor-border-width solid $editor-border-color;
+      padding: 0;
+      
+      &:nth-child(even) {
+        background-color: $editor-muted-color;
+      }
+    }
+    
+    .editor-table-selected {
+      outline: $editor-outline-width solid $editor-primary-color;
+    }
+    
+    .editor-table-selection {
+      background-color: color-mix(
+          in srgb,
+          $editor-primary-color
+            #{$editor-table-cell-selection-opacity * 0.5 * 100%},
+          transparent
+        );
+    }
+  }
+}
+
+// Table Cell Resizer
+.editor-table-cell-resizer {
+  position: absolute;
+  height: 100%;
+  width: 16px;
+  cursor: col-resize;
+  z-index: $editor-z-index-floating;
+  top: 0;
+  pointer-events: auto;
+  user-select: none;
+  background-color: transparent;
+
+  &:hover {
+    background-color: color-mix(in srgb, $editor-primary-color 10%, transparent);
+  }
+}
+
+.editor-table-cell-resize-ruler {
+  display: block;
+  position: absolute;
+  width: 1px;
+  height: 100%;
+  background-color: $editor-primary-color;
+  top: 0;
+  left: 8px;
+  pointer-events: none;
+}
+
+// Readonly/review content can include old inline <col width="..."> from resize.
+// Reset them so table width stays bounded by its parent container.
+.lexical-editor-root .editor-content-editable--readonly,
+.lexical-editor-root .editor-content-editable--review {
+  .editor-table colgroup col,
+  .editor-table col {
+    width: auto;
+    min-width: 0;
+    max-width: none;
+  }
+}
+
+// Lexical wraps table blocks in a runtime <div dir="auto" style="overflow-x:auto">.
+// Constrain that wrapper to parent width so it never expands layout unexpectedly.
+.lexical-editor-root .editor-content-editable {
+  > div[dir][style*="overflow-x: auto"],
+  > div[dir][style*="overflow-x:auto"] {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  > div[dir][style*="overflow-x: auto"] > .editor-table,
+  > div[dir][style*="overflow-x:auto"] > .editor-table {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  // Fallback: even if Lexical wrapper shape changes, keep table bounded.
+  table.editor-table {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+}

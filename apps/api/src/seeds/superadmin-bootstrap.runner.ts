@@ -38,8 +38,10 @@ export async function ensureSeedUserRoleLinks(
 
 export type SuperadminBootstrapResult = {
   rolesInserted: number;
+  rolesUpdated: number;
   rolesSkipped: number;
   usersInserted: number;
+  usersUpdated: number;
   usersSkipped: number;
   userRolesInserted: number;
   userRolesSkipped: number;
@@ -94,8 +96,10 @@ export async function runSuperadminBootstrap(
 ): Promise<SuperadminBootstrapResult> {
   const out: SuperadminBootstrapResult = {
     rolesInserted: 0,
+    rolesUpdated: 0,
     rolesSkipped: 0,
     usersInserted: 0,
+    usersUpdated: 0,
     usersSkipped: 0,
     userRolesInserted: 0,
     userRolesSkipped: 0,
@@ -120,8 +124,14 @@ export async function runSuperadminBootstrap(
       out.rolesInserted++;
       L(`Created role: ${roleData.name}`);
     } else {
-      out.rolesSkipped++;
-      L(`Role already exists: ${roleData.name}`);
+      existing.name = roleData.name;
+      existing.displayName = roleData.displayName;
+      existing.description = roleData.description;
+      existing.permissions = roleData.permissions;
+      existing.isActive = roleData.isActive;
+      em.persist(existing);
+      out.rolesUpdated++;
+      L(`Updated role: ${roleData.name}`);
     }
   }
 
@@ -144,8 +154,18 @@ export async function runSuperadminBootstrap(
       out.usersInserted++;
       L(`Created user: ${userData.email}`);
     } else {
-      out.usersSkipped++;
-      L(`User already exists: ${userData.email}`);
+      existing.email = userData.email;
+      existing.name = userData.name;
+      existing.password = userData.password;
+      existing.bio = userData.bio;
+      existing.avatar = userData.avatar;
+      existing.emailVerified = userData.emailVerified;
+      existing.phone = userData.phone;
+      existing.address = userData.address;
+      existing.isActive = userData.isActive;
+      em.persist(existing);
+      out.usersUpdated++;
+      L(`Updated user: ${userData.email}`);
     }
   }
 

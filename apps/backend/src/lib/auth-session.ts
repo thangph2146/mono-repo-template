@@ -8,18 +8,68 @@ export const ADMIN_SESSION_EVENT = "storesync-admin-session";
 let sessionReadCache: { raw: string | null; user: AuthUser | null } | null =
   null;
 
+function normalizePermissionValues(value: unknown): string[] {
+  const visit = (input: unknown): string[] => {
+    if (Array.isArray(input)) {
+      return input.flatMap((item) => visit(item));
+    }
+    if (typeof input !== "string") {
+      return [];
+    }
+
+    const trimmed = input.trim();
+    if (!trimmed) {
+      return [];
+    }
+
+    if (
+      (trimmed.startsWith("[") && trimmed.endsWith("]")) ||
+      (trimmed.startsWith('"') && trimmed.endsWith('"'))
+    ) {
+      try {
+        return visit(JSON.parse(trimmed));
+      } catch {
+        return [trimmed];
+      }
+    }
+
+    return [trimmed];
+  };
+
+  return [...new Set(visit(value))];
+}
+
 function parseAdminSessionRaw(raw: string | null): AuthUser | null {
   if (!raw) return null;
   try {
     const data = JSON.parse(raw) as AuthUser;
+    const dataRecord = data as unknown as {
+      id?: string | number;
+      email?: string;
+      name?: string | null;
+      permissions?: unknown[];
+      roles?: unknown[];
+    };
     if (
-      typeof data?.id !== "number" ||
-      !Array.isArray(data.permissions) ||
-      typeof data.email !== "string"
+      !(
+        (typeof dataRecord.id === "number" && Number.isFinite(dataRecord.id)) ||
+        (typeof dataRecord.id === "string" && dataRecord.id.trim() !== "")
+      ) ||
+      !Array.isArray(dataRecord.permissions) ||
+      typeof dataRecord.email !== "string" ||
+      !(
+        typeof dataRecord.name === "string" ||
+        dataRecord.name === null ||
+        dataRecord.name === undefined
+      ) ||
+      !Array.isArray(dataRecord.roles)
     ) {
       return null;
     }
-    return data;
+    return {
+      ...data,
+      permissions: normalizePermissionValues(dataRecord.permissions),
+    };
   } catch {
     return null;
   }
@@ -47,7 +97,7 @@ export function writeAdminSession(user: AuthUser): void {
 /** Sau khi cập nhật hồ sơ qua API — giữ nguyên permissions từ phiên đăng nhập. */
 export function patchAdminSessionProfile(
   fields: Partial<
-    Pick<AuthUser, "fullName" | "phone" | "address" | "updatedAt">
+    Pick<AuthUser, "name" | "phone" | "address" | "updatedAt">
   >,
 ): void {
   const prev = readAdminSession();
@@ -63,7 +113,7 @@ export function clearAdminSession(): void {
   sessionReadCache = null;
 }
 
-export function getAdminUserId(): number | null {
+export function getAdminUserId(): string | number | null {
   return readAdminSession()?.id ?? null;
 }
 
@@ -79,7 +129,7 @@ export function getAdminDevAuthLogContext(): string {
   if (!u) {
     return "ctx=guest x-user-id=(none)";
   }
-  const roleCodes = u.roles.map((r) => r.code).join(",");
+  const roleCodes = u.roles.map((r) => r.name).join(",");
   const permSummary = u.permissions.includes("*")
     ? "perms=* (super)"
     : `perms=n=${u.permissions.length} sample=[${u.permissions.slice(0, 6).join(",")}${u.permissions.length > 6 ? ",…" : ""}]`;

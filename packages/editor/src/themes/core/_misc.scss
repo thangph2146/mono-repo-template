@@ -1,0 +1,46 @@
+@use "../variables" as *;
+@use "../mixins" as *;
+
+.lexical-editor-root {
+  // Tweet
+  .editor-tweet-container {
+    display: block;
+    width: 100%;
+    max-width: $editor-tweet-max-width;
+  }
+
+  // Horizontal Rule
+  .editor-hr {
+    padding: calc($editor-gap-1 / 2);
+    border: none;
+    margin: $editor-hr-margin-vertical 0;
+    cursor: pointer;
+    
+    &:after {
+      content: "";
+      display: block;
+      height: $editor-hr-height;
+      background-color: $editor-border-color;
+      line-height: $editor-hr-height;
+    }
+    
+    &.selected {
+      outline: $editor-outline-width solid $editor-primary-color;
+      user-select: none;
+    }
+  }
+
+  // Embed Block
+  .editor-embed-block {
+    user-select: none;
+  }
+  
+  .editor-embed-block-focused {
+    outline: $editor-outline-width solid $editor-primary-color;
+  }
+  
+  // Autocomplete
+  .editor-autocomplete {
+    color: $editor-muted-foreground-color;
+  }
+}

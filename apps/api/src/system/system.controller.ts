@@ -9,7 +9,10 @@ import {
   Query,
   UsePipes,
   ValidationPipe,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { SkipThrottle } from '@nestjs/throttler';
 import type { Response } from 'express';
 import { SystemService } from './system.service';
@@ -30,6 +33,7 @@ const SYSTEM_MAINTENANCE_PERMISSIONS: ReadonlySet<string> = new Set([
   PERMISSIONS.SETTINGS_MANAGE,
   PERMISSIONS.SETTINGS_IMPORT,
 ]);
+const MAX_SYSTEM_EXCEL_FILE_BYTES = 50 * 1024 * 1024;
 
 /** Import/export nhiều chunk — không áp dụng giới hạn 100 req/phút toàn cục. */
 @SkipThrottle()
@@ -136,6 +140,41 @@ export class SystemController {
     }
   }
 
+  @Get('export/excel')
+  async exportExcelData(
+    @Res() res: Response,
+    @Headers() headers: Record<string, string | undefined>,
+    @Query('model') model?: string,
+  ) {
+    try {
+      if (!(await this.canAccessSystemMaintenance(headers))) {
+        const { statusCode, body } = createErrorResponse(
+          'Unauthorized: Super Admin or settings manage permission required',
+          { status: 403 },
+        );
+        return res.status(statusCode).json(body);
+      }
+
+      const buffer = await this.systemService.exportExcelData(model);
+      const filename = model
+        ? `hub-system-${model}.xlsx`
+        : 'hub-system-export.xlsx';
+      res.setHeader(
+        'Content-Type',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      );
+      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+      return res.status(200).send(buffer);
+    } catch (error) {
+      this.logApiError('GET /api/admin/system/export/excel', error, { model });
+      const { statusCode, body } = createErrorResponse(
+        'Internal Server Error',
+        { status: 500 },
+      );
+      return res.status(statusCode).json(body);
+    }
+  }
+
   @Post('import')
   @UsePipes(
     new ValidationPipe({
@@ -181,6 +220,58 @@ export class SystemController {
         model,
         skipClear,
         modelCount: data ? Object.keys(data).length : 0,
+      });
+      const { statusCode, body } = createErrorResponse(
+        error instanceof Error ? error.message : 'Internal Server Error',
+        { status: 500 },
+      );
+      return res.status(statusCode).json(body);
+    }
+  }
+
+  @Post('import/excel')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      limits: { fileSize: MAX_SYSTEM_EXCEL_FILE_BYTES },
+    }),
+  )
+  async importExcelData(
+    @Res() res: Response,
+    @Headers() headers: Record<string, string | undefined>,
+    @Query('model') model?: string,
+    @Query('skipClear') skipClear?: string,
+    @UploadedFile()
+    file?: { buffer: Buffer; originalname?: string; mimetype?: string },
+  ) {
+    try {
+      if (!(await this.canAccessSystemMaintenance(headers))) {
+        const { statusCode, body } = createErrorResponse(
+          'Unauthorized: Super Admin or settings manage permission required',
+          { status: 403 },
+        );
+        return res.status(statusCode).json(body);
+      }
+
+      if (!file?.buffer || file.buffer.length === 0) {
+        const { statusCode, body } = createErrorResponse(
+          'Invalid file: No Excel file uploaded',
+          { status: 400 },
+        );
+        return res.status(statusCode).json(body);
+      }
+
+      const result = await this.systemService.importExcelData(
+        file.buffer,
+        model,
+        skipClear === 'true',
+      );
+      const { statusCode, body } = createSuccessResponse(result);
+      return res.status(statusCode).json(body);
+    } catch (error) {
+      this.logApiError('POST /api/admin/system/import/excel', error, {
+        model,
+        skipClear,
+        filename: file?.originalname ?? null,
       });
       const { statusCode, body } = createErrorResponse(
         error instanceof Error ? error.message : 'Internal Server Error',

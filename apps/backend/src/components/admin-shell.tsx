@@ -1,11 +1,29 @@
 "use client";
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Menu, PanelLeftClose, PanelLeft } from "lucide-react";
+import {
+  ChevronDown,
+  Menu,
+  Monitor,
+  Moon,
+  PanelLeftClose,
+  PanelLeft,
+  Sun,
+  UserCircle2,
+} from "lucide-react";
 import { Button } from "@ui/components/button";
 import { cn } from "@ui/lib/utils";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@ui/components/dropdown-menu";
 import {
   Sheet,
   SheetContent,
@@ -13,18 +31,21 @@ import {
   SheetTitle,
 } from "@ui/components/sheet";
 import { MobileSidebarPanel, Sidebar } from "@/components/sidebar";
-import { TextSizeToggle } from "@ui/components/text-size-toggle";
 import { ThemeToggle } from "@ui/components/theme-toggle";
 import { Page, PageContent } from "@ui/components/layout";
-import { canAccessStaffAdmin, canUserAccess, PERMISSION_CODES } from "@workspace/api-client";
+import { useTextSize } from "@ui/components/text-size-provider";
+import { useTheme } from "@ui/components/theme-provider";
+import { canAccessStaffAdmin } from "@workspace/api-client";
 import { useAuth, useClientReady } from "@/providers/auth-provider";
-import { AdminOrderAlertsProvider } from "@/providers/admin-order-alerts-provider";
 import { AdminNotificationBell } from "@/components/admin-notification-bell";
 import {
   ADMIN_SESSION_EVENT,
   clearAdminSession,
 } from "@/lib/auth-session";
-import { isAuthPath } from "@/lib/auth-routes";
+import {
+  AUTH_LOGIN_PATH,
+  isAuthPath,
+} from "@/lib/auth-routes";
 import {
   ADMIN_HEADER_ROLE_LINE_CLASS,
   ADMIN_MAIN_SCROLL_CLASS,
@@ -35,25 +56,39 @@ import {
 const SIDEBAR_COLLAPSED_KEY = "admin-sidebar-collapsed";
 
 const HEADER_ICON_BTN_MOBILE = cn(
-  "h-11 w-11 min-h-11 min-w-11 shrink-0 rounded-xl border-border/70 bg-background/90 text-muted-foreground shadow-sm",
+  "h-11 w-11 min-h-11 min-w-11 shrink-0 rounded-lg border-border/70 bg-background/90 text-muted-foreground shadow-sm",
   "hover:border-primary/40 hover:bg-primary/5 hover:text-primary hover:shadow active:scale-[0.98] md:hidden [&_svg]:size-5",
 );
 
 const HEADER_ICON_BTN_DESKTOP = cn(
-  "hidden h-10 w-10 shrink-0 rounded-xl border-border/70 bg-background/90 text-muted-foreground shadow-sm",
+  "hidden h-10 w-10 shrink-0 rounded-lg border-border/70 bg-background/90 text-muted-foreground shadow-sm",
   "hover:border-primary/40 hover:bg-primary/5 hover:text-primary hover:shadow active:scale-[0.98] md:inline-flex [&_svg]:size-5",
 );
 
-function initials(fullName: string): string {
-  const p = fullName.trim().split(/\s+/).filter(Boolean);
+const HEADER_PROFILE_TRIGGER = cn(
+  "group relative inline-flex min-h-12 min-w-12 items-center gap-3 rounded-lg border border-border/70 bg-background/95 px-2.5 py-1.5 pr-3 text-left shadow-sm ring-1 ring-black/5 backdrop-blur-xl",
+  "transition-all duration-200 hover:-translate-y-px hover:border-primary/25 hover:bg-primary/[0.04] hover:shadow-md",
+  "aria-expanded:border-primary/25 aria-expanded:bg-primary/[0.05] aria-expanded:shadow-md",
+  "focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-ring/20 supports-[backdrop-filter]:bg-background/75",
+);
+
+const HEADER_PROFILE_AVATAR = cn(
+  "flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-primary/15 bg-gradient-to-br from-primary/15 to-primary/5",
+  "text-sm font-extrabold tracking-wide text-primary shadow-inner transition-all duration-200",
+  "group-hover:border-primary/25 group-hover:from-primary/20 group-hover:to-primary/10 group-hover:shadow-sm",
+  "group-aria-expanded:border-primary/25 group-aria-expanded:from-primary/20 group-aria-expanded:to-primary/10",
+);
+
+function initials(name: string): string {
+  const p = name.trim().split(/\s+/).filter(Boolean);
   if (p.length === 0) return "?";
   if (p.length === 1) return p[0].slice(0, 2).toUpperCase();
   return (p[0][0] + p[p.length - 1][0]).toUpperCase();
 }
 
-function roleSummary(user: { roles: { code: string; name: string }[] }): string {
+function roleSummary(user: { roles: { name: string; displayName: string }[] }): string {
   if (!user.roles.length) return "Chưa gán vai trò";
-  return user.roles.map((r) => r.name).join(" · ");
+  return user.roles.map((r) => r.displayName || r.name).join(" · ");
 }
 
 function AuthLoadingScreen({ message }: { message: string }) {
@@ -69,6 +104,9 @@ export function AdminShell({ children }: { children: ReactNode }) {
   const router = useRouter();
   const clientReady = useClientReady();
   const { user } = useAuth();
+  const { theme, setTheme } = useTheme();
+  const { size, setSize } = useTextSize();
+  const displayName = user?.name?.trim() || user?.email || "Người dùng HUB";
   const onAuthRoute = isAuthPath(pathname);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
@@ -105,19 +143,19 @@ export function AdminShell({ children }: { children: ReactNode }) {
       if (user && !canAccessStaffAdmin(user)) {
         clearAdminSession();
         window.dispatchEvent(new Event(ADMIN_SESSION_EVENT));
-        router.replace("/login?reason=staff_only");
+        router.replace(`${AUTH_LOGIN_PATH}?reason=staff_only`);
       }
       return;
     }
 
     if (!user) {
-      router.replace("/login");
+      router.replace(AUTH_LOGIN_PATH);
       return;
     }
     if (!canAccessStaffAdmin(user)) {
       clearAdminSession();
       window.dispatchEvent(new Event(ADMIN_SESSION_EVENT));
-      router.replace("/login?reason=staff_only");
+      router.replace(`${AUTH_LOGIN_PATH}?reason=staff_only`);
     }
   }, [clientReady, onAuthRoute, user, router]);
 
@@ -130,7 +168,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
     }
     return (
       <>
-        <div className="fixed right-4 top-4 z-50 rounded-xl border border-border bg-background/90 p-0.5 shadow-sm backdrop-blur-sm">
+        <div className="fixed right-4 top-4 z-50 rounded-lg border border-border bg-background/90 p-0.5 shadow-sm backdrop-blur-sm">
           <ThemeToggle />
         </div>
         {children}
@@ -142,13 +180,10 @@ export function AdminShell({ children }: { children: ReactNode }) {
     return <AuthLoadingScreen message="Đang tải…" />;
   }
 
-  const orderAlertsEnabled =
-    !!user && canUserAccess(user, PERMISSION_CODES.ORDERS_READ);
   const rolesDisplay = roleSummary(user);
 
   return (
-    <AdminOrderAlertsProvider alertsEnabled={orderAlertsEnabled}>
-      <div className="flex min-h-screen w-full flex-col bg-background font-sans text-foreground md:flex-row">
+    <div className="flex min-h-screen w-full flex-col bg-background font-sans text-foreground md:flex-row">
         <Sheet open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
           <SheetContent
             id="admin-mobile-nav"
@@ -166,8 +201,8 @@ export function AdminShell({ children }: { children: ReactNode }) {
         <Sidebar collapsed={sidebarCollapsed} />
 
         <div className="flex min-w-0 flex-1 flex-col">
-          <header className="sticky top-0 z-10 flex h-14 shrink-0 items-center justify-between border-b border-border bg-surface/80 px-3 backdrop-blur-sm sm:h-16 sm:px-6">
-            <div className="flex min-w-0 items-center gap-1 sm:gap-2">
+          <header className="sticky top-0 z-10 flex min-h-16 shrink-0 items-center justify-between border-b border-border/70 bg-background/85 px-3 shadow-[0_1px_0_0_hsl(var(--border)/0.4)] backdrop-blur-xl supports-[backdrop-filter]:bg-background/75 sm:min-h-[4.5rem] sm:px-5 lg:px-6">
+            <div className="flex min-w-0 items-center gap-2 sm:gap-3">
               <Button
                 type="button"
                 variant="outline"
@@ -201,25 +236,126 @@ export function AdminShell({ children }: { children: ReactNode }) {
               </Button>
             </div>
             <div className="flex-1" />
-            <div className="flex items-center gap-2 sm:gap-4">
-              <ThemeToggle />
-              <TextSizeToggle />
+            <div className="flex items-center gap-2 sm:gap-3">
               <AdminNotificationBell />
-              <Link
-                href="/profile"
-                className="flex items-center gap-3 pl-4 border-l border-border/50 rounded-lg pr-1 py-1 -my-1 hover:bg-muted/60 transition-colors"
-                title="Hồ sơ & tài khoản"
-              >
-                <div className="text-right hidden sm:block">
-                  <p className="text-sm font-bold leading-none">{user.fullName}</p>
-                  <p className={ADMIN_HEADER_ROLE_LINE_CLASS} title={rolesDisplay}>
-                    {rolesDisplay}
-                  </p>
-                </div>
-                <div className="flex h-10 w-10 items-center justify-center rounded-full border border-primary/20 bg-primary/10 text-sm font-bold text-primary">
-                  {initials(user.fullName)}
-                </div>
-              </Link>
+              <DropdownMenu>
+                <DropdownMenuTrigger
+                  render={
+                    <button
+                      type="button"
+                      className={HEADER_PROFILE_TRIGGER}
+                      aria-label="Mở menu tài khoản và tuỳ chỉnh giao diện"
+                    />
+                  }
+                >
+                  <div className="hidden min-w-0 text-right sm:block">
+                    <p className="max-w-[220px] truncate text-sm font-bold leading-none text-foreground">
+                      {displayName}
+                    </p>
+                    <p
+                      className={cn(
+                        ADMIN_HEADER_ROLE_LINE_CLASS,
+                        "mt-1 max-w-[220px] truncate text-[11px] text-muted-foreground/90",
+                      )}
+                      title={rolesDisplay}
+                    >
+                      {rolesDisplay}
+                    </p>
+                  </div>
+                  <div className={HEADER_PROFILE_AVATAR}>
+                    {initials(displayName)}
+                  </div>
+                  <ChevronDown className="hidden size-4 shrink-0 text-muted-foreground transition-transform duration-200 group-aria-expanded:rotate-180 sm:block" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-72 p-2">
+                  <div className="px-2 py-2">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-primary/20 bg-primary/10 text-sm font-bold text-primary">
+                        {initials(displayName)}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-semibold text-foreground">
+                          {displayName}
+                        </p>
+                        <p className="truncate text-xs text-muted-foreground" title={rolesDisplay}>
+                          {rolesDisplay}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuGroup>
+                    <DropdownMenuItem
+                      className="cursor-pointer rounded-md px-2 py-2"
+                      onClick={() => router.push("/profile")}
+                    >
+                      <UserCircle2 className="size-4 text-muted-foreground" />
+                      Hồ sơ và tài khoản
+                    </DropdownMenuItem>
+                  </DropdownMenuGroup>
+                  <DropdownMenuSeparator />
+                  <div className="px-2 py-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                    Giao diện
+                  </div>
+                  <DropdownMenuRadioGroup
+                    value={theme}
+                    onValueChange={(value) =>
+                      setTheme(value as "light" | "dark" | "system")
+                    }
+                  >
+                    <DropdownMenuRadioItem
+                      value="light"
+                      className="cursor-pointer rounded-md px-2 py-2"
+                    >
+                      <Sun className="size-4 text-muted-foreground" />
+                      Sáng
+                    </DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem
+                      value="dark"
+                      className="cursor-pointer rounded-md px-2 py-2"
+                    >
+                      <Moon className="size-4 text-muted-foreground" />
+                      Tối
+                    </DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem
+                      value="system"
+                      className="cursor-pointer rounded-md px-2 py-2"
+                    >
+                      <Monitor className="size-4 text-muted-foreground" />
+                      Theo hệ thống
+                    </DropdownMenuRadioItem>
+                  </DropdownMenuRadioGroup>
+                  <DropdownMenuSeparator />
+                  <div className="px-2 py-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                    Cỡ chữ
+                  </div>
+                  <DropdownMenuRadioGroup
+                    value={size}
+                    onValueChange={(value) => setSize(value as "sm" | "base" | "lg")}
+                  >
+                    <div className="grid grid-cols-3 gap-2 px-2 pb-1 pt-1">
+                      <DropdownMenuRadioItem
+                        value="sm"
+                        className="cursor-pointer justify-center rounded-md border border-border px-2 py-2 font-bold"
+                      >
+                        S
+                      </DropdownMenuRadioItem>
+                      <DropdownMenuRadioItem
+                        value="base"
+                        className="cursor-pointer justify-center rounded-md border border-border px-2 py-2 font-bold"
+                      >
+                        M
+                      </DropdownMenuRadioItem>
+                      <DropdownMenuRadioItem
+                        value="lg"
+                        className="cursor-pointer justify-center rounded-md border border-border px-2 py-2 font-bold"
+                      >
+                        L
+                      </DropdownMenuRadioItem>
+                    </div>
+                  </DropdownMenuRadioGroup>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </header>
           <main className={ADMIN_MAIN_SCROLL_CLASS}>
@@ -231,6 +367,5 @@ export function AdminShell({ children }: { children: ReactNode }) {
           </main>
         </div>
       </div>
-    </AdminOrderAlertsProvider>
   );
 }

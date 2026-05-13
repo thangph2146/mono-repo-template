@@ -1,0 +1,35 @@
+@use "../variables" as *;
+@use "../mixins" as *;
+
+.lexical-editor-root {
+  // Text Formatting
+  .editor-link { 
+    color: $editor-link-color; 
+    text-decoration: none; 
+    &:hover { text-decoration: underline; cursor: pointer; } 
+  }
+  .editor-text-bold { font-weight: $editor-font-weight-bold; }
+  .editor-text-italic { font-style: italic; }
+  .editor-text-underline { text-decoration: underline; }
+  .editor-text-strikethrough { text-decoration: line-through; }
+  .editor-text-underline-strikethrough { text-decoration: underline line-through; }
+  .editor-text-subscript { vertical-align: sub; font-size: $editor-script-font-size; }
+  .editor-text-superscript { vertical-align: super; font-size: $editor-script-font-size; }
+
+  // Text Alignment
+  .editor-text-align-left {
+    text-align: left;
+  }
+  
+  .editor-text-align-center {
+    text-align: center;
+  }
+  
+  .editor-text-align-right {
+    text-align: right;
+  }
+  
+  .editor-text-align-justify {
+    text-align: justify;
+  }
+}

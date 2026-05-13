@@ -11,7 +11,11 @@ import {
 import { useRouter } from "next/navigation";
 import type { AuthUser } from "@workspace/api-client";
 import { canAccessStaffAdmin } from "@workspace/api-client";
-import { api } from "@/lib/api";
+import {
+  loginWithDevelopmentUser,
+  loginWithEmail,
+  toAdminSessionUser,
+} from "@/features/auth/auth-api";
 import {
   ADMIN_SESSION_EVENT,
   ADMIN_SESSION_KEY,
@@ -19,6 +23,7 @@ import {
   readAdminSession,
   writeAdminSession,
 } from "@/lib/auth-session";
+import { AUTH_LOGIN_PATH } from "@/lib/auth-routes";
 
 function subscribe(callback: () => void) {
   if (typeof window === "undefined") return () => {};
@@ -50,6 +55,7 @@ export type StaffLoginResult =
 type AuthContextValue = {
   user: AuthUser | null;
   login: (email: string, password: string) => Promise<StaffLoginResult>;
+  loginDevelopment: (userId: string) => Promise<StaffLoginResult>;
   logout: () => void;
 };
 
@@ -64,8 +70,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 
   const login = useCallback(async (email: string, password: string) => {
-    const u = await api.users.login({ email: email.trim(), password });
-    if (!u) return "invalid_credentials";
+    let u: AuthUser;
+    try {
+      const payload = await loginWithEmail({
+        email: email.trim(),
+        password,
+      });
+      u = toAdminSessionUser(payload);
+    } catch {
+      return "invalid_credentials";
+    }
+    if (!canAccessStaffAdmin(u)) return "staff_only";
+    writeAdminSession(u);
+    window.dispatchEvent(new Event(ADMIN_SESSION_EVENT));
+    return "success";
+  }, []);
+
+  const loginDevelopment = useCallback(async (userId: string) => {
+    let u: AuthUser;
+    try {
+      const payload = await loginWithDevelopmentUser({
+        userId: userId.trim(),
+      });
+      u = toAdminSessionUser(payload);
+    } catch {
+      return "invalid_credentials";
+    }
     if (!canAccessStaffAdmin(u)) return "staff_only";
     writeAdminSession(u);
     window.dispatchEvent(new Event(ADMIN_SESSION_EVENT));
@@ -75,12 +105,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = useCallback(() => {
     clearAdminSession();
     window.dispatchEvent(new Event(ADMIN_SESSION_EVENT));
-    router.replace("/login");
+    router.replace(AUTH_LOGIN_PATH);
   }, [router]);
 
   const value = useMemo(
-    () => ({ user, login, logout }),
-    [user, login, logout],
+    () => ({ user, login, loginDevelopment, logout }),
+    [user, login, loginDevelopment, logout],
   );
 
   return (

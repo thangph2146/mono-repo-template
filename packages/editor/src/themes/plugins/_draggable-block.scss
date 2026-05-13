@@ -1,0 +1,32 @@
+@use "../variables" as *;
+@use "../mixins" as *;
+
+.editor-draggable-line {
+  background-color: var(--secondary-foreground);
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: $editor-gap-1;
+  opacity: 0;
+  will-change: transform;
+}
+
+.editor-draggable-menu {
+  position: absolute;
+  top: 0;
+  left: 0;
+  cursor: grab;
+  @include rounded-sm;
+  padding: $editor-gap-0-5 $editor-gap-1;
+  opacity: 0;
+  will-change: transform;
+  
+  &:hover {
+    background-color: $editor-accent-color;
+  }
+  
+  &:active {
+    cursor: grabbing;
+  }
+}

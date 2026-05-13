@@ -1,0 +1,20 @@
+@use "../variables" as *;
+@use "../mixins" as *;
+
+/* --- BORDERS --- */
+.editor-border {
+  border: $editor-border-width solid var(--border);
+}
+
+.editor-border-0 {
+  border-width: 0;
+}
+
+.editor-border-transparent {
+  border-color: transparent;
+}
+
+.editor-outline-none {
+  outline: $editor-outline-width solid transparent;
+  outline-offset: $editor-outline-offset;
+}

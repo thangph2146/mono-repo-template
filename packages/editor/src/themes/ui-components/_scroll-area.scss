@@ -1,0 +1,11 @@
+@use "../variables" as *;
+@use "../mixins" as *;
+
+/* --- SCROLL AREA --- */
+.editor-scroll-area {
+  max-height: 50vh;
+  overflow-y: auto;
+  padding: $editor-gap-2;
+  border: $editor-border-width solid var(--border);
+  @include rounded-sm;
+}

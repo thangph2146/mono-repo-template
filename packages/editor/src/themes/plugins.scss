@@ -1,0 +1,37 @@
+@use "variables" as *;
+@use "mixins" as *;
+
+// ==========================================
+// 1. TOOLBAR COMPONENTS
+// ==========================================
+@use "plugins/toolbar";
+
+// ==========================================
+// 2. FLOATING TOOLBARS & OVERLAYS
+// ==========================================
+@use "plugins/floating-toolbars";
+
+// ==========================================
+// 3. PLUGIN SPECIFIC STYLES
+// ==========================================
+@use "plugins/list-color";
+@use "plugins/color-picker";
+@use "plugins/table";
+@use "plugins/image";
+@use "plugins/image-resizer";
+@use "plugins/layout";
+@use "plugins/code-action-menu";
+@use "plugins/mentions";
+@use "plugins/tree-view";
+@use "plugins/draggable-block";
+@use "plugins/auto-embed";
+@use "plugins/floating-link-editor";
+
+// ==========================================
+// 4. MENUS & PICKERS
+// ==========================================
+@use "plugins/menus-and-pickers";
+
+// Note: Core toggle styles are defined in ui-components.scss
+// Specific plugin overrides can be added here if needed
+@use "plugins/toolbar-professional";

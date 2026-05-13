@@ -85,11 +85,11 @@ export const STORE_INTRO_COLUMN_CLASS = "mx-auto max-w-3xl space-y-3 text-center
 
 /** Khối đăng nhập admin — responsive max-width chuẩn Tailwind. */
 export const ADMIN_AUTH_PANEL_CLASS =
-  "w-full min-w-0 max-w-md sm:max-w-lg md:max-w-2xl lg:max-w-3xl rounded-xl border border-border bg-card p-6 sm:p-8 shadow-sm";
+  "w-full min-w-0 max-w-md sm:max-w-lg md:max-w-2xl lg:max-w-3xl rounded-lg border border-border bg-card p-6 sm:p-8 shadow-sm";
 
 /** Card thông tin (vd. /register admin) — cùng scale max-width. */
 export const ADMIN_AUTH_INFO_CARD_CLASS =
-  "w-full min-w-0 max-w-md sm:max-w-lg md:max-w-2xl lg:max-w-3xl rounded-xl border border-border shadow-sm";
+  "w-full min-w-0 max-w-md sm:max-w-lg md:max-w-2xl lg:max-w-3xl rounded-lg border border-border shadow-sm";
 
 // ── Vỏ app admin (apps/backend) ─────────────────────────────
 
@@ -158,17 +158,17 @@ export const ADMIN_DASHBOARD_EMPTY_INNER_CLASS =
 
 /** AlertDialog xác nhận (đơn hàng, kho, …) — đồng bộ border + max-width. */
 export const ADMIN_ALERT_DIALOG_CONTENT_CLASS =
-  "rounded-2xl sm:max-w-[450px]";
+  "rounded-lg sm:max-w-[450px]";
 
 /** Dialog form hẹp (500px). */
 export const ADMIN_DIALOG_CONTENT_MD_CLASS =
-  "rounded-2xl sm:max-w-[500px]";
+  "rounded-lg sm:max-w-[500px]";
 
 /** Dialog form rộng (3xl). */
-export const ADMIN_DIALOG_CONTENT_LG_CLASS = "rounded-2xl sm:max-w-3xl";
+export const ADMIN_DIALOG_CONTENT_LG_CLASS = "rounded-lg sm:max-w-3xl";
 
 /** Dialog form danh mục. */
-export const ADMIN_DIALOG_CONTENT_CATEGORY_CLASS = "sm:max-w-[560px]";
+export const ADMIN_DIALOG_CONTENT_CATEGORY_CLASS = "sm:max-w-[90vw]";
 
 /** Dialog toàn màn hình kho (bảng chi tiết). */
 export const ADMIN_DIALOG_CONTENT_INVENTORY_FULL_CLASS =

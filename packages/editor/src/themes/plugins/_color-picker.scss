@@ -1,0 +1,107 @@
+@use "../variables" as *;
+@use "../mixins" as *;
+
+.editor-color-picker-content {
+  @include flex-col;
+  width: min(100%, $editor-color-picker-width);
+  max-width: $editor-color-picker-width;
+  min-width: 0;
+  gap: $editor-gap-4;
+}
+
+.editor-color-picker-area {
+  position: relative;
+  height: $editor-color-picker-height; // h-40
+  width: 100%;
+  cursor: crosshair;
+  touch-action: none;
+  @include rounded-sm;
+  border: $editor-border-width solid var(--border);
+  overflow: hidden;
+
+  &[data-disabled="true"] {
+    pointer-events: none;
+    opacity: $editor-opacity-disabled;
+  }
+}
+
+.editor-slider-root {
+  position: relative;
+  @include flex-center;
+  width: 100%;
+  touch-action: none;
+  user-select: none;
+
+  &[data-disabled] {
+    opacity: $editor-opacity-disabled;
+    pointer-events: none;
+  }
+}
+
+.editor-slider-track {
+  position: relative;
+  height: $editor-gap-3; // h-3
+  width: 100%;
+  flex-grow: 1;
+  overflow: hidden;
+  @include rounded-full;
+}
+
+.editor-slider-thumb {
+  display: block;
+  @include control-size($editor-icon-size-sm);
+  @include rounded-full;
+  border: $editor-border-width solid var(--border); // border-primary/50
+  background-color: var(--background);
+  @include shadow-sm;
+  transition: background-color $editor-transition-fast, border-color $editor-transition-fast;
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.editor-color-swatch {
+  box-sizing: border-box;
+  @include control-size($editor-control-size-sm);
+  @include rounded-sm;
+  border: $editor-border-width solid var(--border);
+  @include shadow-sm;
+
+  &--disabled {
+    opacity: $editor-opacity-disabled;
+  }
+}
+
+.editor-color-presets {
+  @include flex-center;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: $editor-gap-2;
+  width: 100%;
+}
+
+.editor-color-preset-item {
+  height: $editor-control-size-sm;
+  padding-left: $editor-gap-2;
+  padding-right: $editor-gap-2;
+  flex: 1;
+
+  &__preview {
+    @include control-size($editor-gap-3);
+    @include rounded-full;
+    border: $editor-border-width solid var(--border);
+  }
+
+  &__label {
+    font-family: $editor-font-family-mono;
+    @include text-sm;
+  }
+}
+
+.editor-color-value-text {
+  color: $editor-muted-foreground-color;
+  font-family: $editor-font-family-mono;
+  @include text-sm;
+  font-variant-numeric: tabular-nums;
+}

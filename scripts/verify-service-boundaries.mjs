@@ -16,13 +16,6 @@ const FORBIDDEN_DEPS = {
   "@frontend": ["@backend", "@api"],
   "@backend": ["@frontend", "@api"],
   "@workspace/api-client": ["@api", "@frontend", "@backend", "@ui"],
-  "@workspace/promo-codes": [
-    "@api",
-    "@frontend",
-    "@backend",
-    "@ui",
-    "@workspace/api-client",
-  ],
   "@workspace/dealer-support": [
     "@api",
     "@frontend",
@@ -79,7 +72,7 @@ function main() {
     console.error("[verify-service-boundaries] Vi phạm ranh giới package.json:\n");
     for (const e of errors) console.error(`  • ${e}`);
     console.error(
-      "\nGiao tiếp giữa service: HTTP/SDK (@workspace/api-client), hoặc package trung lập (@workspace/promo-codes).",
+      "\nGiao tiếp giữa service: HTTP/SDK (@workspace/api-client) hoặc package trung lập con song trong workspace.",
     );
     process.exit(1);
   }

@@ -30,7 +30,7 @@ pnpm check:full
 
 - Không import chéo source giữa các app trong `apps/*`.
 - Frontend/Backend giao tiếp với API qua HTTP + `@workspace/api-client`.
-- Logic dùng chung đặt ở `packages/*` (vd `@workspace/promo-codes`).
+- Logic dùng chung đặt ở `packages/*` khi thật sự còn được sử dụng.
 - Ranh giới được kiểm soát bởi:
   - `packages/eslint-config/service-boundaries.js`
   - `scripts/verify-service-boundaries.mjs`

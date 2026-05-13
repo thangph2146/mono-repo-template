@@ -115,8 +115,9 @@
   --secondary-foreground: #ffffff;
   --muted: #f5f5f5;
   --muted-foreground: #6b6b6b;
-  --accent: #1f3368;
-  --accent-foreground: #ffffff;
+  /* Accent dành cho trạng thái active/hover nhẹ, khác với primary brand */
+  --accent: #e8ecf5;
+  --accent-foreground: #1f3368;
   --destructive: #a71b29;
   --destructive-foreground: #ffffff;
   --border: #d4c9c9;
@@ -217,7 +218,8 @@
   --secondary-foreground: #ffffff;
   --muted: #3b3939;
   --muted-foreground: #b0b0b0;
-  --accent: #3d5a9e;
+  /* Accent dark mode vẫn nổi nhưng không gắt như primary */
+  --accent: #2a3a63;
   --accent-foreground: #ffffff;
   --destructive: #a71b29;
   --destructive-foreground: #ffffff;

@@ -1,0 +1,86 @@
+@use "../variables" as *;
+@use "../mixins" as *;
+
+/* --- INPUT --- */
+.editor-input {
+  @include flex-center;
+  height: $editor-control-size-md;
+  width: 100%;
+  @include rounded-md;
+  border: $editor-border-width solid var(--input);
+  background-color: var(--background);
+  padding: $editor-gap-2 $editor-gap-3;
+  @include text-sm;
+
+  &::file-selector-button {
+    border: 0;
+    background-color: transparent;
+    @include text-sm;
+    font-weight: $editor-font-weight-medium;
+  }
+
+  &::placeholder {
+    color: var(--muted-foreground);
+  }
+
+  @include editor-input-interactive;
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 $editor-outline-width var(--ring), 0 0 0 $editor-outline-width * 2 var(--background);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: $editor-opacity-disabled;
+  }
+
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  &[type=number] {
+    -moz-appearance: textfield;
+  }
+}
+
+.editor-input-lg {
+  height: $editor-control-size-xl;
+  width: 100%;
+}
+
+.editor-input-wrapper {
+  @include flex-center;
+}
+
+/* --- INPUT GROUP ITEM --- */
+.editor-input-group-item {
+  height: $editor-control-size-sm;
+  -moz-appearance: textfield;
+
+  &::-webkit-inner-spin-button,
+  &::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  &--first {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+  &--middle {
+    border-radius: 0;
+    border-left-width: 0;
+    margin-inline-start: -1px;
+  }
+
+  &--last {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-left-width: 0;
+    margin-inline-start: -1px;
+  }
+}

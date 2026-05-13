@@ -1,0 +1,23 @@
+@use "../variables" as *;
+@use "../mixins" as *;
+
+/* --- ICONS --- */
+.editor-icon-xs {
+  @include icon-size($editor-icon-size-xs);
+}
+
+.editor-icon-sm {
+  @include icon-size($editor-icon-size-sm);
+}
+
+.editor-icon-md {
+  @include icon-size($editor-icon-size-md);
+}
+
+.editor-icon-lg {
+  @include icon-size($editor-icon-size-lg);
+}
+
+.editor-icon-xl {
+  @include icon-size($editor-icon-size-xl);
+}

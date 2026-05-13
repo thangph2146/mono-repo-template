@@ -1,0 +1,81 @@
+@use "../variables" as *;
+@use "../mixins" as *;
+
+.editor-number-input-container {
+  display: flex;
+  align-items: center;
+  border: $editor-border-width solid var(--border);
+  border-radius: $editor-border-radius;
+  background-color: var(--background);
+  height: $editor-control-size-xl; // h-11 to match color picker trigger
+  transition: border-color $editor-transition-normal;
+  padding: 2px; // Small padding to make inner buttons look nested
+  gap: 2px;
+
+  &:focus-within {
+    border-color: var(--ring);
+  }
+}
+
+.editor-number-input-btn {
+  height: 100% !important;
+  width: $editor-control-size-lg !important;
+  @include rounded-md; // Increase rounding to match container more closely
+  flex-shrink: 0;
+  color: var(--muted-foreground);
+  border: none !important;
+  box-shadow: none !important;
+  
+  &:hover:not(:disabled) {
+    background-color: var(--accent) !important;
+    color: var(--accent-foreground) !important;
+  }
+
+  &:active:not(:disabled) {
+    background-color: var(--accent-muted) !important;
+  }
+}
+
+.editor-number-input-wrapper {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  height: 100%;
+  @include rounded-md;
+  overflow: hidden;
+}
+
+.editor-number-input-field {
+  border: none !important;
+  border-radius: 0 !important;
+  height: 100% !important;
+  text-align: center;
+  padding-right: 28px !important; // space for unit
+  box-shadow: none !important;
+  background: transparent !important;
+  
+  &:focus {
+    box-shadow: none !important; // Don't show inner focus ring, container handles it
+  }
+  
+  &::-webkit-inner-spin-button,
+  &::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  
+  -moz-appearance: textfield;
+}
+
+.editor-number-input-unit {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: $editor-font-size-xs;
+  color: var(--muted-foreground);
+  pointer-events: none;
+  font-family: $editor-font-family-mono;
+}

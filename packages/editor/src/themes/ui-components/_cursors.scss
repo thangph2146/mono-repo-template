@@ -1,0 +1,31 @@
+@use "../variables" as *;
+@use "../mixins" as *;
+
+/* --- CURSORS --- */
+.editor-cursor-default {
+  cursor: default;
+}
+
+.editor-cursor-pointer {
+  cursor: pointer;
+}
+
+.editor-cursor-text {
+  cursor: text;
+}
+
+.editor-cursor-ns-resize {
+  cursor: ns-resize;
+}
+
+.editor-cursor-ew-resize {
+  cursor: ew-resize;
+}
+
+.editor-cursor-nesw-resize {
+  cursor: nesw-resize;
+}
+
+.editor-cursor-nwse-resize {
+  cursor: nwse-resize;
+}

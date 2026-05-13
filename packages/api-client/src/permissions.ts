@@ -20,6 +20,14 @@ export const PERMISSION_CODES = {
   SUPPORT_READ: "support.read",
   /** Sửa nội dung trang /support trên cửa hàng. */
   SUPPORT_WRITE: "support.write",
+  CONTACT_REQUESTS_VIEW: "contact_requests:view",
+  CONTACT_REQUESTS_CREATE: "contact_requests:create",
+  CONTACT_REQUESTS_UPDATE: "contact_requests:update",
+  CONTACT_REQUESTS_DELETE: "contact_requests:delete",
+  CONTACT_REQUESTS_MANAGE: "contact_requests:manage",
+  CONTACT_REQUESTS_EXPORT: "contact_requests:export",
+  CONTACT_REQUESTS_ASSIGN: "contact_requests:assign",
+  CONTACT_REQUESTS_RESTORE: "contact_requests:restore",
 } as const;
 
 export type PermissionCode =
@@ -44,7 +52,7 @@ export function isSuperAdminRoleCode(code: string | undefined): boolean {
  * Dùng thay cho `hasPermission(user.permissions, …)` trên admin panel.
  */
 export function canUserAccess(user: AuthUser, code: PermissionCode): boolean {
-  if (user.roles?.some((r) => isSuperAdminRoleCode(r.code))) {
+  if (user.roles?.some((r) => isSuperAdminRoleCode(r.name))) {
     return true;
   }
   return hasPermission(user.permissions, code);
@@ -72,6 +80,8 @@ const STAFF_PANEL_PERMISSION_CODES: PermissionCode[] = [
   PERMISSION_CODES.DATA_MAINTENANCE,
   PERMISSION_CODES.SUPPORT_READ,
   PERMISSION_CODES.SUPPORT_WRITE,
+  PERMISSION_CODES.CONTACT_REQUESTS_VIEW,
+  PERMISSION_CODES.CONTACT_REQUESTS_MANAGE,
 ];
 
 /**
@@ -79,9 +89,9 @@ const STAFF_PANEL_PERMISSION_CODES: PermissionCode[] = [
  * `*.read` + `orders.checkout` + `users.cart_own` — không đủ → chặn ở login/shell.
  */
 export function canAccessStaffAdmin(user: AuthUser): boolean {
-  if (user.roles?.some((r) => isSuperAdminRoleCode(r.code))) return true;
+  if (user.roles?.some((r) => isSuperAdminRoleCode(r.name))) return true;
   const staffRoles = STAFF_ADMIN_ROLE_CODES as readonly string[];
-  if (user.roles?.some((r) => staffRoles.includes(r.code))) return true;
+  if (user.roles?.some((r) => staffRoles.includes(r.name))) return true;
   return STAFF_PANEL_PERMISSION_CODES.some((p) =>
     hasPermission(user.permissions, p),
   );

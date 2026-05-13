@@ -1,0 +1,127 @@
+@use "../variables" as *;
+@use "../mixins" as *;
+
+/* --- FLEX Component Utilities --- */
+.editor-flex {
+  display: flex;
+}
+
+.editor-flex-1 {
+  flex: 1 1 0%;
+}
+
+.editor-shrink-0 {
+  flex-shrink: 0;
+  gap: 8px !important;
+}
+
+.editor-flex-grow {
+  flex-grow: 1;
+}
+
+.editor-items-start {
+  align-items: flex-start;
+}
+
+.editor-items-center {
+  align-items: center;
+}
+
+.editor-items-end {
+  align-items: flex-end;
+}
+
+.editor-items-baseline {
+  align-items: baseline;
+}
+
+.editor-items-stretch {
+  align-items: stretch;
+}
+
+.editor-justify-start {
+  justify-content: flex-start;
+}
+
+.editor-justify-center {
+  justify-content: center;
+}
+
+.editor-justify-end {
+  justify-content: flex-end;
+}
+
+.editor-justify-between {
+  justify-content: space-between;
+}
+
+.editor-justify-around {
+  justify-content: space-around;
+}
+
+.editor-justify-evenly {
+  justify-content: space-evenly;
+}
+
+.editor-flex-row {
+  flex-direction: row;
+}
+
+.editor-flex-column,
+.editor-flex-col {
+  flex-direction: column;
+}
+
+.editor-flex-row-reverse {
+  flex-direction: row-reverse;
+}
+
+.editor-flex-column-reverse,
+.editor-flex-col-reverse {
+  flex-direction: column-reverse;
+}
+
+.editor-flex-nowrap {
+  flex-wrap: nowrap;
+}
+
+.editor-flex-wrap {
+  flex-wrap: wrap;
+}
+
+.editor-flex-wrap-reverse {
+  flex-wrap: wrap-reverse;
+}
+
+.editor-flex-end {
+  @include flex-center;
+  justify-content: flex-end;
+  gap: $editor-gap-1;
+  flex-wrap: nowrap;
+  flex-shrink: 0;
+}
+
+.editor-flex-row-center {
+  @include flex-center;
+  gap: $editor-gap-2;
+
+  &--pointer {
+    cursor: pointer;
+  }
+}
+
+.editor-flex-col-gap-2 {
+  @include flex-col;
+  gap: $editor-gap-2;
+}
+
+.editor-flex-col-gap-4 {
+  @include flex-col;
+  gap: $editor-gap-4;
+}
+
+.editor-flex-center-justify-py-8 {
+  @include flex-center-justify;
+  padding-top: $editor-gap-5;
+  padding-bottom: $editor-gap-5;
+}

@@ -1,0 +1,21 @@
+@use "../variables" as *;
+@use "../mixins" as *;
+
+.editor-mentions-popover {
+  position: fixed;
+  z-index: $editor-z-index-popover;
+  width: $editor-mentions-width;
+  @include rounded-md;
+  @include shadow-md;
+}
+
+.editor-mentions-item {
+  @include flex-center;
+  gap: $editor-gap-2;
+  
+  @include editor-dropdown-item-interactive;
+  
+  &--transparent {
+    background-color: transparent;
+  }
+}

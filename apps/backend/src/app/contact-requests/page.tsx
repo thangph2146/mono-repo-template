@@ -1,0 +1,1406 @@
+"use client";
+
+import { useCallback, useEffect, useMemo, useState } from "react";
+import type { ColumnDef } from "@tanstack/react-table";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import {
+  AlertCircle,
+  Archive,
+  ArchiveRestore,
+  CheckCircle2,
+  CircleDot,
+  Eye,
+  Headset,
+  Loader2,
+  Mail,
+  Phone,
+  RefreshCw,
+  Save,
+  ShieldCheck,
+  Trash2,
+  UserCircle,
+  UserRoundCog,
+  X,
+} from "lucide-react";
+import { Badge } from "@ui/components/badge";
+import { Button } from "@ui/components/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@ui/components/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@ui/components/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@ui/components/alert-dialog";
+import { Input } from "@ui/components/input";
+import { Label } from "@ui/components/label";
+import { PageSection } from "@ui/components/layout";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@ui/components/select";
+import { Switch } from "@ui/components/switch";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@ui/components/tabs";
+import { Textarea } from "@ui/components/textarea";
+import { AdminDataTable } from "@/components/admin-data-table";
+import { AdminTablePaginationFooter } from "@/components/admin-table-pagination-footer";
+import { useDebouncedValue } from "@/hooks/use-debounced-value";
+import { api } from "@/lib/api";
+import { useAuth } from "@/providers/auth-provider";
+import { canUserAccess, PERMISSION_CODES } from "@workspace/api-client";
+import {
+  ADMIN_ALERT_DIALOG_CONTENT_CLASS,
+  ADMIN_DIALOG_CONTENT_LG_CLASS,
+  ADMIN_PAGE_FORM_COLUMN_CLASS,
+  ADMIN_PAGE_SUBTITLE_CLASS,
+  ADMIN_PAGE_TITLE_ICON_CLASS,
+  ADMIN_PAGE_TITLE_ICON_SM_CLASS,
+  ADMIN_PAGE_TITLE_PRIMARY_CLASS,
+} from "@ui/lib/layout-shell";
+
+type ContactStatus = "NEW" | "IN_PROGRESS" | "RESOLVED" | "CLOSED";
+type ContactPriority = "LOW" | "MEDIUM" | "HIGH" | "URGENT";
+
+type ContactRequestRow = {
+  id: string;
+  name: string;
+  email: string;
+  phone: string | null;
+  subject: string;
+  content: string;
+  status: ContactStatus;
+  priority: ContactPriority;
+  isRead: boolean;
+  assignedToName: string | null;
+  assignedToId: string | null;
+  assignedTo: { id: string; name: string | null; email: string } | null;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+};
+
+type AssigneeOption = {
+  id: string;
+  name: string | null;
+  email: string;
+};
+
+type PagedResult<T> = {
+  items: T[];
+  total: number;
+};
+
+type ApiEnvelope<T> = {
+  success?: boolean;
+  message?: string;
+  error?: string | null;
+  data?: T;
+};
+
+type ContactApiShape = {
+  data: ContactRequestRow[];
+  pagination?: { total?: number };
+};
+
+type UsersApiShape = {
+  data: Array<{
+    id: string | number;
+    email?: string;
+    name?: string | null;
+    fullName?: string | null;
+  }>;
+  pagination?: { total?: number };
+};
+
+type ContactFormState = {
+  id?: string;
+  name: string;
+  email: string;
+  phone: string;
+  subject: string;
+  content: string;
+  status: ContactStatus;
+  priority: ContactPriority;
+  isRead: boolean;
+  assignedToId: string;
+};
+
+const UNASSIGNED_VALUE = "__unassigned__";
+
+const EMPTY_FORM: ContactFormState = {
+  name: "",
+  email: "",
+  phone: "",
+  subject: "",
+  content: "",
+  status: "NEW",
+  priority: "MEDIUM",
+  isRead: false,
+  assignedToId: UNASSIGNED_VALUE,
+};
+
+const STATUS_OPTIONS: Array<{ value: ContactStatus; label: string }> = [
+  { value: "NEW", label: "Mới" },
+  { value: "IN_PROGRESS", label: "Đang xử lý" },
+  { value: "RESOLVED", label: "Đã xử lý" },
+  { value: "CLOSED", label: "Đã đóng" },
+];
+
+const PRIORITY_OPTIONS: Array<{ value: ContactPriority; label: string }> = [
+  { value: "LOW", label: "Thấp" },
+  { value: "MEDIUM", label: "Trung bình" },
+  { value: "HIGH", label: "Cao" },
+  { value: "URGENT", label: "Khẩn cấp" },
+];
+
+function unwrapEnvelope<T>(payload: unknown): T {
+  if (!payload || typeof payload !== "object") return payload as T;
+  const envelope = payload as ApiEnvelope<T>;
+  if (envelope.success === false) {
+    throw new Error(envelope.message || envelope.error || "Yeu cau that bai");
+  }
+  return "data" in envelope ? (envelope.data as T) : (payload as T);
+}
+
+function normalizePaged(payload: unknown): PagedResult<ContactRequestRow> {
+  const data = unwrapEnvelope<ContactApiShape | ContactRequestRow[]>(payload);
+  if (Array.isArray(data)) {
+    return { items: data, total: data.length };
+  }
+  if (data && typeof data === "object" && Array.isArray(data.data)) {
+    return {
+      items: data.data,
+      total:
+        typeof data.pagination?.total === "number"
+          ? data.pagination.total
+          : data.data.length,
+    };
+  }
+  return { items: [], total: 0 };
+}
+
+function normalizeAssignees(payload: unknown): AssigneeOption[] {
+  const data = unwrapEnvelope<UsersApiShape | UsersApiShape["data"]>(payload);
+  const rows =
+    Array.isArray(data) ? data : data && typeof data === "object" ? data.data : [];
+  if (!Array.isArray(rows)) return [];
+  return rows
+    .map((row) => ({
+      id: String(row.id),
+      email: String(row.email ?? ""),
+      name:
+        typeof row.fullName === "string"
+          ? row.fullName
+          : typeof row.name === "string"
+            ? row.name
+            : null,
+    }))
+    .filter((row) => row.email.trim() !== "");
+}
+
+function formatDateTime(value: string | null | undefined): string {
+  if (!value) return "—";
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? "—" : date.toLocaleString("vi-VN");
+}
+
+function statusLabel(value: ContactStatus): string {
+  return STATUS_OPTIONS.find((item) => item.value === value)?.label ?? value;
+}
+
+function priorityLabel(value: ContactPriority): string {
+  return PRIORITY_OPTIONS.find((item) => item.value === value)?.label ?? value;
+}
+
+function statusBadgeClass(value: ContactStatus): string {
+  switch (value) {
+    case "NEW":
+      return "border-sky-200 text-sky-700";
+    case "IN_PROGRESS":
+      return "border-amber-200 text-amber-700";
+    case "RESOLVED":
+      return "border-emerald-200 text-emerald-700";
+    case "CLOSED":
+      return "border-slate-200 text-slate-700";
+  }
+}
+
+function priorityBadgeClass(value: ContactPriority): string {
+  switch (value) {
+    case "LOW":
+      return "border-slate-200 text-slate-700";
+    case "MEDIUM":
+      return "border-sky-200 text-sky-700";
+    case "HIGH":
+      return "border-orange-200 text-orange-700";
+    case "URGENT":
+      return "border-destructive/30 text-destructive";
+  }
+}
+
+function StatCard({
+  label,
+  value,
+  hint,
+  icon: Icon,
+}: {
+  label: string;
+  value: string;
+  hint: string;
+  icon: typeof Headset;
+}) {
+  return (
+    <Card className="border-border/70 bg-card/95 shadow-sm">
+      <CardContent className="flex items-start gap-4 p-5">
+        <div className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+          <Icon className="size-5" />
+        </div>
+        <div className="min-w-0">
+          <p className="text-sm font-medium text-muted-foreground">{label}</p>
+          <p className="mt-1 text-2xl font-bold tracking-tight text-foreground">
+            {value}
+          </p>
+          <p className="mt-1 text-xs text-muted-foreground">{hint}</p>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+export default function ContactRequestsPage() {
+  const queryClient = useQueryClient();
+  const { user: session } = useAuth();
+  const canRead =
+    session != null &&
+    (canUserAccess(session, PERMISSION_CODES.CONTACT_REQUESTS_VIEW) ||
+      canUserAccess(session, PERMISSION_CODES.CONTACT_REQUESTS_MANAGE) ||
+      canUserAccess(session, PERMISSION_CODES.CONTACT_REQUESTS_UPDATE));
+  const canWrite =
+    session != null &&
+    (canUserAccess(session, PERMISSION_CODES.CONTACT_REQUESTS_UPDATE) ||
+      canUserAccess(session, PERMISSION_CODES.CONTACT_REQUESTS_MANAGE));
+  const canDelete =
+    session != null &&
+    (canUserAccess(session, PERMISSION_CODES.CONTACT_REQUESTS_DELETE) ||
+      canUserAccess(session, PERMISSION_CODES.CONTACT_REQUESTS_MANAGE));
+  const canRestore =
+    session != null &&
+    (canUserAccess(session, PERMISSION_CODES.CONTACT_REQUESTS_RESTORE) ||
+      canUserAccess(session, PERMISSION_CODES.CONTACT_REQUESTS_MANAGE));
+  const canAssign =
+    session != null &&
+    (canUserAccess(session, PERMISSION_CODES.CONTACT_REQUESTS_ASSIGN) ||
+      canUserAccess(session, PERMISSION_CODES.CONTACT_REQUESTS_MANAGE));
+  const canLoadAssignees =
+    session != null && canUserAccess(session, PERMISSION_CODES.USERS_MANAGE);
+
+  const [mainTab, setMainTab] = useState<"list" | "trash">("list");
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(15);
+  const [trashPage, setTrashPage] = useState(1);
+  const [trashPageSize, setTrashPageSize] = useState(15);
+  const [globalFilter, setGlobalFilter] = useState("");
+  const [trashGlobalFilter, setTrashGlobalFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState<
+    "all" | ContactStatus
+  >("all");
+  const [detailOpen, setDetailOpen] = useState(false);
+  const [form, setForm] = useState<ContactFormState>(EMPTY_FORM);
+  const [deleteTarget, setDeleteTarget] = useState<ContactRequestRow | null>(null);
+  const [restoreTarget, setRestoreTarget] = useState<ContactRequestRow | null>(
+    null,
+  );
+  const [purgeTarget, setPurgeTarget] = useState<ContactRequestRow | null>(null);
+
+  const debouncedGlobalFilter = useDebouncedValue(globalFilter, 300);
+  const debouncedTrashGlobalFilter = useDebouncedValue(trashGlobalFilter, 300);
+
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedGlobalFilter, pageSize, statusFilter]);
+
+  useEffect(() => {
+    setTrashPage(1);
+  }, [debouncedTrashGlobalFilter, trashPageSize]);
+
+  const listQuery = useQuery({
+    queryKey: [
+      "contact-requests",
+      "list",
+      page,
+      pageSize,
+      debouncedGlobalFilter,
+      statusFilter,
+    ],
+    queryFn: async (): Promise<PagedResult<ContactRequestRow>> =>
+      normalizePaged(
+        await api.http.get("/admin/contact-requests", {
+          query: {
+            page,
+            limit: pageSize,
+            search: debouncedGlobalFilter.trim() || undefined,
+            status: statusFilter === "all" ? "active" : statusFilter,
+          },
+        }),
+      ),
+    enabled: Boolean(session) && canRead && mainTab === "list",
+  });
+
+  const trashQuery = useQuery({
+    queryKey: [
+      "contact-requests",
+      "trash",
+      trashPage,
+      trashPageSize,
+      debouncedTrashGlobalFilter,
+    ],
+    queryFn: async (): Promise<PagedResult<ContactRequestRow>> =>
+      normalizePaged(
+        await api.http.get("/admin/contact-requests", {
+          query: {
+            page: trashPage,
+            limit: trashPageSize,
+            search: debouncedTrashGlobalFilter.trim() || undefined,
+            status: "deleted",
+          },
+        }),
+      ),
+    enabled: Boolean(session) && canRead && mainTab === "trash",
+  });
+
+  const assigneesQuery = useQuery({
+    queryKey: ["contact-requests", "assignees"],
+    queryFn: async (): Promise<AssigneeOption[]> => {
+      try {
+        return normalizeAssignees(
+          await api.http.get("/admin/users", {
+            query: { page: 1, limit: 100 },
+          }),
+        );
+      } catch {
+        return [];
+      }
+    },
+    enabled: Boolean(session) && canAssign && canLoadAssignees,
+  });
+
+  const invalidateLists = useCallback(async () => {
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: ["contact-requests", "list"] }),
+      queryClient.invalidateQueries({ queryKey: ["contact-requests", "trash"] }),
+    ]);
+  }, [queryClient]);
+
+  const updateMutation = useMutation({
+    mutationFn: async (input: ContactFormState) =>
+      unwrapEnvelope<ContactRequestRow>(
+        await api.http.put(`/admin/contact-requests/${input.id}`, {
+          name: input.name,
+          email: input.email,
+          phone: input.phone.trim() || null,
+          subject: input.subject,
+          content: input.content,
+          status: input.status,
+          priority: input.priority,
+          isRead: input.isRead,
+          assignedToId:
+            input.assignedToId === UNASSIGNED_VALUE ? null : input.assignedToId,
+        }),
+      ),
+    onSuccess: async () => {
+      await invalidateLists();
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => api.http.delete(`/admin/contact-requests/${id}`),
+    onSuccess: async () => {
+      await invalidateLists();
+    },
+  });
+
+  const restoreMutation = useMutation({
+    mutationFn: async (id: string) =>
+      unwrapEnvelope<ContactRequestRow>(
+        await api.http.post(`/admin/contact-requests/${id}/restore`),
+      ),
+    onSuccess: async () => {
+      await invalidateLists();
+    },
+  });
+
+  const purgeMutation = useMutation({
+    mutationFn: async (id: string) =>
+      api.http.delete(`/admin/contact-requests/${id}/hard-delete`),
+    onSuccess: async () => {
+      await invalidateLists();
+    },
+  });
+
+  const listItems = useMemo(
+    () => listQuery.data?.items ?? [],
+    [listQuery.data?.items],
+  );
+  const listTotal = listQuery.data?.total ?? 0;
+  const trashItems = useMemo(
+    () => trashQuery.data?.items ?? [],
+    [trashQuery.data?.items],
+  );
+  const trashTotal = trashQuery.data?.total ?? 0;
+  const assigneeOptions = useMemo(
+    () => assigneesQuery.data ?? [],
+    [assigneesQuery.data],
+  );
+
+  const unreadCount = useMemo(
+    () => listItems.filter((item) => !item.isRead).length,
+    [listItems],
+  );
+  const urgentCount = useMemo(
+    () => listItems.filter((item) => item.priority === "URGENT").length,
+    [listItems],
+  );
+  const assignedCount = useMemo(
+    () => listItems.filter((item) => item.assignedToId != null).length,
+    [listItems],
+  );
+
+  const openDetail = useCallback((row: ContactRequestRow) => {
+    setForm({
+      id: row.id,
+      name: row.name,
+      email: row.email,
+      phone: row.phone ?? "",
+      subject: row.subject,
+      content: row.content,
+      status: row.status,
+      priority: row.priority,
+      isRead: row.isRead,
+      assignedToId: row.assignedToId ?? UNASSIGNED_VALUE,
+    });
+    setDetailOpen(true);
+  }, []);
+
+  const resetDialog = useCallback(() => {
+    setForm(EMPTY_FORM);
+    setDetailOpen(false);
+  }, []);
+
+  const handleSave = async (): Promise<void> => {
+    if (!form.id) return;
+    if (!form.name.trim() || !form.email.trim() || !form.subject.trim() || !form.content.trim()) {
+      toast.error("Vui lòng nhập đủ họ tên, email, chủ đề và nội dung");
+      return;
+    }
+    try {
+      await updateMutation.mutateAsync({
+        ...form,
+        name: form.name.trim(),
+        email: form.email.trim(),
+        phone: form.phone.trim(),
+        subject: form.subject.trim(),
+        content: form.content.trim(),
+      });
+      toast.success("Đã cập nhật liên hệ hỗ trợ");
+      resetDialog();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Không lưu được liên hệ");
+    }
+  };
+
+  const handleDelete = async (): Promise<void> => {
+    if (!deleteTarget) return;
+    try {
+      await deleteMutation.mutateAsync(deleteTarget.id);
+      toast.success(`Đã đưa "${deleteTarget.subject}" vào thùng rác`);
+      setDeleteTarget(null);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Không xóa được liên hệ");
+    }
+  };
+
+  const handleRestore = async (): Promise<void> => {
+    if (!restoreTarget) return;
+    try {
+      await restoreMutation.mutateAsync(restoreTarget.id);
+      toast.success(`Đã khôi phục "${restoreTarget.subject}"`);
+      setRestoreTarget(null);
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Không khôi phục được liên hệ",
+      );
+    }
+  };
+
+  const handlePurge = async (): Promise<void> => {
+    if (!purgeTarget) return;
+    try {
+      await purgeMutation.mutateAsync(purgeTarget.id);
+      toast.success(`Đã xóa vĩnh viễn "${purgeTarget.subject}"`);
+      setPurgeTarget(null);
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Không xóa vĩnh viễn được liên hệ",
+      );
+    }
+  };
+
+  const clearListFilters = useCallback(() => {
+    setGlobalFilter("");
+    setStatusFilter("all");
+    setPage(1);
+  }, []);
+
+  const clearTrashFilters = useCallback(() => {
+    setTrashGlobalFilter("");
+    setTrashPage(1);
+  }, []);
+
+  const columns = useMemo<ColumnDef<ContactRequestRow>[]>(
+    () => [
+      {
+        accessorKey: "name",
+        header: "Người gửi",
+        cell: ({ row }) => (
+          <div className="min-w-0">
+            <div className="flex items-center gap-2 min-w-0">
+              <UserCircle className="size-4 shrink-0 text-primary/80" />
+              <span className="truncate font-medium">{row.original.name}</span>
+            </div>
+            <div className="mt-1 flex items-center gap-2 min-w-0 text-xs text-muted-foreground">
+              <Mail className="size-3.5 shrink-0" />
+              <span className="truncate">{row.original.email}</span>
+            </div>
+          </div>
+        ),
+      },
+      {
+        accessorKey: "phone",
+        header: "Liên hệ",
+        cell: ({ row }) =>
+          row.original.phone ? (
+            <span className="flex items-center gap-2 font-mono text-xs">
+              <Phone className="size-3.5 shrink-0 text-muted-foreground" />
+              {row.original.phone}
+            </span>
+          ) : (
+            <span className="text-xs text-muted-foreground">—</span>
+          ),
+      },
+      {
+        accessorKey: "subject",
+        header: "Chủ đề",
+        cell: ({ row }) => (
+          <div className="min-w-0">
+            <p className="truncate font-medium">{row.original.subject}</p>
+            <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
+              {row.original.content}
+            </p>
+          </div>
+        ),
+      },
+      {
+        accessorKey: "status",
+        header: "Trạng thái",
+        cell: ({ row }) => (
+          <Badge variant="outline" className={statusBadgeClass(row.original.status)}>
+            {statusLabel(row.original.status)}
+          </Badge>
+        ),
+      },
+      {
+        accessorKey: "priority",
+        header: "Ưu tiên",
+        cell: ({ row }) => (
+          <Badge
+            variant="outline"
+            className={priorityBadgeClass(row.original.priority)}
+          >
+            {priorityLabel(row.original.priority)}
+          </Badge>
+        ),
+      },
+      {
+        id: "assignedToName",
+        accessorFn: (row) => row.assignedToName ?? "",
+        header: "Phụ trách",
+        cell: ({ row }) =>
+          row.original.assignedTo ? (
+            <div className="min-w-0">
+              <p className="truncate text-sm font-medium">
+                {row.original.assignedTo.name?.trim() || row.original.assignedTo.email}
+              </p>
+              <p className="truncate text-xs text-muted-foreground">
+                {row.original.assignedTo.email}
+              </p>
+            </div>
+          ) : (
+            <span className="text-xs text-muted-foreground">Chưa phân công</span>
+          ),
+      },
+      {
+        accessorKey: "createdAt",
+        header: "Gửi lúc",
+        cell: ({ row }) => (
+          <span className="text-xs text-muted-foreground">
+            {formatDateTime(row.original.createdAt)}
+          </span>
+        ),
+      },
+      {
+        id: "isRead",
+        accessorFn: (row) => (row.isRead ? "read" : "unread"),
+        header: "Đọc",
+        cell: ({ row }) =>
+          row.original.isRead ? (
+            <Badge variant="secondary" className="gap-1 rounded-lg">
+              <CheckCircle2 className="size-3.5" />
+              Đã đọc
+            </Badge>
+          ) : (
+            <Badge variant="outline" className="gap-1 rounded-lg text-primary">
+              <CircleDot className="size-3.5" />
+              Chưa đọc
+            </Badge>
+          ),
+      },
+      {
+        id: "actions",
+        header: "Thao tác",
+        enableSorting: false,
+        enableColumnFilter: false,
+        meta: { disableColumnFilter: true },
+        cell: ({ row }) => (
+          <div className="flex flex-wrap justify-end gap-1">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="h-8 gap-1 rounded-lg"
+              onClick={() => openDetail(row.original)}
+            >
+              <Eye className="size-3.5" />
+              {canWrite ? "Xử lý" : "Xem"}
+            </Button>
+            {canDelete ? (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="h-8 gap-1 rounded-lg border-destructive/40 text-destructive hover:bg-destructive/10"
+                onClick={() => setDeleteTarget(row.original)}
+              >
+                <Trash2 className="size-3.5" />
+                Xóa
+              </Button>
+            ) : null}
+          </div>
+        ),
+      },
+    ],
+    [canDelete, canWrite, openDetail],
+  );
+
+  const trashColumns = useMemo<ColumnDef<ContactRequestRow>[]>(
+    () => [
+      {
+        accessorKey: "subject",
+        header: "Liên hệ",
+        cell: ({ row }) => (
+          <div className="min-w-0">
+            <p className="truncate font-medium">{row.original.subject}</p>
+            <p className="mt-1 truncate text-xs text-muted-foreground">
+              {row.original.name} · {row.original.email}
+            </p>
+          </div>
+        ),
+      },
+      {
+        accessorKey: "status",
+        header: "Trạng thái",
+        cell: ({ row }) => (
+          <Badge variant="outline" className={statusBadgeClass(row.original.status)}>
+            {statusLabel(row.original.status)}
+          </Badge>
+        ),
+      },
+      {
+        accessorKey: "deletedAt",
+        header: "Xóa lúc",
+        cell: ({ row }) => (
+          <span className="text-xs text-muted-foreground">
+            {formatDateTime(row.original.deletedAt)}
+          </span>
+        ),
+      },
+      {
+        id: "actions",
+        header: "Thao tác",
+        enableSorting: false,
+        enableColumnFilter: false,
+        meta: { disableColumnFilter: true },
+        cell: ({ row }) => (
+          <div className="flex flex-wrap justify-end gap-1">
+            {canRestore ? (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="h-8 gap-1 rounded-lg"
+                onClick={() => setRestoreTarget(row.original)}
+              >
+                <ArchiveRestore className="size-3.5" />
+                Khôi phục
+              </Button>
+            ) : null}
+            {canDelete ? (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="h-8 gap-1 rounded-lg border-destructive/40 text-destructive hover:bg-destructive/10"
+                onClick={() => setPurgeTarget(row.original)}
+              >
+                <Trash2 className="size-3.5" />
+                Xóa hẳn
+              </Button>
+            ) : null}
+          </div>
+        ),
+      },
+    ],
+    [canDelete, canRestore],
+  );
+
+  const listPaginationFooter = (
+    <AdminTablePaginationFooter
+      page={page}
+      pageSize={pageSize}
+      total={listTotal}
+      isLoading={listQuery.isLoading}
+      onPageChange={setPage}
+      onPageSizeChange={setPageSize}
+      emptySummary="Không có liên hệ hỗ trợ"
+      itemLabel="liên hệ"
+    />
+  );
+
+  const trashPaginationFooter = (
+    <AdminTablePaginationFooter
+      page={trashPage}
+      pageSize={trashPageSize}
+      total={trashTotal}
+      isLoading={trashQuery.isLoading}
+      onPageChange={setTrashPage}
+      onPageSizeChange={setTrashPageSize}
+      emptySummary="Thùng rác trống"
+      itemLabel="liên hệ"
+    />
+  );
+
+  if (!session) {
+    return null;
+  }
+
+  if (!canRead) {
+    return (
+      <div className={ADMIN_PAGE_FORM_COLUMN_CLASS}>
+        <h1 className={ADMIN_PAGE_TITLE_PRIMARY_CLASS}>
+          <Headset className={ADMIN_PAGE_TITLE_ICON_SM_CLASS} aria-hidden />
+          Liên hệ hỗ trợ
+        </h1>
+        <Card className="border-destructive/30 bg-destructive/5">
+          <CardHeader className="flex flex-row items-start gap-3 space-y-0">
+            <AlertCircle className="mt-0.5 size-5 shrink-0 text-destructive" />
+            <div>
+              <CardTitle className="text-base">Không có quyền truy cập</CardTitle>
+              <CardDescription className="mt-1">
+                Cần quyền{" "}
+                <span className="font-mono text-xs">
+                  contact_requests:view
+                </span>{" "}
+                hoặc quyền quản lý tương đương.
+              </CardDescription>
+            </div>
+          </CardHeader>
+        </Card>
+      </div>
+    );
+  }
+
+  return (
+    <PageSection max="full" className="mx-auto min-w-0 space-y-6">
+      <div>
+        <h1 className={ADMIN_PAGE_TITLE_PRIMARY_CLASS}>
+          <Headset className={ADMIN_PAGE_TITLE_ICON_CLASS} aria-hidden />
+          Liên hệ hỗ trợ
+        </h1>
+        <p className={ADMIN_PAGE_SUBTITLE_CLASS}>
+          Quản lý các yêu cầu liên hệ hỗ trợ từ hệ thống, theo dõi trạng thái xử lý,
+          mức độ ưu tiên và người phụ trách.
+        </p>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <StatCard
+          label="Liên hệ hiện tại"
+          value={String(listTotal)}
+          hint="Tổng số bản ghi theo bộ lọc active hiện tại"
+          icon={Headset}
+        />
+        <StatCard
+          label="Chưa đọc"
+          value={String(unreadCount)}
+          hint="Cần phản hồi hoặc rà soát sớm"
+          icon={Mail}
+        />
+        <StatCard
+          label="Khẩn cấp"
+          value={String(urgentCount)}
+          hint="Ưu tiên mức URGENT trong trang hiện tại"
+          icon={AlertCircle}
+        />
+        <StatCard
+          label="Đã phân công"
+          value={String(assignedCount)}
+          hint="Đã có người phụ trách xử lý"
+          icon={UserRoundCog}
+        />
+      </div>
+
+      <Tabs
+        value={mainTab}
+        onValueChange={(value) => {
+          if (value === "list" || value === "trash") setMainTab(value);
+        }}
+        className="space-y-4"
+      >
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <TabsList className="h-auto min-h-9 flex-wrap gap-1 rounded-lg p-1">
+            <TabsTrigger value="list" className="gap-2 rounded-lg">
+              <ShieldCheck className="size-4" />
+              Đang xử lý
+            </TabsTrigger>
+            <TabsTrigger value="trash" className="gap-2 rounded-lg">
+              <ArchiveRestore className="size-4" />
+              Thùng rác
+              {trashTotal > 0 ? (
+                <Badge variant="secondary" className="px-1.5 py-0 text-[10px]">
+                  {trashTotal}
+                </Badge>
+              ) : null}
+            </TabsTrigger>
+          </TabsList>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              className="h-11 gap-2 rounded-lg"
+              onClick={() =>
+                void (mainTab === "list" ? listQuery.refetch() : trashQuery.refetch())
+              }
+            >
+              <RefreshCw
+                className={`size-4 ${
+                  (mainTab === "list" ? listQuery.isFetching : trashQuery.isFetching)
+                    ? "animate-spin"
+                    : ""
+                }`}
+              />
+              Làm mới
+            </Button>
+          </div>
+        </div>
+
+        <TabsContent value="list" className="mt-0 space-y-4">
+          <p className="flex items-start gap-2 text-sm text-muted-foreground">
+            <AlertCircle className="mt-0.5 size-4 shrink-0 text-primary/80" />
+            <span>
+              Tìm kiếm đang gọi API theo phân trang. Mở từng dòng để cập nhật trạng
+              thái, ưu tiên, cờ đã đọc và người phụ trách theo đúng contract
+              `contact_requests`.
+            </span>
+          </p>
+
+          {listQuery.isError ? (
+            <div className="rounded-lg border border-destructive/20 bg-destructive/5 py-12 text-center">
+              <AlertCircle className="mx-auto mb-2 size-10 text-destructive" />
+              <p className="text-lg font-bold text-destructive">
+                Không tải được danh sách liên hệ hỗ trợ
+              </p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {listQuery.error instanceof Error
+                  ? listQuery.error.message
+                  : "Lỗi không xác định"}
+              </p>
+            </div>
+          ) : (
+            <AdminDataTable<ContactRequestRow>
+              data={listItems}
+              columns={columns}
+              isLoading={listQuery.isLoading}
+              emptyLabel="Không có liên hệ hỗ trợ khớp bộ lọc."
+              manualFiltering
+              globalFilter={globalFilter}
+              onGlobalFilterChange={setGlobalFilter}
+              globalFilterPlaceholder="Tìm theo người gửi, email, SĐT, chủ đề..."
+              filterToolbarExtra={
+                <div className="flex flex-wrap items-end gap-2">
+                  <div className="flex flex-col gap-1.5">
+                    <span className="text-xs font-semibold text-muted-foreground">
+                      Trạng thái
+                    </span>
+                    <Select
+                      value={statusFilter}
+                      onValueChange={(value) =>
+                        setStatusFilter((value as "all" | ContactStatus) ?? "all")
+                      }
+                    >
+                      <SelectTrigger className="h-9 min-w-[12rem] rounded-lg">
+                        <SelectValue placeholder="Trạng thái" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Tất cả active</SelectItem>
+                        {STATUS_OPTIONS.map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="h-9 gap-1.5 rounded-lg"
+                    onClick={clearListFilters}
+                  >
+                    <X className="size-4" />
+                    Xóa bộ lọc
+                  </Button>
+                </div>
+              }
+              csvExport={{ fileName: "lien-he-ho-tro.csv" }}
+              footer={listPaginationFooter}
+            />
+          )}
+        </TabsContent>
+
+        <TabsContent value="trash" className="mt-0 space-y-4">
+          {trashQuery.isError ? (
+            <div className="rounded-lg border border-destructive/20 bg-destructive/5 py-12 text-center">
+              <AlertCircle className="mx-auto mb-2 size-10 text-destructive" />
+              <p className="text-lg font-bold text-destructive">
+                Không tải được thùng rác liên hệ hỗ trợ
+              </p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {trashQuery.error instanceof Error
+                  ? trashQuery.error.message
+                  : "Lỗi không xác định"}
+              </p>
+            </div>
+          ) : (
+            <AdminDataTable<ContactRequestRow>
+              data={trashItems}
+              columns={trashColumns}
+              isLoading={trashQuery.isLoading}
+              emptyLabel="Thùng rác trống hoặc không khớp tìm kiếm."
+              manualFiltering
+              globalFilter={trashGlobalFilter}
+              onGlobalFilterChange={setTrashGlobalFilter}
+              globalFilterPlaceholder="Tìm trong thùng rác..."
+              filterToolbarExtra={
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="h-9 gap-1.5 rounded-lg"
+                  onClick={clearTrashFilters}
+                >
+                  <X className="size-4" />
+                  Xóa bộ lọc
+                </Button>
+              }
+              csvExport={{ fileName: "lien-he-ho-tro-thung-rac.csv" }}
+              footer={trashPaginationFooter}
+            />
+          )}
+        </TabsContent>
+      </Tabs>
+
+      <Dialog
+        open={detailOpen}
+        onOpenChange={(open) => {
+          if (!open) resetDialog();
+        }}
+      >
+        <DialogContent className={ADMIN_DIALOG_CONTENT_LG_CLASS}>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-2xl font-extrabold">
+              <Headset className="size-7 shrink-0 text-primary" />
+              Chi tiết liên hệ hỗ trợ
+            </DialogTitle>
+            <DialogDescription>
+              Rà soát thông tin người gửi và cập nhật quy trình xử lý theo bản ghi
+              `contact_requests`.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="grid gap-4 py-2 md:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="cr-name">Người gửi</Label>
+              <Input
+                id="cr-name"
+                value={form.name}
+                disabled={!canWrite || updateMutation.isPending}
+                onChange={(event) =>
+                  setForm((current) => ({ ...current, name: event.target.value }))
+                }
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="cr-email">Email</Label>
+              <Input
+                id="cr-email"
+                type="email"
+                value={form.email}
+                disabled={!canWrite || updateMutation.isPending}
+                onChange={(event) =>
+                  setForm((current) => ({ ...current, email: event.target.value }))
+                }
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="cr-phone">Số điện thoại</Label>
+              <Input
+                id="cr-phone"
+                value={form.phone}
+                disabled={!canWrite || updateMutation.isPending}
+                onChange={(event) =>
+                  setForm((current) => ({ ...current, phone: event.target.value }))
+                }
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Người phụ trách</Label>
+              {canAssign && canLoadAssignees ? (
+                <Select
+                  value={form.assignedToId}
+                  onValueChange={(value) =>
+                    setForm((current) => ({
+                      ...current,
+                      assignedToId: value ?? UNASSIGNED_VALUE,
+                    }))
+                  }
+                  disabled={updateMutation.isPending || assigneesQuery.isLoading}
+                >
+                  <SelectTrigger className="w-full rounded-lg">
+                    <SelectValue placeholder="Chọn người phụ trách" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={UNASSIGNED_VALUE}>Chưa phân công</SelectItem>
+                    {assigneeOptions.map((option) => (
+                      <SelectItem key={option.id} value={option.id}>
+                        {option.name?.trim() || option.email}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              ) : (
+                <Input
+                  value={
+                    assigneeOptions.find((option) => option.id === form.assignedToId)
+                      ?.name ||
+                    assigneeOptions.find((option) => option.id === form.assignedToId)
+                      ?.email ||
+                    (form.assignedToId === UNASSIGNED_VALUE ? "Chưa phân công" : "")
+                  }
+                  disabled
+                />
+              )}
+            </div>
+            <div className="space-y-2">
+              <Label>Trạng thái</Label>
+              <Select
+                value={form.status}
+                onValueChange={(value) =>
+                  setForm((current) => ({
+                    ...current,
+                    status: value as ContactStatus,
+                  }))
+                }
+                disabled={!canWrite || updateMutation.isPending}
+              >
+                <SelectTrigger className="w-full rounded-lg">
+                  <SelectValue placeholder="Chọn trạng thái" />
+                </SelectTrigger>
+                <SelectContent>
+                  {STATUS_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label>Ưu tiên</Label>
+              <Select
+                value={form.priority}
+                onValueChange={(value) =>
+                  setForm((current) => ({
+                    ...current,
+                    priority: value as ContactPriority,
+                  }))
+                }
+                disabled={!canWrite || updateMutation.isPending}
+              >
+                <SelectTrigger className="w-full rounded-lg">
+                  <SelectValue placeholder="Chọn mức ưu tiên" />
+                </SelectTrigger>
+                <SelectContent>
+                  {PRIORITY_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2 md:col-span-2">
+              <Label htmlFor="cr-subject">Chủ đề</Label>
+              <Input
+                id="cr-subject"
+                value={form.subject}
+                disabled={!canWrite || updateMutation.isPending}
+                onChange={(event) =>
+                  setForm((current) => ({
+                    ...current,
+                    subject: event.target.value,
+                  }))
+                }
+              />
+            </div>
+            <div className="space-y-2 md:col-span-2">
+              <Label htmlFor="cr-content">Nội dung</Label>
+              <Textarea
+                id="cr-content"
+                rows={7}
+                value={form.content}
+                disabled={!canWrite || updateMutation.isPending}
+                onChange={(event) =>
+                  setForm((current) => ({
+                    ...current,
+                    content: event.target.value,
+                  }))
+                }
+              />
+            </div>
+            <div className="flex items-center justify-between gap-3 rounded-lg border border-border px-4 py-3 md:col-span-2">
+              <div className="min-w-0">
+                <p className="text-sm font-semibold">Đánh dấu đã đọc</p>
+                <p className="text-xs text-muted-foreground">
+                  Bật khi yêu cầu đã được tiếp nhận và mở xem.
+                </p>
+              </div>
+              <Switch
+                checked={form.isRead}
+                disabled={!canWrite || updateMutation.isPending}
+                onCheckedChange={(checked) =>
+                  setForm((current) => ({ ...current, isRead: checked }))
+                }
+              />
+            </div>
+          </div>
+
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button
+              type="button"
+              variant="outline"
+              className="gap-2 rounded-lg"
+              onClick={resetDialog}
+            >
+              <X className="size-4" />
+              Đóng
+            </Button>
+            {canWrite ? (
+              <Button
+                type="button"
+                className="gap-2 rounded-lg font-bold"
+                onClick={() => void handleSave()}
+                disabled={updateMutation.isPending}
+              >
+                {updateMutation.isPending ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : (
+                  <Save className="size-4" />
+                )}
+                Lưu thay đổi
+              </Button>
+            ) : null}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <AlertDialog
+        open={deleteTarget != null}
+        onOpenChange={(open) => {
+          if (!open) setDeleteTarget(null);
+        }}
+      >
+        <AlertDialogContent className={ADMIN_ALERT_DIALOG_CONTENT_CLASS}>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2 text-left">
+              <Archive className="size-5 shrink-0 text-destructive" />
+              Đưa liên hệ vào thùng rác?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {deleteTarget
+                ? `"${deleteTarget.subject}" sẽ bị xóa tạm. Có thể khôi phục từ tab Thùng rác.`
+                : null}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="gap-2 sm:gap-0">
+            <AlertDialogCancel className="gap-2 rounded-lg">
+              <X className="size-4" />
+              Hủy
+            </AlertDialogCancel>
+            <AlertDialogAction
+              className="gap-2 rounded-lg bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={(event) => {
+                event.preventDefault();
+                void handleDelete();
+              }}
+              disabled={deleteMutation.isPending}
+            >
+              {deleteMutation.isPending ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <>
+                  <Archive className="size-4" />
+                  Xóa tạm
+                </>
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog
+        open={restoreTarget != null}
+        onOpenChange={(open) => {
+          if (!open) setRestoreTarget(null);
+        }}
+      >
+        <AlertDialogContent className={ADMIN_ALERT_DIALOG_CONTENT_CLASS}>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2 text-left">
+              <ArchiveRestore className="size-5 shrink-0 text-primary" />
+              Khôi phục liên hệ?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {restoreTarget
+                ? `Khôi phục "${restoreTarget.subject}" về danh sách đang xử lý.`
+                : null}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="gap-2 sm:gap-0">
+            <AlertDialogCancel className="gap-2 rounded-lg">
+              <X className="size-4" />
+              Hủy
+            </AlertDialogCancel>
+            <AlertDialogAction
+              className="gap-2 rounded-lg"
+              onClick={(event) => {
+                event.preventDefault();
+                void handleRestore();
+              }}
+              disabled={restoreMutation.isPending}
+            >
+              {restoreMutation.isPending ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <>
+                  <ArchiveRestore className="size-4" />
+                  Khôi phục
+                </>
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog
+        open={purgeTarget != null}
+        onOpenChange={(open) => {
+          if (!open) setPurgeTarget(null);
+        }}
+      >
+        <AlertDialogContent className={ADMIN_ALERT_DIALOG_CONTENT_CLASS}>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2 text-left">
+              <Trash2 className="size-5 shrink-0 text-destructive" />
+              Xóa vĩnh viễn liên hệ?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {purgeTarget
+                ? `"${purgeTarget.subject}" sẽ bị xóa khỏi cơ sở dữ liệu và không thể hoàn tác.`
+                : null}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="gap-2 sm:gap-0">
+            <AlertDialogCancel className="gap-2 rounded-lg">
+              <X className="size-4" />
+              Hủy
+            </AlertDialogCancel>
+            <AlertDialogAction
+              className="gap-2 rounded-lg bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={(event) => {
+                event.preventDefault();
+                void handlePurge();
+              }}
+              disabled={purgeMutation.isPending}
+            >
+              {purgeMutation.isPending ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <>
+                  <Trash2 className="size-4" />
+                  Xóa vĩnh viễn
+                </>
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </PageSection>
+  );
+}

@@ -1,0 +1,260 @@
+/**
+ * Editor Theme Mixins
+ */
+
+@use "variables" as *;
+
+@mixin focus-ring {
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 $editor-outline-width var(--ring), 0 0 0 calc($editor-outline-width * 2) $editor-bg-color;
+  }
+}
+
+@mixin text-sm {
+  font-size: $editor-font-size-sm;
+  line-height: $editor-line-height-snug;
+}
+
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+}
+
+@mixin flex-center-between {
+  @include flex-center;
+  justify-content: space-between;
+}
+
+@mixin flex-row {
+  display: flex !important;
+  flex-direction: row !important;
+}
+
+@mixin flex-col {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+@mixin flex-center-justify {
+  @include flex-center;
+  justify-content: center;
+}
+
+@mixin backdrop-blur($blur: 8px, $bg: rgba(255, 255, 255, 0.8)) {
+  background-color: $bg;
+  @supports (backdrop-filter: blur($blur)) {
+    backdrop-filter: blur($blur);
+  }
+}
+
+@mixin backdrop-blur-dark($blur: 8px, $bg: rgba(15, 15, 15, 0.8)) {
+  .dark & {
+    @supports (backdrop-filter: blur($blur)) {
+      background-color: $bg;
+      backdrop-filter: blur($blur);
+    }
+  }
+}
+
+@mixin control-size($size) {
+  width: $size;
+  height: $size;
+}
+
+@mixin icon-size($size) {
+  @include control-size($size);
+  flex-shrink: 0;
+}
+
+@mixin shadow-sm {
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+}
+
+@mixin shadow-md {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+}
+
+@mixin shadow-lg {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+}
+
+@mixin shadow-xl {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+}
+
+@mixin absolute-full {
+  position: absolute;
+  inset: 0;
+}
+
+@mixin truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@mixin overflow-hidden {
+  overflow: hidden;
+}
+
+@mixin scrollbar-hide {
+  &::-webkit-scrollbar { display: none; }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+@mixin rounded-sm {
+  border-radius: calc($editor-border-radius - 2px);
+}
+
+@mixin rounded-md {
+  border-radius: $editor-border-radius;
+}
+
+@mixin rounded-r-md {
+  border-top-right-radius: $editor-border-radius;
+  border-bottom-right-radius: $editor-border-radius;
+}
+
+@mixin rounded-l-md {
+  border-top-left-radius: $editor-border-radius;
+  border-bottom-left-radius: $editor-border-radius;
+}
+
+@mixin rounded-t-md {
+  border-top-left-radius: $editor-border-radius;
+  border-top-right-radius: $editor-border-radius;
+}
+
+@mixin rounded-b-md {
+  border-bottom-left-radius: $editor-border-radius;
+  border-bottom-right-radius: $editor-border-radius;
+}
+
+@mixin rounded-lg {
+  border-radius: calc($editor-border-radius + 4px);
+}
+
+@mixin rounded-full {
+  border-radius: 9999px;
+}
+
+// --- Unified Hover Styles ---
+@mixin editor-hover-base {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+}
+
+@mixin editor-active-base {
+  transform: translateY(0) scale(0.98);
+  box-shadow: none;
+  filter: brightness(0.95);
+}
+
+@mixin editor-button-interactive {
+  &:hover:not(:disabled):not([data-state="on"]):not([data-state="active"]):not([data-state="open"]) {
+    @include editor-hover-base;
+  }
+  
+  &:active:not(:disabled) {
+    @include editor-active-base;
+  }
+}
+
+@mixin editor-input-interactive {
+  &:hover:not(:disabled):not([readonly]) {
+    background-color: color-mix(in srgb, var(--background), black 3%);
+    border-color: $editor-accent-color;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+  }
+
+  &:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px var(--ring);
+    outline: none;
+  }
+}
+
+@mixin floating-toolbar-base {
+  position: absolute;
+  top: 0;
+  left: 0;
+  @include flex-center;
+  gap: $editor-gap-1;
+  @include rounded-md;
+  border: $editor-border-width solid var(--border);
+  padding: $editor-gap-1;
+  opacity: 0;
+  @include shadow-lg;
+  transition: opacity $editor-transition-normal, transform $editor-transition-normal;
+  will-change: transform;
+  z-index: $editor-z-index-floating;
+
+  &--visible {
+    opacity: 1;
+    animation: editor-floating-zoom-in $editor-transition-normal cubic-bezier(0.16, 1, 0.3, 1);
+  }
+}
+
+// Interactive mixin for dropdown/menu items
+@mixin editor-dropdown-item-interactive {
+  &:hover, &:focus, &--selected, &[aria-selected="true"], &[data-selected="true"], &[data-state="active"], &[data-state="on"] {
+    background-color: $editor-accent-color;
+    color: $editor-accent-foreground-color;
+    border-color: $editor-border-color; // Use border color for visibility
+  }
+  
+  &:active {
+    @include editor-active-base;
+  }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .5; }
+}
+
+@keyframes editor-fade-in {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes editor-dialog-zoom-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -48%) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes editor-popover-zoom-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes editor-floating-zoom-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}

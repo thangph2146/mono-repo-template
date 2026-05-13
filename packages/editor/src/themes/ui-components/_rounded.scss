@@ -1,0 +1,19 @@
+@use "../variables" as *;
+@use "../mixins" as *;
+
+/* --- ROUNDED --- */
+.editor-rounded-sm {
+  @include rounded-sm;
+}
+
+.editor-rounded-md {
+  @include rounded-md;
+}
+
+.editor-rounded-lg {
+  @include rounded-lg;
+}
+
+.editor-rounded-full {
+  @include rounded-full;
+}

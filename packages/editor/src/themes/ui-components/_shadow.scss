@@ -1,0 +1,15 @@
+@use "../variables" as *;
+@use "../mixins" as *;
+
+/* --- SHADOW --- */
+.editor-shadow-sm {
+  @include shadow-sm;
+}
+
+.editor-shadow-md {
+  @include shadow-md;
+}
+
+.editor-shadow-lg {
+  @include shadow-lg;
+}

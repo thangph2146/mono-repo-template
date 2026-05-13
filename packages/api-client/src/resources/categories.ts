@@ -1,82 +1,143 @@
-import type { ApiClient } from '../client';
+import type { ApiClient } from "../client";
 import type {
   Category,
   CategoryUsage,
   CreateCategoryInput,
   UpdateCategoryInput,
-} from '../types';
+} from "../types";
+import { deleteData, getData, normalizePagedResult, postData, putData } from "./_shared";
 
-export type CategoryListOptions = {
-  activeOnly?: boolean;
-  q?: string;
-  page?: number;
-  limit?: number;
+type ApiCategoryRow = {
+  id: string | number;
+  name: string;
+  slug: string;
+  parentId?: string | null;
+  parentName?: string | null;
+  description?: string | null;
+  _count?: { children?: number };
+  postCount?: number;
+  createdAt?: string;
+  updatedAt?: string;
+  deletedAt?: string | null;
 };
+
+function mapCategory(row: ApiCategoryRow): Category {
+  return {
+    id: String(row.id),
+    name: row.name,
+    slug: row.slug,
+    description: row.description ?? null,
+    icon: null,
+    sortOrder: 0,
+    isActive: row.deletedAt == null,
+    parentId: row.parentId ?? null,
+    parentName: row.parentName ?? null,
+    _count: { children: row._count?.children ?? 0 },
+    postCount: row.postCount ?? 0,
+    createdAt: row.createdAt ?? new Date(0).toISOString(),
+    updatedAt: row.updatedAt ?? new Date(0).toISOString(),
+    deletedAt: row.deletedAt ?? null,
+  };
+}
 
 export class CategoriesApi {
   constructor(private readonly http: ApiClient) {}
 
-  list(
-    options?: CategoryListOptions,
-  ): Promise<Category[] | { items: Category[]; total: number }> {
-    const p = new URLSearchParams();
-    if (options?.activeOnly) p.set('active', 'true');
-    if (options?.q?.trim()) p.set('q', options.q.trim());
-    if (options?.page != null) p.set('page', String(options.page));
-    if (options?.limit != null) p.set('limit', String(options.limit));
-    const qs = p.toString();
-    return this.http.get<Category[] | { items: Category[]; total: number }>(
-      `/categories${qs ? `?${qs}` : ''}`,
-    );
+  async list(params?: {
+    q?: string;
+    page?: number;
+    limit?: number;
+    activeOnly?: boolean;
+  }): Promise<Category[] | { items: Category[]; total: number }> {
+    const payload = await this.http.get<unknown>("/admin/categories", {
+      query: {
+        page: params?.page ?? 1,
+        limit: params?.limit ?? (params?.activeOnly ? 500 : 20),
+        search: params?.q,
+        status: params?.activeOnly ? "active" : "all",
+      },
+    });
+    const normalized = normalizePagedResult<ApiCategoryRow>(payload);
+    const items = normalized.items.map(mapCategory);
+    if (params?.page != null || params?.limit != null) {
+      return { items, total: normalized.total };
+    }
+    return items;
   }
 
-  listTrashed(options?: {
+  async listTrashed(params?: {
     page?: number;
     limit?: number;
     q?: string;
   }): Promise<{ items: Category[]; total: number }> {
-    const p = new URLSearchParams();
-    if (options?.q?.trim()) p.set('q', options.q.trim());
-    if (options?.page != null) p.set('page', String(options.page));
-    if (options?.limit != null) p.set('limit', String(options.limit));
-    const qs = p.toString();
-    return this.http.get<{ items: Category[]; total: number }>(
-      `/categories/trashed${qs ? `?${qs}` : ''}`,
+    const payload = await this.http.get<unknown>("/admin/categories", {
+      query: {
+        page: params?.page ?? 1,
+        limit: params?.limit ?? 20,
+        search: params?.q,
+        status: "deleted",
+      },
+    });
+    const normalized = normalizePagedResult<ApiCategoryRow>(payload);
+    return { items: normalized.items.map(mapCategory), total: normalized.total };
+  }
+
+  async usage(): Promise<CategoryUsage[]> {
+    try {
+      return await getData<CategoryUsage[]>(this.http, "/admin/categories/usage");
+    } catch {
+      return [];
+    }
+  }
+
+  async get(id: string | number): Promise<Category> {
+    const row = await getData<ApiCategoryRow>(this.http, `/admin/categories/${id}`);
+    return mapCategory(row);
+  }
+
+  async bySlug(slug: string): Promise<Category> {
+    const rows = await this.list({ activeOnly: true });
+    const items = Array.isArray(rows) ? rows : rows.items;
+    const found = items.find((row) => row.slug === slug);
+    if (!found) {
+      throw new Error(`Không tìm thấy danh mục slug=${slug}`);
+    }
+    return found;
+  }
+
+  async create(input: CreateCategoryInput): Promise<Category> {
+    const row = await postData<ApiCategoryRow>(this.http, "/admin/categories", {
+      name: input.name,
+      slug: input.slug,
+      description: input.description,
+      parentId: input.parentId,
+    });
+    return mapCategory(row);
+  }
+
+  async update(id: string | number, input: UpdateCategoryInput): Promise<Category> {
+    const row = await putData<ApiCategoryRow>(this.http, `/admin/categories/${id}`, {
+      name: input.name,
+      slug: input.slug,
+      description: input.description,
+      parentId: input.parentId,
+    });
+    return mapCategory(row);
+  }
+
+  async remove(id: string | number): Promise<void> {
+    await deleteData<unknown>(this.http, `/admin/categories/${id}`);
+  }
+
+  async restore(id: string | number): Promise<Category> {
+    const row = await postData<ApiCategoryRow>(
+      this.http,
+      `/admin/categories/${id}/restore`,
     );
+    return mapCategory(row);
   }
 
-  usage(): Promise<CategoryUsage[]> {
-    return this.http.get<CategoryUsage[]>('/categories/usage');
-  }
-
-  bySlug(slug: string): Promise<Category> {
-    return this.http.get<Category>(
-      `/categories/slug/${encodeURIComponent(slug)}`,
-    );
-  }
-
-  get(id: number): Promise<Category> {
-    return this.http.get<Category>(`/categories/${id}`);
-  }
-
-  create(input: CreateCategoryInput): Promise<Category> {
-    return this.http.post<Category>('/categories', input);
-  }
-
-  update(id: number, input: UpdateCategoryInput): Promise<Category> {
-    return this.http.put<Category>(`/categories/${id}`, input);
-  }
-
-  restore(id: number): Promise<Category> {
-    return this.http.post<Category>(`/categories/${id}/restore`, {});
-  }
-
-  remove(id: number): Promise<void> {
-    return this.http.delete<void>(`/categories/${id}`);
-  }
-
-  /** Xóa vĩnh viễn (chỉ bản ghi đang trong thùng rác). */
-  purgeTrashed(id: number): Promise<void> {
-    return this.http.delete<void>(`/categories/${id}/permanent`);
+  async purgeTrashed(id: string | number): Promise<void> {
+    await deleteData<unknown>(this.http, `/admin/categories/${id}/hard-delete`);
   }
 }

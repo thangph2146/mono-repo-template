@@ -1,0 +1,14 @@
+@use "../variables" as *;
+@use "../mixins" as *;
+
+.editor-checkbox {
+  @include control-size($editor-icon-size-sm);
+  @include rounded-sm;
+  border: $editor-border-width solid var(--input);
+  cursor: pointer;
+
+  &:checked {
+    background-color: var(--primary);
+    border-color: var(--primary);
+  }
+}

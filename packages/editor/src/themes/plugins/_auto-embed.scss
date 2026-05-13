@@ -1,0 +1,11 @@
+@use "../variables" as *;
+@use "../mixins" as *;
+
+.editor-auto-embed-menu {
+  width: $editor-mentions-width;
+  padding: 0;
+}
+
+.editor-auto-embed-wrapper {
+  transform: translateY(-100%);
+}

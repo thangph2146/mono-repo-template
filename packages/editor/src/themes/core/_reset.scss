@@ -1,0 +1,102 @@
+@use "../variables" as *;
+@use "../mixins" as *;
+
+// Editor Root Container
+.editor-root-container {
+  border-radius: $editor-border-radius;
+  transition: all $editor-transition-normal;
+
+  &.editor-root-container--shadow:focus-within {
+    box-shadow: 0 0 0 $editor-border-width $editor-border-color, 0 0 0 $editor-border-width + $editor-outline-width var(--ring, rgba(59, 130, 246, 0.5));
+  }
+}
+
+// Global resets
+*, *::before, *::after {
+  box-sizing: border-box;
+
+  @supports (color: color-mix(in lab, red, red)) {
+    outline-color: color-mix(in oklab, var(--ring) 50%, transparent);
+  }
+}
+
+// Lexical Editor Root
+.lexical-editor-root {
+  font-family: $editor-font-family !important;
+  font-size: $editor-font-size-base;
+  color: $editor-text-color !important;
+  background-color: $editor-bg-color !important;
+  position: relative !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  text-align: left !important;
+  box-sizing: border-box !important;
+
+
+  ul, ol {
+    list-style-position: outside !important;
+    list-style-type: none !important;
+    padding-left: 2rem !important;
+  }
+
+  li {
+    margin: 0;
+    padding: 0;
+  }
+
+  span[data-lexical-text="true"] {
+    display: inline !important;
+    white-space: pre-wrap !important;
+    word-break: break-word !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+}
+
+// Content Editable
+.editor-content-editable {
+  position: relative !important;
+  display: block !important;
+  outline: none !important;
+  
+  &:not(&--readonly):not(&--review) {
+    min-height: $editor-content-min-height !important;
+    padding: $editor-content-padding-y $editor-content-padding-x !important;
+    border-top: $editor-border-width solid var(--border);
+    border-left: $editor-border-width solid var(--border);
+    border-right: $editor-border-width solid var(--border);
+    
+    background-color: var(--background);
+  }
+  
+  &:focus {
+    outline: none !important;
+  }
+  
+  &--readonly,
+  &--review {
+    cursor: default !important;
+    user-select: text !important;
+    min-height: unset !important;
+    padding: 0 !important;
+  }
+}
+
+// Placeholder
+.editor-placeholder {
+  color: var(--muted-foreground) !important;
+  pointer-events: none !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  overflow: hidden !important;
+  padding: $editor-placeholder-padding-y $editor-content-padding-x !important;
+  text-overflow: ellipsis !important;
+  user-select: none !important;
+
+  .editor-content-editable--readonly + &,
+  .editor-content-editable--review + & {
+    display: none !important;
+  }
+}

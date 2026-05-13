@@ -1,29 +1,13 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
 import { Button } from "./button";
 import { useTheme } from "./theme-provider";
 import { Sun, Moon } from "lucide-react";
-
-function getServerSnapshot() {
-  return false;
-}
-
-function getSnapshot() {
-  return true;
-}
-
-function subscribe() {
-  return () => {};
-}
+import { useHydrated } from "../hooks/use-hydrated";
 
 export function ThemeToggle() {
   const { resolved, setTheme } = useTheme();
-  const mounted = useSyncExternalStore(
-    subscribe,
-    getSnapshot,
-    getServerSnapshot,
-  );
+  const hydrated = useHydrated();
 
   return (
     <Button
@@ -32,7 +16,7 @@ export function ThemeToggle() {
       size="icon"
       aria-label="Toggle theme"
     >
-      {mounted ? (
+      {hydrated ? (
         resolved === "dark" ? (
           <Sun className="size-4" />
         ) : (

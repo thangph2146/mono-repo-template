@@ -1,0 +1,15 @@
+@use "../variables" as *;
+@use "../mixins" as *;
+
+/* --- FORM LAYOUT --- */
+.editor-form-grid {
+  display: grid;
+  gap: $editor-gap-4;
+  padding-top: $editor-gap-4;
+  padding-bottom: $editor-gap-4;
+}
+
+.editor-form-item {
+  display: grid;
+  gap: $editor-gap-2;
+}

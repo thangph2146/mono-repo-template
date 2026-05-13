@@ -13,7 +13,7 @@ export function isStoreAuthPath(pathname: string | null | undefined): boolean {
 /** Tránh open redirect: chỉ cho path tương đối nội bộ. */
 export function safeRelativeNext(
   raw: string | null | undefined,
-  fallback = "/orders",
+  fallback = "/",
 ): string {
   if (raw && raw.startsWith("/") && !raw.startsWith("//")) return raw;
   return fallback;

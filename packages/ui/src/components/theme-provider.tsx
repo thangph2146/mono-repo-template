@@ -5,9 +5,10 @@ import {
   useContext,
   useEffect,
   useMemo,
-  useState,
+  useCallback,
   useSyncExternalStore,
 } from "react";
+import { useHydrated } from "../hooks/use-hydrated";
 
 type Theme = "light" | "dark" | "system";
 
@@ -20,6 +21,23 @@ interface ThemeContextValue {
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 const STORAGE_KEY = "storesync-theme";
+const themeStore = {
+  current: "system" as Theme,
+  listeners: new Set<() => void>(),
+  subscribe(fn: () => void) {
+    this.listeners.add(fn);
+    return () => {
+      this.listeners.delete(fn);
+    };
+  },
+  getSnapshot(): Theme {
+    return this.current;
+  },
+  setTheme(nextTheme: Theme) {
+    this.current = nextTheme;
+    this.listeners.forEach((listener) => listener());
+  },
+};
 
 function getSystemTheme() {
   if (typeof window === "undefined") return "light";
@@ -37,15 +55,17 @@ function useSystemTheme(): "light" | "dark" {
       return () => mq.removeEventListener("change", cb);
     },
     getSystemTheme,
-    () => "dark",
+    () => "light",
   ) as "light" | "dark";
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>(() => {
-    if (typeof window === "undefined") return "system";
-    return (localStorage.getItem(STORAGE_KEY) as Theme) || "system";
-  });
+  const hydrated = useHydrated();
+  const theme = useSyncExternalStore<Theme>(
+    (fn) => themeStore.subscribe(fn),
+    () => themeStore.getSnapshot(),
+    () => "system",
+  );
 
   const systemTheme = useSystemTheme();
   const resolved = useMemo<"light" | "dark">(
@@ -54,13 +74,34 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   );
 
   useEffect(() => {
+    if (!hydrated) return;
+
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored === "light" || stored === "dark" || stored === "system") {
+        themeStore.setTheme(stored);
+      }
+    } catch {
+      // ignore
+    }
+  }, [hydrated]);
+
+  useEffect(() => {
+    if (!hydrated) return;
+
     const root = document.documentElement;
     root.classList.remove("light", "dark");
     root.classList.add(resolved);
-    localStorage.setItem(STORAGE_KEY, theme);
-  }, [theme, resolved]);
+    try {
+      localStorage.setItem(STORAGE_KEY, theme);
+    } catch {
+      // ignore
+    }
+  }, [hydrated, theme, resolved]);
 
-  const setTheme = (t: Theme) => setThemeState(t);
+  const setTheme = useCallback((nextTheme: Theme) => {
+    themeStore.setTheme(nextTheme);
+  }, []);
 
   return (
     <ThemeContext.Provider value={{ theme, resolved, setTheme }}>

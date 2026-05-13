@@ -1,0 +1,126 @@
+@use "../variables" as *;
+@use "../mixins" as *;
+
+.lexical-editor-root {
+  // Code Block
+  .editor-code {
+    background: linear-gradient(135deg, var(--muted, #f8f9fa) 0%, rgba(0, 0, 0, 0.01) 100%);
+    color: var(--foreground, #212529);
+    font-family: $editor-font-family-mono;
+    display: block;
+    padding: $editor-code-padding $editor-code-padding $editor-code-padding ($editor-code-padding * 4);
+    line-height: $editor-line-height-base;
+    font-size: $editor-code-font-size;
+    margin: $editor-code-margin 0 !important;
+    overflow-x: auto;
+    border: $editor-border-width solid var(--border);
+    position: relative;
+    border-radius: $editor-border-radius;
+    tab-size: 2;
+    box-shadow: 
+      0 2px 4px rgba(0, 0, 0, 0.05),
+      inset 0 1px 2px rgba(255, 255, 255, 0.5);
+    transition: all $editor-transition-normal;
+
+    &:hover {
+      box-shadow: 
+        0 4px 12px rgba(0, 0, 0, 0.08),
+        inset 0 1px 2px rgba(255, 255, 255, 0.5);
+    }
+
+    &:focus-within {
+      border-color: var(--primary, #3b82f6);
+      box-shadow: 
+        0 4px 12px rgba(59, 130, 246, 0.15),
+        inset 0 1px 2px rgba(255, 255, 255, 0.5);
+    }
+
+    // =============================================
+    // Line Numbers (Gutter)
+    // =============================================
+    &::before {
+      content: attr(data-gutter);
+      position: absolute;
+      background: linear-gradient(
+        to right,
+        var(--muted, #f5f5f5) 0%,
+        rgba(0, 0, 0, 0.02) 100%
+      );
+      left: 0;
+      top: 0;
+      bottom: 0;
+      padding: $editor-code-padding;
+      border-right: $editor-border-width solid var(--border);
+      color: var(--muted-foreground, #6c757d);
+      white-space: pre-wrap;
+      text-align: right;
+      min-width: ($editor-code-padding * 3);
+      font-size: calc($editor-code-font-size - 1px);
+      user-select: none;
+      font-weight: $editor-font-weight-normal;
+      letter-spacing: 0.5px;
+    }
+
+    // =============================================
+    // Syntax Highlighting Support
+    // =============================================
+    // Add visual separation for different code elements
+    code {
+      font-family: $editor-font-family-mono;
+    }
+
+    // Scrollbar styling
+    &::-webkit-scrollbar {
+      height: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: var(--muted-foreground, #ccc);
+      border-radius: 3px;
+      transition: background-color $editor-transition-fast;
+
+      &:hover {
+        background-color: var(--border, #999);
+      }
+    }
+  }
+
+  // =============================================
+  // Inline Code
+  // =============================================
+  .editor-text-code { 
+    background-color: var(--muted, #f5f5f5);
+    color: var(--primary, #3b82f6);
+    padding: $editor-inline-code-padding-y $editor-inline-code-padding-x; 
+    font-family: $editor-font-family-mono;
+    font-size: calc($editor-code-font-size - 1px);
+    border-radius: $editor-border-radius;
+    border: $editor-border-width solid rgba(59, 130, 246, 0.2);
+    font-weight: $editor-font-weight-medium;
+    transition: all $editor-transition-fast;
+
+    &:hover {
+      background-color: rgba(59, 130, 246, 0.08);
+      border-color: rgba(59, 130, 246, 0.4);
+    }
+  }
+
+  // =============================================
+  // Hashtag
+  // =============================================
+  .editor-hashtag {
+    background-color: rgba($editor-primary-color, $editor-hashtag-opacity);
+    color: $editor-primary-color;
+    border-bottom: $editor-border-width solid $editor-primary-color;
+    padding: 0 calc($editor-gap-1 / 2);
+    transition: all $editor-transition-fast;
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+}

@@ -16,9 +16,9 @@ import { REQUEST_ID_HEADER } from './request-id.middleware';
 export class LoggingInterceptor implements NestInterceptor {
   private readonly logger = new Logger('HTTP');
 
-  /** Giới hạn độ dài log body (request). 0 = không cắt. Mặc định 2000. Có thể set env HTTP_LOG_BODY_MAX_LEN. */
   private readonly bodyMaxLen = appConfig.logging.httpLogBodyMaxLen;
   private readonly errorMaxLen = appConfig.logging.httpLogErrorMaxLen;
+  private readonly responseMaxLen = appConfig.logging.httpLogResponseMaxLen;
   private readonly logSuccessBody = appConfig.logging.httpLogSuccessBody;
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
@@ -36,6 +36,9 @@ export class LoggingInterceptor implements NestInterceptor {
       (req.headers[APP_HEADERS.USER_ID.toLowerCase()] as string)?.trim() || '-';
     const contentType = (req.headers['content-type'] as string) || '-';
     const requestId = (req.headers[REQUEST_ID_HEADER] as string) || '-';
+    const controllerName = context.getClass().name || '-';
+    const handlerName = context.getHandler().name || '-';
+    const endpoint = `${controllerName}.${handlerName}`;
     const queryStr = Object.keys(query).length ? JSON.stringify(query) : '-';
     const bodyStr =
       this.bodyMaxLen === 0
@@ -48,6 +51,7 @@ export class LoggingInterceptor implements NestInterceptor {
     this.logger.log(
       `\n┌── REQUEST ${apiTag} ── ${ts} ── req:${requestId}\n` +
         `│  ${method} ${url}\n` +
+        `│  endpoint     ${endpoint}\n` +
         `│  ip           ${ip}\n` +
         `│  ${APP_HEADERS.USER_ID}    ${userId}\n` +
         `│  req-id       ${requestId}\n` +
@@ -66,18 +70,24 @@ export class LoggingInterceptor implements NestInterceptor {
       const statusIcon = status >= 500 ? '✗' : status >= 400 ? '⚠' : '✓';
       const sanitizedResponse = this.sanitizePayload(responseBody);
       const responseSize = this.getResponseSize(sanitizedResponse);
+      const payloadPreview = this.safeStringify(
+        sanitizedResponse,
+        this.responseMaxLen,
+      );
       const bodyLines =
         this.logSuccessBody &&
         sanitizedResponse !== undefined &&
         sanitizedResponse !== null
-          ? ['│  response:', ...this.formatBodyLines(sanitizedResponse)]
+          ? ['│  response:', ...this.formatBodyLines(sanitizedResponse, this.responseMaxLen)]
           : [];
       this.logger.log(
         `\n┌── RESPONSE ${statusIcon} ${status} ${apiTag} ── ${duration}ms ── size:${responseSize} ── req:${requestId}\n` +
           `│  ${method} ${url}\n` +
+          `│  endpoint   ${endpoint}\n` +
           `│  ${APP_HEADERS.USER_ID}   ${userId}\n` +
           `│  req-id     ${requestId}\n` +
           `│  summary    ${summary}\n` +
+          `│  preview    ${payloadPreview}\n` +
           (!this.logSuccessBody
             ? `│  response   [hidden for success logs, set HTTP_LOG_SUCCESS_BODY=true to show]\n`
             : '') +
@@ -97,6 +107,7 @@ export class LoggingInterceptor implements NestInterceptor {
             this.logger.log(
               `\n┌── RESPONSE ✓ ${res.statusCode} ${apiTag} ── ${duration}ms ── req:${requestId}\n` +
                 `│  ${method} ${url}\n` +
+                `│  endpoint  ${endpoint}\n` +
                 `│  ${APP_HEADERS.USER_ID}  ${userId}\n` +
                 `│  req-id    ${requestId}\n` +
                 `└─────────────`,
@@ -126,6 +137,7 @@ export class LoggingInterceptor implements NestInterceptor {
           this.logger.error(
             `\n┌── RESPONSE ✗ ERROR ${apiTag} ── ${duration}ms ── req:${requestId}\n` +
               `│  ${method} ${url}\n` +
+              `│  endpoint  ${endpoint}\n` +
               `│  ${APP_HEADERS.USER_ID}  ${userId}\n` +
               `│  req-id    ${requestId}\n` +
               `│  query     ${queryDebug}\n` +
@@ -291,17 +303,18 @@ export class LoggingInterceptor implements NestInterceptor {
     }
   }
 
-  /** Pretty-print JSON, mỗi dòng có prefix │  ; không giới hạn số dòng hay độ dài dòng. */
-  private formatBodyLines(value: unknown): string[] {
+  private formatBodyLines(value: unknown, maxLen = this.errorMaxLen): string[] {
     if (value === undefined || value === null) return [];
     try {
-      const str =
+      const raw =
         typeof value === 'object' && value !== null
           ? JSON.stringify(value, null, 2)
           : typeof value === 'symbol'
             ? value.toString()
             : // eslint-disable-next-line @typescript-eslint/no-base-to-string -- primitive after object/symbol check
               String(value);
+      const str =
+        maxLen > 0 && raw.length > maxLen ? `${raw.slice(0, maxLen)}...` : raw;
       const lines = str.split('\n');
       return lines.map((line) => `│  ${line}`);
     } catch {

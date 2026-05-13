@@ -1,0 +1,19 @@
+@use "../variables" as *;
+@use "../mixins" as *;
+
+/* --- LABEL --- */
+.editor-label {
+  @include text-sm;
+  font-weight: $editor-font-weight-medium;
+  line-height: 1;
+
+  &--disabled {
+    cursor: not-allowed;
+    opacity: $editor-opacity-muted;
+  }
+
+  &--normal {
+    font-weight: $editor-font-weight-normal;
+    cursor: pointer;
+  }
+}

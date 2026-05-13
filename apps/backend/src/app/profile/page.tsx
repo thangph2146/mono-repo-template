@@ -1,8 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { Card, CardContent, CardHeader, CardTitle } from "@ui/components/card";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@ui/components/card";
 import { Button } from "@ui/components/button";
 import { Input } from "@ui/components/input";
 import { Label } from "@ui/components/label";
@@ -10,6 +17,16 @@ import { Textarea } from "@ui/components/textarea";
 import { Badge } from "@ui/components/badge";
 import Link from "next/link";
 import { KeyRound, Loader2, MapPin, Save, Shield, UserCircle } from "lucide-react";
+import { cn } from "@ui/lib/utils";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@ui/components/table";
+import { ScrollArea } from "@ui/components/scroll-area";
 import { useAuth } from "@/providers/auth-provider";
 import {
   canUserAccess,
@@ -18,6 +35,7 @@ import {
 import { permissionLabelVi } from "@/lib/permission-labels";
 import {
   useChangeStaffPassword,
+  useRbacCatalog,
   useStaffProfile,
   useUpdateStaffProfile,
 } from "@/hooks/queries";
@@ -25,6 +43,83 @@ import { ApiError } from "@/lib/api";
 import { patchAdminSessionProfile } from "@/lib/auth-session";
 import { Container } from "@ui/components/layout";
 import { ADMIN_PAGE_TITLE_PROFILE_CLASS } from "@ui/lib/layout-shell";
+import type { RbacRole } from "@workspace/api-client";
+
+function getRoleCode(role: { code?: string; name?: string }) {
+  return role.code ?? role.name ?? "";
+}
+
+function getRoleLabel(role: { name?: string; displayName?: string }) {
+  return role.displayName ?? role.name ?? "Chưa gán vai trò";
+}
+
+function normalizePermissionCodes(value: unknown): string[] {
+  const visit = (input: unknown): string[] => {
+    if (Array.isArray(input)) {
+      return input.flatMap((item) => visit(item));
+    }
+    if (typeof input !== "string") {
+      return [];
+    }
+
+    const trimmed = input.trim();
+    if (!trimmed) {
+      return [];
+    }
+
+    if (
+      (trimmed.startsWith("[") && trimmed.endsWith("]")) ||
+      (trimmed.startsWith('"') && trimmed.endsWith('"'))
+    ) {
+      try {
+        return visit(JSON.parse(trimmed));
+      } catch {
+        return [trimmed];
+      }
+    }
+
+    return [trimmed];
+  };
+
+  return [...new Set(visit(value))].sort((a, b) => a.localeCompare(b));
+}
+
+function formatDateTime(value?: string | null) {
+  if (!value) return "Chưa có dữ liệu";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return date.toLocaleString("vi-VN");
+}
+
+const PROFILE_CARD_CLASS =
+  "border border-border/70 bg-card/95 shadow-sm backdrop-blur-sm";
+
+const PROFILE_FIELD_CLASS =
+  "h-10 rounded-lg border-border/70 bg-background/70 px-3 shadow-inner";
+
+const PROFILE_TEXTAREA_CLASS =
+  "min-h-28 rounded-lg border-border/70 bg-background/70 px-3 py-2.5 shadow-inner";
+
+const PROFILE_ACTION_BAR_CLASS =
+  "flex justify-end border-t border-border/60 pt-4";
+
+function roleHasPermission(role: RbacRole, permCode: string): boolean {
+  if (role.permissions.includes("*")) return true;
+  return role.permissions.includes(permCode);
+}
+
+function getPermissionUiLabel(code: string): string {
+  const viaDictionary = permissionLabelVi(code);
+  if (viaDictionary !== code) {
+    return viaDictionary;
+  }
+
+  return code
+    .split(/[:._-]+/)
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" / ");
+}
 
 export default function AdminProfilePage() {
   const { user: sessionUser } = useAuth();
@@ -32,6 +127,7 @@ export default function AdminProfilePage() {
     sessionUser != null &&
     (canUserAccess(sessionUser, PERMISSION_CODES.RBAC_READ) ||
       canUserAccess(sessionUser, PERMISSION_CODES.USERS_MANAGE));
+  const rbacCatalog = useRbacCatalog({ enabled: canSeeRbacPage });
   const userId = sessionUser?.id;
   const { data: profile, isLoading, isError, error } = useStaffProfile(userId);
   const updateProfile = useUpdateStaffProfile();
@@ -43,6 +139,45 @@ export default function AdminProfilePage() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const roles = useMemo(
+    () => profile?.roles ?? sessionUser?.roles ?? [],
+    [profile?.roles, sessionUser?.roles],
+  );
+  const email = profile?.email ?? sessionUser?.email ?? "";
+  const permissionCodes = normalizePermissionCodes(sessionUser?.permissions ?? []);
+  const permissionRows = useMemo(() => {
+    const assignedRoleCodes = new Set(
+      roles.map((role) => getRoleCode(role).trim().toLowerCase()).filter(Boolean),
+    );
+    const runtimeAssignedRoles = (rbacCatalog.data?.roles ?? []).filter((role) =>
+      assignedRoleCodes.has(role.code.trim().toLowerCase()),
+    );
+
+    const effectiveCodeSet = new Set(permissionCodes);
+    for (const role of runtimeAssignedRoles) {
+      for (const code of normalizePermissionCodes(role.permissions)) {
+        effectiveCodeSet.add(code);
+      }
+    }
+
+    return [...effectiveCodeSet]
+      .filter(Boolean)
+      .sort((a, b) => a.localeCompare(b))
+      .map((code) => {
+        const grantedBy = runtimeAssignedRoles
+          .filter((role) => roleHasPermission(role, code))
+          .map((role) => ({
+            code: role.code,
+            name: role.name,
+          }));
+
+        return {
+          code,
+          label: getPermissionUiLabel(code),
+          grantedBy,
+        };
+      });
+  }, [permissionCodes, rbacCatalog.data?.roles, roles]);
 
   useEffect(() => {
     if (!profile) return;
@@ -68,7 +203,7 @@ export default function AdminProfilePage() {
         },
       });
       patchAdminSessionProfile({
-        fullName: u.fullName,
+        name: u.fullName,
         phone: u.phone,
         address: u.address,
         updatedAt: u.updatedAt,
@@ -116,11 +251,8 @@ export default function AdminProfilePage() {
     return null;
   }
 
-  const roles = profile?.roles ?? sessionUser.roles;
-  const email = profile?.email ?? sessionUser.email;
-
   return (
-    <Container max="4xl" className="space-y-6">
+    <Container max="full" className="space-y-6">
       <div>
         <h1 className={ADMIN_PAGE_TITLE_PROFILE_CLASS}>Hồ sơ tài khoản</h1>
         <p className="text-muted-foreground mt-1 text-sm sm:text-base">
@@ -134,219 +266,320 @@ export default function AdminProfilePage() {
         </p>
       )}
 
-      <Card className="border-border shadow-sm">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-lg font-semibold">
-            <UserCircle className="size-5 text-primary" />
-            Tài khoản đăng nhập
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="admin-email">Email</Label>
-            <Input
-              id="admin-email"
-              value={email}
-              disabled
-              className="bg-muted/40"
-            />
-            <p className="text-xs text-muted-foreground">
-              Đổi email cần quản trị hệ thống / API riêng.
-            </p>
-          </div>
-          <div className="space-y-2">
-            <p className="text-sm font-medium">Vai trò</p>
-            <div className="flex flex-wrap gap-2">
-              {roles.map((r) => (
-                <Badge
-                  key={r.code}
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,1.08fr)_minmax(0,0.92fr)]">
+        <div className="space-y-6">
+          <Card className={PROFILE_CARD_CLASS}>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-lg font-semibold">
+                <UserCircle className="size-5 text-primary" />
+                Tài khoản đăng nhập
+              </CardTitle>
+              <CardDescription>
+                Thông tin định danh của tài khoản đang dùng để truy cập cổng quản trị.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-5">
+              <div className="space-y-2">
+                <Label htmlFor="admin-email">Email</Label>
+                <Input
+                  id="admin-email"
+                  value={email}
+                  disabled
+                  className={cn(PROFILE_FIELD_CLASS, "bg-muted/35")}
+                />
+                <p className="text-xs leading-relaxed text-muted-foreground">
+                  Email đăng nhập đang được quản trị tập trung từ hệ thống và không chỉnh trực tiếp ở màn này.
+                </p>
+              </div>
+              <div className="space-y-2.5">
+                <p className="text-sm font-medium">Vai trò</p>
+                <div className="rounded-lg border border-border/60 bg-muted/15 p-3">
+                  <ScrollArea className="max-h-32 overflow-y-auto">
+                    <div className="flex flex-wrap gap-2 pr-3">
+                      {roles.map((r) => (
+                        <Badge
+                          key={getRoleCode(r)}
+                          variant="secondary"
+                          className="min-h-8 rounded-lg border border-border/60 bg-secondary/70 px-3 py-1.5 font-medium"
+                          title={getRoleCode(r)}
+                        >
+                          {getRoleLabel(r)}
+                        </Badge>
+                      ))}
+                    </div>
+                  </ScrollArea>
+                </div>
+              </div>
+              {profile && (
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div className="rounded-lg border border-border/60 bg-muted/20 p-3">
+                    <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                      Trạng thái
+                    </p>
+                    <p className="mt-1 text-sm font-semibold">
+                      {profile.isActive ? "Đang hoạt động" : "Đã khoá"}
+                    </p>
+                  </div>
+                  <div className="rounded-lg border border-border/60 bg-muted/20 p-3">
+                    <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                      Cập nhật lần cuối
+                    </p>
+                    <p className="mt-1 truncate text-sm font-medium">
+                      {formatDateTime(profile.updatedAt)}
+                    </p>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card className={PROFILE_CARD_CLASS}>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-lg font-semibold">
+                <Shield className="size-5 text-primary" />
+                Quyền hiệu lực (phiên đăng nhập)
+              </CardTitle>
+              <CardDescription>
+                Hiển thị theo bảng để đối chiếu giữa quyền hiệu lực thực tế và vai trò động đang cấp quyền trong hệ thống.
+              </CardDescription>
+              <CardAction>
+                <Badge variant="outline" className="rounded-lg px-2.5 py-1 font-medium">
+                  {permissionRows.length} quyền
+                </Badge>
+              </CardAction>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid gap-3 sm:grid-cols-3">
+                <div className="rounded-lg border border-border/60 bg-muted/20 p-3">
+                  <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                    Vai trò đang gán
+                  </p>
+                  <p className="mt-1 text-sm font-semibold">{roles.length}</p>
+                </div>
+                <div className="rounded-lg border border-border/60 bg-muted/20 p-3">
+                  <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                    Quyền hiệu lực
+                  </p>
+                  <p className="mt-1 text-sm font-semibold">{permissionRows.length}</p>
+                </div>
+                <div className="rounded-lg border border-border/60 bg-muted/20 p-3">
+                  <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                    Nguồn đối chiếu
+                  </p>
+                  <p className="mt-1 text-sm font-semibold">
+                    {rbacCatalog.data?.roles?.length ? "RBAC runtime" : "Session hiện tại"}
+                  </p>
+                </div>
+              </div>
+
+              {rbacCatalog.isError ? (
+                <div className="rounded-lg border border-amber-200 bg-amber-50/70 px-4 py-3 text-sm text-amber-900 dark:border-amber-900/40 dark:bg-amber-950/20 dark:text-amber-200">
+                  Không tải được catalog RBAC động, bảng đang fallback theo permission từ session hiện tại.
+                </div>
+              ) : null}
+
+              {permissionRows.length === 0 ? (
+                <div className="rounded-lg border border-dashed border-border/70 bg-muted/15 px-4 py-6 text-sm text-muted-foreground">
+                  Chưa có dữ liệu quyền cho phiên đăng nhập này.
+                </div>
+              ) : (
+                <div className="overflow-hidden rounded-lg border border-border/60 bg-background/70">
+                  <ScrollArea className="max-h-[420px] overflow-y-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow className="bg-muted/35 hover:bg-muted/35">
+                          <TableHead className="min-w-[220px] px-3 py-3 font-semibold">
+                            Quyền
+                          </TableHead>
+                          <TableHead className="min-w-[170px] px-3 py-3 font-semibold">
+                            Mã kỹ thuật
+                          </TableHead>
+                          <TableHead className="min-w-[220px] px-3 py-3 font-semibold">
+                            Cấp qua vai trò
+                          </TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {permissionRows.map((permission) => (
+                          <TableRow key={permission.code}>
+                            <TableCell className="px-3 py-3 align-top whitespace-normal">
+                              <div className="text-sm font-semibold leading-relaxed text-foreground">
+                                {permission.label}
+                              </div>
+                            </TableCell>
+                            <TableCell className="px-3 py-3 align-top whitespace-normal">
+                              <code className="rounded-md bg-muted px-2 py-1 text-[11px] text-muted-foreground">
+                                {permission.code}
+                              </code>
+                            </TableCell>
+                            <TableCell className="px-3 py-3 align-top whitespace-normal">
+                              {permission.grantedBy.length > 0 ? (
+                                <div className="flex flex-wrap gap-2">
+                                  {permission.grantedBy.map((role) => (
+                                    <Badge
+                                      key={`${permission.code}-${role.code}`}
+                                      variant="secondary"
+                                      className="min-h-7 rounded-lg border border-border/60 bg-secondary/60 px-2.5 py-1 text-xs font-medium"
+                                      title={role.code}
+                                    >
+                                      {role.name}
+                                    </Badge>
+                                  ))}
+                                </div>
+                              ) : (
+                                <span className="text-sm text-muted-foreground">
+                                  Quyền đang có trong session, chưa đối chiếu được role nguồn.
+                                </span>
+                              )}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </ScrollArea>
+                </div>
+              )}
+              {canSeeRbacPage ? (
+                <p className="text-sm">
+                  <Link
+                    href="/rbac"
+                    className="font-medium text-primary underline-offset-4 hover:underline"
+                  >
+                    Mở trang phân quyền
+                  </Link>
+                </p>
+              ) : null}
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="space-y-6">
+          <Card className={PROFILE_CARD_CLASS}>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-lg font-semibold">
+                <MapPin className="size-5 text-primary" />
+                Thông tin liên hệ & địa chỉ
+              </CardTitle>
+              <CardDescription>
+                Cập nhật thông tin liên hệ để đồng bộ cho hồ sơ quản trị và các màn nội bộ liên quan.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="admin-fullName">Họ và tên</Label>
+                <Input
+                  id="admin-fullName"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  disabled={isLoading || !profile}
+                  className={PROFILE_FIELD_CLASS}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="admin-phone">Số điện thoại</Label>
+                <Input
+                  id="admin-phone"
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  disabled={isLoading || !profile}
+                  placeholder="VD: 0901234567"
+                  className={PROFILE_FIELD_CLASS}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="admin-address">Địa chỉ / văn phòng</Label>
+                <Textarea
+                  id="admin-address"
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  disabled={isLoading || !profile}
+                  placeholder="Địa chỉ liên hệ khi cần (không bắt buộc)"
+                  className={PROFILE_TEXTAREA_CLASS}
+                />
+              </div>
+              <div className={PROFILE_ACTION_BAR_CLASS}>
+                <Button
+                  type="button"
+                  className="min-w-32 rounded-lg"
+                  onClick={() => void handleSaveProfile()}
+                  disabled={isLoading || !profile || updateProfile.isPending}
+                >
+                  {updateProfile.isPending ? (
+                    <Loader2 className="size-4 animate-spin" />
+                  ) : (
+                    <Save className="size-4" />
+                  )}
+                  <span className="ml-2">Lưu hồ sơ</span>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className={PROFILE_CARD_CLASS}>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-lg font-semibold">
+                <KeyRound className="size-5 text-primary" />
+                Đổi mật khẩu
+              </CardTitle>
+              <CardDescription>
+                Đặt lại mật khẩu cho phiên đăng nhập quản trị. Mật khẩu mới cần từ 6 ký tự trở lên.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="admin-current-pw">Mật khẩu hiện tại</Label>
+                <Input
+                  id="admin-current-pw"
+                  type="password"
+                  autoComplete="current-password"
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  className={PROFILE_FIELD_CLASS}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="admin-new-pw">Mật khẩu mới</Label>
+                <Input
+                  id="admin-new-pw"
+                  type="password"
+                  autoComplete="new-password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  className={PROFILE_FIELD_CLASS}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="admin-confirm-pw">Nhập lại mật khẩu mới</Label>
+                <Input
+                  id="admin-confirm-pw"
+                  type="password"
+                  autoComplete="new-password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className={PROFILE_FIELD_CLASS}
+                />
+              </div>
+              <div className={PROFILE_ACTION_BAR_CLASS}>
+                <Button
+                  type="button"
                   variant="secondary"
-                  className="font-normal"
+                  className="min-w-40 rounded-lg"
+                  onClick={() => void handleChangePassword()}
+                  disabled={changePw.isPending}
                 >
-                  {r.name}
-                  <span className="ml-1.5 text-muted-foreground font-mono text-[10px]">
-                    {r.code}
-                  </span>
-                </Badge>
-              ))}
-            </div>
-          </div>
-          {profile && (
-            <div className="grid grid-cols-2 gap-3 text-sm">
-              <div>
-                <p className="text-muted-foreground text-xs">Trạng thái</p>
-                <p className="font-medium">
-                  {profile.isActive ? "Đang hoạt động" : "Đã khoá"}
-                </p>
+                  {changePw.isPending ? (
+                    <Loader2 className="size-4 animate-spin" />
+                  ) : (
+                    <KeyRound className="size-4" />
+                  )}
+                  <span className="ml-2">Đổi mật khẩu</span>
+                </Button>
               </div>
-              <div>
-                <p className="text-muted-foreground text-xs">Cập nhật lần cuối</p>
-                <p className="font-medium font-mono text-xs truncate">
-                  {new Date(profile.updatedAt).toLocaleString("vi-VN")}
-                </p>
-              </div>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      <Card className="border-border shadow-sm">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-lg font-semibold">
-            <Shield className="size-5 text-primary" />
-            Quyền hiệu lực (phiên đăng nhập)
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <p className="text-xs text-muted-foreground">
-            Hợp quyền từ mọi vai trò được gán. Mã kỹ thuật hiển thị kèm để đối chiếu với API / ma trận RBAC.
-          </p>
-          <div className="flex flex-wrap gap-2">
-            {(sessionUser.permissions ?? []).length === 0 ? (
-              <span className="text-sm text-muted-foreground">Chưa có dữ liệu quyền.</span>
-            ) : (
-              sessionUser.permissions.map((code) => (
-                <Badge
-                  key={code}
-                  variant="outline"
-                  className="font-normal text-xs max-w-full whitespace-normal text-left h-auto py-1.5"
-                  title={code}
-                >
-                  <span className="block font-medium">
-                    {permissionLabelVi(code)}
-                  </span>
-                  {permissionLabelVi(code) !== code ? (
-                    <span className="block font-mono text-[10px] text-muted-foreground mt-0.5">
-                      {code}
-                    </span>
-                  ) : null}
-                </Badge>
-              ))
-            )}
-          </div>
-          {canSeeRbacPage ? (
-            <p className="text-xs">
-              <Link
-                href="/staff"
-                className="text-primary font-medium underline-offset-4 hover:underline"
-              >
-                Mở trang nhân sự & ma trận phân quyền
-              </Link>
-            </p>
-          ) : null}
-        </CardContent>
-      </Card>
-
-      <Card className="border-border shadow-sm">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-lg font-semibold">
-            <MapPin className="size-5 text-primary" />
-            Thông tin liên hệ & địa chỉ
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="admin-fullName">Họ và tên</Label>
-            <Input
-              id="admin-fullName"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              disabled={isLoading || !profile}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="admin-phone">Số điện thoại</Label>
-            <Input
-              id="admin-phone"
-              type="tel"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              disabled={isLoading || !profile}
-              placeholder="VD: 0901234567"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="admin-address">Địa chỉ / văn phòng</Label>
-            <Textarea
-              id="admin-address"
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-              disabled={isLoading || !profile}
-              placeholder="Địa chỉ liên hệ khi cần (không bắt buộc)"
-            />
-          </div>
-          <div className="flex justify-end">
-            <Button
-              type="button"
-              onClick={() => void handleSaveProfile()}
-              disabled={isLoading || !profile || updateProfile.isPending}
-            >
-              {updateProfile.isPending ? (
-                <Loader2 className="size-4 animate-spin" />
-              ) : (
-                <Save className="size-4" />
-              )}
-              <span className="ml-2">Lưu hồ sơ</span>
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card className="border-border shadow-sm">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-lg font-semibold">
-            <KeyRound className="size-5 text-primary" />
-            Đổi mật khẩu
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="admin-current-pw">Mật khẩu hiện tại</Label>
-            <Input
-              id="admin-current-pw"
-              type="password"
-              autoComplete="current-password"
-              value={currentPassword}
-              onChange={(e) => setCurrentPassword(e.target.value)}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="admin-new-pw">Mật khẩu mới</Label>
-            <Input
-              id="admin-new-pw"
-              type="password"
-              autoComplete="new-password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="admin-confirm-pw">Nhập lại mật khẩu mới</Label>
-            <Input
-              id="admin-confirm-pw"
-              type="password"
-              autoComplete="new-password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-            />
-          </div>
-          <div className="flex justify-end">
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={() => void handleChangePassword()}
-              disabled={changePw.isPending}
-            >
-              {changePw.isPending ? (
-                <Loader2 className="size-4 animate-spin" />
-              ) : (
-                <KeyRound className="size-4" />
-              )}
-              <span className="ml-2">Đổi mật khẩu</span>
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     </Container>
   );
 }

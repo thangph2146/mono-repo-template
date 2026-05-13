@@ -14,15 +14,15 @@
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",
+    "@lexical/react": "^0.38.2",
     "@react-google-maps/api": "^2.20.8",
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.6.0",
     "@tanstack/react-query": "^5.100.9",
     "@tanstack/react-query-devtools": "^5.100.9",
+    "@thangph2146/lexical-editor": "workspace:*",
     "@ui": "workspace:*",
     "@workspace/api-client": "workspace:*",
-    "@workspace/promo-codes": "workspace:*",
-    "@workspace/dealer-support": "workspace:*",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
@@ -33,6 +33,7 @@
     "next": "16.2.4",
     "next-themes": "^0.4.6",
     "nextjs-toploader": "^3.9.17",
+    "lexical": "^0.38.2",
     "react": "19.2.4",
     "react-day-picker": "^9.14.0",
     "react-dom": "19.2.4",
@@ -58,6 +59,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.4",
     "graphifyy": "^0.4.25",
+    "sass": "^1.83.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

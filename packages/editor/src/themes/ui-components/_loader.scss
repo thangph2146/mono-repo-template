@@ -1,0 +1,9 @@
+@use "../variables" as *;
+@use "../mixins" as *;
+
+/* --- LOADER --- */
+.editor-loader {
+  @include control-size($editor-icon-size-lg);
+  animation: spin 1s linear infinite;
+  color: var(--muted-foreground);
+}

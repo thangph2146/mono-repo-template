@@ -317,7 +317,7 @@ export function AdminDataTable<TData>({
 
   if (isLoading) {
     return (
-      <div className="space-y-2 rounded-xl border border-border bg-card p-4">
+      <div className="space-y-2 rounded-lg border border-border bg-card p-4">
         {Array.from({ length: 6 }).map((_, i) => (
           <div
             key={i}

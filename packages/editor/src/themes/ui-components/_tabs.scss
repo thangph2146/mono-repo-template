@@ -1,0 +1,46 @@
+@use "../variables" as *;
+@use "../mixins" as *;
+
+/* --- TABS --- */
+.editor-tabs-trigger {
+  @include flex-center-justify;
+  white-space: nowrap;
+  @include rounded-sm;
+  padding: $editor-gap-1-5 $editor-gap-2;
+  @include text-sm;
+  font-weight: $editor-font-weight-medium;
+  transition: all $editor-transition-normal;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: var(--muted-foreground);
+  flex: 1;
+
+  @include focus-ring;
+
+  &:disabled {
+    pointer-events: none;
+    opacity: $editor-opacity-disabled;
+  }
+
+  &[data-state="active"] {
+    background-color: var(--background);
+    color: var(--foreground);
+    @include shadow-sm;
+  }
+}
+
+.editor-tabs-list {
+  @include flex-center-justify;
+  height: $editor-control-size-lg;
+  @include rounded-md;
+  background-color: var(--muted);
+  padding: $editor-gap-1;
+  color: var(--muted-foreground);
+  width: 100%;
+}
+
+.editor-tabs-content {
+  margin-top: $editor-gap-2;
+  @include focus-ring;
+}

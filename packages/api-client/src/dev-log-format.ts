@@ -48,7 +48,7 @@ function stringifyCapped(value: unknown, maxLen: number): string {
 /** Gần giống AuthUser / User từ API. */
 function looksLikeAuthUser(o: Record<string, unknown>): boolean {
   return (
-    typeof o.id === 'number' &&
+    (typeof o.id === 'string' || typeof o.id === 'number') &&
     typeof o.email === 'string' &&
     Array.isArray(o.permissions) &&
     Array.isArray(o.roles)
@@ -56,8 +56,8 @@ function looksLikeAuthUser(o: Record<string, unknown>): boolean {
 }
 
 function summarizeAuthUser(o: Record<string, unknown>): string {
-  const roles = (o.roles as { code?: string }[])
-    .map((r) => r?.code)
+  const roles = (o.roles as { name?: string; displayName?: string }[])
+    .map((r) => r?.name)
     .filter(Boolean)
     .join(',');
   const perms = o.permissions as string[];
@@ -65,8 +65,8 @@ function summarizeAuthUser(o: Record<string, unknown>): string {
     ? 'perms=*'
     : `perms=n=${perms.length}[${perms.slice(0, 8).join(',')}${perms.length > 8 ? ',…' : ''}]`;
   const nameBit =
-    typeof o.fullName === 'string' && o.fullName.length > 0
-      ? ` name="${o.fullName}"`
+    typeof o.name === 'string' && o.name.length > 0
+      ? ` name="${o.name}"`
       : '';
   return `AuthUser id=${o.id} email=${o.email}${nameBit} roles=[${roles}] ${permBit}`;
 }
@@ -135,10 +135,15 @@ export function formatDevApiStateHint(
   ok: boolean,
 ): string | undefined {
   if (!ok || payload === null || typeof payload !== 'object') return undefined;
-  if (method !== 'POST' || !path.endsWith('/users/login')) return undefined;
+  if (
+    method !== 'POST' ||
+    (!path.endsWith('/users/login') && !path.endsWith('/admin/auth/login'))
+  ) {
+    return undefined;
+  }
   const o = payload as Record<string, unknown>;
   if (!looksLikeAuthUser(o)) return undefined;
-  return `sau login: lưu session (sessionStorage) → các request sau gửi X-User-Id=${o.id}; roles=[${(o.roles as { code?: string }[]).map((r) => r?.code).filter(Boolean).join(',')}]`;
+  return `sau login: lưu session (sessionStorage) → các request sau gửi X-User-Id=${o.id}; roles=[${(o.roles as { name?: string }[]).map((r) => r?.name).filter(Boolean).join(',')}]`;
 }
 
 /** Bản sao đã redact để mở rộng trong console.debug (DevTools). */
@@ -177,7 +182,7 @@ function simplifyUserRef(u: unknown): unknown {
   return {
     id: r.id,
     email: r.email,
-    fullName: r.fullName,
+    name: r.name ?? r.fullName,
   };
 }
 

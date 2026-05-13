@@ -1,0 +1,19 @@
+/**
+ * Editor Theme - Independent SCSS Structure
+ * Built for Lexical + Next.js Monorepo
+ */
+
+@use "variables" as *;
+@use "mixins" as *;
+@use "ui-components";
+@use "plugins";
+
+// Core Editor Styles
+@use "core/reset";
+@use "core/typography";
+@use "core/lists";
+@use "core/code";
+@use "core/tables";
+@use "core/text";
+@use "core/images";
+@use "core/misc";

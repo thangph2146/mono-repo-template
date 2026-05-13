@@ -1,0 +1,80 @@
+@use "../variables" as *;
+@use "../mixins" as *;
+
+/* --- TOGGLE --- */
+.editor-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  @include rounded-md;
+  font-size: $editor-font-size-sm;
+  font-weight: $editor-font-weight-medium;
+  transition-property: color, background-color, border-color;
+  transition-duration: $editor-transition-fast;
+  background-color: transparent;
+  border: $editor-border-width solid transparent;
+  cursor: pointer;
+  @include editor-button-interactive;
+
+  &:hover {
+    background-color: $editor-accent-color;
+    color: $editor-accent-foreground-color;
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 $editor-outline-width var(--ring), 0 0 0 $editor-outline-width * 2 var(--background);
+  }
+
+  &:disabled {
+    pointer-events: none;
+    opacity: $editor-opacity-disabled;
+  }
+
+  &[data-state="on"] {
+    background-color: $editor-accent-color;
+    color: $editor-accent-foreground-color !important;
+
+    &:hover {
+      @include editor-hover-base;
+      background-color: color-mix(in srgb, $editor-accent-color, black 10%);
+      border-color: $editor-accent-color;
+    }
+  }
+
+  &--outline {
+    border-color: var(--input);
+    @include shadow-sm;
+
+    &:hover {
+      background-color: color-mix(in srgb, $editor-accent-color, black 5%);
+      color: $editor-accent-foreground-color;
+    }
+  }
+
+  &--ghost {
+    &:hover {
+      background-color: color-mix(in srgb, $editor-accent-color, black 5%);
+      color: $editor-accent-foreground-color;
+    }
+  }
+
+  &--size-default {
+    height: $editor-control-size-md;
+    padding-left: $editor-gap-3;
+    padding-right: $editor-gap-3;
+  }
+
+  &--size-sm {
+    height: $editor-control-size-sm;
+    padding-left: $editor-gap-2;
+    padding-right: $editor-gap-2;
+    font-size: $editor-font-size-xs;
+  }
+
+  &--size-lg {
+    height: $editor-control-size-lg;
+    padding-left: $editor-gap-3;
+    padding-right: $editor-gap-3;
+  }
+}

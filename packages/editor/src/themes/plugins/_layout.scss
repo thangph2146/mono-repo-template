@@ -1,0 +1,64 @@
+@use "../variables" as *;
+@use "../mixins" as *;
+
+.editor-layout-container {
+  display: grid;
+  gap: $editor-gap-3;
+  width: 100%;
+  margin: $editor-gap-2 0;
+}
+
+.editor-layout-item {
+  min-height: 60px;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  flex: 1;
+  position: relative;
+  border: 1px dashed var(--border, #d1d5db);
+  border-radius: 4px;
+  transition: background-color $editor-transition-normal;
+  overflow: hidden;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.02);
+  }
+
+  p {
+    margin: 0;
+    width: 100%;
+  }
+}
+
+.editor-layout-dialog-grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: $editor-gap-4;
+  
+  @media (min-width: 480px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+
+.editor-layout-color-trigger {
+  height: $editor-control-size-xl; // h-11
+  width: 100%;
+  justify-content: flex-start;
+  gap: $editor-gap-2;
+  padding-left: $editor-gap-2;
+  padding-right: $editor-gap-2;
+  @include text-sm;
+  transition: all $editor-transition-normal;
+
+  &:hover:not(:disabled) {
+    @include editor-button-interactive;
+  }
+}
+
+.editor-layout-color-preview {
+  @include control-size($editor-icon-size-sm);
+  flex-shrink: 0;
+  @include rounded-sm;
+  border: $editor-border-width solid var(--border);
+}

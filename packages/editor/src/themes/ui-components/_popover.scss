@@ -1,0 +1,16 @@
+@use "../variables" as *;
+@use "../mixins" as *;
+
+/* --- POPOVER --- */
+.editor-popover-content {
+  z-index: $editor-z-index-floating;
+  width: $editor-popover-width;
+  @include rounded-md;
+  border: $editor-border-width solid var(--border);
+  background-color: var(--popover);
+  color: var(--popover-foreground);
+  @include shadow-md;
+  padding: $editor-gap-4;
+  outline: none;
+  animation: editor-popover-zoom-in $editor-transition-fast;
+}

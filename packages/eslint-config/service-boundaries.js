@@ -147,7 +147,7 @@ export const nextBackendServiceBoundary = [
 ];
 
 /**
- * Package TS thuần (@workspace/api-client, @workspace/promo-codes).
+ * Package TS thuần (vd `@workspace/api-client`).
  *
  * @type {import("eslint").Linter.Config[]}
  */

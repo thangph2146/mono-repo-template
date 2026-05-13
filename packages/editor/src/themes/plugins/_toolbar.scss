@@ -1,0 +1,52 @@
+@use "../variables" as *;
+@use "../mixins" as *;
+
+.editor-toolbar {
+  position: sticky;
+  top: 0; // Can be overridden by inline style from ToolbarPlugin
+  z-index: $editor-z-index-toolbar;
+  @include flex-center;
+  justify-content: flex-start;
+  flex-wrap: nowrap;
+  gap: $editor-gap-2;
+  border: $editor-border-width solid var(--border);
+  border-top-left-radius: $editor-border-radius;
+  border-top-right-radius: $editor-border-radius;
+  background-color: color-mix(in srgb, var(--background) 94%, var(--muted));
+  @include backdrop-blur($editor-dialog-overlay-blur, rgba(255, 255, 255, 0.82));
+  padding: $editor-gap-2 $editor-gap-3;
+  @include shadow-md;
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--muted-foreground) 40%, transparent) transparent;
+
+  &::-webkit-scrollbar {
+    height: 8px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: color-mix(in srgb, var(--muted-foreground) 32%, transparent);
+    border-radius: 9999px;
+  }
+}
+
+.editor-toolbar-group {
+  @include flex-center;
+  gap: $editor-gap-1;
+  flex-wrap: nowrap;
+  padding: $editor-gap-1;
+  @include rounded-md;
+  background-color: color-mix(in srgb, var(--background) 78%, transparent);
+}
+
+// Note: Toolbar items and select triggers are defined in ui-components.scss
+
+.editor-toolbar-separator {
+  height: $editor-icon-size-lg;
+  margin-left: $editor-gap-1;
+  margin-right: $editor-gap-1;
+  opacity: 0.7;
+}

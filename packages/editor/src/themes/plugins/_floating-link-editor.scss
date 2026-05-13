@@ -1,0 +1,80 @@
+@use "../variables" as *;
+@use "../mixins" as *;
+
+// Scoped under `.lexical-editor-root` so reset rules like
+// `.lexical-editor-root div { padding: 0 }` (higher specificity than a single class)
+// do not override padding on these UI blocks.
+.lexical-editor-root .editor-floating-link-editor {
+  display: flex;
+  position: absolute;
+  padding: 4px;
+  top: 0;
+  left: 0;
+  z-index: $editor-z-index-floating;
+  max-width: min(#{$editor-link-editor-max-width}, calc(100vw - 24px));
+  width: 100%;
+  overflow: hidden;
+  opacity: 0;
+  background-color: var(--background);
+  @include rounded-md;
+  border: $editor-border-width solid var(--border);
+  @include shadow-lg;
+  transition: opacity $editor-transition-normal;
+  will-change: transform;
+
+  &__input-container {
+    @include flex-center;
+    gap: $editor-gap-1;
+    padding: $editor-gap-2;
+    width: 100%;
+  }
+
+  &__library {
+    display: flex;
+    flex-direction: column;
+    gap: $editor-gap-1;
+    width: 100%;
+    max-height: 220px;
+    overflow: auto;
+    border-top: $editor-border-width solid var(--border);
+    padding: $editor-gap-2;
+  }
+
+  &__library-item {
+    width: 100%;
+    text-align: left;
+    background: transparent;
+    border: 0;
+    color: var(--foreground);
+    padding: $editor-gap-1;
+    @include rounded-sm;
+    cursor: pointer;
+
+    &:hover {
+      background: var(--muted);
+    }
+  }
+
+  &__view-container {
+    @include flex-center;
+    justify-content: space-between;
+    gap: $editor-gap-2;
+    padding: $editor-gap-1 $editor-gap-1 $editor-gap-1 $editor-gap-3;
+    width: 100%;
+    min-width: 0;
+  }
+
+  &__link {
+    display: block;
+    flex-grow: 1;
+    min-width: 0;
+    @include truncate;
+    color: var(--primary);
+    @include text-sm;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}

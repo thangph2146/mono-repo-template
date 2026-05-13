@@ -1,0 +1,166 @@
+@use "../variables" as *;
+@use "../mixins" as *;
+
+.editor-component-picker-menu {
+  position: fixed;
+  z-index: $editor-z-index-popover;
+  width: $editor-component-picker-width;
+  @include rounded-md;
+  border: $editor-border-width solid var(--border);
+  background-color: var(--popover);
+  color: var(--popover-foreground);
+  @include shadow-lg;
+  overflow: hidden;
+  
+  // Base visibility
+  visibility: visible;
+  opacity: 1;
+  max-height: $editor-popover-max-height;
+}
+
+.editor-command {
+  @include flex-col;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.editor-command-list {
+  max-height: $editor-popover-max-height;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: $editor-gap-1;
+}
+
+.editor-command-group {
+  overflow: hidden;
+  color: var(--foreground);
+  
+  & > [cmdk-group-heading] {
+    padding: $editor-gap-2 $editor-gap-2 4px;
+    font-size: $editor-font-size-xs;
+    font-weight: $editor-font-weight-medium;
+    color: var(--muted-foreground);
+  }
+}
+
+.editor-command-item {
+  position: relative;
+  @include flex-center;
+  cursor: pointer;
+  user-select: none;
+  @include rounded-sm;
+  padding: calc($editor-gap-1 + 2px) $editor-gap-2;
+  border: $editor-border-width solid transparent; // Added for hover border
+  @include text-sm;
+  outline: none;
+  gap: $editor-gap-2;
+  
+  @include editor-dropdown-item-interactive;
+
+  &[data-disabled="true"] {
+    pointer-events: none;
+    opacity: $editor-opacity-disabled;
+  }
+  
+  svg {
+    @include icon-size($editor-icon-size-sm);
+  }
+}
+
+// Cao hơn thanh sticky/action bar thường dùng z-index ~10 (vd. form admin).
+// Không dùng &:has(*) ép z-index thấp — mọi menu đều có con nên trước đây luôn rơi về 10 và bị đè.
+.editor-context-menu {
+  background-color: var(--popover);
+  color: var(--popover-foreground);
+  z-index: $editor-z-index-popover !important;
+  position: relative;
+  overflow: hidden;
+  @include rounded-md;
+  border: $editor-border-width solid var(--border);
+  @include shadow-md;
+  outline: none;
+}
+
+[data-floating-ui-portal]:has(.editor-context-menu) {
+  z-index: $editor-z-index-popover !important;
+}
+
+[data-floating-ui-portal]:has(.editor-context-menu) > div {
+  z-index: $editor-z-index-popover !important;
+}
+
+.editor-context-menu-item {
+  position: relative;
+  width: 100%;
+  @include flex-center;
+  cursor: default;
+  gap: $editor-gap-2;
+  @include rounded-sm;
+  padding: calc($editor-gap-1 + 2px) $editor-gap-2;
+  border: $editor-border-width solid transparent; // Added for hover border
+  @include text-sm;
+  outline: none;
+  user-select: none;
+  
+  @include editor-dropdown-item-interactive;
+  
+  &[data-disabled="true"] {
+    pointer-events: none;
+    opacity: $editor-opacity-disabled;
+  }
+}
+
+.editor-context-menu-separator {
+  background-color: var(--border);
+  margin-left: -0.25rem; // -mx-1
+  margin-right: -0.25rem;
+  height: $editor-border-width;
+}
+
+// Scoped under `.lexical-editor-root` so `.lexical-editor-root div { padding: 0 }` does not win.
+.lexical-editor-root .editor-actions-bar {
+  clear: both;
+  padding: 2px;
+  @include flex-center;
+  width: 100%;
+  @include flex-center-between;
+  gap: $editor-gap-3;
+  overflow-x: auto;
+  flex-wrap: nowrap;
+  border-top: $editor-border-width solid var(--border);
+  border-left: $editor-border-width solid var(--border);
+  border-right: $editor-border-width solid var(--border);
+  border-bottom: $editor-border-width solid var(--border);
+  border-bottom-left-radius: $editor-border-radius;
+  border-bottom-right-radius: $editor-border-radius;
+  @include backdrop-blur($editor-dialog-overlay-blur * 2, color-mix(in srgb, var(--background), transparent 50%));
+  
+  @include scrollbar-hide;
+
+  // Ẩn nội dung tooltip mặc định trong actions bar nếu nó đang bị hiển thị sai
+  .editor-tooltip-content {
+    display: none !important;
+  }
+  
+  // Chỉ hiển thị tooltip khi hover vào trigger
+  .editor-tooltip-group:hover .editor-tooltip-content {
+    display: block !important;
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-bottom: $editor-gap-2;
+    background: var(--popover);
+    color: var(--popover-foreground);
+    padding: $editor-gap-1 $editor-gap-2;
+    @include rounded-sm;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    border: $editor-border-width solid var(--border);
+    @include shadow-sm;
+    z-index: $editor-z-index-floating;
+    pointer-events: none;
+  }
+}

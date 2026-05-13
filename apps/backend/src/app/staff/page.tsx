@@ -11,7 +11,6 @@ import {
   AlertCircle,
   Archive,
   ArchiveRestore,
-  Check,
   CheckCircle2,
   CalendarClock,
   FilterX,
@@ -25,7 +24,6 @@ import {
   Phone,
   RefreshCw,
   Save,
-  Shield,
   ShieldHalf,
   UserCircle,
   UserMinus,
@@ -84,13 +82,10 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
 } from "@ui/components/table";
 import { AdminDataTable } from "@/components/admin-data-table";
 import { AdminTablePaginationFooter } from "@/components/admin-table-pagination-footer";
-import { ApiError, type RbacRole, type User } from "@/lib/api";
+import { ApiError, type User } from "@/lib/api";
 import { useAuth } from "@/providers/auth-provider";
 import {
   canUserAccess,
@@ -121,20 +116,13 @@ import {
   ADMIN_PAGE_TITLE_PRIMARY_CLASS,
 } from "@ui/lib/layout-shell";
 
-function roleHasPermission(role: RbacRole, permCode: string): boolean {
-  if (role.permissions.includes("*")) return true;
-  return role.permissions.includes(permCode);
-}
-
-export default function StaffAndRbacPage() {
+export default function StaffPage() {
   const { user: session } = useAuth();
   const canManageUsers =
     session != null && canUserAccess(session, PERMISSION_CODES.USERS_MANAGE);
-  const canReadRbac =
-    session != null && canUserAccess(session, PERMISSION_CODES.RBAC_READ);
 
   const rbacQuery = useRbacCatalog({
-    enabled: Boolean(session) && (canManageUsers || canReadRbac),
+    enabled: Boolean(session) && canManageUsers,
   });
   const [staffSubTab, setStaffSubTab] = useState<"list" | "trash">("list");
   const [staffPage, setStaffPage] = useState(1);
@@ -208,8 +196,6 @@ export default function StaffAndRbacPage() {
   const [formRoles, setFormRoles] = useState<string[]>([]);
 
   const roles = rbacQuery.data?.roles ?? [];
-  const permissions = rbacQuery.data?.permissions ?? [];
-
   const resetForm = () => {
     setFormEmail("");
     setFormPassword("");
@@ -531,9 +517,9 @@ export default function StaffAndRbacPage() {
                 size="sm"
                 className="h-8 gap-1 rounded-lg border-destructive/40 text-destructive hover:bg-destructive/10"
                 onClick={() => setDeleteTarget(u)}
-                disabled={busy || u.id === session?.id}
+                disabled={busy || String(u.id) === String(session?.id ?? "")}
                 title={
-                  u.id === session?.id
+                  String(u.id) === String(session?.id ?? "")
                     ? "Không xoá tài khoản đang đăng nhập"
                     : "Xoá tạm"
                 }
@@ -547,9 +533,6 @@ export default function StaffAndRbacPage() {
     ],
     [session?.id, busy, openEdit],
   );
-
-  const defaultTab = canManageUsers ? "people" : "rbac";
-  const showTabs = canManageUsers && canReadRbac;
 
   const handleCreate = async () => {
     const email = formEmail.trim();
@@ -616,7 +599,7 @@ export default function StaffAndRbacPage() {
 
   const handleDelete = async () => {
     if (!deleteTarget) return;
-    if (deleteTarget.id === session?.id) {
+    if (String(deleteTarget.id) === String(session?.id ?? "")) {
       toast.error("Không thể xoá chính tài khoản đang đăng nhập");
       setDeleteTarget(null);
       return;
@@ -643,7 +626,7 @@ export default function StaffAndRbacPage() {
 
   const handlePurgeTrashedUser = async (): Promise<void> => {
     if (!purgeTarget) return;
-    if (purgeTarget.id === session?.id) {
+    if (String(purgeTarget.id) === String(session?.id ?? "")) {
       toast.error("Không thể xoá vĩnh viễn chính tài khoản đang đăng nhập");
       setPurgeTarget(null);
       return;
@@ -663,12 +646,12 @@ export default function StaffAndRbacPage() {
     return null;
   }
 
-  if (!canManageUsers && !canReadRbac) {
+  if (!canManageUsers) {
     return (
       <div className={ADMIN_PAGE_FORM_COLUMN_CLASS}>
         <h1 className={ADMIN_PAGE_TITLE_FORM_CLASS}>
           <Users className={ADMIN_PAGE_TITLE_ICON_SM_CLASS} aria-hidden />
-          Nhân sự & phân quyền
+          Nhân sự
         </h1>
         <Card className="border-destructive/30 bg-destructive/5">
           <CardHeader className="flex flex-row items-start gap-3 space-y-0">
@@ -676,10 +659,8 @@ export default function StaffAndRbacPage() {
             <div>
               <CardTitle className="text-base">Không có quyền truy cập</CardTitle>
               <CardDescription className="mt-1">
-                Cần quyền{" "}
-                <span className="font-mono text-xs">users.manage</span> hoặc{" "}
-                <span className="font-mono text-xs">rbac.read</span>. Liên hệ quản
-                trị để được gán vai trò phù hợp.
+                Cần quyền <span className="font-mono text-xs">users.manage</span>.
+                Liên hệ quản trị để được gán vai trò phù hợp.
               </CardDescription>
             </div>
           </CardHeader>
@@ -687,106 +668,6 @@ export default function StaffAndRbacPage() {
       </div>
     );
   }
-
-  const matrixBody = (
-    <Card className="border-border shadow-sm">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-lg">
-          <Shield className="size-5 text-primary" />
-          Ma trận vai trò → quyền
-        </CardTitle>
-        <CardDescription>
-          Dữ liệu chỉ đọc từ hệ thống. Gán quyền thực tế bằng cách gán vai trò cho
-          từng tài khoản (hợp quyền = union các role).
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        {rbacQuery.isLoading ? (
-          <div className="flex flex-col items-center justify-center gap-3 py-12 text-sm text-muted-foreground">
-            <Loader2 className="size-8 animate-spin text-primary" aria-hidden />
-            <span className="flex items-center gap-2 font-medium">
-              <Shield className="size-4 opacity-60" aria-hidden />
-              Đang tải RBAC…
-            </span>
-          </div>
-        ) : rbacQuery.isError ? (
-          <div className="rounded-xl border border-destructive/20 bg-destructive/5 py-10 text-center">
-            <AlertCircle className="mx-auto mb-2 size-9 text-destructive" aria-hidden />
-            <p className="text-sm font-semibold text-destructive">
-              {rbacQuery.error instanceof Error
-                ? rbacQuery.error.message
-                : "Lỗi tải dữ liệu"}
-            </p>
-          </div>
-        ) : (
-          <div className="w-full overflow-x-auto rounded-xl border border-border">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-muted/40 hover:bg-muted/40">
-                  <TableHead className="sticky left-0 z-[1] bg-muted/90 backdrop-blur min-w-[140px] font-semibold">
-                    <span className="flex items-center gap-2">
-                      <Shield className="size-4 text-primary shrink-0" aria-hidden />
-                      Vai trò
-                    </span>
-                  </TableHead>
-                  {permissions.map((p) => (
-                    <TableHead
-                      key={p.code}
-                      className="text-center align-bottom min-w-[100px] max-w-[140px] px-1"
-                      title={p.description ?? p.code}
-                    >
-                      <span className="block text-[10px] leading-tight font-mono text-muted-foreground truncate">
-                        {p.code}
-                      </span>
-                      <span className="block text-xs font-medium leading-snug mt-1 line-clamp-2">
-                        {p.name}
-                      </span>
-                    </TableHead>
-                  ))}
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {roles.map((role) => (
-                  <TableRow key={role.code}>
-                    <TableCell className="sticky left-0 z-[1] bg-background font-medium">
-                      <div className="flex items-start gap-2">
-                        <UserCircle
-                          className="mt-0.5 size-4 shrink-0 text-muted-foreground"
-                          aria-hidden
-                        />
-                        <div>
-                          <div>{role.name}</div>
-                          <div className="text-[10px] font-mono text-muted-foreground">
-                            {role.code}
-                          </div>
-                        </div>
-                      </div>
-                    </TableCell>
-                    {permissions.map((p) => {
-                      const on = roleHasPermission(role, p.code);
-                      return (
-                        <TableCell key={p.code} className="text-center p-1">
-                          {on ? (
-                            <span className="inline-flex size-8 items-center justify-center rounded-lg bg-primary/15 text-primary">
-                              <Check className="size-4" aria-label="Có" />
-                            </span>
-                          ) : (
-                            <span className="inline-flex size-8 items-center justify-center rounded-lg bg-muted/50 text-muted-foreground/30">
-                              —
-                            </span>
-                          )}
-                        </TableCell>
-                      );
-                    })}
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        )}
-      </CardContent>
-    </Card>
-  );
 
   const peoplePanel = (
     <div className="space-y-4">
@@ -800,7 +681,7 @@ export default function StaffAndRbacPage() {
         className="space-y-4"
       >
         <div className="flex flex-wrap justify-between items-center gap-3">
-          <TabsList className="h-auto min-h-9 flex-wrap gap-1 rounded-xl p-1">
+          <TabsList className="h-auto min-h-9 flex-wrap gap-1 rounded-lg p-1">
             <TabsTrigger value="list" className="gap-2 rounded-lg">
               <Layers className="size-4 shrink-0" aria-hidden />
               Danh sách
@@ -822,7 +703,7 @@ export default function StaffAndRbacPage() {
             <Button
               type="button"
               variant="outline"
-              className="flex h-11 items-center gap-2 rounded-xl border-outline-variant px-4 font-semibold hover:bg-muted"
+              className="flex h-11 items-center gap-2 rounded-lg border-outline-variant px-4 font-semibold hover:bg-muted"
               onClick={() => void usersQuery.refetch()}
             >
               <RefreshCw
@@ -837,7 +718,7 @@ export default function StaffAndRbacPage() {
             <Button
               type="button"
               onClick={openCreate}
-              className="flex h-11 items-center gap-2 rounded-xl px-5 font-bold shadow-md"
+              className="flex h-11 items-center gap-2 rounded-lg px-5 font-bold shadow-md"
               disabled={busy || roles.length === 0}
             >
               <UserPlus className="size-4" aria-hidden />
@@ -861,7 +742,7 @@ export default function StaffAndRbacPage() {
           </p>
 
           {usersQuery.isError ? (
-            <div className="rounded-2xl border border-destructive/20 bg-destructive/5 py-12 text-center">
+            <div className="rounded-lg border border-destructive/20 bg-destructive/5 py-12 text-center">
               <AlertCircle className="mx-auto mb-2 size-10 text-destructive" />
               <p className="text-lg font-bold text-destructive">
                 Không tải được danh sách nhân sự
@@ -955,7 +836,7 @@ export default function StaffAndRbacPage() {
 
         <TabsContent value="trash" className="mt-0 space-y-4">
           {trashedStaffQuery.isError ? (
-            <div className="rounded-2xl border border-destructive/20 bg-destructive/5 py-12 text-center">
+            <div className="rounded-lg border border-destructive/20 bg-destructive/5 py-12 text-center">
               <AlertCircle className="mx-auto mb-2 size-10 text-destructive" />
               <p className="text-lg font-bold text-destructive">
                 Không tải được thùng rác
@@ -1028,7 +909,7 @@ export default function StaffAndRbacPage() {
   );
 
   const roleChecklist = (
-    <div className="space-y-3 max-h-[220px] overflow-y-auto rounded-xl border border-border p-3">
+    <div className="space-y-3 max-h-[220px] overflow-y-auto rounded-lg border border-border p-3">
       {roles.length === 0 ? (
         <p className="flex items-center gap-2 text-xs text-muted-foreground">
           <AlertCircle className="size-3.5 shrink-0 opacity-70" aria-hidden />
@@ -1066,38 +947,15 @@ export default function StaffAndRbacPage() {
       <div>
         <h1 className={ADMIN_PAGE_TITLE_PRIMARY_CLASS}>
           <Users className={ADMIN_PAGE_TITLE_ICON_CLASS} aria-hidden />
-          Nhân sự & phân quyền
+          Nhân sự
         </h1>
         <p className={cn(ADMIN_PAGE_SUBTITLE_CLASS, "sm:text-base")}>
-          Quản lý tài khoản nội bộ, gán vai trò và xem ma trận quyền theo role.
-          Quyền thực tế của mỗi người là hợp (union) của tất cả role được gán.
+          Quản lý tài khoản nội bộ, gán vai trò và theo dõi trạng thái hoạt động
+          của từng nhân sự trong hệ thống.
         </p>
       </div>
 
-      {showTabs ? (
-        <Tabs defaultValue={defaultTab} className="space-y-6">
-          <TabsList className="h-auto min-h-9 flex-wrap gap-1 rounded-xl p-1">
-            <TabsTrigger value="people" className="gap-2 rounded-lg">
-              <Users className="size-4 shrink-0" aria-hidden />
-              Danh sách nhân sự
-            </TabsTrigger>
-            <TabsTrigger value="rbac" className="gap-2 rounded-lg">
-              <Shield className="size-4 shrink-0" aria-hidden />
-              Vai trò & quyền
-            </TabsTrigger>
-          </TabsList>
-          <TabsContent value="people" className="mt-0 space-y-4">
-            {peoplePanel}
-          </TabsContent>
-          <TabsContent value="rbac" className="mt-0">
-            {matrixBody}
-          </TabsContent>
-        </Tabs>
-      ) : canManageUsers ? (
-        peoplePanel
-      ) : (
-        matrixBody
-      )}
+      {peoplePanel}
 
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
         <DialogContent className={ADMIN_DIALOG_CONTENT_MD_CLASS}>
@@ -1148,7 +1006,7 @@ export default function StaffAndRbacPage() {
                 onChange={(e) => setFormPassword(e.target.value)}
               />
             </div>
-            <div className="flex items-center justify-between gap-3 rounded-xl border border-border px-3 py-3">
+            <div className="flex items-center justify-between gap-3 rounded-lg border border-border px-3 py-3">
               <div className="flex items-start gap-3 min-w-0">
                 <div className="mt-0.5 rounded-lg bg-muted p-1.5 shrink-0">
                   {formActive ? (
@@ -1181,7 +1039,7 @@ export default function StaffAndRbacPage() {
             <Button
               type="button"
               variant="outline"
-              className="gap-2 rounded-xl"
+              className="gap-2 rounded-lg"
               onClick={() => setCreateOpen(false)}
             >
               <X className="size-4" aria-hidden />
@@ -1191,7 +1049,7 @@ export default function StaffAndRbacPage() {
               type="button"
               onClick={() => void handleCreate()}
               disabled={createUser.isPending}
-              className="gap-2 rounded-xl font-bold"
+              className="gap-2 rounded-lg font-bold"
             >
               {createUser.isPending ? (
                 <Loader2 className="size-4 animate-spin" aria-hidden />
@@ -1258,7 +1116,7 @@ export default function StaffAndRbacPage() {
                     onChange={(e) => setFormPassword(e.target.value)}
                   />
                 </div>
-                <div className="flex items-center justify-between gap-3 rounded-xl border border-border px-3 py-3">
+                <div className="flex items-center justify-between gap-3 rounded-lg border border-border px-3 py-3">
                   <div className="flex items-start gap-3 min-w-0">
                     <div className="mt-0.5 rounded-lg bg-muted p-1.5 shrink-0">
                       {formActive ? (
@@ -1291,7 +1149,7 @@ export default function StaffAndRbacPage() {
                 <Button
                   type="button"
                   variant="outline"
-                  className="gap-2 rounded-xl"
+                  className="gap-2 rounded-lg"
                   onClick={() => {
                     setEditUser(null);
                     resetForm();
@@ -1304,7 +1162,7 @@ export default function StaffAndRbacPage() {
                   type="button"
                   onClick={() => void handleUpdate()}
                   disabled={updateUser.isPending}
-                  className="gap-2 rounded-xl font-bold"
+                  className="gap-2 rounded-lg font-bold"
                 >
                   {updateUser.isPending ? (
                     <Loader2 className="size-4 animate-spin" aria-hidden />
@@ -1340,13 +1198,13 @@ export default function StaffAndRbacPage() {
               ) : null}
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter className="gap-2 sm:gap-0">
-            <AlertDialogCancel className="rounded-xl gap-2">
+          <AlertDialogFooter className="gap-2">
+            <AlertDialogCancel className="rounded-lg gap-2">
               <X className="size-4" aria-hidden />
               Huỷ
             </AlertDialogCancel>
             <AlertDialogAction
-              className="rounded-xl gap-2 bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              className="rounded-lg gap-2 bg-destructive text-destructive-foreground hover:bg-destructive/90"
               onClick={(e) => {
                 e.preventDefault();
                 void handleDelete();
@@ -1389,12 +1247,12 @@ export default function StaffAndRbacPage() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="gap-2 sm:gap-0">
-            <AlertDialogCancel className="rounded-xl gap-2">
+            <AlertDialogCancel className="rounded-lg gap-2">
               <X className="size-4" aria-hidden />
               Huỷ
             </AlertDialogCancel>
             <AlertDialogAction
-              className="rounded-xl gap-2 bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              className="rounded-lg gap-2 bg-destructive text-destructive-foreground hover:bg-destructive/90"
               onClick={(e) => {
                 e.preventDefault();
                 void handlePurgeTrashedUser();
@@ -1436,12 +1294,12 @@ export default function StaffAndRbacPage() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="gap-2 sm:gap-0">
-            <AlertDialogCancel className="rounded-xl gap-2">
+            <AlertDialogCancel className="rounded-lg gap-2">
               <X className="size-4" aria-hidden />
               Huỷ
             </AlertDialogCancel>
             <AlertDialogAction
-              className="rounded-xl gap-2"
+              className="rounded-lg gap-2"
               onClick={(e) => {
                 e.preventDefault();
                 void handleRestoreUser();

@@ -23,29 +23,4 @@ export const api = createStoreSyncSdk({
   baseUrl: process.env.NEXT_PUBLIC_API_URL ?? DEFAULT_API_URL,
   getUserId: () => readSessionUserId(),
 });
-
-export type {
-  Product,
-  ProductListParams,
-  ProductPagedResponse,
-  ProductUnitType,
-  Order,
-  OrderItem,
-  User,
-  UserRoleRef,
-  OrderStatus,
-  Category,
-  CategoryUsage,
-  CreateCategoryInput,
-  UpdateCategoryInput,
-  CreateOrderInput,
-  CreateOrderItemInput,
-  PaymentMethod,
-  PaymentStatus,
-  UpdateProfileInput,
-  PromoCode,
-  PromoDiscountKind,
-  CreatePromoCodeInput,
-  UpdatePromoCodeInput,
-} from "@workspace/api-client";
 export { ApiError } from "@workspace/api-client";

@@ -127,6 +127,53 @@ export class AuthAdminController {
     }
   }
 
+  @Post('dev-login')
+  async developmentLogin(
+    @Body() body: { userId?: string },
+    @Res() res: Response,
+  ) {
+    if (process.env.NODE_ENV !== 'development') {
+      const { statusCode, body } = createErrorResponse('Not Found', {
+        status: 404,
+      });
+      return res.status(statusCode).json(body);
+    }
+
+    const userId = body?.userId?.trim();
+    if (!userId) {
+      const { statusCode, body } = createErrorResponse('userId là bắt buộc.', {
+        status: 400,
+      });
+      return res.status(statusCode).json(body);
+    }
+
+    try {
+      const user = await this.authService.loginAsDevelopmentUser(userId);
+      if (!user) {
+        const { statusCode, body: errBody } = createErrorResponse(
+          'Không tìm thấy tài khoản development hợp lệ trong database.',
+          { status: 404 },
+        );
+        return res.status(statusCode).json(errBody);
+      }
+
+      const { statusCode, body: okBody } = createSuccessResponse(user, {
+        message: 'Đăng nhập development thành công',
+      });
+      return res.status(statusCode).json(okBody);
+    } catch (error) {
+      this.logger.error(
+        'Admin development login error',
+        error instanceof Error ? error : String(error),
+      );
+      const { statusCode, body } = createErrorResponse(
+        'Đã xảy ra lỗi khi đăng nhập development.',
+        { status: 500 },
+      );
+      return res.status(statusCode).json(body);
+    }
+  }
+
   @Post('google')
   async google(
     @Body() body: { email?: string; name?: string; image?: string },

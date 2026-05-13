@@ -20,6 +20,13 @@ export interface UserRoleRef {
   name: string;
 }
 
+/** Role trả từ `/admin/auth/*` và các payload user của API HUB. */
+export interface AuthRoleRef {
+  id: string;
+  name: string;
+  displayName: string;
+}
+
 export interface User extends AuditFields {
   email: string;
   fullName: string;
@@ -31,9 +38,21 @@ export interface User extends AuditFields {
   deletedAt?: Iso8601 | null;
 }
 
-/** Kết quả đăng nhập: user kèm union quyền hiệu lực (từ mọi role). */
-export interface AuthUser extends User {
+/**
+ * Payload xác thực của API HUB.
+ * Khác với `User` admin-list cũ: dùng `name`, `image`, role `{ id, name, displayName }`
+ * và `id` dạng chuỗi theo `BaseEntity`.
+ */
+export interface AuthUser {
+  id: string;
+  email: string;
+  name: string | null;
+  image: string | null;
   permissions: string[];
+  roles: AuthRoleRef[];
+  phone?: string | null;
+  address?: string | null;
+  updatedAt?: Iso8601;
 }
 
 export interface UserCredentials {
@@ -130,17 +149,30 @@ export interface ProductPagedResponse {
 export type CreateProductInput = Omit<Product, keyof AuditFields>;
 export type UpdateProductInput = Partial<CreateProductInput>;
 
-export interface Category extends AuditFields {
+export interface Category extends Omit<AuditFields, 'id'> {
+  id: string;
   name: string;
   slug: string;
   description?: string | null;
   icon?: string | null;
   sortOrder: number;
   isActive: boolean;
+  parentId?: string | null;
+  parentName?: string | null;
+  _count?: { children: number };
+  postCount?: number;
   deletedAt?: Iso8601 | null;
 }
 
-export type CreateCategoryInput = Omit<Category, keyof AuditFields>;
+export type CreateCategoryInput = {
+  name: string;
+  slug: string;
+  description?: string | null;
+  icon?: string | null;
+  sortOrder?: number;
+  isActive?: boolean;
+  parentId?: string | null;
+};
 export type UpdateCategoryInput = Partial<CreateCategoryInput>;
 
 export interface CategoryUsage {

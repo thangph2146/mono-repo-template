@@ -1,0 +1,225 @@
+@use "../variables" as *;
+@use "../mixins" as *;
+
+/* --- DIALOG --- */
+.editor-dialog-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: $editor-z-index-dialog-overlay;
+  @include backdrop-blur($editor-dialog-overlay-blur, $editor-dialog-overlay-bg);
+  animation: editor-fade-in $editor-transition-normal ease-out;
+}
+
+.editor-dialog-content {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  z-index: $editor-z-index-dialog;
+  display: grid;
+  width: 100%;
+  max-width: $editor-dialog-max-width-lg;
+  transform: translate(-50%, -50%);
+  gap: $editor-gap-5;
+  border: $editor-border-width solid var(--border);
+  background-color: var(--background);
+  padding: $editor-gap-5;
+  @include shadow-lg;
+  @include rounded-lg;
+  outline: none;
+  animation: editor-dialog-zoom-in $editor-transition-normal cubic-bezier(0.16, 1, 0.3, 1);
+
+  @media (min-width: 640px) {
+    max-width: $editor-dialog-max-width-lg;
+  }
+
+  &__close {
+    position: absolute;
+    right: $editor-gap-4;
+    top: $editor-gap-4;
+    @include rounded-md;
+    opacity: $editor-opacity-muted;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: opacity $editor-transition-normal;
+
+    &:hover {
+      opacity: 1;
+    }
+
+    @include focus-ring;
+  }
+}
+
+.editor-dialog-content--image {
+  width: min(1400px, 96vw);
+  max-width: min(1400px, 96vw) !important;
+}
+
+.editor-dialog-content--lightbox {
+  width: min(1400px, 96vw);
+  max-width: min(1400px, 96vw) !important;
+  height: min(90vh, 920px);
+  padding: 0;
+  gap: 0;
+  display: block;
+  background: #0b0f19;
+  border: 0;
+  color: #ffffff;
+  overflow: hidden;
+
+  .editor-dialog-content__close {
+    color: #ffffff;
+  }
+}
+
+.editor-lightbox {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.editor-lightbox__stage {
+  flex: 1 1 auto;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.editor-lightbox__image {
+  position: relative;
+  width: 100%;
+  height: 100%;
+
+  img {
+    object-fit: contain;
+  }
+}
+
+.editor-lightbox__nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(0, 0, 0, 0.35);
+  color: #ffffff;
+  cursor: pointer;
+
+  svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  &.prev {
+    left: 12px;
+  }
+
+  &.next {
+    right: 12px;
+  }
+
+  &.is-disabled {
+    opacity: 0.45;
+    cursor: default;
+  }
+}
+
+.editor-lightbox__footer {
+  flex: 0 0 auto;
+  padding: 12px 12px 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.editor-lightbox__meta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.editor-lightbox__counter {
+  font-size: 12px;
+  font-weight: 700;
+  opacity: 0.9;
+  white-space: nowrap;
+}
+
+.editor-lightbox__caption {
+  font-size: 13px;
+  font-weight: 500;
+  opacity: 0.9;
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.editor-lightbox__thumbs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+
+.editor-lightbox__thumb {
+  position: relative;
+  width: 72px;
+  height: 52px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.04);
+  overflow: hidden;
+  cursor: pointer;
+  flex: 0 0 auto;
+
+  img {
+    object-fit: cover;
+  }
+
+  &.is-active {
+    border-color: rgba(255, 255, 255, 0.62);
+  }
+}
+
+.editor-dialog-header {
+  @include flex-col;
+  gap: $editor-gap-1;
+  text-align: center;
+
+  @media (min-width: 640px) {
+    text-align: left;
+  }
+
+  &__title {
+    font-size: $editor-font-size-lg;
+    font-weight: $editor-font-weight-semibold;
+    line-height: $editor-line-height-tight;
+    margin: 0;
+  }
+
+  &__description {
+    @include text-sm;
+    color: var(--muted-foreground);
+    margin: 0;
+  }
+}
+
+.editor-dialog-footer {
+  @include flex-col;
+  flex-direction: column-reverse;
+  gap: $editor-gap-2;
+
+  @media (min-width: 640px) {
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+}

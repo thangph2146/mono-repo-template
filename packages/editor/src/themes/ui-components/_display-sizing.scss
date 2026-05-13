@@ -1,0 +1,100 @@
+@use "../variables" as *;
+@use "../mixins" as *;
+
+/* --- DISPLAY & SIZING --- */
+.editor-w-full {
+  width: 100%;
+}
+
+.editor-h-full {
+  height: 100%;
+}
+
+.editor-w-14 {
+  width: $editor-control-size-xl + $editor-gap-3;
+}
+
+.editor-w-48 {
+  width: $editor-popover-width * 0.67; // approx 12rem
+}
+
+.editor-w-\[200px\] {
+  width: $editor-image-broken-size;
+}
+
+.editor-h-4 {
+  height: $editor-gap-4;
+}
+
+.editor-h-2 {
+  height: $editor-gap-2;
+}
+
+.editor-w-2 {
+  width: $editor-gap-2;
+}
+
+.editor-min-h-5 {
+  min-height: $editor-gap-5;
+}
+
+.editor-inline-block {
+  display: inline-block;
+}
+
+.editor-block {
+  display: block;
+}
+
+.editor-inline {
+  display: inline;
+}
+
+.editor-overflow-hidden {
+  overflow: hidden;
+}
+
+.editor-pointer-events-none {
+  pointer-events: none;
+}
+
+.editor-select-none {
+  user-select: none;
+}
+
+.editor-user-select-text,
+.editor-select-text {
+  user-select: text;
+}
+
+.editor-z-10 {
+  z-index: $editor-z-index-layer-10;
+}
+
+.editor-box-border {
+  box-sizing: border-box;
+}
+
+.editor-opacity-30 {
+  opacity: $editor-opacity-soft;
+}
+
+.editor-truncate {
+  @include truncate;
+}
+
+.editor-object-cover {
+  object-fit: cover;
+}
+
+.editor-sr-only {
+  @include absolute-full;
+  width: $editor-border-width;
+  height: $editor-border-width;
+  padding: 0;
+  margin: -$editor-border-width;
+  @include overflow-hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}

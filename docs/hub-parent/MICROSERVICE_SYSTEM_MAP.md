@@ -12,12 +12,11 @@ Nguyên tắc:
 
 - Không import chéo source giữa các app trong `apps/*`.
 - Frontend/Backend gọi API qua HTTP và `@workspace/api-client`.
-- Logic chia sẻ không phụ thuộc runtime app đặt ở `packages/*` (vd `@workspace/promo-codes`).
+- Logic chia sẻ không phụ thuộc runtime app đặt ở `packages/*` khi còn tồn tại trong workspace.
 
 ## 2) Shared Packages
 
 - `@workspace/api-client`: SDK/contract để gọi `@api`.
-- `@workspace/promo-codes`: business rules dùng chung.
 - `@ui`: component/UI primitives dùng cho Next apps.
 - `@workspace/eslint-config`: lint rules + service boundaries.
 

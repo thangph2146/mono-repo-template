@@ -27,6 +27,15 @@ export interface UserRowDto {
   roles: Array<{ id: string; name: string; displayName: string }>;
 }
 
+export interface DevLoginOptionDto {
+  id: string;
+  email: string;
+  name: string | null;
+  roleNames: string[];
+  roleLabels: string[];
+  description: string;
+}
+
 export interface ListUsersParams {
   page: number;
   limit: number;
@@ -176,6 +185,49 @@ export class UsersService {
       search,
       limit,
     );
+  }
+
+  async listDevelopmentLoginOptions(): Promise<DevLoginOptionDto[]> {
+    const rows = await this.em.find(
+      User,
+      { deletedAt: null },
+      {
+        populate: ['userRoles', 'userRoles.role'],
+        orderBy: [{ name: 'ASC' }, { email: 'ASC' }],
+      },
+    );
+
+    return rows
+      .map((user) => {
+        const roles = (user.userRoles ?? [])
+          .map((userRole) => userRole.role)
+          .filter((role): role is Role =>
+            Boolean(role && role.deletedAt == null),
+          );
+        const roleNames = [...new Set(roles.map((role) => role.name.trim()))];
+        const roleLabels = [
+          ...new Set(
+            roles
+              .map((role) => role.displayName?.trim() || role.name.trim())
+              .filter(Boolean),
+          ),
+        ];
+        const statusLabel = user.isActive
+          ? 'Đang hoạt động'
+          : 'Ngừng hoạt động';
+        const roleDescription =
+          roleLabels.length > 0 ? roleLabels.join(', ') : 'Chưa gán vai trò';
+
+        return {
+          id: user.id,
+          email: user.email ?? '',
+          name: user.name ?? null,
+          roleNames,
+          roleLabels,
+          description: `${statusLabel} | ${roleDescription}`,
+        } satisfies DevLoginOptionDto;
+      })
+      .filter((user) => user.email.trim() !== '');
   }
 
   async getById(id: string): Promise<UserRowDto | null> {

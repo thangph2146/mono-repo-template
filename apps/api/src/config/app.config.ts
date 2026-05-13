@@ -44,7 +44,14 @@ export const appConfig = {
       process.env.HTTP_LOG_ERROR_MAX_LEN || '20000',
       10,
     ),
-    httpLogSuccessBody: process.env.HTTP_LOG_SUCCESS_BODY === 'true',
+    httpLogResponseMaxLen: parseInt(
+      process.env.HTTP_LOG_RESPONSE_MAX_LEN || '4000',
+      10,
+    ),
+    httpLogSuccessBody:
+      process.env.HTTP_LOG_SUCCESS_BODY != null
+        ? process.env.HTTP_LOG_SUCCESS_BODY === 'true'
+        : (process.env.NODE_ENV || 'development') === 'development',
   },
   cors: {
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'] as string[],

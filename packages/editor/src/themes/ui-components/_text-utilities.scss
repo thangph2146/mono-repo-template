@@ -1,0 +1,48 @@
+@use "../variables" as *;
+@use "../mixins" as *;
+
+/* --- TEXT UTILITIES --- */
+.editor-text-xs-muted {
+  font-size: $editor-font-size-xs;
+  color: $editor-muted-foreground-color;
+}
+
+.editor-text-sm {
+  @include text-sm;
+}
+
+.editor-font-medium {
+  font-weight: $editor-font-weight-medium;
+}
+
+.editor-font-mono {
+  font-family: $editor-font-family-mono;
+}
+
+.editor-text-muted-foreground {
+  color: $editor-muted-foreground-color;
+}
+
+.editor-text-foreground-50 {
+  color: color-mix(in srgb, var(--foreground), transparent 50%);
+}
+
+.editor-uppercase {
+  text-transform: uppercase;
+}
+
+.editor-whitespace-nowrap {
+  white-space: nowrap;
+}
+
+.editor-whitespace-pre-wrap {
+  white-space: pre-wrap;
+}
+
+.editor-word-break-break-word {
+  word-break: break-word;
+}
+
+.editor-caret-primary {
+  caret-color: var(--primary);
+}

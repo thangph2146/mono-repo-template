@@ -1,0 +1,19 @@
+@use "../variables" as *;
+@use "../mixins" as *;
+
+/* --- SEPARATOR --- */
+.editor-separator {
+  background-color: var(--border);
+  flex-shrink: 0;
+
+  &--horizontal {
+    height: $editor-border-width;
+    width: 100%;
+  }
+
+  &--vertical {
+    width: $editor-border-width;
+    height: 100%;
+    min-height: $editor-separator-min-height-vertical;
+  }
+}

@@ -1,0 +1,183 @@
+@use "../variables" as *;
+@use "../mixins" as *;
+
+/* --- BUTTON --- */
+.editor-btn {
+  @include flex-center-justify;
+  gap: $editor-gap-2;
+  white-space: nowrap;
+  @include rounded-md;
+  font-weight: $editor-font-weight-medium;
+  transition: all $editor-transition-normal;
+  @include text-sm;
+  @include focus-ring;
+  border: $editor-border-width solid $editor-quote-border-color;
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+  padding: $editor-gap-2 $editor-gap-4;
+  box-sizing: border-box; // Ensure consistent sizing
+  @include shadow-md;
+  @include editor-button-interactive;
+
+  &:disabled {
+    pointer-events: none;
+    opacity: $editor-opacity-disabled;
+    cursor: not-allowed;
+  }
+
+  &--loading {
+    cursor: wait;
+  }
+
+  &__loader {
+    @include absolute-full;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  &__content {
+    @include flex-center;
+    gap: $editor-gap-2;
+    transition: opacity $editor-transition-normal;
+  }
+
+  &--default {
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+    border-color: var(--primary);
+
+    &:hover {
+      background-color: color-mix(in srgb, var(--primary), black 10%);
+      @include shadow-md;
+    }
+  }
+
+  &--destructive {
+    background-color: var(--destructive);
+    color: var(--destructive-foreground);
+    border-color: var(--destructive);
+
+    &:hover {
+      background-color: color-mix(in srgb, var(--destructive), black 10%);
+      @include shadow-md;
+    }
+  }
+
+  &--outline {
+    border-color: var(--input);
+    background-color: var(--background);
+    color: var(--foreground);
+
+    &:hover {
+      background-color: var(--accent);
+      color: var(--accent-foreground);
+      border-color: var(--accent);
+    }
+  }
+
+  &--secondary {
+    background-color: var(--secondary);
+    color: var(--secondary-foreground);
+    border-color: transparent;
+
+    &:hover {
+      background-color: color-mix(in srgb, var(--secondary), black 10%);
+    }
+  }
+
+  &--ghost {
+    background-color: transparent;
+    border-color: transparent;
+    color: var(--foreground);
+
+    &:hover {
+      background-color: var(--accent);
+      color: var(--accent-foreground);
+    }
+  }
+
+  &--link {
+    color: var(--primary);
+    text-decoration-line: underline;
+    text-underline-offset: $editor-gap-1;
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    height: auto;
+    box-shadow: none !important;
+
+    &:hover {
+      text-decoration-line: underline;
+      transform: none;
+      box-shadow: none !important;
+    }
+  }
+
+  /* Sizes */
+  &--size-default {
+    height: $editor-control-size-md;
+    padding: 0 $editor-gap-4;
+  }
+
+  &--size-sm {
+    height: $editor-control-size-sm;
+    @include rounded-sm;
+    padding: 0 $editor-gap-3;
+    font-size: $editor-font-size-xs;
+  }
+
+  &--size-md {
+    height: $editor-control-size-md;
+    padding: 0 $editor-gap-4;
+  }
+
+  &--size-lg {
+    height: $editor-control-size-lg;
+    @include rounded-md;
+    padding: 0 $editor-gap-4 + $editor-gap-2;
+  }
+
+  &--size-icon,
+  &.editor-btn--size-icon,
+  button.editor-btn--size-icon {
+    width: $editor-control-size-md !important;
+    height: $editor-control-size-md !important;
+    min-width: $editor-control-size-md !important;
+    min-height: $editor-control-size-md !important;
+    flex-shrink: 0;
+    padding: 0 !important;
+  }
+
+  /* Sau mọi biến thể (--ghost/--outline) để active không bị ghi đè */
+  &[data-state="on"],
+  &[data-state="active"] {
+    background-color: var(--primary);
+    color: var(--primary-foreground) !important;
+    border-color: var(--primary);
+
+    &:hover:not(:disabled) {
+      background-color: color-mix(in srgb, var(--primary), black 10%);
+      color: var(--primary-foreground) !important;
+      border-color: color-mix(in srgb, var(--primary), black 10%);
+    }
+  }
+}
+
+/* --- BUTTON GROUP --- */
+.editor-button-group {
+  @include flex-center;
+  flex-wrap: wrap;
+  gap: $editor-gap-1;
+}
+
+.editor-btn-icon-lg {
+  @include control-size($editor-control-size-lg);
+  min-height: $editor-control-size-lg;
+}
+
+.editor-btn-icon-md {
+  @include control-size($editor-control-size-md);
+}
+

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@ui/components/button";
 import { Input } from "@ui/components/input";
@@ -21,11 +21,6 @@ import {
 } from "@ui/components/card";
 import { PageSection } from "@ui/components/layout";
 import { ADMIN_PAGE_TITLE_DOCUMENT_CLASS } from "@ui/lib/layout-shell";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@ui/components/collapsible";
 import { cn } from "@ui/lib/utils";
 import { readAdminSession } from "@/lib/auth-session";
 import { DEFAULT_API_URL } from "@workspace/api-client";
@@ -35,47 +30,29 @@ import {
   FileSpreadsheet,
   FileJson,
   Upload,
-  KeyRound,
   Loader2,
   FolderDown,
   Check,
-  ChevronDown,
   Sparkles,
 } from "lucide-react";
-
-const SECRET_KEY = "storesync_backup_admin_secret";
 
 function apiBase(): string {
   return (process.env.NEXT_PUBLIC_API_URL ?? DEFAULT_API_URL).replace(/\/$/, "");
 }
 
+type ApiEnvelope<T> = {
+  success: boolean;
+  message?: string;
+  error?: string | null;
+  data?: T;
+};
+
 export default function DataBackupPage() {
-  const [secret, setSecret] = useState("");
   const [exporting, setExporting] = useState<"json" | "excel" | null>(null);
   const [importing, setImporting] = useState<"json" | "excel" | null>(null);
-  const [advancedOpen, setAdvancedOpen] = useState(false);
-
-  useEffect(() => {
-    try {
-      setSecret(sessionStorage.getItem(SECRET_KEY) ?? "");
-    } catch {
-      setSecret("");
-    }
-  }, []);
-
-  const persistSecret = (): void => {
-    try {
-      sessionStorage.setItem(SECRET_KEY, secret.trim());
-      toast.success("Đã lưu mật khẩu trong trình duyệt (session).");
-    } catch {
-      toast.error("Không thể lưu sessionStorage.");
-    }
-  };
 
   const authHeaders = (): HeadersInit => {
     const headers: Record<string, string> = {};
-    const t = secret.trim();
-    if (t) headers["X-Backup-Secret"] = t;
     const uid = readAdminSession()?.id;
     if (uid != null) headers["X-User-Id"] = String(uid);
     return headers;
@@ -94,8 +71,17 @@ export default function DataBackupPage() {
   };
 
   const toastFetchError = async (res: Response): Promise<void> => {
-    const t = await res.text();
-    const msg = t.length > 280 ? `${t.slice(0, 280)}…` : t;
+    let msg = "";
+    try {
+      const json = (await res.json()) as ApiEnvelope<unknown>;
+      msg =
+        json.message?.trim() ||
+        (typeof json.error === "string" ? json.error.trim() : "") ||
+        "";
+    } catch {
+      const t = await res.text();
+      msg = t.length > 280 ? `${t.slice(0, 280)}…` : t;
+    }
     if (res.status === 401) {
       toast.error(
         "API từ chối: thiếu hoặc sai X-User-Id — hãy đăng nhập lại admin.",
@@ -104,8 +90,7 @@ export default function DataBackupPage() {
     }
     if (res.status === 403) {
       toast.error(
-        msg ||
-          "Không đủ quyền (data.maintenance hoặc X-Backup-Secret không khớp).",
+        msg || "Không đủ quyền export/import hệ thống cho tài khoản hiện tại.",
       );
       return;
     }
@@ -115,16 +100,24 @@ export default function DataBackupPage() {
   const exportJson = async (): Promise<void> => {
     setExporting("json");
     try {
-      const res = await fetch(`${apiBase()}/data-maintenance/export`, {
+      const res = await fetch(`${apiBase()}/admin/system/export`, {
         headers: authHeaders(),
       });
       if (!res.ok) {
         await toastFetchError(res);
         return;
       }
-      const blob = await res.blob();
-      downloadBlob(blob, "storesync-backup.json");
-      toast.success("Đã tải storesync-backup.json — kiểm tra thư mục Tải xuống.");
+      const payload = (await res.json()) as ApiEnvelope<Record<string, unknown[]>>;
+      if (!payload.success || !payload.data) {
+        toast.error(payload.message || "API không trả dữ liệu export hợp lệ.");
+        return;
+      }
+
+      const blob = new Blob([JSON.stringify(payload.data, null, 2)], {
+        type: "application/json;charset=utf-8",
+      });
+      downloadBlob(blob, "hub-system-export.json");
+      toast.success("Đã tải `hub-system-export.json`.");
     } catch (e) {
       toast.error(
         e instanceof Error ? e.message : "Lỗi mạng — kiểm tra API đang chạy.",
@@ -137,7 +130,7 @@ export default function DataBackupPage() {
   const exportExcel = async (): Promise<void> => {
     setExporting("excel");
     try {
-      const res = await fetch(`${apiBase()}/data-maintenance/export/excel`, {
+      const res = await fetch(`${apiBase()}/admin/system/export/excel`, {
         headers: authHeaders(),
       });
       if (!res.ok) {
@@ -145,8 +138,8 @@ export default function DataBackupPage() {
         return;
       }
       const blob = await res.blob();
-      downloadBlob(blob, "storesync-backup.xlsx");
-      toast.success("Đã tải storesync-backup.xlsx — kiểm tra thư mục Tải xuống.");
+      downloadBlob(blob, "hub-system-export.xlsx");
+      toast.success("Đã tải `hub-system-export.xlsx`.");
     } catch (e) {
       toast.error(
         e instanceof Error ? e.message : "Lỗi mạng — kiểm tra API đang chạy.",
@@ -168,7 +161,7 @@ export default function DataBackupPage() {
         toast.error("File không phải JSON hợp lệ.");
         return;
       }
-      const res = await fetch(`${apiBase()}/data-maintenance/import`, {
+      const res = await fetch(`${apiBase()}/admin/system/import`, {
         method: "POST",
         headers: { ...authHeaders(), "Content-Type": "application/json" },
         body: JSON.stringify(body),
@@ -177,8 +170,15 @@ export default function DataBackupPage() {
         await toastFetchError(res);
         return;
       }
-      const data = (await res.json()) as { inserted: number };
-      toast.success(`Import JSON xong — ${data.inserted} bản ghi.`);
+      const payload = (await res.json()) as ApiEnvelope<{
+        success?: boolean;
+        message?: string;
+      }>;
+      toast.success(
+        payload.message ||
+          payload.data?.message ||
+          "Import JSON hoàn tất.",
+      );
     } catch (e) {
       toast.error(
         e instanceof Error ? e.message : "Lỗi mạng — kiểm tra API đang chạy.",
@@ -194,7 +194,7 @@ export default function DataBackupPage() {
     try {
       const fd = new FormData();
       fd.append("file", file);
-      const res = await fetch(`${apiBase()}/data-maintenance/import/excel`, {
+      const res = await fetch(`${apiBase()}/admin/system/import/excel`, {
         method: "POST",
         headers: authHeaders(),
         body: fd,
@@ -203,8 +203,15 @@ export default function DataBackupPage() {
         await toastFetchError(res);
         return;
       }
-      const data = (await res.json()) as { inserted: number };
-      toast.success(`Import Excel xong — ${data.inserted} bản ghi.`);
+      const payload = (await res.json()) as ApiEnvelope<{
+        success?: boolean;
+        message?: string;
+      }>;
+      toast.success(
+        payload.message ||
+          payload.data?.message ||
+          "Import Excel hoàn tất.",
+      );
     } catch (e) {
       toast.error(
         e instanceof Error ? e.message : "Lỗi mạng — kiểm tra API đang chạy.",
@@ -221,7 +228,7 @@ export default function DataBackupPage() {
       {/* Tiêu đề + bối cảnh ngay khi mở trang */}
       <header className="space-y-3">
         <div className="flex flex-wrap items-start gap-4">
-          <div className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-primary/12 text-primary ring-1 ring-primary/20">
+          <div className="flex size-14 shrink-0 items-center justify-center rounded-lg bg-primary/12 text-primary ring-1 ring-primary/20">
             <Database className="size-7" />
           </div>
           <div className="min-w-0 flex-1 space-y-2">
@@ -240,7 +247,7 @@ export default function DataBackupPage() {
 
             <p className="text-muted-foreground text-pretty leading-relaxed">
               <span className="font-medium text-foreground">Bước 2 (tuỳ chọn):</span>{" "}
-              mở khối &quot;Cài đặt nâng cao&quot; nếu API yêu cầu mật khẩu.
+              dùng file JSON export từ chính hệ thống để import lại khi cần.
             </p>
           </div>
         </div>
@@ -252,7 +259,9 @@ export default function DataBackupPage() {
               Export và import cần header{" "}
               <code className="rounded bg-muted px-1 text-xs">X-User-Id</code> — hãy đăng nhập
               tài khoản có quyền{" "}
-              <code className="rounded bg-muted px-1 text-xs">data.maintenance</code>.
+              <code className="rounded bg-muted px-1 text-xs">settings:manage</code>{" "}
+              hoặc{" "}
+              <code className="rounded bg-muted px-1 text-xs">settings:import</code>.
             </AlertDescription>
           </Alert>
         ) : null}
@@ -267,11 +276,7 @@ export default function DataBackupPage() {
               Trình duyệt thường lưu vào thư mục{" "}
               <strong className="text-foreground">Tải xuống</strong> (Downloads) với tên cố định{" "}
               <code className="rounded bg-muted px-1.5 py-0.5 text-xs">
-                storesync-backup.json
-              </code>{" "}
-              hoặc{" "}
-              <code className="rounded bg-muted px-1.5 py-0.5 text-xs">
-                storesync-backup.xlsx
+                hub-system-export.json
               </code>
               . Nếu không thấy file, mở bảng tải xuống của trình duyệt (Ctrl+J / ⌘+J).
             </p>
@@ -288,7 +293,7 @@ export default function DataBackupPage() {
           </h2>
         </div>
         <p className="text-muted-foreground -mt-1 text-sm">
-          Hai định dạng cùng nội dung nguồn; chọn theo công cụ bạn dùng (script / Excel).
+          Có thể xuất cùng snapshot hệ thống ở định dạng JSON hoặc Excel `.xlsx`.
         </p>
 
         <div className="grid gap-4 sm:grid-cols-2">
@@ -305,23 +310,23 @@ export default function DataBackupPage() {
               </Badge>
             </div>
             <CardHeader className="pb-2 pt-6">
-              <div className="mb-3 flex size-12 items-center justify-center rounded-xl bg-sky-500/12 text-sky-600 dark:text-sky-400">
+              <div className="mb-3 flex size-12 items-center justify-center rounded-lg bg-sky-500/12 text-sky-600 dark:text-sky-400">
                 <FileJson className="size-6" />
               </div>
               <CardTitle className="text-lg">JSON</CardTitle>
               <CardDescription className="text-pretty">
-                Một file duy nhất, dễ tích hợp CI/CD và script phục hồi.
+                Snapshot chuẩn theo contract `admin/system/export`, phù hợp sao lưu và import lại qua API.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4 pt-0">
               <ul className="text-muted-foreground space-y-2 text-sm">
                 <li className="flex gap-2">
                   <Check className="mt-0.5 size-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
-                  Cấu trúc theo metadata ORM (không cấu hình tay từng cột).
+                  Lấy trực tiếp từ API bảo trì hệ thống hiện có của HUB.
                 </li>
                 <li className="flex gap-2">
                   <Check className="mt-0.5 size-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
-                  Phù hợp import lại qua API JSON.
+                  Phù hợp import lại qua `POST /api/admin/system/import`.
                 </li>
               </ul>
               <Button
@@ -358,23 +363,23 @@ export default function DataBackupPage() {
               </Badge>
             </div>
             <CardHeader className="pb-2 pt-6">
-              <div className="mb-3 flex size-12 items-center justify-center rounded-xl bg-emerald-500/12 text-emerald-600 dark:text-emerald-400">
+              <div className="mb-3 flex size-12 items-center justify-center rounded-lg bg-emerald-500/12 text-emerald-600 dark:text-emerald-400">
                 <FileSpreadsheet className="size-6" />
               </div>
               <CardTitle className="text-lg">Excel</CardTitle>
               <CardDescription className="text-pretty">
-                Nhiều sheet — mỗi entity một sheet, mở trực tiếp bằng Excel / LibreOffice.
+                Mỗi model/entity là một sheet, phù hợp kiểm tra nhanh và chỉnh dữ liệu trước khi import lại.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4 pt-0">
               <ul className="text-muted-foreground space-y-2 text-sm">
                 <li className="flex gap-2">
                   <Check className="mt-0.5 size-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
-                  Có sheet metadata ẩn + dữ liệu từng bảng.
+                  Xuất workbook `.xlsx` từ cùng bundle dữ liệu của JSON export.
                 </li>
                 <li className="flex gap-2">
                   <Check className="mt-0.5 size-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
-                  Phù hợp xem nhanh, chỉnh sửa thủ công rồi import Excel.
+                  Mỗi bảng hiện tại của hệ thống được tách thành sheet tương ứng.
                 </li>
               </ul>
               <Button
@@ -403,54 +408,6 @@ export default function DataBackupPage() {
 
       <Separator />
 
-      <Collapsible open={advancedOpen} onOpenChange={setAdvancedOpen}>
-        <Card className="pt-0">
-          <CollapsibleTrigger
-            className={cn(
-              "flex w-full items-center justify-between gap-3 p-4 text-left",
-              "rounded-none border-0 bg-transparent hover:bg-muted/50",
-              "cursor-pointer font-semibold text-foreground",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-            )}
-          >
-            <span className="flex items-center gap-2">
-              <KeyRound className="size-5 shrink-0 text-primary" />
-              Cài đặt nâng cao — X-Backup-Secret (tuỳ chọn)
-            </span>
-            <ChevronDown
-              className={cn(
-                "size-5 shrink-0 text-muted-foreground transition-transform",
-                advancedOpen && "rotate-180",
-              )}
-            />
-          </CollapsibleTrigger>
-          <CollapsibleContent>
-            <CardContent className="border-t pt-4 space-y-3">
-              <p className="text-muted-foreground text-sm">
-                Chỉ cần khi API đặt biến{" "}
-                <code className="rounded bg-muted px-1 text-xs">BACKUP_IMPORT_SECRET</code>.
-                Giá trị gửi qua header{" "}
-                <code className="rounded bg-muted px-1 text-xs">X-Backup-Secret</code>.
-              </p>
-              <div className="space-y-2">
-                <Label htmlFor="backup-secret">Mật khẩu</Label>
-                <Input
-                  id="backup-secret"
-                  type="password"
-                  autoComplete="off"
-                  placeholder="Để trống nếu API không bật secret"
-                  value={secret}
-                  onChange={(e) => setSecret(e.target.value)}
-                />
-              </div>
-              <Button type="button" variant="secondary" onClick={persistSecret}>
-                Lưu vào trình duyệt (session)
-              </Button>
-            </CardContent>
-          </CollapsibleContent>
-        </Card>
-      </Collapsible>
-
       <Card className="border-destructive/40 bg-destructive/[0.03]">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg text-destructive">
@@ -463,7 +420,7 @@ export default function DataBackupPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-6 sm:grid-cols-2">
-          <div className="space-y-2 rounded-xl border border-border bg-card p-4">
+          <div className="space-y-2 rounded-lg border border-border bg-card p-4">
             <Label className="flex items-center gap-2 text-base font-medium">
               <FileJson className="size-4 text-sky-600" />
               Import JSON
@@ -489,13 +446,13 @@ export default function DataBackupPage() {
               </p>
             )}
           </div>
-          <div className="space-y-2 rounded-xl border border-border bg-card p-4">
+          <div className="space-y-2 rounded-lg border border-border bg-card p-4">
             <Label className="flex items-center gap-2 text-base font-medium">
               <FileSpreadsheet className="size-4 text-emerald-600" />
               Import Excel
             </Label>
             <p className="text-muted-foreground text-xs">
-              Chọn file <code className="rounded bg-muted px-1">.xlsx</code> do export Excel tạo.
+              Chọn file <code className="rounded bg-muted px-1">.xlsx</code> do hệ thống export ra để import lại.
             </p>
             <Input
               type="file"

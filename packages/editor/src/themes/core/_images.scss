@@ -1,0 +1,98 @@
+@use "../variables" as *;
+@use "../mixins" as *;
+
+.lexical-editor-root {
+
+  // Images
+  .editor-image {
+    display: inline-block;
+    position: relative;
+    cursor: default;
+    user-select: none;
+
+    img {
+      max-width: 100%;
+      height: auto;
+      border-radius: $editor-border-radius;
+    }
+  }
+
+  .editor-image-link {
+    display: inline-block;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    background: transparent;
+    cursor: zoom-in;
+
+    &:focus-visible {
+      @include focus-ring;
+    }
+  }
+
+  .editor-inline-image {
+    display: inline-block;
+    position: relative;
+    z-index: $editor-z-index-layer-1;
+
+    img {
+      max-width: 100%;
+      height: auto;
+    }
+  }
+
+  .editor-image-focused {
+    outline: $editor-outline-width solid $editor-primary-color;
+    outline-offset: calc($editor-gap-1 / 2);
+  }
+
+  .editor-image-draggable {
+    cursor: grab;
+
+    &:active {
+      cursor: grabbing;
+    }
+  }
+
+  .editor-image-caption {
+    display: block;
+    min-width: $editor-image-caption-min-width;
+    overflow: hidden;
+    padding: 0;
+
+    &.editable {
+      border: $editor-border-width solid $editor-border-color;
+      border-radius: $editor-border-radius;
+      background-color: $editor-image-caption-bg;
+    }
+
+    &.readonly {
+      border: 0;
+      background-color: transparent;
+    }
+
+    .editor-paragraph {
+      margin: 0;
+    }
+  }
+
+  .editor-lazy-image-wrapper {
+    display: inline-block;
+
+    &.full-width {
+      width: 100%;
+    }
+  }
+
+  // Broken Image
+  .editor-broken-image-container {
+    display: inline-block;
+    width: $editor-image-broken-size;
+    height: $editor-image-broken-size;
+
+    img {
+      opacity: 0.2;
+      object-fit: contain;
+    }
+  }
+}

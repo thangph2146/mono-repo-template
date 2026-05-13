@@ -1,0 +1,151 @@
+@use "../variables" as *;
+@use "../mixins" as *;
+
+/* --- TOGGLE GROUP & TOOLBAR ITEMS --- */
+.editor-toggle-group {
+  @include flex-center-justify;
+  flex-wrap: wrap;
+  gap: $editor-gap-1;
+}
+
+.editor-toolbar-item,
+.editor-toggle-group-item {
+  @include flex-center-justify;
+  @include rounded-md;
+  @include text-sm;
+  font-weight: $editor-font-weight-medium;
+  color: var(--foreground);
+  transition: all $editor-transition-normal;
+  cursor: pointer;
+  line-height: 1;
+  padding: $editor-gap-2;
+  @include editor-button-interactive;
+
+  &--size-sm {
+    padding: $editor-gap-1;
+    font-size: $editor-font-size-xs;
+  }
+
+  &--size-lg {
+    padding: $editor-gap-3;
+    font-size: $editor-font-size-md;
+  }
+
+  &--outline {
+    border-color: var(--border);
+
+    &:hover {
+      background-color: $editor-accent-color;
+      border-color: $editor-accent-color;
+      color: $editor-accent-foreground-color;
+    }
+  }
+
+  &:hover:not([data-state="on"]):not([data-state="active"]):not([data-state="open"]) {
+    background-color: color-mix(in srgb, var(--accent) 92%, transparent);
+    color: var(--accent-foreground);
+    border-color: color-mix(in srgb, var(--accent-foreground) 16%, transparent);
+  }
+
+  &[data-state="on"],
+  &[data-state="active"],
+  &[data-state="open"] {
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+    border-color: var(--primary);
+
+    &:hover:not(:disabled) {
+      background-color: color-mix(in srgb, var(--primary), black 10%);
+      color: var(--primary-foreground);
+      border-color: color-mix(in srgb, var(--primary), black 10%);
+    }
+  }
+
+  &:disabled {
+    pointer-events: none;
+    opacity: $editor-opacity-disabled;
+  }
+}
+
+.editor-toolbar-item {
+  @include control-size($editor-control-size-md);
+  padding: 0;
+  background-color: var(--background);
+  border: $editor-border-width solid var(--border);
+  box-shadow: none;
+
+  &--lg {
+    @include control-size($editor-control-size-lg);
+    min-height: $editor-control-size-lg;
+  }
+  
+  &--w-fit { width: fit-content; }
+  &--w-auto {
+    width: auto;
+    padding-left: $editor-gap-2;
+    padding-right: $editor-gap-2;
+  }
+  &--gap-sm { gap: $editor-gap-1; }
+  &--text-center { text-align: center; }
+}
+
+.editor-toolbar-select-trigger {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: auto;
+  width: 220px;
+  min-width: 220px;
+  min-height: $editor-control-size-md;
+  width: auto;
+  gap: $editor-gap-2;
+  padding: calc($editor-gap-1 + 2px) $editor-gap-2;
+  @include text-sm;
+  font-weight: $editor-font-weight-medium;
+  border: $editor-border-width solid var(--border);
+  @include rounded-md;
+  transition: all $editor-transition-normal;
+  
+  @include editor-button-interactive;
+  background-color: var(--background);
+  color: var(--foreground);
+
+  .editor-select-icon {
+    flex-shrink: 0;
+    color: currentColor;
+  }
+  
+  &:focus {
+    @include focus-ring;
+  }
+
+  &:hover:not(:disabled):not([data-state="open"]) {
+    border-color: color-mix(in srgb, var(--primary) 24%, var(--border));
+    background-color: color-mix(in srgb, var(--accent) 88%, transparent);
+    color: var(--accent-foreground);
+  }
+
+  &[data-state="open"] {
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+    border-color: var(--primary);
+
+    &:hover:not(:disabled) {
+      background-color: color-mix(in srgb, var(--primary), black 10%);
+      color: var(--primary-foreground);
+      border-color: color-mix(in srgb, var(--primary), black 10%);
+    }
+  }
+
+  &--w-md {
+    width: $editor-toolbar-select-width;
+    min-width: $editor-toolbar-select-width;
+  }
+}
+
+.editor-toolbar-select-icon {
+  @include icon-size($editor-icon-size-sm);
+  @include flex-center-justify;
+  margin-right: $editor-gap-2;
+}
+

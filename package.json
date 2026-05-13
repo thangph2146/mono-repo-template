@@ -18,7 +18,10 @@
     "format": "turbo format",
     "typecheck": "turbo typecheck",
     "api": "pnpm --filter @api",
-    "db": "pnpm --filter @api exec mikro-orm"
+    "db": "pnpm --filter @api exec mikro-orm",
+    "db:fresh": "pnpm --filter @api run db:fresh",
+    "db:migration:fresh": "pnpm --filter @api run db:migration:fresh",
+    "db:seed": "pnpm --filter @api run db:seed"
   },
   "devDependencies": {
     "@workspace/eslint-config": "workspace:*",

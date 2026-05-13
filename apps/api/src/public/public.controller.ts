@@ -12,9 +12,14 @@ import type { Response } from 'express';
 import { PublicPostsService } from './public-posts.service';
 import { PublicCategoriesService } from './public-categories.service';
 import { PublicContactRequestsService } from './public-contact-requests.service';
+import {
+  PublicAuthService,
+  type CreatePublicRegisterDto,
+} from './public-auth.service';
 import { AdmissionResultsService } from '../admission-results/admission-results.service';
 import { PageContentsService } from '../page-contents/page-contents.service';
 import type { CreateContactRequestDto } from './public-contact-requests.service';
+import { UsersService } from '../users/users.service';
 import {
   createSuccessResponse,
   createErrorResponse,
@@ -44,8 +49,10 @@ export class PublicController {
     private readonly publicPostsService: PublicPostsService,
     private readonly publicCategoriesService: PublicCategoriesService,
     private readonly publicContactRequestsService: PublicContactRequestsService,
+    private readonly publicAuthService: PublicAuthService,
     private readonly admissionResultsService: AdmissionResultsService,
     private readonly pageContentsService: PageContentsService,
+    private readonly usersService: UsersService,
   ) {}
 
   private logApiError(api: string, error: unknown, metadata?: unknown): void {
@@ -65,6 +72,30 @@ export class PublicController {
             metadata: metadata ?? null,
           };
     this.logger.error(JSON.stringify(details));
+  }
+
+  @Get('dev-login-options')
+  async getDevelopmentLoginOptions(@Res() res: Response) {
+    this.logger.log('getDevelopmentLoginOptions');
+    if (process.env.NODE_ENV !== 'development') {
+      const { statusCode, body } = createErrorResponse('Not Found', {
+        status: 404,
+      });
+      return res.status(statusCode).json(body);
+    }
+
+    try {
+      const options = await this.usersService.listDevelopmentLoginOptions();
+      const { statusCode, body } = createSuccessResponse(options);
+      return res.status(statusCode).json(body);
+    } catch (error) {
+      this.logApiError('GET /api/public/dev-login-options', error);
+      const { statusCode, body } = createErrorResponse(
+        'Không thể tải danh sách tài khoản development.',
+        { status: 500 },
+      );
+      return res.status(statusCode).json(body);
+    }
   }
 
   @Get('admission-results/lookup')
@@ -189,10 +220,19 @@ export class PublicController {
   ) {
     this.logger.log('createContactRequest');
     try {
-      const { fullName, phone, email } = body;
-      if (!fullName?.trim() || !phone?.trim() || !email?.trim()) {
+      const name = body?.name?.trim() || body?.fullName?.trim();
+      const email = body?.email?.trim();
+      const subject = body?.subject?.trim();
+      const hasLegacyConsultationFields = Boolean(
+        body?.address ||
+        body?.program ||
+        body?.major ||
+        body?.subscribeNewsletter ||
+        body?.subscribeConsultation,
+      );
+      if (!name || !email || (!subject && !hasLegacyConsultationFields)) {
         const { statusCode, body: errBody } = createErrorResponse(
-          'Vui lòng điền đầy đủ họ tên, số điện thoại và email.',
+          'Vui lòng điền đầy đủ họ tên, email và chủ đề liên hệ.',
           { status: 400 },
         );
         return res.status(statusCode).json(errBody);
@@ -202,13 +242,50 @@ export class PublicController {
       return res.status(statusCode).json(okBody);
     } catch (error) {
       this.logApiError('POST /api/public/contact-requests', error, {
+        name: name ?? null,
+        email: body?.email ?? null,
+        phone: body?.phone ?? null,
+        subject: body?.subject ?? null,
+      });
+      const { statusCode, body: errBody } = createErrorResponse(
+        'Không thể gửi liên hệ hỗ trợ. Vui lòng thử lại sau.',
+        { status: 500 },
+      );
+      return res.status(statusCode).json(errBody);
+    }
+  }
+
+  @Post('register')
+  async register(@Body() body: CreatePublicRegisterDto, @Res() res: Response) {
+    this.logger.log(`register email=${body?.email ?? '-'}`);
+    try {
+      const { fullName, email, password } = body;
+      if (!fullName?.trim() || !email?.trim() || !password?.trim()) {
+        const { statusCode, body: errBody } = createErrorResponse(
+          'Vui lòng điền đầy đủ họ tên, email và mật khẩu.',
+          { status: 400 },
+        );
+        return res.status(statusCode).json(errBody);
+      }
+
+      const result = await this.publicAuthService.register(body);
+      const { statusCode, body: okBody } = createSuccessResponse(result, {
+        status: 201,
+        message: 'Đăng ký tài khoản thành công',
+      });
+      return res.status(statusCode).json(okBody);
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : 'Không thể đăng ký tài khoản. Vui lòng thử lại sau.';
+      this.logApiError('POST /api/public/register', error, {
         email: body?.email ?? null,
         phone: body?.phone ?? null,
       });
-      const { statusCode, body: errBody } = createErrorResponse(
-        'Không thể gửi đăng ký. Vui lòng thử lại sau.',
-        { status: 500 },
-      );
+      const { statusCode, body: errBody } = createErrorResponse(message, {
+        status: message.includes('đã tồn tại') ? 409 : 400,
+      });
       return res.status(statusCode).json(errBody);
     }
   }

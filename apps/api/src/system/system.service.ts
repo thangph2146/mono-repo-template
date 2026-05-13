@@ -7,6 +7,7 @@ import {
   wrap,
 } from '@mikro-orm/core';
 import { hashSync } from 'bcryptjs';
+import * as ExcelJS from 'exceljs';
 
 import { Account } from '../entities/account.entity';
 import { AdmissionResult } from '../entities/admission-result.entity';
@@ -42,6 +43,10 @@ import {
   stripHeroSlidesPermissions,
   stripLegacyHeroSlideFromBundle,
 } from './import-helpers';
+
+const EXCEL_META_SHEET = '__meta';
+const EXCEL_NULL_MARKER = '__HUB_NULL__';
+type ExcelWorkbookLoadInput = Parameters<ExcelJS.Workbook['xlsx']['load']>[0];
 
 /** bcrypt — chỉ khi bản ghi user thiếu password trong JSON export. */
 let importUserFallbackPasswordHash: string | null = null;
@@ -207,6 +212,71 @@ function coerceImportDate(val: unknown, fallback: Date): Date {
   return fallback;
 }
 
+function encodeExcelCellValue(value: unknown): string | number | boolean {
+  if (value === null) return EXCEL_NULL_MARKER;
+  if (value === undefined) return '';
+  if (value instanceof Date) return value.toISOString();
+  if (typeof value === 'string') return value;
+  if (typeof value === 'number' || typeof value === 'boolean') return value;
+  try {
+    return JSON.stringify(value);
+  } catch {
+    return String(value);
+  }
+}
+
+function parseExcelObjectValue(value: object): unknown {
+  if ('result' in value) {
+    return parseExcelCellValue((value as { result?: unknown }).result);
+  }
+  if ('text' in value) {
+    return String((value as { text?: unknown }).text ?? '');
+  }
+  if ('richText' in value) {
+    return ((value as { richText?: Array<{ text?: string }> }).richText ?? [])
+      .map((item) => item.text ?? '')
+      .join('');
+  }
+  return String(value);
+}
+
+function parseExcelCellValue(value: unknown): unknown {
+  if (value === null || value === undefined || value === '') {
+    return undefined;
+  }
+  if (value instanceof Date) {
+    return value.toISOString();
+  }
+  if (typeof value === 'number' || typeof value === 'boolean') {
+    return value;
+  }
+  if (typeof value === 'object') {
+    return parseExcelObjectValue(value);
+  }
+  if (typeof value !== 'string') {
+    return value;
+  }
+  if (value === EXCEL_NULL_MARKER) {
+    return null;
+  }
+
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return undefined;
+  }
+  if (
+    (trimmed.startsWith('{') && trimmed.endsWith('}')) ||
+    (trimmed.startsWith('[') && trimmed.endsWith(']'))
+  ) {
+    try {
+      return JSON.parse(trimmed) as unknown;
+    } catch {
+      return value;
+    }
+  }
+  return value;
+}
+
 @Injectable()
 export class SystemService {
   private readonly logger = new Logger(SystemService.name);
@@ -238,6 +308,192 @@ export class SystemService {
 
   constructor(private readonly em: EntityManager) {
     this.assertExportRegistryCoversOrmEntities();
+  }
+
+  private getWorkbookSheetName(modelName: string): string {
+    return modelName.slice(0, 31);
+  }
+
+  private getDefaultExcelColumns(modelName: string): string[] {
+    if (modelName === 'postCategory') return ['postId', 'categoryId'];
+    if (modelName === 'postTag') return ['postId', 'tagId'];
+
+    const entity = entityByModelName[modelName];
+    if (!entity) return [];
+    const entityName =
+      typeof entity === 'string'
+        ? entity
+        : typeof entity === 'function'
+          ? entity.name
+          : String(entity as unknown as string);
+    const meta = this.em.getMetadata().find(entityName);
+    if (!meta) return [];
+
+    return Object.values(meta.properties)
+      .filter((prop) => !shouldSkipImportProperty(prop))
+      .map((prop) => prop.name);
+  }
+
+  private getExcelColumns(
+    modelName: string,
+    rows: Record<string, unknown>[],
+  ): string[] {
+    const columns = [...this.getDefaultExcelColumns(modelName)];
+    const seen = new Set(columns);
+
+    for (const row of rows) {
+      for (const key of Object.keys(row)) {
+        if (seen.has(key)) continue;
+        seen.add(key);
+        columns.push(key);
+      }
+    }
+
+    return columns;
+  }
+
+  private addWorkbookMetadataSheet(
+    workbook: ExcelJS.Workbook,
+    data: Record<string, any[]>,
+  ): void {
+    const sheet = workbook.addWorksheet(EXCEL_META_SHEET, {
+      state: 'veryHidden',
+    });
+    sheet.columns = [
+      { header: 'modelName', key: 'modelName', width: 24 },
+      { header: 'sheetName', key: 'sheetName', width: 24 },
+      { header: 'rowCount', key: 'rowCount', width: 12 },
+    ];
+    sheet.getRow(1).font = { bold: true };
+
+    for (const [modelName, rows] of Object.entries(data)) {
+      sheet.addRow({
+        modelName,
+        sheetName: this.getWorkbookSheetName(modelName),
+        rowCount: rows.length,
+      });
+    }
+  }
+
+  async exportExcelData(modelName?: string): Promise<Buffer> {
+    const data = (await this.exportData(modelName)) as Record<string, Record<
+      string,
+      unknown
+    >[]>;
+    const workbook = new ExcelJS.Workbook();
+    workbook.creator = 'HUB API';
+    workbook.created = new Date();
+    workbook.modified = new Date();
+
+    this.addWorkbookMetadataSheet(workbook, data);
+
+    for (const [currentModelName, rows] of Object.entries(data)) {
+      const sheet = workbook.addWorksheet(
+        this.getWorkbookSheetName(currentModelName),
+      );
+      const columns = this.getExcelColumns(currentModelName, rows);
+
+      if (columns.length === 0) {
+        sheet.addRow(['id']);
+        continue;
+      }
+
+      sheet.columns = columns.map((column) => ({
+        header: column,
+        key: column,
+        width: Math.max(14, Math.min(40, column.length + 4)),
+      }));
+      sheet.getRow(1).font = { bold: true };
+      sheet.views = [{ state: 'frozen', ySplit: 1 }];
+      sheet.autoFilter = {
+        from: { row: 1, column: 1 },
+        to: { row: 1, column: columns.length },
+      };
+
+      for (const row of rows) {
+        const encodedRow: Record<string, string | number | boolean> = {};
+        for (const column of columns) {
+          encodedRow[column] = encodeExcelCellValue(row[column]);
+        }
+        sheet.addRow(encodedRow);
+      }
+    }
+
+    const buffer = await workbook.xlsx.writeBuffer();
+    return Buffer.from(buffer);
+  }
+
+  async importExcelData(
+    fileBuffer: Buffer,
+    targetModel?: string,
+    skipClear: boolean = false,
+  ) {
+    const workbook = new ExcelJS.Workbook();
+    await workbook.xlsx.load(fileBuffer as unknown as ExcelWorkbookLoadInput);
+
+    const metaSheet = workbook.getWorksheet(EXCEL_META_SHEET);
+    const sheetMap = new Map<string, string>();
+    if (metaSheet) {
+      metaSheet.eachRow((row, rowNumber) => {
+        if (rowNumber === 1) return;
+        const modelName = row.getCell(1).text?.trim();
+        const sheetName = row.getCell(2).text?.trim();
+        if (modelName && sheetName) {
+          sheetMap.set(modelName, sheetName);
+        }
+      });
+    }
+
+    const modelNames = targetModel
+      ? [targetModel]
+      : sheetMap.size > 0
+        ? [...sheetMap.keys()]
+        : workbook.worksheets
+            .map((sheet) => sheet.name)
+            .filter((name) => name !== EXCEL_META_SHEET);
+
+    const data: Record<string, any[]> = {};
+
+    for (const modelName of modelNames) {
+      const worksheet =
+        workbook.getWorksheet(sheetMap.get(modelName) ?? modelName) ??
+        workbook.getWorksheet(modelName);
+      if (!worksheet) continue;
+
+      const headerRow = worksheet.getRow(1);
+      const headerValues = Array.isArray(headerRow.values)
+        ? headerRow.values.slice(1)
+        : [];
+      const headers = headerValues
+        .map((value) => String(value ?? '').trim())
+        .filter(Boolean);
+      if (headers.length === 0) {
+        data[modelName] = [];
+        continue;
+      }
+
+      const rows: Record<string, unknown>[] = [];
+      worksheet.eachRow((row, rowNumber) => {
+        if (rowNumber === 1) return;
+        const record: Record<string, unknown> = {};
+        let hasValue = false;
+
+        headers.forEach((header, index) => {
+          const parsed = parseExcelCellValue(row.getCell(index + 1).value);
+          if (parsed === undefined) return;
+          record[header] = parsed;
+          hasValue = true;
+        });
+
+        if (hasValue) {
+          rows.push(record);
+        }
+      });
+
+      data[modelName] = rows;
+    }
+
+    return this.importData(data, targetModel, skipClear);
   }
 
   /** Tránh lệch bảng: mọi entity trong ORM phải có trong entityByModelName và ngược lại. */

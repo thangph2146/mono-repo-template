@@ -1,0 +1,66 @@
+@use "../variables" as *;
+@use "../mixins" as *;
+
+.editor-floating-toolbar {
+  @include floating-toolbar-base;
+  @include backdrop-blur(8px, rgba(var(--background-rgb, 255, 255, 255), 0.85));
+  max-width: $editor-floating-toolbar-max-width;
+  flex-wrap: wrap;
+}
+
+.editor-floating-text-format {
+  @include floating-toolbar-base;
+  @include backdrop-blur(8px, rgba(var(--background-rgb, 255, 255, 255), 0.8));
+  @include backdrop-blur-dark(8px, rgba(var(--background-rgb, 15, 15, 15), 0.8));
+  
+  // Hover effect for the whole bar
+  &:hover {
+    @include shadow-xl;
+  }
+
+  // Divider between groups
+  .editor-separator--vertical {
+    height: $editor-gap-5;
+    width: $editor-border-width;
+    margin: 0 $editor-gap-1;
+    background-color: var(--border);
+  }
+
+  // Custom styling for buttons in floating toolbar
+  .editor-toggle-group-item, .editor-btn, .editor-toolbar-item {
+    border: none;
+    border-radius: calc($editor-border-radius - 4px);
+    @include control-size(30px);
+    padding: 0;
+    background-color: transparent;
+    transition: all $editor-transition-normal;
+    @include flex-center-justify;
+
+    &:hover {
+      background-color: color-mix(in srgb, var(--accent) 92%, transparent);
+      color: var(--accent-foreground);
+    }
+
+    &[data-state="on"], &[data-state="active"], &--active {
+      background-color: var(--primary);
+      color: var(--primary-foreground);
+      font-weight: $editor-font-weight-bold;
+
+      &:hover:not(:disabled) {
+        background-color: color-mix(in srgb, var(--primary), black 10%);
+        color: var(--primary-foreground);
+      }
+    }
+  }
+
+  // Group of buttons with border as requested
+  .editor-floating-group, .editor-floating-group--lg {
+    @include flex-center;
+    gap: $editor-gap-0-5;
+    padding: $editor-gap-0-5;
+    border-radius: calc($editor-border-radius - 2px);
+    // Remove border from inner groups to make it cleaner
+    border: none;
+    background-color: transparent;
+  }
+}

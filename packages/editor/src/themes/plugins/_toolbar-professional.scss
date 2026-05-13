@@ -1,0 +1,170 @@
+@use "../variables" as *;
+@use "../mixins" as *;
+
+/*
+ * Professional toolbar skin for Lexical editor.
+ * Scoped under `.lexical-editor-root` to reduce side-effects
+ * from external app styles and utility classes.
+ */
+.lexical-editor-root {
+  .editor-relative-full{
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+  }
+  .editor-relative-full > .editor-toolbar.editor-toolbar {
+    position: sticky;
+    top: 0;
+    z-index: $editor-z-index-toolbar;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    column-gap: $editor-gap-2;
+    row-gap: $editor-gap-1;
+    flex-wrap: wrap !important;
+    width: 100% !important;
+    min-height: calc(#{$editor-control-size-md} + #{$editor-gap-2 * 2});
+    box-sizing: border-box;
+    padding: $editor-gap-2 $editor-gap-3 !important;
+    border: $editor-border-width solid var(--border, #d1d5db);
+    border-bottom-color: color-mix(in srgb, var(--border) 86%, var(--muted));
+    border-top-left-radius: $editor-border-radius;
+    border-top-right-radius: $editor-border-radius;
+    background: color-mix(in srgb, var(--background, #fff) 94%, var(--muted, #f3f4f6));
+    @include backdrop-blur(8px, rgba(255, 255, 255, 1));
+    @include shadow-md;
+    white-space: normal;
+    overflow-x: hidden !important;
+    overflow-y: visible !important;
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, var(--muted-foreground) 36%, transparent) transparent;
+  }
+
+  .editor-relative-full > .editor-toolbar.editor-toolbar .editor-toolbar-group {
+    display: inline-flex;
+    align-items: center;
+    gap: $editor-gap-1;
+    flex-wrap: nowrap;
+    width: auto;
+    min-width: max-content;
+    max-width: 100%;
+    padding: $editor-gap-1;
+    border-radius: calc($editor-border-radius - 2px);
+    background-color: color-mix(in srgb, var(--background) 82%, transparent);
+  }
+
+  .editor-relative-full > .editor-toolbar.editor-toolbar .editor-toolbar-item,
+  .editor-relative-full > .editor-toolbar.editor-toolbar .editor-toggle-group-item {
+    width: $editor-control-size-md;
+    min-width: $editor-control-size-md;
+    height: $editor-control-size-md;
+    min-height: $editor-control-size-md;
+    padding: 0;
+    border: $editor-border-width solid var(--border);
+    border-radius: calc($editor-border-radius - 3px);
+    background: var(--background);
+    color: var(--foreground);
+    box-shadow: none;
+    transition: all $editor-transition-fast;
+    flex-shrink: 0;
+  }
+
+  .editor-relative-full > .editor-toolbar.editor-toolbar .editor-toolbar-item.editor-toolbar-item--w-auto {
+    width: auto !important;
+    min-width: max-content !important;
+    padding-left: $editor-gap-2 !important;
+    padding-right: $editor-gap-2 !important;
+    justify-content: space-between;
+    gap: $editor-gap-1;
+  }
+
+  .editor-relative-full > .editor-toolbar.editor-toolbar .editor-toolbar-item.editor-toolbar-item--w-fit {
+    width: fit-content !important;
+    min-width: 56px !important;
+  }
+
+  .editor-relative-full > .editor-toolbar.editor-toolbar .editor-toolbar-item:hover:not([data-state="on"]):not([data-state="active"]):not([data-state="open"]),
+  .editor-relative-full > .editor-toolbar.editor-toolbar .editor-toggle-group-item:hover:not([data-state="on"]):not([data-state="active"]):not([data-state="open"]) {
+    background-color: color-mix(in srgb, var(--accent) 90%, transparent);
+    color: var(--accent-foreground);
+    border-color: color-mix(in srgb, var(--primary) 20%, var(--border));
+  }
+
+  .editor-relative-full > .editor-toolbar.editor-toolbar .editor-toolbar-item[data-state="on"],
+  .editor-relative-full > .editor-toolbar.editor-toolbar .editor-toolbar-item[data-state="active"],
+  .editor-relative-full > .editor-toolbar.editor-toolbar .editor-toolbar-item[data-state="open"],
+  .editor-relative-full > .editor-toolbar.editor-toolbar .editor-toggle-group-item[data-state="on"],
+  .editor-relative-full > .editor-toolbar.editor-toolbar .editor-toggle-group-item[data-state="active"],
+  .editor-relative-full > .editor-toolbar.editor-toolbar .editor-toggle-group-item[data-state="open"] {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    color: var(--primary-foreground);
+
+    &:hover:not(:disabled) {
+      background-color: color-mix(in srgb, var(--primary), black 10%);
+      border-color: color-mix(in srgb, var(--primary), black 10%);
+      color: var(--primary-foreground);
+    }
+  }
+
+  .editor-relative-full > .editor-toolbar.editor-toolbar .editor-toolbar-select-trigger {
+    width: auto;
+    min-width: 8.5rem;
+    min-height: $editor-control-size-md;
+    max-width: min(100%, 22rem);
+    border: $editor-border-width solid var(--border);
+    background-color: var(--background);
+    border-radius: calc($editor-border-radius - 2px);
+    transition: all $editor-transition-fast;
+    color: var(--foreground);
+  }
+
+  .editor-relative-full > .editor-toolbar.editor-toolbar .editor-toolbar-select-trigger:hover:not(:disabled):not([data-state="open"]) {
+    border-color: color-mix(in srgb, var(--primary) 24%, var(--border));
+    background-color: color-mix(in srgb, var(--accent) 88%, transparent);
+    color: var(--accent-foreground);
+  }
+
+  .editor-relative-full > .editor-toolbar.editor-toolbar .editor-toolbar-select-trigger[data-state="open"] {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    color: var(--primary-foreground);
+
+    &:hover:not(:disabled) {
+      background-color: color-mix(in srgb, var(--primary), black 10%);
+      border-color: color-mix(in srgb, var(--primary), black 10%);
+      color: var(--primary-foreground);
+    }
+  }
+
+  .editor-relative-full > .editor-toolbar.editor-toolbar .editor-toolbar-separator {
+    opacity: 0.7;
+    margin-left: $editor-gap-1;
+    margin-right: $editor-gap-1;
+  }
+
+  @media (max-width: 1280px) {
+    .editor-relative-full > .editor-toolbar.editor-toolbar .editor-toolbar-select-trigger {
+      min-width: 7.5rem;
+      max-width: 16rem;
+    }
+  }
+
+  @media (max-width: 1024px) {
+    .editor-relative-full > .editor-toolbar.editor-toolbar {
+      column-gap: $editor-gap-1;
+      row-gap: $editor-gap-1;
+      padding: $editor-gap-1 $editor-gap-2 !important;
+    }
+
+    .editor-relative-full > .editor-toolbar.editor-toolbar .editor-toolbar-group {
+      padding: $editor-gap-0-5;
+      gap: $editor-gap-0-5;
+    }
+
+    .editor-relative-full > .editor-toolbar.editor-toolbar .editor-toolbar-select-trigger {
+      min-width: 6.5rem;
+      max-width: 12rem;
+      padding: 0 $editor-gap-2;
+    }
+  }
+}
