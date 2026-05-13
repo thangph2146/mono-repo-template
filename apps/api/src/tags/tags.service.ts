@@ -34,14 +34,35 @@ export interface ListTagsResult {
   };
 }
 
+function toIsoString(
+  value: Date | string | number | undefined | null,
+): string | null {
+  if (value == null) return null;
+  if (value instanceof Date) {
+    return Number.isNaN(value.getTime()) ? null : value.toISOString();
+  }
+  if (typeof value === 'number') {
+    return Number.isNaN(value) ? null : new Date(value).toISOString();
+  }
+  if (typeof value === 'string' && value.trim()) {
+    const ms = Date.parse(value);
+    return Number.isNaN(ms) ? null : new Date(ms).toISOString();
+  }
+  return null;
+}
+
+function toIsoStringRequired(value: Date | string | number): string {
+  return toIsoString(value) ?? new Date(0).toISOString();
+}
+
 function mapRow(r: Tag): TagRowDto {
   return {
     id: r.id,
     name: r.name,
     slug: r.slug,
-    createdAt: r.createdAt.toISOString(),
-    updatedAt: r.updatedAt.toISOString(),
-    deletedAt: r.deletedAt?.toISOString() ?? null,
+    createdAt: toIsoStringRequired(r.createdAt),
+    updatedAt: toIsoStringRequired(r.updatedAt),
+    deletedAt: toIsoString(r.deletedAt),
   };
 }
 
@@ -144,7 +165,8 @@ export class TagsService {
   }
 
   async softDelete(id: string): Promise<boolean> {
-    const r = await this.em.findOne(Tag, { id });
+    const trimmed = id.trim();
+    const r = await this.em.findOne(Tag, { id: trimmed });
     if (!r || r.deletedAt) return false;
     r.deletedAt = new Date();
     await this.em.persistAndFlush(r);
@@ -152,7 +174,8 @@ export class TagsService {
   }
 
   async restore(id: string): Promise<boolean> {
-    const r = await this.em.findOne(Tag, { id });
+    const trimmed = id.trim();
+    const r = await this.em.findOne(Tag, { id: trimmed });
     if (!r || !r.deletedAt) return false;
     r.deletedAt = null;
     await this.em.persistAndFlush(r);
@@ -160,7 +183,8 @@ export class TagsService {
   }
 
   async hardDelete(id: string): Promise<boolean> {
-    const r = await this.em.findOne(Tag, { id });
+    const trimmed = id.trim();
+    const r = await this.em.findOne(Tag, { id: trimmed });
     if (!r) return false;
     await this.em.removeAndFlush(r);
     return true;
@@ -172,10 +196,13 @@ export class TagsService {
   ): Promise<{ affected: number; message: string }> {
     if (!ids.length) return { affected: 0, message: 'Không có bản ghi nào' };
 
+    const trimmedIds = ids.map((x) => String(x).trim()).filter(Boolean);
+    if (!trimmedIds.length) return { affected: 0, message: 'Không có bản ghi nào' };
+
     if (action === 'delete') {
       const result = await this.em.nativeUpdate(
         Tag,
-        { id: { $in: ids }, deletedAt: null },
+        { id: { $in: trimmedIds }, deletedAt: null },
         { deletedAt: new Date() },
       );
       return {
@@ -187,7 +214,7 @@ export class TagsService {
     if (action === 'restore') {
       const result = await this.em.nativeUpdate(
         Tag,
-        { id: { $in: ids }, deletedAt: { $ne: null } },
+        { id: { $in: trimmedIds }, deletedAt: { $ne: null } },
         { deletedAt: null },
       );
       return {
@@ -197,7 +224,7 @@ export class TagsService {
     }
 
     if (action === 'hard-delete') {
-      const entities = await this.em.find(Tag, { id: { $in: ids } });
+      const entities = await this.em.find(Tag, { id: { $in: trimmedIds } });
       await this.em.removeAndFlush(entities);
       const result = entities;
       return {

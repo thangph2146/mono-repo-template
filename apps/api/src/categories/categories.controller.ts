@@ -1,6 +1,6 @@
 /**
  * Categories Admin API Controller.
- * GET list, options, :id; POST (create); PUT :id; DELETE :id; POST :id/restore; DELETE :id/hard-delete; POST bulk.
+ * GET list, options, :id; POST (create); PUT :id; POST bulk; DELETE :id/hard-delete; DELETE :id; POST :id/restore.
  * Header: X-User-Id (bắt buộc).
  */
 import {
@@ -280,6 +280,114 @@ export class CategoriesController {
     return res.status(statusCode).json(okBody);
   }
 
+  @Post('bulk')
+  async bulk(
+    @Res() res: Response,
+    @Headers() headers: Record<string, string | undefined>,
+    @Body() body: { action?: string; ids?: string[]; parentId?: string | null },
+  ) {
+    this.logger.log(
+      `bulk action=${body?.action} ids=${(body?.ids ?? []).length}`,
+    );
+    const userId = this.getUserId(headers);
+    if (!userId) {
+      return this.unauthorized(res);
+    }
+    const action = body?.action;
+    const ids = Array.isArray(body?.ids) ? body.ids : [];
+    if (!action || !this.isBulkAction(action)) {
+      const { statusCode, body: errBody } = createErrorResponse(
+        'Action không hợp lệ',
+        { status: 400 },
+      );
+      return res.status(statusCode).json(errBody);
+    }
+    const result = await this.categoriesService.bulk(
+      action,
+      ids,
+      body?.parentId,
+    );
+    if (userId && result.affected > 0) {
+      let actionLabel = '';
+      let actionType = '';
+
+      switch (action) {
+        case 'delete':
+          actionLabel = 'Xóa';
+          actionType = ACTIONS.DELETE;
+          break;
+        case 'restore':
+          actionLabel = 'Khôi phục';
+          actionType = ACTIONS.RESTORE;
+          break;
+        case 'hard-delete':
+          actionLabel = 'Xóa vĩnh viễn';
+          actionType = ACTIONS.HARD_DELETE;
+          break;
+        case 'set-parent':
+          actionLabel = 'Đổi danh mục cha';
+          actionType = ACTIONS.UPDATE;
+          break;
+      }
+
+      this.logActivity(
+        userId,
+        `Đã ${actionLabel} ${result.affected} danh mục`,
+        `Bulk: ${actionLabel} ${result.affected} danh mục`,
+        ADMIN_ROUTES.CATEGORIES,
+        {
+          resource: RESOURCES.CATEGORIES,
+          action: actionType,
+          count: result.affected,
+          ids,
+        },
+      );
+    }
+    const { statusCode, body: okBody } = createSuccessResponse(
+      { affected: result.affected, message: result.message },
+      { message: result.message },
+    );
+    return res.status(statusCode).json(okBody);
+  }
+
+  @Delete(':id/hard-delete')
+  async hardDelete(
+    @Res() res: Response,
+    @Headers() headers: Record<string, string | undefined>,
+    @Param('id') id: string,
+  ) {
+    this.logger.log(`hardDelete id=${id}`);
+    const userId = this.getUserId(headers);
+    if (!userId) {
+      return this.unauthorized(res);
+    }
+    const ok = await this.categoriesService.hardDelete(id);
+    if (!ok) {
+      const { statusCode, body } = createErrorResponse(
+        'Không tìm thấy danh mục',
+        { status: 404 },
+      );
+      return res.status(statusCode).json(body);
+    }
+    if (userId) {
+      this.logActivity(
+        userId,
+        'Đã xóa vĩnh viễn danh mục',
+        `Xóa vĩnh viễn danh mục id: ${id}`,
+        ADMIN_ROUTES.CATEGORIES,
+        {
+          resource: RESOURCES.CATEGORIES,
+          action: ACTIONS.HARD_DELETE,
+          resourceId: id,
+        },
+      );
+    }
+    const { statusCode, body } = createSuccessResponse(undefined, {
+      message: 'Đã xóa vĩnh viễn danh mục',
+    });
+    return res.status(statusCode).json(body);
+  }
+
   @Delete(':id')
   async softDelete(
     @Res() res: Response,
@@ -354,113 +462,5 @@ export class CategoriesController {
       message: 'Đã khôi phục danh mục',
     });
     return res.status(statusCode).json(body);
-  }
-
-  @Delete(':id/hard-delete')
-  async hardDelete(
-    @Res() res: Response,
-    @Headers() headers: Record<string, string | undefined>,
-    @Param('id') id: string,
-  ) {
-    this.logger.log(`hardDelete id=${id}`);
-    const userId = this.getUserId(headers);
-    if (!userId) {
-      return this.unauthorized(res);
-    }
-    const ok = await this.categoriesService.hardDelete(id);
-    if (!ok) {
-      const { statusCode, body } = createErrorResponse(
-        'Không tìm thấy danh mục',
-        { status: 404 },
-      );
-      return res.status(statusCode).json(body);
-    }
-    if (userId) {
-      this.logActivity(
-        userId,
-        'Đã xóa vĩnh viễn danh mục',
-        `Xóa vĩnh viễn danh mục id: ${id}`,
-        ADMIN_ROUTES.CATEGORIES,
-        {
-          resource: RESOURCES.CATEGORIES,
-          action: ACTIONS.HARD_DELETE,
-          resourceId: id,
-        },
-      );
-    }
-    const { statusCode, body } = createSuccessResponse(undefined, {
-      message: 'Đã xóa vĩnh viễn danh mục',
-    });
-    return res.status(statusCode).json(body);
-  }
-
-  @Post('bulk')
-  async bulk(
-    @Res() res: Response,
-    @Headers() headers: Record<string, string | undefined>,
-    @Body() body: { action?: string; ids?: string[]; parentId?: string | null },
-  ) {
-    this.logger.log(
-      `bulk action=${body?.action} ids=${(body?.ids ?? []).length}`,
-    );
-    const userId = this.getUserId(headers);
-    if (!userId) {
-      return this.unauthorized(res);
-    }
-    const action = body?.action;
-    const ids = Array.isArray(body?.ids) ? body.ids : [];
-    if (!action || !this.isBulkAction(action)) {
-      const { statusCode, body: errBody } = createErrorResponse(
-        'Action không hợp lệ',
-        { status: 400 },
-      );
-      return res.status(statusCode).json(errBody);
-    }
-    const result = await this.categoriesService.bulk(
-      action,
-      ids,
-      body?.parentId,
-    );
-    if (userId && result.affected > 0) {
-      let actionLabel = '';
-      let actionType = '';
-
-      switch (action) {
-        case 'delete':
-          actionLabel = 'Xóa';
-          actionType = ACTIONS.DELETE;
-          break;
-        case 'restore':
-          actionLabel = 'Khôi phục';
-          actionType = ACTIONS.RESTORE;
-          break;
-        case 'hard-delete':
-          actionLabel = 'Xóa vĩnh viễn';
-          actionType = ACTIONS.HARD_DELETE;
-          break;
-        case 'set-parent':
-          actionLabel = 'Đổi danh mục cha';
-          actionType = ACTIONS.UPDATE;
-          break;
-      }
-
-      this.logActivity(
-        userId,
-        `Đã ${actionLabel} ${result.affected} danh mục`,
-        `Bulk: ${actionLabel} ${result.affected} danh mục`,
-        ADMIN_ROUTES.CATEGORIES,
-        {
-          resource: RESOURCES.CATEGORIES,
-          action: actionType,
-          count: result.affected,
-          ids,
-        },
-      );
-    }
-    const { statusCode, body: okBody } = createSuccessResponse(
-      { affected: result.affected, message: result.message },
-      { message: result.message },
-    );
-    return res.status(statusCode).json(okBody);
   }
 }

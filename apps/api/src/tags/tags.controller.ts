@@ -1,6 +1,6 @@
 /**
  * Tags Admin API Controller.
- * GET list, options, :id; POST (create); PUT :id; DELETE :id; POST :id/restore; DELETE :id/hard-delete; POST bulk.
+ * GET list, options, :id; POST (create); PUT :id; POST bulk; DELETE :id/hard-delete; DELETE :id (soft); POST :id/restore.
  * Header: X-User-Id (bắt buộc).
  */
 import {
@@ -250,6 +250,101 @@ export class TagsController {
     return res.status(statusCode).json(okBody);
   }
 
+  @Post('bulk')
+  async bulk(
+    @Res() res: Response,
+    @Headers() headers: Record<string, string | undefined>,
+    @Body() body: { action?: string; ids?: string[] },
+  ) {
+    const userId = this.getUserId(headers);
+    if (!userId) {
+      return this.unauthorized(res);
+    }
+    const action = body?.action;
+    const ids = Array.isArray(body?.ids) ? body.ids : [];
+    if (!action || !this.isBulkAction(action)) {
+      const { statusCode, body: errBody } = createErrorResponse(
+        'Action không hợp lệ',
+        { status: 400 },
+      );
+      return res.status(statusCode).json(errBody);
+    }
+    const result = await this.tagsService.bulk(action, ids);
+    if (userId && result.affected > 0) {
+      let actionLabel = '';
+      let actionType = '';
+
+      switch (action) {
+        case 'delete':
+          actionLabel = 'Xóa';
+          actionType = ACTIONS.DELETE;
+          break;
+        case 'restore':
+          actionLabel = 'Khôi phục';
+          actionType = ACTIONS.RESTORE;
+          break;
+        case 'hard-delete':
+          actionLabel = 'Xóa vĩnh viễn';
+          actionType = ACTIONS.HARD_DELETE;
+          break;
+      }
+
+      this.logActivity(
+        userId,
+        `Đã ${actionLabel} ${result.affected} thẻ`,
+        `Bulk: ${actionLabel} ${result.affected} thẻ`,
+        ADMIN_ROUTES.TAGS,
+        {
+          resource: RESOURCES.TAGS,
+          action: actionType,
+          count: result.affected,
+          ids,
+        },
+      );
+    }
+    const { statusCode, body: okBody } = createSuccessResponse(
+      { affected: result.affected, message: result.message },
+      { message: result.message },
+    );
+    return res.status(statusCode).json(okBody);
+  }
+
+  @Delete(':id/hard-delete')
+  async hardDelete(
+    @Res() res: Response,
+    @Headers() headers: Record<string, string | undefined>,
+    @Param('id') id: string,
+  ) {
+    const userId = this.getUserId(headers);
+    if (!userId) {
+      return this.unauthorized(res);
+    }
+    const ok = await this.tagsService.hardDelete(id);
+    if (!ok) {
+      const { statusCode, body } = createErrorResponse('Không tìm thấy thẻ', {
+        status: 404,
+      });
+      return res.status(statusCode).json(body);
+    }
+    if (userId) {
+      this.logActivity(
+        userId,
+        'Đã xóa vĩnh viễn thẻ',
+        `Xóa vĩnh viễn thẻ id: ${id}`,
+        ADMIN_ROUTES.TAGS,
+        {
+          resource: RESOURCES.TAGS,
+          action: ACTIONS.HARD_DELETE,
+          resourceId: id,
+        },
+      );
+    }
+    const { statusCode, body } = createSuccessResponse(undefined, {
+      message: 'Đã xóa vĩnh viễn thẻ',
+    });
+    return res.status(statusCode).json(body);
+  }
+
   @Delete(':id')
   async softDelete(
     @Res() res: Response,
@@ -322,100 +417,5 @@ export class TagsController {
       message: 'Đã khôi phục thẻ',
     });
     return res.status(statusCode).json(body);
-  }
-
-  @Delete(':id/hard-delete')
-  async hardDelete(
-    @Res() res: Response,
-    @Headers() headers: Record<string, string | undefined>,
-    @Param('id') id: string,
-  ) {
-    const userId = this.getUserId(headers);
-    if (!userId) {
-      return this.unauthorized(res);
-    }
-    const ok = await this.tagsService.hardDelete(id);
-    if (!ok) {
-      const { statusCode, body } = createErrorResponse('Không tìm thấy thẻ', {
-        status: 404,
-      });
-      return res.status(statusCode).json(body);
-    }
-    if (userId) {
-      this.logActivity(
-        userId,
-        'Đã xóa vĩnh viễn thẻ',
-        `Xóa vĩnh viễn thẻ id: ${id}`,
-        ADMIN_ROUTES.TAGS,
-        {
-          resource: RESOURCES.TAGS,
-          action: ACTIONS.HARD_DELETE,
-          resourceId: id,
-        },
-      );
-    }
-    const { statusCode, body } = createSuccessResponse(undefined, {
-      message: 'Đã xóa vĩnh viễn thẻ',
-    });
-    return res.status(statusCode).json(body);
-  }
-
-  @Post('bulk')
-  async bulk(
-    @Res() res: Response,
-    @Headers() headers: Record<string, string | undefined>,
-    @Body() body: { action?: string; ids?: string[] },
-  ) {
-    const userId = this.getUserId(headers);
-    if (!userId) {
-      return this.unauthorized(res);
-    }
-    const action = body?.action;
-    const ids = Array.isArray(body?.ids) ? body.ids : [];
-    if (!action || !this.isBulkAction(action)) {
-      const { statusCode, body: errBody } = createErrorResponse(
-        'Action không hợp lệ',
-        { status: 400 },
-      );
-      return res.status(statusCode).json(errBody);
-    }
-    const result = await this.tagsService.bulk(action, ids);
-    if (userId && result.affected > 0) {
-      let actionLabel = '';
-      let actionType = '';
-
-      switch (action) {
-        case 'delete':
-          actionLabel = 'Xóa';
-          actionType = ACTIONS.DELETE;
-          break;
-        case 'restore':
-          actionLabel = 'Khôi phục';
-          actionType = ACTIONS.RESTORE;
-          break;
-        case 'hard-delete':
-          actionLabel = 'Xóa vĩnh viễn';
-          actionType = ACTIONS.HARD_DELETE;
-          break;
-      }
-
-      this.logActivity(
-        userId,
-        `Đã ${actionLabel} ${result.affected} thẻ`,
-        `Bulk: ${actionLabel} ${result.affected} thẻ`,
-        ADMIN_ROUTES.TAGS,
-        {
-          resource: RESOURCES.TAGS,
-          action: actionType,
-          count: result.affected,
-          ids,
-        },
-      );
-    }
-    const { statusCode, body: okBody } = createSuccessResponse(
-      { affected: result.affected, message: result.message },
-      { message: result.message },
-    );
-    return res.status(statusCode).json(okBody);
   }
 }

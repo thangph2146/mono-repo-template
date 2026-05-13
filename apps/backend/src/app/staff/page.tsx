@@ -4,8 +4,10 @@ import type {
   ColumnDef,
   ColumnFiltersState,
   OnChangeFn,
+  RowSelectionState,
 } from "@tanstack/react-table";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
   AlertCircle,
@@ -87,8 +89,10 @@ import {
   useStaffUserList,
   useTrashedStaffUsers,
   useUpdateStaffUser,
+  queryKeys,
 } from "@/hooks/queries";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
+import { api } from "@/lib/api";
 import { cn } from "@ui/lib/utils";
 import {
   ADMIN_ALERT_DIALOG_CONTENT_CLASS,
@@ -115,6 +119,7 @@ function buildUsersFilterQuery(columnFilters: ColumnFiltersState): Record<string
 }
 
 export default function StaffPage() {
+  const queryClient = useQueryClient();
   const { user: session } = useAuth();
   const canManageUsers =
     session != null && canUserAccess(session, PERMISSION_CODES.USERS_MANAGE);
@@ -123,6 +128,8 @@ export default function StaffPage() {
     enabled: Boolean(session) && canManageUsers,
   });
   const [staffSubTab, setStaffSubTab] = useState<"list" | "trash">("list");
+  const [listStaffSelection, setListStaffSelection] = useState<RowSelectionState>({});
+  const [trashStaffSelection, setTrashStaffSelection] = useState<RowSelectionState>({});
   const [staffPage, setStaffPage] = useState(1);
   const [staffPageSize, setStaffPageSize] = useState(25);
   const [trashPage, setTrashPage] = useState(1);
@@ -146,6 +153,11 @@ export default function StaffPage() {
   useEffect(() => {
     setTrashPage(1);
   }, [debouncedTrashSearch, staffSubTab, trashPageSize]);
+
+  useEffect(() => {
+    setListStaffSelection({});
+    setTrashStaffSelection({});
+  }, [staffSubTab]);
 
   const staffListParams = useMemo(
     () => ({
@@ -181,6 +193,19 @@ export default function StaffPage() {
   const deleteUser = useDeleteStaffUser();
   const restoreUser = useRestoreStaffUser();
   const purgeTrashedUser = usePurgeTrashedStaffUser();
+
+  const bulkStaffMutation = useMutation({
+    mutationFn: async (input: {
+      action: "delete" | "restore" | "hard-delete";
+      ids: string[];
+    }) => api.http.post("/admin/users/bulk", input),
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: queryKeys.staffUserList() }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.usersTrashed() }),
+      ]);
+    },
+  });
 
   const [createOpen, setCreateOpen] = useState(false);
   const [editUser, setEditUser] = useState<User | null>(null);
@@ -247,6 +272,7 @@ export default function StaffPage() {
     deleteUser.isPending ||
     restoreUser.isPending ||
     purgeTrashedUser.isPending ||
+    bulkStaffMutation.isPending ||
     rbacQuery.isFetching;
 
   const clearTrashStaffFilters = useCallback((): void => {
@@ -757,6 +783,7 @@ export default function StaffPage() {
           {!usersQuery.isError ? (
             <AdminDataTable<User>
               data={roleFilteredUsers}
+              getRowId={(row) => String(row.id)}
               columns={staffColumns}
               isLoading={usersQuery.isLoading}
               emptyLabel="Không có tài khoản khớp tìm kiếm API hoặc bộ lọc vai trò / cột."
@@ -767,6 +794,26 @@ export default function StaffPage() {
               globalFilter={globalFilter}
               onGlobalFilterChange={setGlobalFilter}
               globalFilterPlaceholder="Tìm theo email, họ tên (API)…"
+              rowSelectionEnabled={canManageUsers}
+              selectedRowIds={listStaffSelection}
+              onSelectedRowIdsChange={setListStaffSelection}
+              canSelectRow={(row) => String(row.original.id) !== String(session?.id ?? "")}
+              bulkActions={[
+                {
+                  id: "bulk-staff-delete",
+                  label: "Xóa tạm đã chọn",
+                  variant: "outline",
+                  className: "border-destructive/40 text-destructive",
+                  onAction: async (rows) => {
+                    const ids = rows
+                      .filter((u) => String(u.id) !== String(session?.id ?? ""))
+                      .map((u) => String(u.id));
+                    if (!ids.length) return;
+                    await bulkStaffMutation.mutateAsync({ action: "delete", ids });
+                    toast.success(`Đã đưa ${ids.length} tài khoản vào thùng rác`);
+                  },
+                },
+              ]}
               filterToolbarExtra={
                 <div className="flex flex-wrap items-end gap-2">
                   <div className="flex items-end gap-2">
@@ -859,6 +906,7 @@ export default function StaffPage() {
               </p>
               <AdminDataTable<User>
                 data={trashedUsers}
+                getRowId={(row) => String(row.id)}
                 columns={trashedUserColumns}
                 isLoading={trashedStaffQuery.isLoading}
                 emptyLabel="Thùng rác trống hoặc không khớp tìm kiếm."
@@ -867,6 +915,33 @@ export default function StaffPage() {
                 globalFilter={trashSearch}
                 onGlobalFilterChange={setTrashSearch}
                 globalFilterPlaceholder="Tìm theo email, họ tên, SĐT (API)…"
+                rowSelectionEnabled={canManageUsers}
+                selectedRowIds={trashStaffSelection}
+                onSelectedRowIdsChange={setTrashStaffSelection}
+                bulkActions={[
+                  {
+                    id: "bulk-staff-restore",
+                    label: "Khôi phục đã chọn",
+                    onAction: async (rows) => {
+                      const ids = rows.map((u) => String(u.id));
+                      if (!ids.length) return;
+                      await bulkStaffMutation.mutateAsync({ action: "restore", ids });
+                      toast.success(`Đã khôi phục ${ids.length} tài khoản`);
+                    },
+                  },
+                  {
+                    id: "bulk-staff-purge",
+                    label: "Xóa vĩnh viễn đã chọn",
+                    variant: "outline",
+                    className: "border-destructive/40 text-destructive",
+                    onAction: async (rows) => {
+                      const ids = rows.map((u) => String(u.id));
+                      if (!ids.length) return;
+                      await bulkStaffMutation.mutateAsync({ action: "hard-delete", ids });
+                      toast.success(`Đã xóa vĩnh viễn ${ids.length} tài khoản`);
+                    },
+                  },
+                ]}
                 filterToolbarExtra={
                   <div className="flex flex-wrap items-end gap-2">
                     <Button
@@ -1034,7 +1109,7 @@ export default function StaffPage() {
               {roleChecklist}
             </div>
           </div>
-          <DialogFooter className="gap-2 sm:gap-0">
+          <DialogFooter className="gap-2">
             <Button
               type="button"
               variant="outline"
@@ -1144,7 +1219,7 @@ export default function StaffPage() {
                   {roleChecklist}
                 </div>
               </div>
-              <DialogFooter className="gap-2 sm:gap-0">
+              <DialogFooter className="gap-2">
                 <Button
                   type="button"
                   variant="outline"
@@ -1208,7 +1283,7 @@ export default function StaffPage() {
           if (!open) setPurgeTarget(null);
         }}
         contentClassName={ADMIN_ALERT_DIALOG_CONTENT_CLASS}
-        footerClassName="gap-2 sm:gap-0"
+        footerClassName="gap-2"
         icon={<Trash2 className="size-5 shrink-0 text-destructive" aria-hidden />}
         title="Xóa vĩnh viễn tài khoản?"
         description={
@@ -1235,7 +1310,7 @@ export default function StaffPage() {
           if (!open) setRestoreTarget(null);
         }}
         contentClassName={ADMIN_ALERT_DIALOG_CONTENT_CLASS}
-        footerClassName="gap-2 sm:gap-0"
+        footerClassName="gap-2"
         icon={<ArchiveRestore className="size-5 shrink-0 text-primary" aria-hidden />}
         title="Khôi phục tài khoản?"
         description={

@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import type { ColumnDef } from "@tanstack/react-table";
+import type { ColumnDef, RowSelectionState } from "@tanstack/react-table";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Badge } from "@ui/components/badge";
@@ -242,6 +242,8 @@ export default function TagsPage() {
   const [deleteTarget, setDeleteTarget] = useState<TagRow | null>(null);
   const [restoreTarget, setRestoreTarget] = useState<TagRow | null>(null);
   const [purgeTarget, setPurgeTarget] = useState<TagRow | null>(null);
+  const [listTagSelection, setListTagSelection] = useState<RowSelectionState>({});
+  const [trashTagSelection, setTrashTagSelection] = useState<RowSelectionState>({});
   const debouncedTrashQ = useDebouncedValue(trashGlobalFilter, 350);
 
   const listQuery = useQuery({
@@ -287,7 +289,12 @@ export default function TagsPage() {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: async (id: string) => api.http.delete(`/admin/tags/${id}`),
+    /** Cùng luồng bulk soft-delete, tránh edge case routing DELETE. */
+    mutationFn: async (id: string) =>
+      api.http.post("/admin/tags/bulk", {
+        action: "delete",
+        ids: [String(id).trim()],
+      }),
     onSuccess: invalidateAll,
   });
 
@@ -302,9 +309,22 @@ export default function TagsPage() {
     onSuccess: invalidateAll,
   });
 
+  const bulkMutation = useMutation({
+    mutationFn: async (input: {
+      action: "delete" | "restore" | "hard-delete";
+      ids: string[];
+    }) => api.http.post("/admin/tags/bulk", input),
+    onSuccess: invalidateAll,
+  });
+
   useEffect(() => {
     setTrashPage(1);
   }, [debouncedTrashQ, trashPageSize]);
+
+  useEffect(() => {
+    setListTagSelection({});
+    setTrashTagSelection({});
+  }, [mainTab]);
 
   const openCreate = () => {
     setForm(EMPTY_FORM);
@@ -445,7 +465,7 @@ export default function TagsPage() {
                 disabled={!canDelete}
               >
                 <Trash2 className="size-3.5" />
-                Xóa
+                Xóa tạm
               </Button>
             </div>
           ),
@@ -653,6 +673,7 @@ export default function TagsPage() {
 
           <AdminDataTable<TagTreeRow>
             data={treeRows}
+            getRowId={(row) => row.id}
             columns={columns}
             isLoading={listQuery.isLoading}
             emptyLabel='Chưa có thẻ — bấm "Thêm thẻ".'
@@ -663,12 +684,35 @@ export default function TagsPage() {
             onGlobalFilterChange={setGlobalFilter}
             globalFilterPlaceholder="Tìm theo tên nhóm, tên thẻ hoặc slug..."
             csvExport={{ fileName: "the-dang-hoat-dong.csv" }}
+            rowSelectionEnabled={canDelete}
+            selectedRowIds={listTagSelection}
+            onSelectedRowIdsChange={setListTagSelection}
+            canSelectRow={(row) => !row.original.isGroup}
+            bulkActions={
+              canDelete
+                ? [
+                    {
+                      id: "bulk-tag-delete",
+                      label: "Xóa tạm đã chọn",
+                      variant: "outline",
+                      className: "border-destructive/40 text-destructive",
+                      onAction: async (rows) => {
+                        const ids = rows.filter((r) => !r.isGroup).map((r) => r.id);
+                        if (!ids.length) return;
+                        await bulkMutation.mutateAsync({ action: "delete", ids });
+                        toast.success(`Đã đưa ${ids.length} thẻ vào thùng rác`);
+                      },
+                    },
+                  ]
+                : []
+            }
           />
         </TabsContent>
 
         <TabsContent value="trash" className="mt-4 space-y-4">
           <AdminDataTable<TagRow>
             data={trashQuery.data?.items ?? []}
+            getRowId={(row) => row.id}
             columns={trashColumns}
             isLoading={trashQuery.isLoading}
             emptyLabel="Thùng rác trống."
@@ -677,6 +721,37 @@ export default function TagsPage() {
             onGlobalFilterChange={setTrashGlobalFilter}
             globalFilterPlaceholder="Tìm trong thùng rác..."
             csvExport={{ fileName: "the-thung-rac.csv" }}
+            rowSelectionEnabled={canDelete}
+            selectedRowIds={trashTagSelection}
+            onSelectedRowIdsChange={setTrashTagSelection}
+            bulkActions={
+              canDelete
+                ? [
+                    {
+                      id: "bulk-tag-restore",
+                      label: "Khôi phục đã chọn",
+                      onAction: async (rows) => {
+                        const ids = rows.map((r) => r.id);
+                        if (!ids.length) return;
+                        await bulkMutation.mutateAsync({ action: "restore", ids });
+                        toast.success(`Đã khôi phục ${ids.length} thẻ`);
+                      },
+                    },
+                    {
+                      id: "bulk-tag-purge",
+                      label: "Xóa vĩnh viễn đã chọn",
+                      variant: "outline",
+                      className: "border-destructive/40 text-destructive",
+                      onAction: async (rows) => {
+                        const ids = rows.map((r) => r.id);
+                        if (!ids.length) return;
+                        await bulkMutation.mutateAsync({ action: "hard-delete", ids });
+                        toast.success(`Đã xóa vĩnh viễn ${ids.length} thẻ`);
+                      },
+                    },
+                  ]
+                : []
+            }
             footer={
               <AdminTablePaginationFooter
                 page={trashPage}

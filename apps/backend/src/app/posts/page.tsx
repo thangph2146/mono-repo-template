@@ -3,7 +3,12 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { LexicalEditor } from "@thangph2146/lexical-editor";
 import type { SerializedEditorState } from "lexical";
-import type { ColumnDef, ColumnFiltersState, OnChangeFn } from "@tanstack/react-table";
+import type {
+  ColumnDef,
+  ColumnFiltersState,
+  OnChangeFn,
+  RowSelectionState,
+} from "@tanstack/react-table";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Badge } from "@ui/components/badge";
@@ -38,6 +43,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@ui/components/tabs";
 import { Textarea } from "@ui/components/textarea";
 import {
   AlertCircle,
+  Archive,
   ArchiveRestore,
   CalendarClock,
   ChevronDown,
@@ -52,11 +58,13 @@ import {
   Tags,
   Trash2,
 } from "lucide-react";
+import { AdminConfirmActionDialog } from "@/components/admin-confirm-action-dialog";
 import { AdminDataTable } from "@/components/admin-data-table";
 import { AdminTablePaginationFooter } from "@/components/admin-table-pagination-footer";
 import { api } from "@/lib/api";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import {
+  ADMIN_ALERT_DIALOG_CONTENT_CLASS,
   ADMIN_DIALOG_CONTENT_CATEGORY_CLASS,
   ADMIN_PAGE_SUBTITLE_CLASS,
   ADMIN_PAGE_TITLE_ICON_CLASS,
@@ -93,6 +101,11 @@ type PostListRow = {
   categories: TaxonomyOption[];
   tags: TaxonomyOption[];
 };
+
+type PostConfirmAction =
+  | { kind: "delete"; row: PostListRow }
+  | { kind: "restore"; row: PostListRow }
+  | { kind: "purge"; row: PostListRow };
 
 type PostDetail = PostListRow & {
   content: unknown;
@@ -497,6 +510,9 @@ export default function PostsPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [loadingDetail, setLoadingDetail] = useState(false);
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
+  const [confirmAction, setConfirmAction] = useState<PostConfirmAction | null>(null);
+  const [listPostSelection, setListPostSelection] = useState<RowSelectionState>({});
+  const [trashPostSelection, setTrashPostSelection] = useState<RowSelectionState>({});
   const debouncedQ = useDebouncedValue(globalFilter, 350);
   const debouncedTrashQ = useDebouncedValue(trashGlobalFilter, 350);
   const postColumnFilterQuery = useMemo(
@@ -630,6 +646,14 @@ export default function PostsPage() {
     onSuccess: invalidateAll,
   });
 
+  const bulkMutation = useMutation({
+    mutationFn: async (input: {
+      action: "delete" | "restore" | "hard-delete";
+      ids: string[];
+    }) => api.http.post("/admin/posts/bulk", input),
+    onSuccess: invalidateAll,
+  });
+
   useEffect(() => {
     setPage(1);
   }, [columnFilters, debouncedQ, pageSize]);
@@ -637,6 +661,11 @@ export default function PostsPage() {
   useEffect(() => {
     setTrashPage(1);
   }, [debouncedTrashQ, trashPageSize]);
+
+  useEffect(() => {
+    setListPostSelection({});
+    setTrashPostSelection({});
+  }, [mainTab]);
 
   const handleColumnFiltersChange = useCallback<OnChangeFn<ColumnFiltersState>>(
     (updater) => {
@@ -721,32 +750,31 @@ export default function PostsPage() {
     }
   };
 
-  const handleDelete = useCallback(async (row: PostListRow) => {
-    await toast.promise(deleteMutation.mutateAsync(row.id), {
-      loading: `Đang xóa tạm «${row.title}»...`,
-      success: `Đã đưa «${row.title}» vào thùng rác`,
-      error: (error: unknown) =>
-        error instanceof Error ? error.message : "Không xóa được bài viết",
-    });
-  }, [deleteMutation]);
-
-  const handleRestore = useCallback(async (row: PostListRow) => {
-    await toast.promise(restoreMutation.mutateAsync(row.id), {
-      loading: `Đang khôi phục «${row.title}»...`,
-      success: `Đã khôi phục «${row.title}»`,
-      error: (error: unknown) =>
-        error instanceof Error ? error.message : "Không khôi phục được bài viết",
-    });
-  }, [restoreMutation]);
-
-  const handlePurge = useCallback(async (row: PostListRow) => {
-    await toast.promise(purgeMutation.mutateAsync(row.id), {
-      loading: `Đang xóa vĩnh viễn «${row.title}»...`,
-      success: `Đã xóa vĩnh viễn «${row.title}»`,
-      error: (error: unknown) =>
-        error instanceof Error ? error.message : "Không xóa hẳn được bài viết",
-    });
-  }, [purgeMutation]);
+  const handleConfirmAction = useCallback(async (): Promise<void> => {
+    if (!confirmAction) return;
+    const { kind, row } = confirmAction;
+    try {
+      if (kind === "delete") {
+        await deleteMutation.mutateAsync(row.id);
+        toast.success(`Đã đưa «${row.title}» vào thùng rác`);
+      } else if (kind === "restore") {
+        await restoreMutation.mutateAsync(row.id);
+        toast.success(`Đã khôi phục «${row.title}»`);
+      } else {
+        await purgeMutation.mutateAsync(row.id);
+        toast.success(`Đã xóa vĩnh viễn «${row.title}»`);
+      }
+      setConfirmAction(null);
+    } catch (error) {
+      const fallback =
+        kind === "delete"
+          ? "Không xóa được bài viết"
+          : kind === "restore"
+            ? "Không khôi phục được bài viết"
+            : "Không xóa hẳn được bài viết";
+      toast.error(error instanceof Error ? error.message : fallback);
+    }
+  }, [confirmAction, deleteMutation, purgeMutation, restoreMutation]);
 
   const columns = useMemo<ColumnDef<PostListRow>[]>(
     () => [
@@ -825,7 +853,7 @@ export default function PostsPage() {
               variant="outline"
               size="sm"
               className="h-8 gap-1 rounded-lg border-destructive/40 text-destructive hover:bg-destructive/10"
-              onClick={() => void handleDelete(row.original)}
+              onClick={() => setConfirmAction({ kind: "delete", row: row.original })}
             >
               <Trash2 className="size-3.5" />
               Xóa tạm
@@ -834,7 +862,7 @@ export default function PostsPage() {
         ),
       },
     ],
-    [handleDelete, openEdit],
+    [openEdit],
   );
 
   const trashColumns = useMemo<ColumnDef<PostListRow>[]>(
@@ -861,7 +889,7 @@ export default function PostsPage() {
               variant="outline"
               size="sm"
               className="h-8 gap-1 rounded-lg"
-              onClick={() => void handleRestore(row.original)}
+              onClick={() => setConfirmAction({ kind: "restore", row: row.original })}
             >
               <ArchiveRestore className="size-3.5" />
               Khôi phục
@@ -871,7 +899,7 @@ export default function PostsPage() {
               variant="outline"
               size="sm"
               className="h-8 gap-1 rounded-lg border-destructive/40 text-destructive hover:bg-destructive/10"
-              onClick={() => void handlePurge(row.original)}
+              onClick={() => setConfirmAction({ kind: "purge", row: row.original })}
             >
               <Trash2 className="size-3.5" />
               Xóa hẳn
@@ -880,7 +908,7 @@ export default function PostsPage() {
         ),
       },
     ],
-    [handlePurge, handleRestore],
+    [],
   );
 
   return (
@@ -1348,6 +1376,7 @@ export default function PostsPage() {
 
           <AdminDataTable<PostListRow>
             data={postsQuery.data?.items ?? []}
+            getRowId={(row) => String(row.id)}
             columns={columns}
             isLoading={postsQuery.isLoading}
             emptyLabel='Chưa có bài viết — bấm "Thêm bài viết".'
@@ -1358,6 +1387,23 @@ export default function PostsPage() {
             onGlobalFilterChange={setGlobalFilter}
             globalFilterPlaceholder="Tìm theo tiêu đề, slug..."
             csvExport={{ fileName: "bai-viet-dang-hoat-dong.csv" }}
+            rowSelectionEnabled
+            selectedRowIds={listPostSelection}
+            onSelectedRowIdsChange={setListPostSelection}
+            bulkActions={[
+              {
+                id: "bulk-post-delete",
+                label: "Xóa tạm đã chọn",
+                variant: "outline",
+                className: "border-destructive/40 text-destructive",
+                onAction: async (rows) => {
+                  const ids = rows.map((r) => String(r.id));
+                  if (!ids.length) return;
+                  await bulkMutation.mutateAsync({ action: "delete", ids });
+                  toast.success(`Đã đưa ${ids.length} bài viết vào thùng rác`);
+                },
+              },
+            ]}
             footer={
               <AdminTablePaginationFooter
                 page={page}
@@ -1376,6 +1422,7 @@ export default function PostsPage() {
         <TabsContent value="trash" className="mt-4 space-y-4">
           <AdminDataTable<PostListRow>
             data={trashQuery.data?.items ?? []}
+            getRowId={(row) => String(row.id)}
             columns={trashColumns}
             isLoading={trashQuery.isLoading}
             emptyLabel="Thùng rác trống."
@@ -1384,6 +1431,33 @@ export default function PostsPage() {
             onGlobalFilterChange={setTrashGlobalFilter}
             globalFilterPlaceholder="Tìm trong thùng rác..."
             csvExport={{ fileName: "bai-viet-thung-rac.csv" }}
+            rowSelectionEnabled
+            selectedRowIds={trashPostSelection}
+            onSelectedRowIdsChange={setTrashPostSelection}
+            bulkActions={[
+              {
+                id: "bulk-post-restore",
+                label: "Khôi phục đã chọn",
+                onAction: async (rows) => {
+                  const ids = rows.map((r) => String(r.id));
+                  if (!ids.length) return;
+                  await bulkMutation.mutateAsync({ action: "restore", ids });
+                  toast.success(`Đã khôi phục ${ids.length} bài viết`);
+                },
+              },
+              {
+                id: "bulk-post-purge",
+                label: "Xóa vĩnh viễn đã chọn",
+                variant: "outline",
+                className: "border-destructive/40 text-destructive",
+                onAction: async (rows) => {
+                  const ids = rows.map((r) => String(r.id));
+                  if (!ids.length) return;
+                  await bulkMutation.mutateAsync({ action: "hard-delete", ids });
+                  toast.success(`Đã xóa vĩnh viễn ${ids.length} bài viết`);
+                },
+              },
+            ]}
             footer={
               <AdminTablePaginationFooter
                 page={trashPage}
@@ -1399,6 +1473,69 @@ export default function PostsPage() {
           />
         </TabsContent>
       </Tabs>
+
+      <AdminConfirmActionDialog
+        open={confirmAction != null}
+        onOpenChange={(open) => {
+          if (!open) setConfirmAction(null);
+        }}
+        contentClassName={ADMIN_ALERT_DIALOG_CONTENT_CLASS}
+        footerClassName="gap-2"
+        icon={
+          confirmAction?.kind === "delete" ? (
+            <Archive className="size-5 shrink-0 text-destructive" />
+          ) : confirmAction?.kind === "restore" ? (
+            <ArchiveRestore className="size-5 shrink-0 text-primary" />
+          ) : confirmAction?.kind === "purge" ? (
+            <Trash2 className="size-5 shrink-0 text-destructive" />
+          ) : null
+        }
+        title={
+          confirmAction?.kind === "delete"
+            ? "Đưa bài viết vào thùng rác?"
+            : confirmAction?.kind === "restore"
+              ? "Khôi phục bài viết?"
+              : confirmAction?.kind === "purge"
+                ? "Xóa vĩnh viễn bài viết?"
+                : ""
+        }
+        description={
+          confirmAction?.kind === "delete"
+            ? `«${confirmAction.row.title}» sẽ bị xóa tạm. Có thể khôi phục từ tab Thùng rác.`
+            : confirmAction?.kind === "restore"
+              ? `Khôi phục «${confirmAction.row.title}» về danh sách đang hoạt động.`
+              : confirmAction?.kind === "purge"
+                ? `«${confirmAction.row.title}» sẽ bị xóa khỏi cơ sở dữ liệu và không thể hoàn tác.`
+                : null
+        }
+        confirmLabel={
+          confirmAction?.kind === "delete"
+            ? "Xóa tạm"
+            : confirmAction?.kind === "restore"
+              ? "Khôi phục"
+              : confirmAction?.kind === "purge"
+                ? "Xóa vĩnh viễn"
+                : "Xác nhận"
+        }
+        confirmDestructive={
+          confirmAction?.kind === "delete" || confirmAction?.kind === "purge"
+        }
+        confirmDisabled={
+          deleteMutation.isPending || restoreMutation.isPending || purgeMutation.isPending
+        }
+        confirmLoading={
+          confirmAction?.kind === "delete"
+            ? deleteMutation.isPending
+            : confirmAction?.kind === "restore"
+              ? restoreMutation.isPending
+              : confirmAction?.kind === "purge"
+                ? purgeMutation.isPending
+                : false
+        }
+        onConfirm={() => {
+          void handleConfirmAction();
+        }}
+      />
     </PageSection>
   );
 }

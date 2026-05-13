@@ -1,7 +1,12 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import type { ColumnDef, ColumnFiltersState, OnChangeFn } from "@tanstack/react-table";
+import type {
+  ColumnDef,
+  ColumnFiltersState,
+  OnChangeFn,
+  RowSelectionState,
+} from "@tanstack/react-table";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
@@ -352,6 +357,8 @@ export default function ContactRequestsPage() {
   const [confirmAction, setConfirmAction] = useState<ContactRequestConfirmAction | null>(
     null,
   );
+  const [listContactSelection, setListContactSelection] = useState<RowSelectionState>({});
+  const [trashContactSelection, setTrashContactSelection] = useState<RowSelectionState>({});
 
   const debouncedGlobalFilter = useDebouncedValue(globalFilter, 300);
   const debouncedTrashGlobalFilter = useDebouncedValue(trashGlobalFilter, 300);
@@ -363,6 +370,11 @@ export default function ContactRequestsPage() {
   useEffect(() => {
     setTrashPage(1);
   }, [debouncedTrashGlobalFilter, trashPageSize]);
+
+  useEffect(() => {
+    setListContactSelection({});
+    setTrashContactSelection({});
+  }, [mainTab]);
 
   const listQuery = useQuery({
     queryKey: [
@@ -480,6 +492,16 @@ export default function ContactRequestsPage() {
   const purgeMutation = useMutation({
     mutationFn: async (id: string) =>
       api.http.delete(`/admin/contact-requests/${id}/hard-delete`),
+    onSuccess: async () => {
+      await invalidateLists();
+    },
+  });
+
+  const bulkMutation = useMutation({
+    mutationFn: async (input: {
+      action: "delete" | "restore" | "hard-delete";
+      ids: string[];
+    }) => api.http.post("/admin/contact-requests/bulk", input),
     onSuccess: async () => {
       await invalidateLists();
     },
@@ -974,6 +996,7 @@ export default function ContactRequestsPage() {
           ) : (
             <AdminDataTable<ContactRequestRow>
               data={listItems}
+              getRowId={(row) => row.id}
               columns={columns}
               isLoading={listQuery.isLoading}
               emptyLabel="Không có liên hệ hỗ trợ khớp bộ lọc."
@@ -983,6 +1006,27 @@ export default function ContactRequestsPage() {
               globalFilter={globalFilter}
               onGlobalFilterChange={setGlobalFilter}
               globalFilterPlaceholder="Tìm theo người gửi, email, SĐT, chủ đề..."
+              rowSelectionEnabled={canDelete}
+              selectedRowIds={listContactSelection}
+              onSelectedRowIdsChange={setListContactSelection}
+              bulkActions={
+                canDelete
+                  ? [
+                      {
+                        id: "bulk-contact-delete",
+                        label: "Xóa tạm đã chọn",
+                        variant: "outline",
+                        className: "border-destructive/40 text-destructive",
+                        onAction: async (rows) => {
+                          const ids = rows.map((r) => r.id);
+                          if (!ids.length) return;
+                          await bulkMutation.mutateAsync({ action: "delete", ids });
+                          toast.success(`Đã đưa ${ids.length} yêu cầu vào thùng rác`);
+                        },
+                      },
+                    ]
+                  : []
+              }
               filterToolbarExtra={
                 <div className="flex flex-wrap items-end gap-2">
                   <Button
@@ -1019,6 +1063,7 @@ export default function ContactRequestsPage() {
           ) : (
             <AdminDataTable<ContactRequestRow>
               data={trashItems}
+              getRowId={(row) => row.id}
               columns={trashColumns}
               isLoading={trashQuery.isLoading}
               emptyLabel="Thùng rác trống hoặc không khớp tìm kiếm."
@@ -1026,6 +1071,41 @@ export default function ContactRequestsPage() {
               globalFilter={trashGlobalFilter}
               onGlobalFilterChange={setTrashGlobalFilter}
               globalFilterPlaceholder="Tìm trong thùng rác..."
+              rowSelectionEnabled={canRestore || canDelete}
+              selectedRowIds={trashContactSelection}
+              onSelectedRowIdsChange={setTrashContactSelection}
+              bulkActions={[
+                ...(canRestore
+                  ? [
+                      {
+                        id: "bulk-contact-restore",
+                        label: "Khôi phục đã chọn",
+                        onAction: async (rows: ContactRequestRow[]) => {
+                          const ids = rows.map((r) => r.id);
+                          if (!ids.length) return;
+                          await bulkMutation.mutateAsync({ action: "restore", ids });
+                          toast.success(`Đã khôi phục ${ids.length} yêu cầu`);
+                        },
+                      },
+                    ]
+                  : []),
+                ...(canDelete
+                  ? [
+                      {
+                        id: "bulk-contact-purge",
+                        label: "Xóa vĩnh viễn đã chọn",
+                        variant: "outline" as const,
+                        className: "border-destructive/40 text-destructive",
+                        onAction: async (rows: ContactRequestRow[]) => {
+                          const ids = rows.map((r) => r.id);
+                          if (!ids.length) return;
+                          await bulkMutation.mutateAsync({ action: "hard-delete", ids });
+                          toast.success(`Đã xóa vĩnh viễn ${ids.length} yêu cầu`);
+                        },
+                      },
+                    ]
+                  : []),
+              ]}
               filterToolbarExtra={
                 <Button
                   type="button"
@@ -1232,7 +1312,7 @@ export default function ContactRequestsPage() {
             </div>
           </div>
 
-          <DialogFooter className="gap-2 sm:gap-0">
+          <DialogFooter className="gap-2">
             <Button
               type="button"
               variant="outline"

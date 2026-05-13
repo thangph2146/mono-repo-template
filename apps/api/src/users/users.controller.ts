@@ -1,6 +1,6 @@
 /**
  * Users Admin API Controller.
- * GET list, options, :id; POST (create); PUT :id; DELETE :id; POST :id/restore; DELETE :id/hard-delete; POST bulk.
+ * GET list, options, :id; POST (create); PUT :id; POST bulk; DELETE :id/hard-delete; DELETE :id; POST :id/restore.
  * Header: X-User-Id (bắt buộc). Không trả password.
  */
 import {
@@ -334,44 +334,6 @@ export class UsersController {
     return res.status(statusCode).json(okBody);
   }
 
-  @Delete(':id')
-  async softDelete(
-    @Res() res: Response,
-    @Headers() headers: Record<string, string | undefined>,
-    @Param('id') id: string,
-  ) {
-    this.logger.log(`softDelete id=${id}`);
-    const userId = this.getUserId(headers);
-    if (!userId) {
-      return this.unauthorized(res);
-    }
-    const ok = await this.usersService.softDelete(id);
-    if (!ok) {
-      const { statusCode, body } = createErrorResponse(
-        'Người dùng không tồn tại hoặc đã bị xóa',
-        { status: 404 },
-      );
-      return res.status(statusCode).json(body);
-    }
-    if (userId) {
-      this.logActivity(
-        userId,
-        'Đã xóa người dùng',
-        `Xóa người dùng (soft) id: ${id}`,
-        ADMIN_ROUTES.USERS,
-        {
-          resource: RESOURCES.USERS,
-          action: ACTIONS.DELETE,
-          resourceId: id,
-        },
-      );
-    }
-    const { statusCode, body } = createSuccessResponse(undefined, {
-      message: 'Đã xóa người dùng',
-    });
-    return res.status(statusCode).json(body);
-  }
-
   @Post('bulk')
   async bulk(
     @Res() res: Response,
@@ -447,44 +409,6 @@ export class UsersController {
     return res.status(statusCode).json(okBody);
   }
 
-  @Post(':id/restore')
-  async restore(
-    @Res() res: Response,
-    @Headers() headers: Record<string, string | undefined>,
-    @Param('id') id: string,
-  ) {
-    this.logger.log(`restore id=${id}`);
-    const userId = this.getUserId(headers);
-    if (!userId) {
-      return this.unauthorized(res, 'X-User-Id');
-    }
-    const ok = await this.usersService.restore(id);
-    if (!ok) {
-      const { statusCode, body } = createErrorResponse(
-        'Người dùng không tồn tại hoặc chưa bị xóa',
-        { status: 404 },
-      );
-      return res.status(statusCode).json(body);
-    }
-    if (userId) {
-      this.logActivity(
-        userId,
-        'Đã khôi phục người dùng',
-        `Khôi phục người dùng id: ${id}`,
-        `${ADMIN_ROUTES.USERS}/${id}`,
-        {
-          resource: RESOURCES.USERS,
-          action: ACTIONS.RESTORE,
-          resourceId: id,
-        },
-      );
-    }
-    const { statusCode, body } = createSuccessResponse(undefined, {
-      message: 'Đã khôi phục người dùng',
-    });
-    return res.status(statusCode).json(body);
-  }
-
   @Delete(':id/hard-delete')
   async hardDelete(
     @Res() res: Response,
@@ -519,6 +443,82 @@ export class UsersController {
     }
     const { statusCode, body } = createSuccessResponse(undefined, {
       message: 'Đã xóa vĩnh viễn người dùng',
+    });
+    return res.status(statusCode).json(body);
+  }
+
+  @Delete(':id')
+  async softDelete(
+    @Res() res: Response,
+    @Headers() headers: Record<string, string | undefined>,
+    @Param('id') id: string,
+  ) {
+    this.logger.log(`softDelete id=${id}`);
+    const userId = this.getUserId(headers);
+    if (!userId) {
+      return this.unauthorized(res);
+    }
+    const ok = await this.usersService.softDelete(id);
+    if (!ok) {
+      const { statusCode, body } = createErrorResponse(
+        'Người dùng không tồn tại hoặc đã bị xóa',
+        { status: 404 },
+      );
+      return res.status(statusCode).json(body);
+    }
+    if (userId) {
+      this.logActivity(
+        userId,
+        'Đã xóa người dùng',
+        `Xóa người dùng (soft) id: ${id}`,
+        ADMIN_ROUTES.USERS,
+        {
+          resource: RESOURCES.USERS,
+          action: ACTIONS.DELETE,
+          resourceId: id,
+        },
+      );
+    }
+    const { statusCode, body } = createSuccessResponse(undefined, {
+      message: 'Đã xóa người dùng',
+    });
+    return res.status(statusCode).json(body);
+  }
+
+  @Post(':id/restore')
+  async restore(
+    @Res() res: Response,
+    @Headers() headers: Record<string, string | undefined>,
+    @Param('id') id: string,
+  ) {
+    this.logger.log(`restore id=${id}`);
+    const userId = this.getUserId(headers);
+    if (!userId) {
+      return this.unauthorized(res, 'X-User-Id');
+    }
+    const ok = await this.usersService.restore(id);
+    if (!ok) {
+      const { statusCode, body } = createErrorResponse(
+        'Người dùng không tồn tại hoặc chưa bị xóa',
+        { status: 404 },
+      );
+      return res.status(statusCode).json(body);
+    }
+    if (userId) {
+      this.logActivity(
+        userId,
+        'Đã khôi phục người dùng',
+        `Khôi phục người dùng id: ${id}`,
+        `${ADMIN_ROUTES.USERS}/${id}`,
+        {
+          resource: RESOURCES.USERS,
+          action: ACTIONS.RESTORE,
+          resourceId: id,
+        },
+      );
+    }
+    const { statusCode, body } = createSuccessResponse(undefined, {
+      message: 'Đã khôi phục người dùng',
     });
     return res.status(statusCode).json(body);
   }

@@ -1,7 +1,13 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import type { ColumnDef, ColumnFiltersState, OnChangeFn } from "@tanstack/react-table";
+import type {
+  ColumnDef,
+  ColumnFiltersState,
+  OnChangeFn,
+  RowSelectionState,
+} from "@tanstack/react-table";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Button } from "@ui/components/button";
 import { Input } from "@ui/components/input";
@@ -54,8 +60,10 @@ import {
   useRestoreCategory,
   useTrashedCategories,
   useUpdateCategory,
+  queryKeys,
 } from "@/hooks/queries";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
+import { api } from "@/lib/api";
 import {
   CATEGORY_ICON_OPTIONS,
   resolveCategoryIcon,
@@ -167,6 +175,7 @@ function flattenCategoryOptions(
 }
 
 export default function CategoriesPage() {
+  const queryClient = useQueryClient();
   const { user } = useAuth();
   const canWriteCategories = user
     ? canUserAccess(user, PERMISSION_CODES.CATEGORIES_WRITE)
@@ -177,7 +186,22 @@ export default function CategoriesPage() {
   const restoreMutation = useRestoreCategory();
   const purgeTrashedMutation = usePurgeTrashedCategory();
 
+  const bulkCategoriesMutation = useMutation({
+    mutationFn: async (input: {
+      action: "delete" | "restore" | "hard-delete";
+      ids: string[];
+    }) => api.http.post("/admin/categories/bulk", input),
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: queryKeys.categories() }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.categoriesTrashed() }),
+      ]);
+    },
+  });
+
   const [mainTab, setMainTab] = useState<"list" | "trash">("list");
+  const [listCategorySelection, setListCategorySelection] = useState<RowSelectionState>({});
+  const [trashCategorySelection, setTrashCategorySelection] = useState<RowSelectionState>({});
   const [globalFilter, setGlobalFilter] = useState("");
   const [trashPage, setTrashPage] = useState(1);
   const [trashPageSize, setTrashPageSize] = useState(15);
@@ -197,6 +221,11 @@ export default function CategoriesPage() {
   useEffect(() => {
     setTrashPage(1);
   }, [debouncedTrashQ, mainTab, trashPageSize]);
+
+  useEffect(() => {
+    setListCategorySelection({});
+    setTrashCategorySelection({});
+  }, [mainTab]);
 
   const {
     data,
@@ -884,6 +913,7 @@ export default function CategoriesPage() {
           {!error && (
             <AdminDataTable<CategoryRow>
               data={tableRows}
+              getRowId={(row) => row.id}
               columns={columns}
               isLoading={loading}
               emptyLabel={
@@ -906,6 +936,36 @@ export default function CategoriesPage() {
               globalFilter={globalFilter}
               onGlobalFilterChange={setGlobalFilter}
               globalFilterPlaceholder="Tìm theo tên, slug, mô tả hoặc danh mục cha…"
+              rowSelectionEnabled={canWriteCategories}
+              selectedRowIds={listCategorySelection}
+              onSelectedRowIdsChange={setListCategorySelection}
+              canSelectRow={(row) => {
+                const c = row.original;
+                const childCount = c._count?.children ?? 0;
+                const linkedPosts = c.postCount ?? 0;
+                return !(childCount > 0 || linkedPosts > 0);
+              }}
+              bulkActions={
+                canWriteCategories
+                  ? [
+                      {
+                        id: "bulk-category-delete",
+                        label: "Xóa tạm đã chọn",
+                        variant: "outline",
+                        className: "border-destructive/40 text-destructive",
+                        onAction: async (rows) => {
+                          const ids = rows.map((r) => r.id);
+                          if (!ids.length) return;
+                          await bulkCategoriesMutation.mutateAsync({
+                            action: "delete",
+                            ids,
+                          });
+                          toast.success(`Đã đưa ${ids.length} danh mục vào thùng rác`);
+                        },
+                      },
+                    ]
+                  : []
+              }
               filterToolbarExtra={
                 <div className="flex flex-wrap items-center gap-2">
                   <Button
@@ -962,6 +1022,7 @@ export default function CategoriesPage() {
                 </p>
                 <AdminDataTable<Category>
                   data={trashedItems}
+                  getRowId={(row) => row.id}
                   columns={trashColumns}
                   isLoading={trashedLoading}
                   emptyLabel="Thùng rác trống hoặc không khớp tìm kiếm."
@@ -970,6 +1031,39 @@ export default function CategoriesPage() {
                   globalFilter={trashGlobalFilter}
                   onGlobalFilterChange={setTrashGlobalFilter}
                   globalFilterPlaceholder="Tìm theo tên, slug, mô tả (API)…"
+                  rowSelectionEnabled={canWriteCategories}
+                  selectedRowIds={trashCategorySelection}
+                  onSelectedRowIdsChange={setTrashCategorySelection}
+                  bulkActions={[
+                    {
+                      id: "bulk-category-restore",
+                      label: "Khôi phục đã chọn",
+                      onAction: async (rows) => {
+                        const ids = rows.map((r) => r.id);
+                        if (!ids.length) return;
+                        await bulkCategoriesMutation.mutateAsync({
+                          action: "restore",
+                          ids,
+                        });
+                        toast.success(`Đã khôi phục ${ids.length} danh mục`);
+                      },
+                    },
+                    {
+                      id: "bulk-category-purge",
+                      label: "Xóa vĩnh viễn đã chọn",
+                      variant: "outline",
+                      className: "border-destructive/40 text-destructive",
+                      onAction: async (rows) => {
+                        const ids = rows.map((r) => r.id);
+                        if (!ids.length) return;
+                        await bulkCategoriesMutation.mutateAsync({
+                          action: "hard-delete",
+                          ids,
+                        });
+                        toast.success(`Đã xóa vĩnh viễn ${ids.length} danh mục`);
+                      },
+                    },
+                  ]}
                   filterToolbarExtra={
                     <div className="flex flex-wrap items-center gap-2">
                       <Button

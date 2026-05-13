@@ -1,6 +1,6 @@
 /**
  * Contact Requests Admin API Controller.
- * GET list, options, :id; PUT :id; DELETE :id; POST :id/restore; DELETE :id/hard-delete; POST bulk; POST :id/assign.
+ * GET list, options, :id; PUT :id; POST bulk; POST :id/restore; DELETE :id/hard-delete; DELETE :id; POST :id/assign.
  * Header: X-User-Id (bắt buộc).
  */
 import {
@@ -287,44 +287,6 @@ export class ContactRequestsController {
     return res.status(statusCode).json(okBody);
   }
 
-  @Delete(':id')
-  async softDelete(
-    @Res() res: Response,
-    @Headers() headers: Record<string, string | undefined>,
-    @Param('id') id: string,
-  ) {
-    const userId = this.getUserId(headers);
-    if (!userId) {
-      return this.unauthorized(res);
-    }
-
-    const ok = await this.contactRequestsService.softDelete(id);
-    if (!ok) {
-      const { statusCode, body } = createErrorResponse(
-        'Yêu cầu liên hệ không tồn tại hoặc đã bị xóa',
-        { status: 404 },
-      );
-      return res.status(statusCode).json(body);
-    }
-    if (userId) {
-      this.logActivity(
-        userId,
-        'Đã xóa yêu cầu liên hệ',
-        `Xóa yêu cầu liên hệ (soft) id: ${id}`,
-        ADMIN_ROUTES.CONTACT_REQUESTS,
-        {
-          resource: RESOURCES.CONTACT_REQUESTS,
-          action: ACTIONS.DELETE,
-          resourceId: id,
-        },
-      );
-    }
-    const { statusCode, body } = createSuccessResponse(undefined, {
-      message: 'Đã xóa yêu cầu liên hệ',
-    });
-    return res.status(statusCode).json(body);
-  }
-
   @Post('bulk')
   async bulk(
     @Res() res: Response,
@@ -504,6 +466,44 @@ export class ContactRequestsController {
     }
     const { statusCode, body } = createSuccessResponse(undefined, {
       message: 'Đã xóa vĩnh viễn yêu cầu liên hệ',
+    });
+    return res.status(statusCode).json(body);
+  }
+
+  @Delete(':id')
+  async softDelete(
+    @Res() res: Response,
+    @Headers() headers: Record<string, string | undefined>,
+    @Param('id') id: string,
+  ) {
+    const userId = this.getUserId(headers);
+    if (!userId) {
+      return this.unauthorized(res);
+    }
+
+    const ok = await this.contactRequestsService.softDelete(id);
+    if (!ok) {
+      const { statusCode, body } = createErrorResponse(
+        'Yêu cầu liên hệ không tồn tại hoặc đã bị xóa',
+        { status: 404 },
+      );
+      return res.status(statusCode).json(body);
+    }
+    if (userId) {
+      this.logActivity(
+        userId,
+        'Đã xóa yêu cầu liên hệ',
+        `Xóa yêu cầu liên hệ (soft) id: ${id}`,
+        ADMIN_ROUTES.CONTACT_REQUESTS,
+        {
+          resource: RESOURCES.CONTACT_REQUESTS,
+          action: ACTIONS.DELETE,
+          resourceId: id,
+        },
+      );
+    }
+    const { statusCode, body } = createSuccessResponse(undefined, {
+      message: 'Đã xóa yêu cầu liên hệ',
     });
     return res.status(statusCode).json(body);
   }
