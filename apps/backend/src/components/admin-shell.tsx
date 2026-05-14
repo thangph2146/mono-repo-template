@@ -33,6 +33,7 @@ import {
 import { MobileSidebarPanel, Sidebar } from "@/components/sidebar";
 import { ThemeToggle } from "@ui/components/theme-toggle";
 import { Page, PageContent } from "@ui/components/layout";
+import { TypographyH2 } from "@ui/components/typography";
 import { useTextSize } from "@ui/components/text-size-provider";
 import { useTheme } from "@ui/components/theme-provider";
 import { canAccessStaffAdmin } from "@workspace/api-client";
@@ -215,9 +216,9 @@ export function AdminShell({ children }: { children: ReactNode }) {
               >
                 <Menu aria-hidden className="size-5" />
               </Button>
-              <h2 className="shrink-0 truncate text-lg font-bold text-primary sm:text-xl md:hidden">
+              <TypographyH2 className="shrink-0 truncate text-lg font-bold text-primary sm:text-xl md:hidden">
                 B2B Admin
-              </h2>
+              </TypographyH2>
               <Button
                 type="button"
                 variant="outline"

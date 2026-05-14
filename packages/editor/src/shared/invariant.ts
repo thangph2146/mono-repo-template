@@ -1,7 +1,6 @@
 export function invariant(
   cond?: boolean,
   message?: string,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- rest args for compile-time replacement
   ..._args: string[]
 ): asserts cond {
   if (cond) {

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import graphData from "../../../../.graphify/graph.json";
-import contextData from "../../../../.graphify/context.json";
+import graphData from "../../../../.graphify/snapshot/graph.json";
+import contextData from "../../../../.graphify/snapshot/context.json";
 import type { GraphData, ContextData } from "@/lib/graphify-context";
 
 export async function GET() {

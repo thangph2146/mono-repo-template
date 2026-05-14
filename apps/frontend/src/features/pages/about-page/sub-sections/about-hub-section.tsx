@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { TypographyH2, TypographyH3, TypographyDescriptionLarge, TypographyPSmall, IconSize } from "@ui/components/typography";
+import { TypographyH2, TypographyDescriptionLarge, TypographyPSmall, IconSize } from "@ui/components/typography";
 import { ChevronDown } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@ui/components/dialog";
 import { ScrollArea } from "@ui/components/scroll-area";

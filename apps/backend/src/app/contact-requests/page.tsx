@@ -31,7 +31,6 @@ import { Badge } from "@ui/components/badge";
 import { Button } from "@ui/components/button";
 import {
   Card,
-  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
@@ -285,35 +284,6 @@ function buildContactFilterQuery(columnFilters: ColumnFiltersState): Record<stri
   return query;
 }
 
-function StatCard({
-  label,
-  value,
-  hint,
-  icon: Icon,
-}: {
-  label: string;
-  value: string;
-  hint: string;
-  icon: typeof Headset;
-}) {
-  return (
-    <Card className="border-border/70 bg-card/95 shadow-sm">
-      <CardContent className="flex items-start gap-4 p-5">
-        <div className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-          <Icon className="size-5" />
-        </div>
-        <div className="min-w-0">
-          <p className="text-sm font-medium text-muted-foreground">{label}</p>
-          <p className="mt-1 text-2xl font-bold tracking-tight text-foreground">
-            {value}
-          </p>
-          <p className="mt-1 text-xs text-muted-foreground">{hint}</p>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
 export default function ContactRequestsPage() {
   const queryClient = useQueryClient();
   const { user: session } = useAuth();
@@ -520,19 +490,6 @@ export default function ContactRequestsPage() {
   const assigneeOptions = useMemo(
     () => assigneesQuery.data ?? [],
     [assigneesQuery.data],
-  );
-
-  const unreadCount = useMemo(
-    () => listItems.filter((item) => !item.isRead).length,
-    [listItems],
-  );
-  const urgentCount = useMemo(
-    () => listItems.filter((item) => item.priority === "URGENT").length,
-    [listItems],
-  );
-  const assignedCount = useMemo(
-    () => listItems.filter((item) => item.assignedToId != null).length,
-    [listItems],
   );
 
   const openDetail = useCallback((row: ContactRequestRow) => {

@@ -8,10 +8,10 @@ Tài liệu tổng quan kiến trúc microservice: `docs/hub-parent/MICROSERVICE
 
 | Thứ tự | Nội dung | Mục đích |
 |--------|----------|----------|
-| 1 | `apps/frontend/.graphify/SUMMARY_FOR_AI.md` | Storefront Next, route, import |
+| 1 | `apps/frontend/.graphify/markdown/SUMMARY_FOR_AI.md` | Storefront Next, route, import |
 | 1b | `docs/hub-parent/FRONTEND_UX.md` | Token màu / UX / a11y storefront (khi sửa UI) |
-| 2 | `apps/backend/.graphify/SUMMARY_FOR_AI.md` | Admin Next |
-| 3 | `apps/api/.graphify/SUMMARY_FOR_AI.md` | Nest API: module, controller, entity (**MikroORM**) |
+| 2 | `apps/backend/.graphify/markdown/SUMMARY_FOR_AI.md` | Admin Next |
+| 3 | `apps/api/.graphify/markdown/SUMMARY_FOR_AI.md` | Nest API: module, controller, entity (**MikroORM**) |
 | 4 | `packages/eslint-config/service-boundaries.js` | Ranh giới import giữa service |
 | 5 | Source cụ thể (`*.ts`, `*.tsx`) | Chỉ mở khi đã biết file/module liên quan |
 
@@ -27,7 +27,7 @@ pnpm check
 
 Gồm: `verify:bounds` (package.json) + `lint` + `typecheck`.
 
-Nếu đổi **cấu trúc file/route/module** nhiều và đã cập nhật `apps/*/.graphify/context.json`:
+Nếu đổi **cấu trúc file/route/module** nhiều và đã cập nhật `apps/*/.graphify/snapshot/context.json`:
 
 ```bash
 pnpm graphify:ai-summary

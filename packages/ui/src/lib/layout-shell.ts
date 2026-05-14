@@ -170,6 +170,9 @@ export const ADMIN_DIALOG_CONTENT_LG_CLASS = "rounded-lg sm:max-w-3xl";
 /** Dialog form danh mục. */
 export const ADMIN_DIALOG_CONTENT_CATEGORY_CLASS = "max-w-[90vw] sm:max-w-[600px]";
 
+/** Dialog form bài viết. */
+export const ADMIN_DIALOG_CONTENT_POST_CLASS = "max-w-[90vw]";
+
 /** Dialog toàn màn hình kho (bảng chi tiết). */
 export const ADMIN_DIALOG_CONTENT_INVENTORY_FULL_CLASS =
   "flex-col gap-0 p-0 sm:max-w-7xl";

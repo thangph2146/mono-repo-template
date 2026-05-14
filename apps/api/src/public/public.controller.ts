@@ -345,6 +345,30 @@ export class PublicController {
     }
   }
 
+  @Post('posts/:slug/view')
+  async incrementPostView(@Param('slug') slug: string, @Res() res: Response) {
+    this.logger.log(`incrementPostView slug=${slug}`);
+    try {
+      const result =
+        await this.publicPostsService.incrementPostViewBySlug(slug);
+      if (!result) {
+        const { statusCode, body } = createErrorResponse('Not Found', {
+          status: 404,
+        });
+        return res.status(statusCode).json(body);
+      }
+      const { statusCode, body } = createSuccessResponse(result);
+      return res.status(statusCode).json(body);
+    } catch (error) {
+      this.logApiError('POST /api/public/posts/:slug/view', error, { slug });
+      const { statusCode, body } = createErrorResponse(
+        'Internal Server Error',
+        { status: 500 },
+      );
+      return res.status(statusCode).json(body);
+    }
+  }
+
   @Get('posts/:slug')
   async getPostBySlug(
     @Param('slug') slug: string,

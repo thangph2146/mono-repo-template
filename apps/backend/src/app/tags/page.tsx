@@ -19,6 +19,7 @@ import { Input } from "@ui/components/input";
 import { Label } from "@ui/components/label";
 import { PageSection } from "@ui/components/layout";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@ui/components/tabs";
+import { TypographyH1, TypographyH2 } from "@ui/components/typography";
 import {
   AlertCircle,
   ArchiveRestore,
@@ -526,7 +527,7 @@ export default function TagsPage() {
     return (
       <PageSection max="full" className="min-w-0 space-y-6">
         <div className="rounded-lg border border-outline-variant bg-surface-container p-6">
-          <h2 className="text-lg font-semibold">Không có quyền truy cập</h2>
+          <TypographyH2 className="text-lg font-semibold">Không có quyền truy cập</TypographyH2>
           <p className="mt-2 text-sm text-muted-foreground">
             Bạn cần quyền <code>tags:view</code> hoặc <code>tags:manage</code> để xem trang này.
           </p>
@@ -539,10 +540,10 @@ export default function TagsPage() {
     <PageSection max="full" className="min-w-0 space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className={ADMIN_PAGE_TITLE_PRIMARY_CLASS}>
+          <TypographyH1 className={ADMIN_PAGE_TITLE_PRIMARY_CLASS}>
             <Hash className={ADMIN_PAGE_TITLE_ICON_CLASS} aria-hidden />
             Thẻ
-          </h1>
+          </TypographyH1>
           <p className={ADMIN_PAGE_SUBTITLE_CLASS}>
             Quản lý thẻ dùng chung để gắn cho bài viết và nội dung truyền thông
           </p>

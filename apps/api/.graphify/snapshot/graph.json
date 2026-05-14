@@ -1,0 +1,4803 @@
+{
+  "nodes": [
+    {
+      "id": "dir_src",
+      "label": "src/",
+      "path": "src",
+      "color": "#ff9d00",
+      "size": 28,
+      "community": "root",
+      "type": "directory"
+    },
+    {
+      "id": "dir_src_accounts",
+      "label": "accounts/",
+      "path": "src/accounts",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_accounts_accounts_controller_ts",
+      "label": "accounts.controller.ts",
+      "path": "src/accounts/accounts.controller.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/accounts",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_accounts_accounts_module_ts",
+      "label": "accounts.module.ts",
+      "path": "src/accounts/accounts.module.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/accounts",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_accounts_accounts_service_ts",
+      "label": "accounts.service.ts",
+      "path": "src/accounts/accounts.service.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/accounts",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_admission_results",
+      "label": "admission-results/",
+      "path": "src/admission-results",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_admission_results_admission_results_controller_ts",
+      "label": "admission-results.controller.ts",
+      "path": "src/admission-results/admission-results.controller.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/admission-results",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_admission_results_admission_results_module_ts",
+      "label": "admission-results.module.ts",
+      "path": "src/admission-results/admission-results.module.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/admission-results",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_admission_results_admission_results_service_ts",
+      "label": "admission-results.service.ts",
+      "path": "src/admission-results/admission-results.service.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/admission-results",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_app_module_ts",
+      "label": "app.module.ts",
+      "path": "src/app.module.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_auth",
+      "label": "auth/",
+      "path": "src/auth",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_auth_auth_admin_controller_ts",
+      "label": "auth-admin.controller.ts",
+      "path": "src/auth/auth-admin.controller.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/auth",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_auth_auth_module_ts",
+      "label": "auth.module.ts",
+      "path": "src/auth/auth.module.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/auth",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_auth_auth_service_ts",
+      "label": "auth.service.ts",
+      "path": "src/auth/auth.service.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/auth",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_categories",
+      "label": "categories/",
+      "path": "src/categories",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_categories_categories_controller_ts",
+      "label": "categories.controller.ts",
+      "path": "src/categories/categories.controller.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/categories",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_categories_categories_module_ts",
+      "label": "categories.module.ts",
+      "path": "src/categories/categories.module.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/categories",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_categories_categories_service_ts",
+      "label": "categories.service.ts",
+      "path": "src/categories/categories.service.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/categories",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_comments",
+      "label": "comments/",
+      "path": "src/comments",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_comments_comments_controller_ts",
+      "label": "comments.controller.ts",
+      "path": "src/comments/comments.controller.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/comments",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_comments_comments_module_ts",
+      "label": "comments.module.ts",
+      "path": "src/comments/comments.module.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/comments",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_comments_comments_service_ts",
+      "label": "comments.service.ts",
+      "path": "src/comments/comments.service.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/comments",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_common",
+      "label": "common/",
+      "path": "src/common",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_common_api_access_middleware_ts",
+      "label": "api-access.middleware.ts",
+      "path": "src/common/api-access.middleware.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/common",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_common_api_response_ts",
+      "label": "api-response.ts",
+      "path": "src/common/api-response.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/common",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_common_database_http_exception_filter_ts",
+      "label": "database-http-exception.filter.ts",
+      "path": "src/common/database-http-exception.filter.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/common",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_common_date_utils_ts",
+      "label": "date-utils.ts",
+      "path": "src/common/date-utils.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/common",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_common_get_options_ts",
+      "label": "get-options.ts",
+      "path": "src/common/get-options.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/common",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_common_logging_interceptor_ts",
+      "label": "logging.interceptor.ts",
+      "path": "src/common/logging.interceptor.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/common",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_common_pagination_ts",
+      "label": "pagination.ts",
+      "path": "src/common/pagination.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/common",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_common_request_id_middleware_ts",
+      "label": "request-id.middleware.ts",
+      "path": "src/common/request-id.middleware.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/common",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_common_resolve_relation_filters_ts",
+      "label": "resolve-relation-filters.ts",
+      "path": "src/common/resolve-relation-filters.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/common",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_config",
+      "label": "config/",
+      "path": "src/config",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_config_app_config_ts",
+      "label": "app.config.ts",
+      "path": "src/config/app.config.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/config",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_config_constants_ts",
+      "label": "constants.ts",
+      "path": "src/config/constants.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/config",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_config_permissions_ts",
+      "label": "permissions.ts",
+      "path": "src/config/permissions.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/config",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_contact_requests",
+      "label": "contact-requests/",
+      "path": "src/contact-requests",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_contact_requests_contact_requests_controller_ts",
+      "label": "contact-requests.controller.ts",
+      "path": "src/contact-requests/contact-requests.controller.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/contact-requests",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_contact_requests_contact_requests_module_ts",
+      "label": "contact-requests.module.ts",
+      "path": "src/contact-requests/contact-requests.module.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/contact-requests",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_contact_requests_contact_requests_service_ts",
+      "label": "contact-requests.service.ts",
+      "path": "src/contact-requests/contact-requests.service.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/contact-requests",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_dashboard",
+      "label": "dashboard/",
+      "path": "src/dashboard",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_dashboard_dashboard_controller_ts",
+      "label": "dashboard.controller.ts",
+      "path": "src/dashboard/dashboard.controller.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/dashboard",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_dashboard_dashboard_module_ts",
+      "label": "dashboard.module.ts",
+      "path": "src/dashboard/dashboard.module.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/dashboard",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_dashboard_dashboard_service_ts",
+      "label": "dashboard.service.ts",
+      "path": "src/dashboard/dashboard.service.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/dashboard",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_entities",
+      "label": "entities/",
+      "path": "src/entities",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_entities_account_entity_ts",
+      "label": "account.entity.ts",
+      "path": "src/entities/account.entity.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/entities",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_entities_admission_result_entity_ts",
+      "label": "admission-result.entity.ts",
+      "path": "src/entities/admission-result.entity.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/entities",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_entities_base_entity_ts",
+      "label": "base.entity.ts",
+      "path": "src/entities/base.entity.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/entities",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_entities_category_entity_ts",
+      "label": "category.entity.ts",
+      "path": "src/entities/category.entity.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/entities",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_entities_comment_entity_ts",
+      "label": "comment.entity.ts",
+      "path": "src/entities/comment.entity.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/entities",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_entities_contact_request_entity_ts",
+      "label": "contact-request.entity.ts",
+      "path": "src/entities/contact-request.entity.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/entities",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_entities_group_member_entity_ts",
+      "label": "group-member.entity.ts",
+      "path": "src/entities/group-member.entity.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/entities",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_entities_group_entity_ts",
+      "label": "group.entity.ts",
+      "path": "src/entities/group.entity.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/entities",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_entities_message_read_entity_ts",
+      "label": "message-read.entity.ts",
+      "path": "src/entities/message-read.entity.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/entities",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_entities_message_entity_ts",
+      "label": "message.entity.ts",
+      "path": "src/entities/message.entity.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/entities",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_entities_notification_entity_ts",
+      "label": "notification.entity.ts",
+      "path": "src/entities/notification.entity.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/entities",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_entities_page_content_entity_ts",
+      "label": "page-content.entity.ts",
+      "path": "src/entities/page-content.entity.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/entities",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_entities_post_category_entity_ts",
+      "label": "post-category.entity.ts",
+      "path": "src/entities/post-category.entity.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/entities",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_entities_post_tag_entity_ts",
+      "label": "post-tag.entity.ts",
+      "path": "src/entities/post-tag.entity.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/entities",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_entities_post_entity_ts",
+      "label": "post.entity.ts",
+      "path": "src/entities/post.entity.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/entities",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_entities_role_entity_ts",
+      "label": "role.entity.ts",
+      "path": "src/entities/role.entity.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/entities",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_entities_session_entity_ts",
+      "label": "session.entity.ts",
+      "path": "src/entities/session.entity.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/entities",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_entities_setting_entity_ts",
+      "label": "setting.entity.ts",
+      "path": "src/entities/setting.entity.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/entities",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_entities_student_entity_ts",
+      "label": "student.entity.ts",
+      "path": "src/entities/student.entity.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/entities",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_entities_tag_entity_ts",
+      "label": "tag.entity.ts",
+      "path": "src/entities/tag.entity.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/entities",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_entities_user_role_entity_ts",
+      "label": "user-role.entity.ts",
+      "path": "src/entities/user-role.entity.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/entities",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_entities_user_entity_ts",
+      "label": "user.entity.ts",
+      "path": "src/entities/user.entity.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/entities",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_entities_verification_token_entity_ts",
+      "label": "verification-token.entity.ts",
+      "path": "src/entities/verification-token.entity.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/entities",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_full_export_2026_05_13_json",
+      "label": "full-export-2026-05-13.json",
+      "path": "src/full-export-2026-05-13.json",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src",
+      "type": "json",
+      "client": false
+    },
+    {
+      "id": "dir_src_groups",
+      "label": "groups/",
+      "path": "src/groups",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_groups_groups_controller_ts",
+      "label": "groups.controller.ts",
+      "path": "src/groups/groups.controller.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/groups",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_groups_groups_module_ts",
+      "label": "groups.module.ts",
+      "path": "src/groups/groups.module.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/groups",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_groups_groups_service_ts",
+      "label": "groups.service.ts",
+      "path": "src/groups/groups.service.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/groups",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_hero_slides",
+      "label": "hero-slides/",
+      "path": "src/hero-slides",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_main_ts",
+      "label": "main.ts",
+      "path": "src/main.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_messages",
+      "label": "messages/",
+      "path": "src/messages",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_messages_conversations_controller_ts",
+      "label": "conversations.controller.ts",
+      "path": "src/messages/conversations.controller.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/messages",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_messages_messages_controller_ts",
+      "label": "messages.controller.ts",
+      "path": "src/messages/messages.controller.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/messages",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_messages_messages_module_ts",
+      "label": "messages.module.ts",
+      "path": "src/messages/messages.module.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/messages",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_migrations",
+      "label": "migrations/",
+      "path": "src/migrations",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_migrations__snapshot_hub_parent_json",
+      "label": ".snapshot-hub_parent.json",
+      "path": "src/migrations/.snapshot-hub_parent.json",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/migrations",
+      "type": "json",
+      "client": false
+    },
+    {
+      "id": "file_src_migrations_migration20260503140000_ts",
+      "label": "Migration20260503140000.ts",
+      "path": "src/migrations/Migration20260503140000.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/migrations",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_migrations_migration20260503150000_ts",
+      "label": "Migration20260503150000.ts",
+      "path": "src/migrations/Migration20260503150000.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/migrations",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_migrations_migration20260503160000_ts",
+      "label": "Migration20260503160000.ts",
+      "path": "src/migrations/Migration20260503160000.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/migrations",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_migrations_migration20260503170000_ts",
+      "label": "Migration20260503170000.ts",
+      "path": "src/migrations/Migration20260503170000.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/migrations",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_migrations_migration20260503180000_ts",
+      "label": "Migration20260503180000.ts",
+      "path": "src/migrations/Migration20260503180000.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/migrations",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_mikro_orm",
+      "label": "mikro-orm/",
+      "path": "src/mikro-orm",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_mikro_orm_mikro_orm_module_ts",
+      "label": "mikro-orm.module.ts",
+      "path": "src/mikro-orm/mikro-orm.module.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/mikro-orm",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_mikro_orm_orm_entities_ts",
+      "label": "orm-entities.ts",
+      "path": "src/mikro-orm/orm-entities.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/mikro-orm",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_notifications",
+      "label": "notifications/",
+      "path": "src/notifications",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_notifications_notifications_controller_ts",
+      "label": "notifications.controller.ts",
+      "path": "src/notifications/notifications.controller.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/notifications",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_notifications_notifications_module_ts",
+      "label": "notifications.module.ts",
+      "path": "src/notifications/notifications.module.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/notifications",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_notifications_notifications_service_ts",
+      "label": "notifications.service.ts",
+      "path": "src/notifications/notifications.service.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/notifications",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_page_contents",
+      "label": "page-contents/",
+      "path": "src/page-contents",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_page_contents_page_contents_controller_ts",
+      "label": "page-contents.controller.ts",
+      "path": "src/page-contents/page-contents.controller.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/page-contents",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_page_contents_page_contents_module_ts",
+      "label": "page-contents.module.ts",
+      "path": "src/page-contents/page-contents.module.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/page-contents",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_page_contents_page_contents_service_ts",
+      "label": "page-contents.service.ts",
+      "path": "src/page-contents/page-contents.service.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/page-contents",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_posts",
+      "label": "posts/",
+      "path": "src/posts",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_posts_posts_controller_ts",
+      "label": "posts.controller.ts",
+      "path": "src/posts/posts.controller.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/posts",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_posts_posts_module_ts",
+      "label": "posts.module.ts",
+      "path": "src/posts/posts.module.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/posts",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_posts_posts_service_ts",
+      "label": "posts.service.ts",
+      "path": "src/posts/posts.service.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/posts",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_proxy_image",
+      "label": "proxy-image/",
+      "path": "src/proxy-image",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_proxy_image_proxy_image_controller_ts",
+      "label": "proxy-image.controller.ts",
+      "path": "src/proxy-image/proxy-image.controller.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/proxy-image",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_proxy_image_proxy_image_module_ts",
+      "label": "proxy-image.module.ts",
+      "path": "src/proxy-image/proxy-image.module.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/proxy-image",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_public",
+      "label": "public/",
+      "path": "src/public",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_public_public_auth_service_ts",
+      "label": "public-auth.service.ts",
+      "path": "src/public/public-auth.service.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/public",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_public_public_categories_service_ts",
+      "label": "public-categories.service.ts",
+      "path": "src/public/public-categories.service.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/public",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_public_public_contact_requests_service_ts",
+      "label": "public-contact-requests.service.ts",
+      "path": "src/public/public-contact-requests.service.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/public",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_public_public_posts_service_ts",
+      "label": "public-posts.service.ts",
+      "path": "src/public/public-posts.service.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/public",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_public_public_controller_ts",
+      "label": "public.controller.ts",
+      "path": "src/public/public.controller.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/public",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_public_public_module_ts",
+      "label": "public.module.ts",
+      "path": "src/public/public.module.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/public",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_roles",
+      "label": "roles/",
+      "path": "src/roles",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_roles_roles_controller_ts",
+      "label": "roles.controller.ts",
+      "path": "src/roles/roles.controller.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/roles",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_roles_roles_module_ts",
+      "label": "roles.module.ts",
+      "path": "src/roles/roles.module.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/roles",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_roles_roles_service_ts",
+      "label": "roles.service.ts",
+      "path": "src/roles/roles.service.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/roles",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_scripts",
+      "label": "scripts/",
+      "path": "src/scripts",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_scripts_mark_migrations_executed_ts",
+      "label": "mark-migrations-executed.ts",
+      "path": "src/scripts/mark-migrations-executed.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/scripts",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_seed_full_export_ts",
+      "label": "seed-full-export.ts",
+      "path": "src/seed-full-export.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_seed_superadmin_ts",
+      "label": "seed-superadmin.ts",
+      "path": "src/seed-superadmin.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_seeders",
+      "label": "seeders/",
+      "path": "src/seeders",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_seeders_databaseseeder_ts",
+      "label": "DatabaseSeeder.ts",
+      "path": "src/seeders/DatabaseSeeder.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/seeders",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_seeds",
+      "label": "seeds/",
+      "path": "src/seeds",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_seeds_superadmin_bootstrap_data_ts",
+      "label": "superadmin-bootstrap.data.ts",
+      "path": "src/seeds/superadmin-bootstrap.data.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/seeds",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_seeds_superadmin_bootstrap_runner_ts",
+      "label": "superadmin-bootstrap.runner.ts",
+      "path": "src/seeds/superadmin-bootstrap.runner.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/seeds",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_sessions",
+      "label": "sessions/",
+      "path": "src/sessions",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_sessions_sessions_controller_ts",
+      "label": "sessions.controller.ts",
+      "path": "src/sessions/sessions.controller.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/sessions",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_sessions_sessions_module_ts",
+      "label": "sessions.module.ts",
+      "path": "src/sessions/sessions.module.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/sessions",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_sessions_sessions_service_ts",
+      "label": "sessions.service.ts",
+      "path": "src/sessions/sessions.service.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/sessions",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_settings",
+      "label": "settings/",
+      "path": "src/settings",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_settings_settings_controller_ts",
+      "label": "settings.controller.ts",
+      "path": "src/settings/settings.controller.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/settings",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_settings_settings_module_ts",
+      "label": "settings.module.ts",
+      "path": "src/settings/settings.module.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/settings",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_settings_settings_service_ts",
+      "label": "settings.service.ts",
+      "path": "src/settings/settings.service.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/settings",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_socket",
+      "label": "socket/",
+      "path": "src/socket",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_socket_notification_mapper_ts",
+      "label": "notification-mapper.ts",
+      "path": "src/socket/notification-mapper.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/socket",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_socket_socket_gateway_ts",
+      "label": "socket.gateway.ts",
+      "path": "src/socket/socket.gateway.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/socket",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_socket_socket_module_ts",
+      "label": "socket.module.ts",
+      "path": "src/socket/socket.module.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/socket",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_socket_socket_types_ts",
+      "label": "socket.types.ts",
+      "path": "src/socket/socket.types.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/socket",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_students",
+      "label": "students/",
+      "path": "src/students",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_students_students_controller_ts",
+      "label": "students.controller.ts",
+      "path": "src/students/students.controller.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/students",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_students_students_module_ts",
+      "label": "students.module.ts",
+      "path": "src/students/students.module.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/students",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_students_students_service_ts",
+      "label": "students.service.ts",
+      "path": "src/students/students.service.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/students",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_system",
+      "label": "system/",
+      "path": "src/system",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_system_import_helpers_ts",
+      "label": "import-helpers.ts",
+      "path": "src/system/import-helpers.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/system",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_system_system_controller_ts",
+      "label": "system.controller.ts",
+      "path": "src/system/system.controller.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/system",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_system_system_module_ts",
+      "label": "system.module.ts",
+      "path": "src/system/system.module.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/system",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_system_system_service_ts",
+      "label": "system.service.ts",
+      "path": "src/system/system.service.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/system",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_tags",
+      "label": "tags/",
+      "path": "src/tags",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_tags_tags_controller_ts",
+      "label": "tags.controller.ts",
+      "path": "src/tags/tags.controller.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/tags",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_tags_tags_module_ts",
+      "label": "tags.module.ts",
+      "path": "src/tags/tags.module.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/tags",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_tags_tags_service_ts",
+      "label": "tags.service.ts",
+      "path": "src/tags/tags.service.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/tags",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_uploads",
+      "label": "uploads/",
+      "path": "src/uploads",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_uploads_public_uploads_controller_ts",
+      "label": "public-uploads.controller.ts",
+      "path": "src/uploads/public-uploads.controller.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/uploads",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_uploads_uploads_controller_ts",
+      "label": "uploads.controller.ts",
+      "path": "src/uploads/uploads.controller.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/uploads",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_uploads_uploads_module_ts",
+      "label": "uploads.module.ts",
+      "path": "src/uploads/uploads.module.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/uploads",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_uploads_uploads_service_ts",
+      "label": "uploads.service.ts",
+      "path": "src/uploads/uploads.service.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/uploads",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_users",
+      "label": "users/",
+      "path": "src/users",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_users_users_controller_ts",
+      "label": "users.controller.ts",
+      "path": "src/users/users.controller.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/users",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_users_users_module_ts",
+      "label": "users.module.ts",
+      "path": "src/users/users.module.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/users",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_users_users_service_ts",
+      "label": "users.service.ts",
+      "path": "src/users/users.service.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/users",
+      "type": "ts",
+      "client": false
+    }
+  ],
+  "links": [
+    {
+      "source": "dir_src",
+      "target": "dir_src_accounts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_accounts",
+      "target": "file_src_accounts_accounts_controller_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_accounts",
+      "target": "file_src_accounts_accounts_module_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_accounts",
+      "target": "file_src_accounts_accounts_service_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_admission_results",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_admission_results",
+      "target": "file_src_admission_results_admission_results_controller_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_admission_results",
+      "target": "file_src_admission_results_admission_results_module_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_admission_results",
+      "target": "file_src_admission_results_admission_results_service_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "file_src_app_module_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_auth",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_auth",
+      "target": "file_src_auth_auth_admin_controller_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_auth",
+      "target": "file_src_auth_auth_module_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_auth",
+      "target": "file_src_auth_auth_service_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_categories",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_categories",
+      "target": "file_src_categories_categories_controller_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_categories",
+      "target": "file_src_categories_categories_module_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_categories",
+      "target": "file_src_categories_categories_service_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_comments",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_comments",
+      "target": "file_src_comments_comments_controller_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_comments",
+      "target": "file_src_comments_comments_module_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_comments",
+      "target": "file_src_comments_comments_service_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_common",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_common",
+      "target": "file_src_common_api_access_middleware_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_common",
+      "target": "file_src_common_api_response_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_common",
+      "target": "file_src_common_database_http_exception_filter_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_common",
+      "target": "file_src_common_date_utils_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_common",
+      "target": "file_src_common_get_options_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_common",
+      "target": "file_src_common_logging_interceptor_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_common",
+      "target": "file_src_common_pagination_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_common",
+      "target": "file_src_common_request_id_middleware_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_common",
+      "target": "file_src_common_resolve_relation_filters_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_config",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_config",
+      "target": "file_src_config_app_config_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_config",
+      "target": "file_src_config_constants_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_config",
+      "target": "file_src_config_permissions_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_contact_requests",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_contact_requests",
+      "target": "file_src_contact_requests_contact_requests_controller_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_contact_requests",
+      "target": "file_src_contact_requests_contact_requests_module_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_contact_requests",
+      "target": "file_src_contact_requests_contact_requests_service_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_dashboard",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_dashboard",
+      "target": "file_src_dashboard_dashboard_controller_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_dashboard",
+      "target": "file_src_dashboard_dashboard_module_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_dashboard",
+      "target": "file_src_dashboard_dashboard_service_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_entities",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_entities",
+      "target": "file_src_entities_account_entity_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_entities",
+      "target": "file_src_entities_admission_result_entity_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_entities",
+      "target": "file_src_entities_base_entity_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_entities",
+      "target": "file_src_entities_category_entity_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_entities",
+      "target": "file_src_entities_comment_entity_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_entities",
+      "target": "file_src_entities_contact_request_entity_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_entities",
+      "target": "file_src_entities_group_member_entity_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_entities",
+      "target": "file_src_entities_group_entity_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_entities",
+      "target": "file_src_entities_message_read_entity_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_entities",
+      "target": "file_src_entities_message_entity_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_entities",
+      "target": "file_src_entities_notification_entity_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_entities",
+      "target": "file_src_entities_page_content_entity_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_entities",
+      "target": "file_src_entities_post_category_entity_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_entities",
+      "target": "file_src_entities_post_tag_entity_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_entities",
+      "target": "file_src_entities_post_entity_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_entities",
+      "target": "file_src_entities_role_entity_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_entities",
+      "target": "file_src_entities_session_entity_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_entities",
+      "target": "file_src_entities_setting_entity_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_entities",
+      "target": "file_src_entities_student_entity_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_entities",
+      "target": "file_src_entities_tag_entity_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_entities",
+      "target": "file_src_entities_user_role_entity_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_entities",
+      "target": "file_src_entities_user_entity_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_entities",
+      "target": "file_src_entities_verification_token_entity_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "file_src_full_export_2026_05_13_json",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_groups",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_groups",
+      "target": "file_src_groups_groups_controller_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_groups",
+      "target": "file_src_groups_groups_module_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_groups",
+      "target": "file_src_groups_groups_service_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_hero_slides",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "file_src_main_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_messages",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_messages",
+      "target": "file_src_messages_conversations_controller_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_messages",
+      "target": "file_src_messages_messages_controller_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_messages",
+      "target": "file_src_messages_messages_module_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_migrations",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_migrations",
+      "target": "file_src_migrations__snapshot_hub_parent_json",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_migrations",
+      "target": "file_src_migrations_migration20260503140000_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_migrations",
+      "target": "file_src_migrations_migration20260503150000_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_migrations",
+      "target": "file_src_migrations_migration20260503160000_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_migrations",
+      "target": "file_src_migrations_migration20260503170000_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_migrations",
+      "target": "file_src_migrations_migration20260503180000_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_mikro_orm",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_mikro_orm",
+      "target": "file_src_mikro_orm_mikro_orm_module_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_mikro_orm",
+      "target": "file_src_mikro_orm_orm_entities_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_notifications",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_notifications",
+      "target": "file_src_notifications_notifications_controller_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_notifications",
+      "target": "file_src_notifications_notifications_module_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_notifications",
+      "target": "file_src_notifications_notifications_service_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_page_contents",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_page_contents",
+      "target": "file_src_page_contents_page_contents_controller_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_page_contents",
+      "target": "file_src_page_contents_page_contents_module_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_page_contents",
+      "target": "file_src_page_contents_page_contents_service_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_posts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_posts",
+      "target": "file_src_posts_posts_controller_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_posts",
+      "target": "file_src_posts_posts_module_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_posts",
+      "target": "file_src_posts_posts_service_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_proxy_image",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_proxy_image",
+      "target": "file_src_proxy_image_proxy_image_controller_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_proxy_image",
+      "target": "file_src_proxy_image_proxy_image_module_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_public",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_public",
+      "target": "file_src_public_public_auth_service_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_public",
+      "target": "file_src_public_public_categories_service_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_public",
+      "target": "file_src_public_public_contact_requests_service_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_public",
+      "target": "file_src_public_public_posts_service_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_public",
+      "target": "file_src_public_public_controller_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_public",
+      "target": "file_src_public_public_module_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_roles",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_roles",
+      "target": "file_src_roles_roles_controller_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_roles",
+      "target": "file_src_roles_roles_module_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_roles",
+      "target": "file_src_roles_roles_service_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_scripts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_scripts",
+      "target": "file_src_scripts_mark_migrations_executed_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "file_src_seed_full_export_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "file_src_seed_superadmin_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_seeders",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_seeders",
+      "target": "file_src_seeders_databaseseeder_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_seeds",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_seeds",
+      "target": "file_src_seeds_superadmin_bootstrap_data_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_seeds",
+      "target": "file_src_seeds_superadmin_bootstrap_runner_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_sessions",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_sessions",
+      "target": "file_src_sessions_sessions_controller_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_sessions",
+      "target": "file_src_sessions_sessions_module_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_sessions",
+      "target": "file_src_sessions_sessions_service_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_settings",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_settings",
+      "target": "file_src_settings_settings_controller_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_settings",
+      "target": "file_src_settings_settings_module_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_settings",
+      "target": "file_src_settings_settings_service_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_socket",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_socket",
+      "target": "file_src_socket_notification_mapper_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_socket",
+      "target": "file_src_socket_socket_gateway_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_socket",
+      "target": "file_src_socket_socket_module_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_socket",
+      "target": "file_src_socket_socket_types_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_students",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_students",
+      "target": "file_src_students_students_controller_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_students",
+      "target": "file_src_students_students_module_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_students",
+      "target": "file_src_students_students_service_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_system",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_system",
+      "target": "file_src_system_import_helpers_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_system",
+      "target": "file_src_system_system_controller_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_system",
+      "target": "file_src_system_system_module_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_system",
+      "target": "file_src_system_system_service_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_tags",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_tags",
+      "target": "file_src_tags_tags_controller_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_tags",
+      "target": "file_src_tags_tags_module_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_tags",
+      "target": "file_src_tags_tags_service_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_uploads",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_uploads",
+      "target": "file_src_uploads_public_uploads_controller_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_uploads",
+      "target": "file_src_uploads_uploads_controller_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_uploads",
+      "target": "file_src_uploads_uploads_module_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_uploads",
+      "target": "file_src_uploads_uploads_service_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_users",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_users",
+      "target": "file_src_users_users_controller_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_users",
+      "target": "file_src_users_users_module_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_users",
+      "target": "file_src_users_users_service_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "file_src_accounts_accounts_controller_ts",
+      "target": "file_src_accounts_accounts_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_accounts_accounts_controller_ts",
+      "target": "file_src_common_api_response_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_accounts_accounts_controller_ts",
+      "target": "file_src_config_constants_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_accounts_accounts_module_ts",
+      "target": "file_src_accounts_accounts_controller_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_accounts_accounts_module_ts",
+      "target": "file_src_accounts_accounts_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_accounts_accounts_service_ts",
+      "target": "file_src_entities_user_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_accounts_accounts_service_ts",
+      "target": "file_src_entities_user_role_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_admission_results_admission_results_controller_ts",
+      "target": "file_src_admission_results_admission_results_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_admission_results_admission_results_controller_ts",
+      "target": "file_src_notifications_notifications_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_admission_results_admission_results_controller_ts",
+      "target": "file_src_entities_notification_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_admission_results_admission_results_controller_ts",
+      "target": "file_src_common_api_response_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_admission_results_admission_results_controller_ts",
+      "target": "file_src_config_constants_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_admission_results_admission_results_controller_ts",
+      "target": "file_src_config_permissions_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_admission_results_admission_results_module_ts",
+      "target": "file_src_notifications_notifications_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_admission_results_admission_results_module_ts",
+      "target": "file_src_admission_results_admission_results_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_admission_results_admission_results_module_ts",
+      "target": "file_src_admission_results_admission_results_controller_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_admission_results_admission_results_service_ts",
+      "target": "file_src_entities_admission_result_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_admission_results_admission_results_service_ts",
+      "target": "file_src_common_pagination_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_admission_results_admission_results_service_ts",
+      "target": "file_src_common_date_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_module_ts",
+      "target": "file_src_mikro_orm_mikro_orm_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_module_ts",
+      "target": "file_src_public_public_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_module_ts",
+      "target": "file_src_socket_socket_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_module_ts",
+      "target": "file_src_auth_auth_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_module_ts",
+      "target": "file_src_notifications_notifications_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_module_ts",
+      "target": "file_src_accounts_accounts_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_module_ts",
+      "target": "file_src_sessions_sessions_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_module_ts",
+      "target": "file_src_uploads_uploads_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_module_ts",
+      "target": "file_src_contact_requests_contact_requests_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_module_ts",
+      "target": "file_src_comments_comments_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_module_ts",
+      "target": "file_src_categories_categories_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_module_ts",
+      "target": "file_src_tags_tags_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_module_ts",
+      "target": "file_src_posts_posts_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_module_ts",
+      "target": "file_src_roles_roles_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_module_ts",
+      "target": "file_src_students_students_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_module_ts",
+      "target": "file_src_admission_results_admission_results_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_module_ts",
+      "target": "file_src_users_users_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_module_ts",
+      "target": "file_src_proxy_image_proxy_image_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_module_ts",
+      "target": "file_src_dashboard_dashboard_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_module_ts",
+      "target": "file_src_messages_messages_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_module_ts",
+      "target": "file_src_groups_groups_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_module_ts",
+      "target": "file_src_page_contents_page_contents_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_module_ts",
+      "target": "file_src_settings_settings_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_module_ts",
+      "target": "file_src_system_system_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_auth_auth_admin_controller_ts",
+      "target": "file_src_auth_auth_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_auth_auth_admin_controller_ts",
+      "target": "file_src_common_api_response_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_auth_auth_admin_controller_ts",
+      "target": "file_src_config_constants_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_auth_auth_module_ts",
+      "target": "file_src_auth_auth_admin_controller_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_auth_auth_module_ts",
+      "target": "file_src_auth_auth_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_auth_auth_service_ts",
+      "target": "file_src_config_constants_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_auth_auth_service_ts",
+      "target": "file_src_entities_user_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_auth_auth_service_ts",
+      "target": "file_src_entities_role_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_auth_auth_service_ts",
+      "target": "file_src_entities_user_role_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_categories_categories_controller_ts",
+      "target": "file_src_categories_categories_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_categories_categories_controller_ts",
+      "target": "file_src_notifications_notifications_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_categories_categories_controller_ts",
+      "target": "file_src_entities_notification_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_categories_categories_controller_ts",
+      "target": "file_src_common_api_response_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_categories_categories_controller_ts",
+      "target": "file_src_config_constants_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_categories_categories_controller_ts",
+      "target": "file_src_config_permissions_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_categories_categories_module_ts",
+      "target": "file_src_notifications_notifications_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_categories_categories_module_ts",
+      "target": "file_src_categories_categories_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_categories_categories_module_ts",
+      "target": "file_src_categories_categories_controller_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_categories_categories_service_ts",
+      "target": "file_src_common_pagination_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_categories_categories_service_ts",
+      "target": "file_src_entities_category_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_categories_categories_service_ts",
+      "target": "file_src_entities_post_category_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_comments_comments_controller_ts",
+      "target": "file_src_comments_comments_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_comments_comments_controller_ts",
+      "target": "file_src_notifications_notifications_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_comments_comments_controller_ts",
+      "target": "file_src_entities_notification_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_comments_comments_controller_ts",
+      "target": "file_src_common_api_response_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_comments_comments_controller_ts",
+      "target": "file_src_config_constants_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_comments_comments_controller_ts",
+      "target": "file_src_config_permissions_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_comments_comments_module_ts",
+      "target": "file_src_notifications_notifications_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_comments_comments_module_ts",
+      "target": "file_src_comments_comments_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_comments_comments_module_ts",
+      "target": "file_src_comments_comments_controller_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_comments_comments_service_ts",
+      "target": "file_src_common_pagination_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_comments_comments_service_ts",
+      "target": "file_src_entities_comment_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_common_api_access_middleware_ts",
+      "target": "file_src_config_constants_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_common_api_access_middleware_ts",
+      "target": "file_src_common_request_id_middleware_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_common_database_http_exception_filter_ts",
+      "target": "file_src_common_api_response_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_common_logging_interceptor_ts",
+      "target": "file_src_config_app_config_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_common_logging_interceptor_ts",
+      "target": "file_src_config_constants_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_common_logging_interceptor_ts",
+      "target": "file_src_common_request_id_middleware_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_common_resolve_relation_filters_ts",
+      "target": "file_src_entities_admission_result_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_common_resolve_relation_filters_ts",
+      "target": "file_src_entities_category_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_common_resolve_relation_filters_ts",
+      "target": "file_src_entities_contact_request_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_common_resolve_relation_filters_ts",
+      "target": "file_src_entities_group_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_common_resolve_relation_filters_ts",
+      "target": "file_src_entities_message_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_common_resolve_relation_filters_ts",
+      "target": "file_src_entities_notification_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_common_resolve_relation_filters_ts",
+      "target": "file_src_entities_post_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_common_resolve_relation_filters_ts",
+      "target": "file_src_entities_role_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_common_resolve_relation_filters_ts",
+      "target": "file_src_entities_session_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_common_resolve_relation_filters_ts",
+      "target": "file_src_entities_setting_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_common_resolve_relation_filters_ts",
+      "target": "file_src_entities_student_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_common_resolve_relation_filters_ts",
+      "target": "file_src_entities_tag_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_common_resolve_relation_filters_ts",
+      "target": "file_src_entities_user_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_config_app_config_ts",
+      "target": "file_src_config_constants_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_contact_requests_contact_requests_controller_ts",
+      "target": "file_src_contact_requests_contact_requests_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_contact_requests_contact_requests_controller_ts",
+      "target": "file_src_notifications_notifications_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_contact_requests_contact_requests_controller_ts",
+      "target": "file_src_entities_notification_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_contact_requests_contact_requests_controller_ts",
+      "target": "file_src_common_api_response_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_contact_requests_contact_requests_controller_ts",
+      "target": "file_src_config_constants_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_contact_requests_contact_requests_controller_ts",
+      "target": "file_src_config_permissions_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_contact_requests_contact_requests_module_ts",
+      "target": "file_src_notifications_notifications_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_contact_requests_contact_requests_module_ts",
+      "target": "file_src_contact_requests_contact_requests_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_contact_requests_contact_requests_module_ts",
+      "target": "file_src_contact_requests_contact_requests_controller_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_contact_requests_contact_requests_service_ts",
+      "target": "file_src_entities_contact_request_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_contact_requests_contact_requests_service_ts",
+      "target": "file_src_entities_user_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_contact_requests_contact_requests_service_ts",
+      "target": "file_src_common_pagination_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_contact_requests_contact_requests_service_ts",
+      "target": "file_src_common_date_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_dashboard_dashboard_controller_ts",
+      "target": "file_src_dashboard_dashboard_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_dashboard_dashboard_controller_ts",
+      "target": "file_src_common_api_response_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_dashboard_dashboard_controller_ts",
+      "target": "file_src_config_constants_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_dashboard_dashboard_module_ts",
+      "target": "file_src_dashboard_dashboard_controller_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_dashboard_dashboard_module_ts",
+      "target": "file_src_dashboard_dashboard_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_dashboard_dashboard_service_ts",
+      "target": "file_src_entities_category_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_dashboard_dashboard_service_ts",
+      "target": "file_src_entities_comment_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_dashboard_dashboard_service_ts",
+      "target": "file_src_entities_contact_request_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_dashboard_dashboard_service_ts",
+      "target": "file_src_entities_message_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_dashboard_dashboard_service_ts",
+      "target": "file_src_entities_notification_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_dashboard_dashboard_service_ts",
+      "target": "file_src_entities_post_category_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_dashboard_dashboard_service_ts",
+      "target": "file_src_entities_post_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_dashboard_dashboard_service_ts",
+      "target": "file_src_entities_role_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_dashboard_dashboard_service_ts",
+      "target": "file_src_entities_session_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_dashboard_dashboard_service_ts",
+      "target": "file_src_entities_student_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_dashboard_dashboard_service_ts",
+      "target": "file_src_entities_tag_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_dashboard_dashboard_service_ts",
+      "target": "file_src_entities_user_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_account_entity_ts",
+      "target": "file_src_entities_base_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_account_entity_ts",
+      "target": "file_src_entities_user_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_admission_result_entity_ts",
+      "target": "file_src_entities_base_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_category_entity_ts",
+      "target": "file_src_entities_base_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_category_entity_ts",
+      "target": "file_src_entities_post_category_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_comment_entity_ts",
+      "target": "file_src_entities_base_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_comment_entity_ts",
+      "target": "file_src_entities_post_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_comment_entity_ts",
+      "target": "file_src_entities_user_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_contact_request_entity_ts",
+      "target": "file_src_entities_base_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_contact_request_entity_ts",
+      "target": "file_src_entities_user_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_group_member_entity_ts",
+      "target": "file_src_entities_base_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_group_member_entity_ts",
+      "target": "file_src_entities_group_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_group_member_entity_ts",
+      "target": "file_src_entities_user_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_group_entity_ts",
+      "target": "file_src_entities_base_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_group_entity_ts",
+      "target": "file_src_entities_group_member_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_group_entity_ts",
+      "target": "file_src_entities_message_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_group_entity_ts",
+      "target": "file_src_entities_user_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_message_read_entity_ts",
+      "target": "file_src_entities_base_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_message_read_entity_ts",
+      "target": "file_src_entities_message_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_message_read_entity_ts",
+      "target": "file_src_entities_user_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_message_entity_ts",
+      "target": "file_src_entities_base_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_message_entity_ts",
+      "target": "file_src_entities_group_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_message_entity_ts",
+      "target": "file_src_entities_message_read_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_message_entity_ts",
+      "target": "file_src_entities_user_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_notification_entity_ts",
+      "target": "file_src_entities_base_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_notification_entity_ts",
+      "target": "file_src_entities_user_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_page_content_entity_ts",
+      "target": "file_src_entities_base_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_post_category_entity_ts",
+      "target": "file_src_entities_post_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_post_category_entity_ts",
+      "target": "file_src_entities_category_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_post_tag_entity_ts",
+      "target": "file_src_entities_post_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_post_tag_entity_ts",
+      "target": "file_src_entities_tag_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_post_entity_ts",
+      "target": "file_src_entities_base_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_post_entity_ts",
+      "target": "file_src_entities_comment_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_post_entity_ts",
+      "target": "file_src_entities_post_category_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_post_entity_ts",
+      "target": "file_src_entities_post_tag_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_post_entity_ts",
+      "target": "file_src_entities_user_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_role_entity_ts",
+      "target": "file_src_entities_base_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_role_entity_ts",
+      "target": "file_src_entities_user_role_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_session_entity_ts",
+      "target": "file_src_entities_base_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_session_entity_ts",
+      "target": "file_src_entities_user_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_setting_entity_ts",
+      "target": "file_src_entities_base_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_student_entity_ts",
+      "target": "file_src_entities_base_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_student_entity_ts",
+      "target": "file_src_entities_user_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_tag_entity_ts",
+      "target": "file_src_entities_base_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_tag_entity_ts",
+      "target": "file_src_entities_post_tag_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_user_role_entity_ts",
+      "target": "file_src_entities_base_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_user_role_entity_ts",
+      "target": "file_src_entities_role_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_user_role_entity_ts",
+      "target": "file_src_entities_user_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_user_entity_ts",
+      "target": "file_src_entities_base_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_user_entity_ts",
+      "target": "file_src_entities_account_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_user_entity_ts",
+      "target": "file_src_entities_comment_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_user_entity_ts",
+      "target": "file_src_entities_contact_request_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_user_entity_ts",
+      "target": "file_src_entities_group_member_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_user_entity_ts",
+      "target": "file_src_entities_group_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_user_entity_ts",
+      "target": "file_src_entities_message_read_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_user_entity_ts",
+      "target": "file_src_entities_message_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_user_entity_ts",
+      "target": "file_src_entities_notification_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_user_entity_ts",
+      "target": "file_src_entities_post_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_user_entity_ts",
+      "target": "file_src_entities_session_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_user_entity_ts",
+      "target": "file_src_entities_student_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_user_entity_ts",
+      "target": "file_src_entities_user_role_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_groups_groups_controller_ts",
+      "target": "file_src_groups_groups_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_groups_groups_controller_ts",
+      "target": "file_src_notifications_notifications_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_groups_groups_controller_ts",
+      "target": "file_src_entities_notification_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_groups_groups_controller_ts",
+      "target": "file_src_socket_socket_gateway_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_groups_groups_controller_ts",
+      "target": "file_src_common_api_response_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_groups_groups_controller_ts",
+      "target": "file_src_config_constants_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_groups_groups_controller_ts",
+      "target": "file_src_config_permissions_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_groups_groups_module_ts",
+      "target": "file_src_notifications_notifications_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_groups_groups_module_ts",
+      "target": "file_src_socket_socket_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_groups_groups_module_ts",
+      "target": "file_src_groups_groups_controller_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_groups_groups_module_ts",
+      "target": "file_src_groups_groups_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_groups_groups_service_ts",
+      "target": "file_src_entities_group_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_groups_groups_service_ts",
+      "target": "file_src_entities_group_member_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_groups_groups_service_ts",
+      "target": "file_src_entities_message_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_groups_groups_service_ts",
+      "target": "file_src_entities_message_read_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_groups_groups_service_ts",
+      "target": "file_src_entities_user_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_main_ts",
+      "target": "file_src_app_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_main_ts",
+      "target": "file_src_common_logging_interceptor_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_main_ts",
+      "target": "file_src_config_app_config_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_main_ts",
+      "target": "file_src_common_database_http_exception_filter_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_main_ts",
+      "target": "file_src_common_request_id_middleware_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_main_ts",
+      "target": "file_src_common_api_access_middleware_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_messages_conversations_controller_ts",
+      "target": "file_src_common_api_response_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_messages_conversations_controller_ts",
+      "target": "file_src_socket_socket_gateway_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_messages_conversations_controller_ts",
+      "target": "file_src_entities_message_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_messages_conversations_controller_ts",
+      "target": "file_src_config_constants_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_messages_messages_controller_ts",
+      "target": "file_src_socket_socket_gateway_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_messages_messages_controller_ts",
+      "target": "file_src_common_api_response_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_messages_messages_controller_ts",
+      "target": "file_src_entities_message_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_messages_messages_controller_ts",
+      "target": "file_src_entities_message_read_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_messages_messages_controller_ts",
+      "target": "file_src_entities_group_member_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_messages_messages_controller_ts",
+      "target": "file_src_entities_group_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_messages_messages_controller_ts",
+      "target": "file_src_entities_user_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_messages_messages_controller_ts",
+      "target": "file_src_config_constants_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_messages_messages_module_ts",
+      "target": "file_src_socket_socket_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_messages_messages_module_ts",
+      "target": "file_src_messages_messages_controller_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_messages_messages_module_ts",
+      "target": "file_src_messages_conversations_controller_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_mikro_orm_mikro_orm_module_ts",
+      "target": "file_src_mikro_orm_orm_entities_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_mikro_orm_orm_entities_ts",
+      "target": "file_src_entities_account_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_mikro_orm_orm_entities_ts",
+      "target": "file_src_entities_admission_result_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_mikro_orm_orm_entities_ts",
+      "target": "file_src_entities_category_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_mikro_orm_orm_entities_ts",
+      "target": "file_src_entities_comment_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_mikro_orm_orm_entities_ts",
+      "target": "file_src_entities_contact_request_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_mikro_orm_orm_entities_ts",
+      "target": "file_src_entities_group_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_mikro_orm_orm_entities_ts",
+      "target": "file_src_entities_group_member_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_mikro_orm_orm_entities_ts",
+      "target": "file_src_entities_message_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_mikro_orm_orm_entities_ts",
+      "target": "file_src_entities_message_read_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_mikro_orm_orm_entities_ts",
+      "target": "file_src_entities_notification_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_mikro_orm_orm_entities_ts",
+      "target": "file_src_entities_page_content_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_mikro_orm_orm_entities_ts",
+      "target": "file_src_entities_post_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_mikro_orm_orm_entities_ts",
+      "target": "file_src_entities_post_category_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_mikro_orm_orm_entities_ts",
+      "target": "file_src_entities_post_tag_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_mikro_orm_orm_entities_ts",
+      "target": "file_src_entities_role_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_mikro_orm_orm_entities_ts",
+      "target": "file_src_entities_session_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_mikro_orm_orm_entities_ts",
+      "target": "file_src_entities_setting_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_mikro_orm_orm_entities_ts",
+      "target": "file_src_entities_student_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_mikro_orm_orm_entities_ts",
+      "target": "file_src_entities_tag_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_mikro_orm_orm_entities_ts",
+      "target": "file_src_entities_user_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_mikro_orm_orm_entities_ts",
+      "target": "file_src_entities_user_role_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_mikro_orm_orm_entities_ts",
+      "target": "file_src_entities_verification_token_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_notifications_notifications_controller_ts",
+      "target": "file_src_notifications_notifications_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_notifications_notifications_controller_ts",
+      "target": "file_src_common_api_response_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_notifications_notifications_controller_ts",
+      "target": "file_src_config_constants_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_notifications_notifications_module_ts",
+      "target": "file_src_notifications_notifications_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_notifications_notifications_module_ts",
+      "target": "file_src_notifications_notifications_controller_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_notifications_notifications_service_ts",
+      "target": "file_src_entities_notification_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_notifications_notifications_service_ts",
+      "target": "file_src_entities_user_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_notifications_notifications_service_ts",
+      "target": "file_src_entities_user_role_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_notifications_notifications_service_ts",
+      "target": "file_src_entities_message_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_notifications_notifications_service_ts",
+      "target": "file_src_entities_contact_request_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_page_contents_page_contents_controller_ts",
+      "target": "file_src_page_contents_page_contents_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_page_contents_page_contents_controller_ts",
+      "target": "file_src_notifications_notifications_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_page_contents_page_contents_controller_ts",
+      "target": "file_src_entities_notification_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_page_contents_page_contents_controller_ts",
+      "target": "file_src_auth_auth_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_page_contents_page_contents_controller_ts",
+      "target": "file_src_common_api_response_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_page_contents_page_contents_controller_ts",
+      "target": "file_src_config_constants_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_page_contents_page_contents_controller_ts",
+      "target": "file_src_config_permissions_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_page_contents_page_contents_module_ts",
+      "target": "file_src_page_contents_page_contents_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_page_contents_page_contents_module_ts",
+      "target": "file_src_page_contents_page_contents_controller_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_page_contents_page_contents_module_ts",
+      "target": "file_src_notifications_notifications_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_page_contents_page_contents_module_ts",
+      "target": "file_src_auth_auth_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_page_contents_page_contents_service_ts",
+      "target": "file_src_entities_page_content_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_posts_posts_controller_ts",
+      "target": "file_src_posts_posts_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_posts_posts_controller_ts",
+      "target": "file_src_notifications_notifications_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_posts_posts_controller_ts",
+      "target": "file_src_entities_notification_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_posts_posts_controller_ts",
+      "target": "file_src_common_api_response_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_posts_posts_controller_ts",
+      "target": "file_src_config_constants_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_posts_posts_controller_ts",
+      "target": "file_src_config_permissions_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_posts_posts_module_ts",
+      "target": "file_src_notifications_notifications_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_posts_posts_module_ts",
+      "target": "file_src_posts_posts_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_posts_posts_module_ts",
+      "target": "file_src_posts_posts_controller_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_posts_posts_service_ts",
+      "target": "file_src_common_resolve_relation_filters_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_posts_posts_service_ts",
+      "target": "file_src_common_pagination_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_posts_posts_service_ts",
+      "target": "file_src_common_get_options_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_posts_posts_service_ts",
+      "target": "file_src_common_date_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_posts_posts_service_ts",
+      "target": "file_src_entities_post_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_posts_posts_service_ts",
+      "target": "file_src_entities_post_category_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_posts_posts_service_ts",
+      "target": "file_src_entities_post_tag_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_posts_posts_service_ts",
+      "target": "file_src_entities_category_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_posts_posts_service_ts",
+      "target": "file_src_entities_tag_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_posts_posts_service_ts",
+      "target": "file_src_entities_user_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_proxy_image_proxy_image_controller_ts",
+      "target": "file_src_config_constants_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_proxy_image_proxy_image_module_ts",
+      "target": "file_src_proxy_image_proxy_image_controller_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_public_public_auth_service_ts",
+      "target": "file_src_entities_role_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_public_public_auth_service_ts",
+      "target": "file_src_entities_user_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_public_public_auth_service_ts",
+      "target": "file_src_auth_auth_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_public_public_auth_service_ts",
+      "target": "file_src_users_users_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_public_public_auth_service_ts",
+      "target": "file_src_config_constants_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_public_public_categories_service_ts",
+      "target": "file_src_entities_category_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_public_public_categories_service_ts",
+      "target": "file_src_entities_post_category_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_public_public_contact_requests_service_ts",
+      "target": "file_src_entities_contact_request_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_public_public_posts_service_ts",
+      "target": "file_src_entities_post_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_public_public_posts_service_ts",
+      "target": "file_src_entities_category_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_public_public_posts_service_ts",
+      "target": "file_src_entities_tag_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_public_public_posts_service_ts",
+      "target": "file_src_entities_setting_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_public_public_posts_service_ts",
+      "target": "file_src_common_pagination_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_public_public_controller_ts",
+      "target": "file_src_public_public_posts_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_public_public_controller_ts",
+      "target": "file_src_public_public_categories_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_public_public_controller_ts",
+      "target": "file_src_public_public_contact_requests_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_public_public_controller_ts",
+      "target": "file_src_public_public_auth_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_public_public_controller_ts",
+      "target": "file_src_admission_results_admission_results_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_public_public_controller_ts",
+      "target": "file_src_page_contents_page_contents_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_public_public_controller_ts",
+      "target": "file_src_users_users_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_public_public_controller_ts",
+      "target": "file_src_common_api_response_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_public_public_controller_ts",
+      "target": "file_src_config_constants_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_public_public_module_ts",
+      "target": "file_src_public_public_controller_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_public_public_module_ts",
+      "target": "file_src_public_public_posts_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_public_public_module_ts",
+      "target": "file_src_public_public_categories_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_public_public_module_ts",
+      "target": "file_src_public_public_contact_requests_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_public_public_module_ts",
+      "target": "file_src_public_public_auth_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_public_public_module_ts",
+      "target": "file_src_admission_results_admission_results_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_public_public_module_ts",
+      "target": "file_src_page_contents_page_contents_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_public_public_module_ts",
+      "target": "file_src_users_users_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_public_public_module_ts",
+      "target": "file_src_auth_auth_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_roles_roles_controller_ts",
+      "target": "file_src_roles_roles_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_roles_roles_controller_ts",
+      "target": "file_src_socket_socket_gateway_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_roles_roles_controller_ts",
+      "target": "file_src_notifications_notifications_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_roles_roles_controller_ts",
+      "target": "file_src_entities_notification_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_roles_roles_controller_ts",
+      "target": "file_src_common_api_response_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_roles_roles_controller_ts",
+      "target": "file_src_config_constants_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_roles_roles_controller_ts",
+      "target": "file_src_config_permissions_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_roles_roles_module_ts",
+      "target": "file_src_notifications_notifications_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_roles_roles_module_ts",
+      "target": "file_src_socket_socket_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_roles_roles_module_ts",
+      "target": "file_src_roles_roles_controller_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_roles_roles_module_ts",
+      "target": "file_src_roles_roles_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_roles_roles_service_ts",
+      "target": "file_src_common_pagination_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_roles_roles_service_ts",
+      "target": "file_src_common_get_options_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_roles_roles_service_ts",
+      "target": "file_src_entities_role_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_scripts_mark_migrations_executed_ts",
+      "target": "file_src_mikro_orm_mikro_orm_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_seed_full_export_ts",
+      "target": "file_src_mikro_orm_orm_entities_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_seed_full_export_ts",
+      "target": "file_src_entities_account_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_seed_full_export_ts",
+      "target": "file_src_entities_admission_result_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_seed_full_export_ts",
+      "target": "file_src_entities_category_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_seed_full_export_ts",
+      "target": "file_src_entities_comment_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_seed_full_export_ts",
+      "target": "file_src_entities_contact_request_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_seed_full_export_ts",
+      "target": "file_src_entities_group_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_seed_full_export_ts",
+      "target": "file_src_entities_group_member_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_seed_full_export_ts",
+      "target": "file_src_entities_message_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_seed_full_export_ts",
+      "target": "file_src_entities_message_read_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_seed_full_export_ts",
+      "target": "file_src_entities_notification_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_seed_full_export_ts",
+      "target": "file_src_entities_page_content_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_seed_full_export_ts",
+      "target": "file_src_entities_post_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_seed_full_export_ts",
+      "target": "file_src_entities_post_category_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_seed_full_export_ts",
+      "target": "file_src_entities_post_tag_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_seed_full_export_ts",
+      "target": "file_src_entities_role_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_seed_full_export_ts",
+      "target": "file_src_entities_session_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_seed_full_export_ts",
+      "target": "file_src_entities_setting_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_seed_full_export_ts",
+      "target": "file_src_entities_student_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_seed_full_export_ts",
+      "target": "file_src_entities_tag_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_seed_full_export_ts",
+      "target": "file_src_entities_user_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_seed_full_export_ts",
+      "target": "file_src_entities_user_role_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_seed_full_export_ts",
+      "target": "file_src_entities_verification_token_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_seed_full_export_ts",
+      "target": "file_src_system_import_helpers_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_seed_superadmin_ts",
+      "target": "file_src_entities_user_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_seed_superadmin_ts",
+      "target": "file_src_entities_role_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_seed_superadmin_ts",
+      "target": "file_src_entities_user_role_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_seed_superadmin_ts",
+      "target": "file_src_entities_page_content_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_seed_superadmin_ts",
+      "target": "file_src_seeds_superadmin_bootstrap_runner_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_seeders_databaseseeder_ts",
+      "target": "file_src_seeds_superadmin_bootstrap_runner_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_seeds_superadmin_bootstrap_runner_ts",
+      "target": "file_src_entities_user_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_seeds_superadmin_bootstrap_runner_ts",
+      "target": "file_src_entities_role_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_seeds_superadmin_bootstrap_runner_ts",
+      "target": "file_src_entities_user_role_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_seeds_superadmin_bootstrap_runner_ts",
+      "target": "file_src_entities_page_content_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_seeds_superadmin_bootstrap_runner_ts",
+      "target": "file_src_seeds_superadmin_bootstrap_data_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_sessions_sessions_controller_ts",
+      "target": "file_src_sessions_sessions_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_sessions_sessions_controller_ts",
+      "target": "file_src_notifications_notifications_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_sessions_sessions_controller_ts",
+      "target": "file_src_entities_notification_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_sessions_sessions_controller_ts",
+      "target": "file_src_socket_socket_gateway_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_sessions_sessions_controller_ts",
+      "target": "file_src_common_api_response_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_sessions_sessions_controller_ts",
+      "target": "file_src_config_constants_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_sessions_sessions_controller_ts",
+      "target": "file_src_config_permissions_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_sessions_sessions_module_ts",
+      "target": "file_src_notifications_notifications_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_sessions_sessions_module_ts",
+      "target": "file_src_socket_socket_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_sessions_sessions_module_ts",
+      "target": "file_src_sessions_sessions_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_sessions_sessions_module_ts",
+      "target": "file_src_sessions_sessions_controller_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_sessions_sessions_service_ts",
+      "target": "file_src_entities_session_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_sessions_sessions_service_ts",
+      "target": "file_src_entities_user_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_sessions_sessions_service_ts",
+      "target": "file_src_entities_user_role_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_sessions_sessions_service_ts",
+      "target": "file_src_entities_role_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_sessions_sessions_service_ts",
+      "target": "file_src_common_resolve_relation_filters_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_sessions_sessions_service_ts",
+      "target": "file_src_common_pagination_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_sessions_sessions_service_ts",
+      "target": "file_src_config_constants_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_settings_settings_controller_ts",
+      "target": "file_src_settings_settings_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_settings_settings_controller_ts",
+      "target": "file_src_common_api_response_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_settings_settings_controller_ts",
+      "target": "file_src_config_constants_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_settings_settings_module_ts",
+      "target": "file_src_settings_settings_controller_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_settings_settings_module_ts",
+      "target": "file_src_settings_settings_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_settings_settings_service_ts",
+      "target": "file_src_entities_setting_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_socket_notification_mapper_ts",
+      "target": "file_src_socket_socket_types_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_socket_socket_gateway_ts",
+      "target": "file_src_sessions_sessions_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_socket_socket_gateway_ts",
+      "target": "file_src_entities_notification_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_socket_socket_gateway_ts",
+      "target": "file_src_entities_user_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_socket_socket_gateway_ts",
+      "target": "file_src_socket_socket_types_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_socket_socket_gateway_ts",
+      "target": "file_src_config_app_config_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_socket_socket_gateway_ts",
+      "target": "file_src_socket_notification_mapper_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_socket_socket_module_ts",
+      "target": "file_src_socket_socket_gateway_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_socket_socket_module_ts",
+      "target": "file_src_sessions_sessions_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_students_students_controller_ts",
+      "target": "file_src_students_students_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_students_students_controller_ts",
+      "target": "file_src_notifications_notifications_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_students_students_controller_ts",
+      "target": "file_src_entities_notification_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_students_students_controller_ts",
+      "target": "file_src_common_api_response_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_students_students_controller_ts",
+      "target": "file_src_config_constants_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_students_students_controller_ts",
+      "target": "file_src_config_permissions_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_students_students_module_ts",
+      "target": "file_src_notifications_notifications_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_students_students_module_ts",
+      "target": "file_src_students_students_controller_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_students_students_module_ts",
+      "target": "file_src_students_students_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_students_students_service_ts",
+      "target": "file_src_entities_user_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_students_students_service_ts",
+      "target": "file_src_common_pagination_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_students_students_service_ts",
+      "target": "file_src_common_get_options_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_students_students_service_ts",
+      "target": "file_src_entities_student_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_system_system_controller_ts",
+      "target": "file_src_system_system_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_system_system_controller_ts",
+      "target": "file_src_auth_auth_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_system_system_controller_ts",
+      "target": "file_src_common_api_response_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_system_system_controller_ts",
+      "target": "file_src_config_constants_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_system_system_controller_ts",
+      "target": "file_src_config_permissions_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_system_system_module_ts",
+      "target": "file_src_system_system_controller_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_system_system_module_ts",
+      "target": "file_src_system_system_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_system_system_module_ts",
+      "target": "file_src_auth_auth_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_system_system_service_ts",
+      "target": "file_src_entities_account_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_system_system_service_ts",
+      "target": "file_src_entities_admission_result_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_system_system_service_ts",
+      "target": "file_src_entities_category_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_system_system_service_ts",
+      "target": "file_src_entities_comment_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_system_system_service_ts",
+      "target": "file_src_entities_contact_request_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_system_system_service_ts",
+      "target": "file_src_entities_group_member_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_system_system_service_ts",
+      "target": "file_src_entities_group_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_system_system_service_ts",
+      "target": "file_src_entities_message_read_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_system_system_service_ts",
+      "target": "file_src_entities_message_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_system_system_service_ts",
+      "target": "file_src_entities_notification_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_system_system_service_ts",
+      "target": "file_src_entities_page_content_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_system_system_service_ts",
+      "target": "file_src_entities_post_category_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_system_system_service_ts",
+      "target": "file_src_entities_post_tag_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_system_system_service_ts",
+      "target": "file_src_entities_post_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_system_system_service_ts",
+      "target": "file_src_entities_role_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_system_system_service_ts",
+      "target": "file_src_entities_session_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_system_system_service_ts",
+      "target": "file_src_entities_setting_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_system_system_service_ts",
+      "target": "file_src_entities_student_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_system_system_service_ts",
+      "target": "file_src_entities_tag_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_system_system_service_ts",
+      "target": "file_src_entities_user_role_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_system_system_service_ts",
+      "target": "file_src_entities_user_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_system_system_service_ts",
+      "target": "file_src_entities_verification_token_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_system_system_service_ts",
+      "target": "file_src_mikro_orm_orm_entities_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_system_system_service_ts",
+      "target": "file_src_seeds_superadmin_bootstrap_runner_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_system_system_service_ts",
+      "target": "file_src_system_import_helpers_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_tags_tags_controller_ts",
+      "target": "file_src_tags_tags_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_tags_tags_controller_ts",
+      "target": "file_src_notifications_notifications_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_tags_tags_controller_ts",
+      "target": "file_src_entities_notification_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_tags_tags_controller_ts",
+      "target": "file_src_common_api_response_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_tags_tags_controller_ts",
+      "target": "file_src_config_constants_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_tags_tags_controller_ts",
+      "target": "file_src_config_permissions_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_tags_tags_module_ts",
+      "target": "file_src_notifications_notifications_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_tags_tags_module_ts",
+      "target": "file_src_tags_tags_controller_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_tags_tags_module_ts",
+      "target": "file_src_tags_tags_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_tags_tags_service_ts",
+      "target": "file_src_entities_tag_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_tags_tags_service_ts",
+      "target": "file_src_common_pagination_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_tags_tags_service_ts",
+      "target": "file_src_common_get_options_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_uploads_public_uploads_controller_ts",
+      "target": "file_src_uploads_uploads_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_uploads_public_uploads_controller_ts",
+      "target": "file_src_config_constants_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_uploads_uploads_controller_ts",
+      "target": "file_src_uploads_uploads_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_uploads_uploads_controller_ts",
+      "target": "file_src_common_api_response_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_uploads_uploads_controller_ts",
+      "target": "file_src_config_app_config_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_uploads_uploads_controller_ts",
+      "target": "file_src_config_constants_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_uploads_uploads_module_ts",
+      "target": "file_src_uploads_uploads_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_uploads_uploads_module_ts",
+      "target": "file_src_uploads_uploads_controller_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_uploads_uploads_module_ts",
+      "target": "file_src_uploads_public_uploads_controller_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_uploads_uploads_service_ts",
+      "target": "file_src_config_app_config_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_users_users_controller_ts",
+      "target": "file_src_users_users_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_users_users_controller_ts",
+      "target": "file_src_notifications_notifications_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_users_users_controller_ts",
+      "target": "file_src_entities_notification_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_users_users_controller_ts",
+      "target": "file_src_sessions_sessions_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_users_users_controller_ts",
+      "target": "file_src_socket_socket_gateway_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_users_users_controller_ts",
+      "target": "file_src_common_api_response_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_users_users_controller_ts",
+      "target": "file_src_config_constants_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_users_users_controller_ts",
+      "target": "file_src_config_permissions_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_users_users_module_ts",
+      "target": "file_src_notifications_notifications_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_users_users_module_ts",
+      "target": "file_src_socket_socket_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_users_users_module_ts",
+      "target": "file_src_sessions_sessions_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_users_users_module_ts",
+      "target": "file_src_users_users_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_users_users_module_ts",
+      "target": "file_src_users_users_controller_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_users_users_service_ts",
+      "target": "file_src_common_pagination_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_users_users_service_ts",
+      "target": "file_src_common_get_options_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_users_users_service_ts",
+      "target": "file_src_common_date_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_users_users_service_ts",
+      "target": "file_src_entities_role_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_users_users_service_ts",
+      "target": "file_src_entities_user_role_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_users_users_service_ts",
+      "target": "file_src_entities_user_entity_ts",
+      "relation": "imports"
+    }
+  ]
+}

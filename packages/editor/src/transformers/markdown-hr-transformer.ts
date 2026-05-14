@@ -12,7 +12,7 @@ export const HR: ElementTransformer = {
     return $isHorizontalRuleNode(node) ? "***" : null
   },
   regExp: /^(---|\*\*\*|___)\s?$/,
-  replace: (parentNode, _1, _2, isImport) => {
+  replace: (parentNode, _children, _match, _isImport) => {
     const line = $createHorizontalRuleNode()
 
     parentNode.replace(line)

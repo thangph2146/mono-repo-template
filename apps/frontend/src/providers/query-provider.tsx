@@ -1,33 +1,12 @@
 "use client";
 
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { useState } from "react";
-import { ApiError } from "@/lib/api";
-
-const RETRYABLE = (failureCount: number, error: unknown): boolean => {
-  if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
-    return false;
-  }
-  return failureCount < 2;
-};
+import { createHubQueryClient } from "@workspace/query-client";
 
 export function QueryProvider({ children }: { children: React.ReactNode }) {
-  const [client] = useState(
-    () =>
-      new QueryClient({
-        defaultOptions: {
-          queries: {
-            staleTime: 30_000,
-            retry: RETRYABLE,
-            refetchOnWindowFocus: false,
-          },
-          mutations: {
-            retry: false,
-          },
-        },
-      }),
-  );
+  const [client] = useState(() => createHubQueryClient());
 
   return (
     <QueryClientProvider client={client}>

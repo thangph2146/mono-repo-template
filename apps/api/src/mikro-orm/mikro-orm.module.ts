@@ -78,6 +78,8 @@ export function createMikroConfig(configService: ConfigService) {
 
 @Global()
 @Module({
-  imports: [MikroOrmModule.forRoot(createMikroConfig(new ConfigService(process.env)))],
+  imports: [
+    MikroOrmModule.forRoot(createMikroConfig(new ConfigService(process.env))),
+  ],
 })
 export class DatabaseModule {}

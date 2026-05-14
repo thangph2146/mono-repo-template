@@ -18,6 +18,7 @@ import {
 } from "@ui/components/field";
 import { Input } from "@ui/components/input";
 import { PointerHighlight } from "@ui/components/pointer-highlight";
+import { TypographyH2 } from "@ui/components/typography";
 import {
   Select,
   SelectContent,
@@ -215,9 +216,9 @@ export function SignInForm() {
               <form onSubmit={onSubmit} className="p-6 md:p-8 lg:p-10">
                 <FieldGroup className="gap-4">
                   <div className="flex flex-col items-center justify-center gap-4 text-center">
-                    <h2 className="text-2xl font-bold text-secondary sm:text-xl md:text-3xl lg:text-3xl">
+                    <TypographyH2 className="text-2xl font-bold text-secondary sm:text-xl md:text-3xl lg:text-3xl">
                       Đăng nhập hệ thống
-                    </h2>
+                    </TypographyH2>
                     <div className="flex flex-col items-center gap-1">
                       <PointerHighlight>
                         <p className="relative z-10 text-lg font-bold uppercase tracking-tight text-primary sm:text-sm md:text-xl xl:text-2xl">

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Roboto, Roboto_Mono } from "next/font/google";
 import "@ui/globals.css";
 import "@thangph2146/lexical-editor/styles";
@@ -58,7 +59,9 @@ export default function RootLayout({
               <StoreAuthGate>
                 <main className="flex-1">{children}</main>
               </StoreAuthGate>
-              <ScrollToTop />
+              <Suspense fallback={null}>
+                <ScrollToTop />
+              </Suspense>
               <Footer />
               <Toaster position="top-right" richColors />
             </QueryProvider>

@@ -4,6 +4,7 @@ import {
   type PointerEvent as ReactPointerEvent,
   useCallback,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -84,13 +85,13 @@ export function ImageLightbox({
     setOffset({ x: 0, y: 0 });
   }, []);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!open) return;
     setZoomScale(1);
     setOffset({ x: 0, y: 0 });
   }, [open, safeIndex]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (zoomScale > 1) return;
     setOffset({ x: 0, y: 0 });
     setIsDraggingImage(false);

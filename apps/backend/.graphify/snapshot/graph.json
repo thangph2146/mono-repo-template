@@ -38,6 +38,25 @@
       "client": true
     },
     {
+      "id": "dir_src_app_contact_requests",
+      "label": "contact-requests/",
+      "path": "src/app/contact-requests",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_app_contact_requests_page_tsx",
+      "label": "page.tsx",
+      "path": "src/app/contact-requests/page.tsx",
+      "color": "#00ff41",
+      "size": 14,
+      "community": "src/app/contact-requests",
+      "type": "page",
+      "client": true
+    },
+    {
       "id": "dir_src_app_data",
       "label": "data/",
       "path": "src/app/data",
@@ -55,35 +74,6 @@
       "community": "src/app/data",
       "type": "page",
       "client": true
-    },
-    {
-      "id": "dir_src_app_inventory",
-      "label": "inventory/",
-      "path": "src/app/inventory",
-      "color": "#ff9d00",
-      "size": 22,
-      "community": "src/app",
-      "type": "directory"
-    },
-    {
-      "id": "file_src_app_inventory_page_tsx",
-      "label": "page.tsx",
-      "path": "src/app/inventory/page.tsx",
-      "color": "#00ff41",
-      "size": 14,
-      "community": "src/app/inventory",
-      "type": "page",
-      "client": true
-    },
-    {
-      "id": "file_src_app_inventory_product_form_ts",
-      "label": "product-form.ts",
-      "path": "src/app/inventory/product-form.ts",
-      "color": "#00ff41",
-      "size": 10,
-      "community": "src/app/inventory",
-      "type": "ts",
-      "client": false
     },
     {
       "id": "file_src_app_layout_tsx",
@@ -106,25 +96,6 @@
       "client": false
     },
     {
-      "id": "dir_src_app_locations",
-      "label": "locations/",
-      "path": "src/app/locations",
-      "color": "#ff9d00",
-      "size": 22,
-      "community": "src/app",
-      "type": "directory"
-    },
-    {
-      "id": "file_src_app_locations_page_tsx",
-      "label": "page.tsx",
-      "path": "src/app/locations/page.tsx",
-      "color": "#00ff41",
-      "size": 14,
-      "community": "src/app/locations",
-      "type": "page",
-      "client": true
-    },
-    {
       "id": "dir_src_app_login",
       "label": "login/",
       "path": "src/app/login",
@@ -141,26 +112,7 @@
       "size": 14,
       "community": "src/app/login",
       "type": "page",
-      "client": true
-    },
-    {
-      "id": "dir_src_app_orders",
-      "label": "orders/",
-      "path": "src/app/orders",
-      "color": "#ff9d00",
-      "size": 22,
-      "community": "src/app",
-      "type": "directory"
-    },
-    {
-      "id": "file_src_app_orders_page_tsx",
-      "label": "page.tsx",
-      "path": "src/app/orders/page.tsx",
-      "color": "#00ff41",
-      "size": 14,
-      "community": "src/app/orders",
-      "type": "page",
-      "client": true
+      "client": false
     },
     {
       "id": "file_src_app_page_tsx",
@@ -169,6 +121,25 @@
       "color": "#00ff41",
       "size": 14,
       "community": "src/app",
+      "type": "page",
+      "client": true
+    },
+    {
+      "id": "dir_src_app_posts",
+      "label": "posts/",
+      "path": "src/app/posts",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_app_posts_page_tsx",
+      "label": "page.tsx",
+      "path": "src/app/posts/page.tsx",
+      "color": "#00ff41",
+      "size": 14,
+      "community": "src/app/posts",
       "type": "page",
       "client": true
     },
@@ -192,21 +163,21 @@
       "client": true
     },
     {
-      "id": "dir_src_app_promo_codes",
-      "label": "promo-codes/",
-      "path": "src/app/promo-codes",
+      "id": "dir_src_app_rbac",
+      "label": "rbac/",
+      "path": "src/app/rbac",
       "color": "#ff9d00",
       "size": 22,
       "community": "src/app",
       "type": "directory"
     },
     {
-      "id": "file_src_app_promo_codes_page_tsx",
+      "id": "file_src_app_rbac_page_tsx",
       "label": "page.tsx",
-      "path": "src/app/promo-codes/page.tsx",
+      "path": "src/app/rbac/page.tsx",
       "color": "#00ff41",
       "size": 14,
-      "community": "src/app/promo-codes",
+      "community": "src/app/rbac",
       "type": "page",
       "client": true
     },
@@ -227,7 +198,7 @@
       "size": 14,
       "community": "src/app/register",
       "type": "page",
-      "client": true
+      "client": false
     },
     {
       "id": "dir_src_app_staff",
@@ -249,6 +220,25 @@
       "client": true
     },
     {
+      "id": "dir_src_app_tags",
+      "label": "tags/",
+      "path": "src/app/tags",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_app_tags_page_tsx",
+      "label": "page.tsx",
+      "path": "src/app/tags/page.tsx",
+      "color": "#00ff41",
+      "size": 14,
+      "community": "src/app/tags",
+      "type": "page",
+      "client": true
+    },
+    {
       "id": "dir_src_components",
       "label": "components/",
       "path": "src/components",
@@ -256,6 +246,16 @@
       "size": 22,
       "community": "src",
       "type": "directory"
+    },
+    {
+      "id": "file_src_components_admin_confirm_action_dialog_tsx",
+      "label": "admin-confirm-action-dialog.tsx",
+      "path": "src/components/admin-confirm-action-dialog.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/components",
+      "type": "tsx",
+      "client": true
     },
     {
       "id": "dir_src_components_admin_data_table",
@@ -297,6 +297,16 @@
       "client": false
     },
     {
+      "id": "file_src_components_admin_notification_bell_tsx",
+      "label": "admin-notification-bell.tsx",
+      "path": "src/components/admin-notification-bell.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/components",
+      "type": "tsx",
+      "client": true
+    },
+    {
       "id": "file_src_components_admin_shell_tsx",
       "label": "admin-shell.tsx",
       "path": "src/components/admin-shell.tsx",
@@ -317,6 +327,16 @@
       "client": true
     },
     {
+      "id": "file_src_components_api_scope_notice_tsx",
+      "label": "api-scope-notice.tsx",
+      "path": "src/components/api-scope-notice.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/components",
+      "type": "tsx",
+      "client": true
+    },
+    {
       "id": "file_src_components_sidebar_tsx",
       "label": "sidebar.tsx",
       "path": "src/components/sidebar.tsx",
@@ -327,21 +347,80 @@
       "client": true
     },
     {
-      "id": "dir_src_components_ui",
-      "label": "ui/",
-      "path": "src/components/ui",
+      "id": "dir_src_features",
+      "label": "features/",
+      "path": "src/features",
       "color": "#ff9d00",
       "size": 22,
-      "community": "src/components",
+      "community": "src",
       "type": "directory"
     },
     {
-      "id": "file_src_components_ui_sidebar_tsx",
-      "label": "sidebar.tsx",
-      "path": "src/components/ui/sidebar.tsx",
+      "id": "dir_src_features_auth",
+      "label": "auth/",
+      "path": "src/features/auth",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/features",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_features_auth_admin_bridge_ts",
+      "label": "admin-bridge.ts",
+      "path": "src/features/auth/admin-bridge.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/features/auth",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_features_auth_auth_api_ts",
+      "label": "auth-api.ts",
+      "path": "src/features/auth/auth-api.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/features/auth",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_features_auth_index_ts",
+      "label": "index.ts",
+      "path": "src/features/auth/index.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/features/auth",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_features_auth_register_form_tsx",
+      "label": "register-form.tsx",
+      "path": "src/features/auth/register-form.tsx",
       "color": "#00ddff",
       "size": 10,
-      "community": "src/components/ui",
+      "community": "src/features/auth",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_features_auth_session_ts",
+      "label": "session.ts",
+      "path": "src/features/auth/session.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/features/auth",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_features_auth_sign_in_form_tsx",
+      "label": "sign-in-form.tsx",
+      "path": "src/features/auth/sign-in-form.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/features/auth",
       "type": "tsx",
       "client": true
     },
@@ -382,26 +461,6 @@
       "size": 22,
       "community": "src",
       "type": "directory"
-    },
-    {
-      "id": "file_src_lib_admin_inventory_tree_ts",
-      "label": "admin-inventory-tree.ts",
-      "path": "src/lib/admin-inventory-tree.ts",
-      "color": "#00ff41",
-      "size": 10,
-      "community": "src/lib",
-      "type": "ts",
-      "client": false
-    },
-    {
-      "id": "file_src_lib_admin_orders_tree_ts",
-      "label": "admin-orders-tree.ts",
-      "path": "src/lib/admin-orders-tree.ts",
-      "color": "#00ff41",
-      "size": 10,
-      "community": "src/lib",
-      "type": "ts",
-      "client": false
     },
     {
       "id": "file_src_lib_admin_ui_ts",
@@ -504,16 +563,6 @@
       "client": false
     },
     {
-      "id": "file_src_lib_inventory_api_filters_ts",
-      "label": "inventory-api-filters.ts",
-      "path": "src/lib/inventory-api-filters.ts",
-      "color": "#00ff41",
-      "size": 10,
-      "community": "src/lib",
-      "type": "ts",
-      "client": false
-    },
-    {
       "id": "file_src_lib_permission_labels_ts",
       "label": "permission-labels.ts",
       "path": "src/lib/permission-labels.ts",
@@ -531,16 +580,6 @@
       "size": 10,
       "community": "src/lib",
       "type": "ts",
-      "client": false
-    },
-    {
-      "id": "file_src_middleware_ts",
-      "label": "middleware.ts",
-      "path": "src/middleware.ts",
-      "color": "#ff00ff",
-      "size": 16,
-      "community": "src",
-      "type": "middleware",
       "client": false
     },
     {
@@ -573,6 +612,16 @@
       "client": true
     },
     {
+      "id": "file_src_proxy_ts",
+      "label": "proxy.ts",
+      "path": "src/proxy.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src",
+      "type": "ts",
+      "client": false
+    },
+    {
       "id": "dir_public",
       "label": "public/",
       "path": "public",
@@ -600,27 +649,22 @@
     },
     {
       "source": "dir_src_app",
+      "target": "dir_src_app_contact_requests",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_contact_requests",
+      "target": "file_src_app_contact_requests_page_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app",
       "target": "dir_src_app_data",
       "relation": "contains"
     },
     {
       "source": "dir_src_app_data",
       "target": "file_src_app_data_page_tsx",
-      "relation": "contains"
-    },
-    {
-      "source": "dir_src_app",
-      "target": "dir_src_app_inventory",
-      "relation": "contains"
-    },
-    {
-      "source": "dir_src_app_inventory",
-      "target": "file_src_app_inventory_page_tsx",
-      "relation": "contains"
-    },
-    {
-      "source": "dir_src_app_inventory",
-      "target": "file_src_app_inventory_product_form_ts",
       "relation": "contains"
     },
     {
@@ -635,16 +679,6 @@
     },
     {
       "source": "dir_src_app",
-      "target": "dir_src_app_locations",
-      "relation": "contains"
-    },
-    {
-      "source": "dir_src_app_locations",
-      "target": "file_src_app_locations_page_tsx",
-      "relation": "contains"
-    },
-    {
-      "source": "dir_src_app",
       "target": "dir_src_app_login",
       "relation": "contains"
     },
@@ -655,17 +689,17 @@
     },
     {
       "source": "dir_src_app",
-      "target": "dir_src_app_orders",
-      "relation": "contains"
-    },
-    {
-      "source": "dir_src_app_orders",
-      "target": "file_src_app_orders_page_tsx",
+      "target": "file_src_app_page_tsx",
       "relation": "contains"
     },
     {
       "source": "dir_src_app",
-      "target": "file_src_app_page_tsx",
+      "target": "dir_src_app_posts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_posts",
+      "target": "file_src_app_posts_page_tsx",
       "relation": "contains"
     },
     {
@@ -680,12 +714,12 @@
     },
     {
       "source": "dir_src_app",
-      "target": "dir_src_app_promo_codes",
+      "target": "dir_src_app_rbac",
       "relation": "contains"
     },
     {
-      "source": "dir_src_app_promo_codes",
-      "target": "file_src_app_promo_codes_page_tsx",
+      "source": "dir_src_app_rbac",
+      "target": "file_src_app_rbac_page_tsx",
       "relation": "contains"
     },
     {
@@ -709,8 +743,23 @@
       "relation": "contains"
     },
     {
+      "source": "dir_src_app",
+      "target": "dir_src_app_tags",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_tags",
+      "target": "file_src_app_tags_page_tsx",
+      "relation": "contains"
+    },
+    {
       "source": "dir_src",
       "target": "dir_src_components",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components",
+      "target": "file_src_components_admin_confirm_action_dialog_tsx",
       "relation": "contains"
     },
     {
@@ -735,6 +784,11 @@
     },
     {
       "source": "dir_src_components",
+      "target": "file_src_components_admin_notification_bell_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components",
       "target": "file_src_components_admin_shell_tsx",
       "relation": "contains"
     },
@@ -745,17 +799,52 @@
     },
     {
       "source": "dir_src_components",
-      "target": "file_src_components_sidebar_tsx",
+      "target": "file_src_components_api_scope_notice_tsx",
       "relation": "contains"
     },
     {
       "source": "dir_src_components",
-      "target": "dir_src_components_ui",
+      "target": "file_src_components_sidebar_tsx",
       "relation": "contains"
     },
     {
-      "source": "dir_src_components_ui",
-      "target": "file_src_components_ui_sidebar_tsx",
+      "source": "dir_src",
+      "target": "dir_src_features",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_features",
+      "target": "dir_src_features_auth",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_features_auth",
+      "target": "file_src_features_auth_admin_bridge_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_features_auth",
+      "target": "file_src_features_auth_auth_api_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_features_auth",
+      "target": "file_src_features_auth_index_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_features_auth",
+      "target": "file_src_features_auth_register_form_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_features_auth",
+      "target": "file_src_features_auth_session_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_features_auth",
+      "target": "file_src_features_auth_sign_in_form_tsx",
       "relation": "contains"
     },
     {
@@ -776,16 +865,6 @@
     {
       "source": "dir_src",
       "target": "dir_src_lib",
-      "relation": "contains"
-    },
-    {
-      "source": "dir_src_lib",
-      "target": "file_src_lib_admin_inventory_tree_ts",
-      "relation": "contains"
-    },
-    {
-      "source": "dir_src_lib",
-      "target": "file_src_lib_admin_orders_tree_ts",
       "relation": "contains"
     },
     {
@@ -840,22 +919,12 @@
     },
     {
       "source": "dir_src_lib",
-      "target": "file_src_lib_inventory_api_filters_ts",
-      "relation": "contains"
-    },
-    {
-      "source": "dir_src_lib",
       "target": "file_src_lib_permission_labels_ts",
       "relation": "contains"
     },
     {
       "source": "dir_src_lib",
       "target": "file_src_lib_product_price_ts",
-      "relation": "contains"
-    },
-    {
-      "source": "dir_src",
-      "target": "file_src_middleware_ts",
       "relation": "contains"
     },
     {
@@ -871,6 +940,11 @@
     {
       "source": "dir_src_providers",
       "target": "file_src_providers_query_provider_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "file_src_proxy_ts",
       "relation": "contains"
     },
     {
@@ -890,6 +964,11 @@
     },
     {
       "source": "file_src_app_categories_page_tsx",
+      "target": "file_src_components_admin_confirm_action_dialog_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_categories_page_tsx",
       "target": "file_src_lib_api_ts",
       "relation": "imports"
     },
@@ -911,76 +990,41 @@
     {
       "source": "file_src_app_categories_page_tsx",
       "target": "file_src_lib_category_icons_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_contact_requests_page_tsx",
+      "target": "dir_src_components_admin_data_table",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_contact_requests_page_tsx",
+      "target": "file_src_components_admin_table_pagination_footer_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_contact_requests_page_tsx",
+      "target": "file_src_components_admin_confirm_action_dialog_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_contact_requests_page_tsx",
+      "target": "file_src_hooks_use_debounced_value_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_contact_requests_page_tsx",
+      "target": "file_src_lib_api_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_contact_requests_page_tsx",
+      "target": "file_src_providers_auth_provider_tsx",
       "relation": "imports"
     },
     {
       "source": "file_src_app_data_page_tsx",
       "target": "file_src_lib_auth_session_ts",
-      "relation": "imports"
-    },
-    {
-      "source": "file_src_app_inventory_page_tsx",
-      "target": "file_src_lib_api_ts",
-      "relation": "imports"
-    },
-    {
-      "source": "file_src_app_inventory_page_tsx",
-      "target": "file_src_providers_auth_provider_tsx",
-      "relation": "imports"
-    },
-    {
-      "source": "file_src_app_inventory_page_tsx",
-      "target": "file_src_hooks_queries_ts",
-      "relation": "imports"
-    },
-    {
-      "source": "file_src_app_inventory_page_tsx",
-      "target": "file_src_hooks_use_debounced_value_ts",
-      "relation": "imports"
-    },
-    {
-      "source": "file_src_app_inventory_page_tsx",
-      "target": "file_src_lib_format_ts",
-      "relation": "imports"
-    },
-    {
-      "source": "file_src_app_inventory_page_tsx",
-      "target": "file_src_lib_product_price_ts",
-      "relation": "imports"
-    },
-    {
-      "source": "file_src_app_inventory_page_tsx",
-      "target": "file_src_lib_admin_inventory_tree_ts",
-      "relation": "imports"
-    },
-    {
-      "source": "file_src_app_inventory_page_tsx",
-      "target": "file_src_lib_inventory_api_filters_ts",
-      "relation": "imports"
-    },
-    {
-      "source": "file_src_app_inventory_page_tsx",
-      "target": "dir_src_components_admin_data_table",
-      "relation": "imports"
-    },
-    {
-      "source": "file_src_app_inventory_page_tsx",
-      "target": "file_src_components_admin_table_pagination_footer_tsx",
-      "relation": "imports"
-    },
-    {
-      "source": "file_src_app_inventory_page_tsx",
-      "target": "file_src_lib_category_icons_ts",
-      "relation": "imports"
-    },
-    {
-      "source": "file_src_app_inventory_page_tsx",
-      "target": "file_src_app_inventory_product_form_ts",
-      "relation": "imports"
-    },
-    {
-      "source": "file_src_app_inventory_product_form_ts",
-      "target": "file_src_lib_api_ts",
       "relation": "imports"
     },
     {
@@ -999,93 +1043,38 @@
       "relation": "imports"
     },
     {
-      "source": "file_src_app_locations_page_tsx",
-      "target": "file_src_lib_api_ts",
-      "relation": "imports"
-    },
-    {
-      "source": "file_src_app_locations_page_tsx",
-      "target": "file_src_hooks_queries_ts",
-      "relation": "imports"
-    },
-    {
-      "source": "file_src_app_locations_page_tsx",
-      "target": "file_src_lib_export_csv_ts",
-      "relation": "imports"
-    },
-    {
-      "source": "file_src_app_locations_page_tsx",
-      "target": "file_src_lib_export_xlsx_ts",
-      "relation": "imports"
-    },
-    {
       "source": "file_src_app_login_page_tsx",
-      "target": "file_src_providers_auth_provider_tsx",
+      "target": "file_src_features_auth_sign_in_form_tsx",
       "relation": "imports"
     },
     {
-      "source": "file_src_app_login_page_tsx",
-      "target": "file_src_lib_dev_demo_accounts_ts",
+      "source": "file_src_app_page_tsx",
+      "target": "file_src_components_api_scope_notice_tsx",
       "relation": "imports"
     },
     {
-      "source": "file_src_app_login_page_tsx",
-      "target": "file_src_lib_admin_ui_ts",
+      "source": "file_src_app_posts_page_tsx",
+      "target": "file_src_components_admin_confirm_action_dialog_tsx",
       "relation": "imports"
     },
     {
-      "source": "file_src_app_orders_page_tsx",
-      "target": "file_src_lib_api_ts",
-      "relation": "imports"
-    },
-    {
-      "source": "file_src_app_orders_page_tsx",
-      "target": "file_src_providers_auth_provider_tsx",
-      "relation": "imports"
-    },
-    {
-      "source": "file_src_app_orders_page_tsx",
-      "target": "file_src_hooks_queries_ts",
-      "relation": "imports"
-    },
-    {
-      "source": "file_src_app_orders_page_tsx",
-      "target": "file_src_hooks_use_debounced_value_ts",
-      "relation": "imports"
-    },
-    {
-      "source": "file_src_app_orders_page_tsx",
-      "target": "file_src_lib_format_ts",
-      "relation": "imports"
-    },
-    {
-      "source": "file_src_app_orders_page_tsx",
-      "target": "file_src_lib_admin_orders_tree_ts",
-      "relation": "imports"
-    },
-    {
-      "source": "file_src_app_orders_page_tsx",
+      "source": "file_src_app_posts_page_tsx",
       "target": "dir_src_components_admin_data_table",
       "relation": "imports"
     },
     {
-      "source": "file_src_app_orders_page_tsx",
+      "source": "file_src_app_posts_page_tsx",
       "target": "file_src_components_admin_table_pagination_footer_tsx",
       "relation": "imports"
     },
     {
-      "source": "file_src_app_page_tsx",
-      "target": "file_src_hooks_queries_ts",
+      "source": "file_src_app_posts_page_tsx",
+      "target": "file_src_lib_api_ts",
       "relation": "imports"
     },
     {
-      "source": "file_src_app_page_tsx",
-      "target": "file_src_lib_format_ts",
-      "relation": "imports"
-    },
-    {
-      "source": "file_src_app_page_tsx",
-      "target": "file_src_providers_auth_provider_tsx",
+      "source": "file_src_app_posts_page_tsx",
+      "target": "file_src_hooks_use_debounced_value_ts",
       "relation": "imports"
     },
     {
@@ -1114,38 +1103,48 @@
       "relation": "imports"
     },
     {
-      "source": "file_src_app_promo_codes_page_tsx",
+      "source": "file_src_app_rbac_page_tsx",
+      "target": "file_src_components_admin_confirm_action_dialog_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_rbac_page_tsx",
       "target": "dir_src_components_admin_data_table",
       "relation": "imports"
     },
     {
-      "source": "file_src_app_promo_codes_page_tsx",
+      "source": "file_src_app_rbac_page_tsx",
       "target": "file_src_components_admin_table_pagination_footer_tsx",
       "relation": "imports"
     },
     {
-      "source": "file_src_app_promo_codes_page_tsx",
-      "target": "file_src_hooks_queries_ts",
-      "relation": "imports"
-    },
-    {
-      "source": "file_src_app_promo_codes_page_tsx",
+      "source": "file_src_app_rbac_page_tsx",
       "target": "file_src_hooks_use_debounced_value_ts",
       "relation": "imports"
     },
     {
-      "source": "file_src_app_promo_codes_page_tsx",
-      "target": "file_src_providers_auth_provider_tsx",
+      "source": "file_src_app_rbac_page_tsx",
+      "target": "file_src_hooks_queries_ts",
       "relation": "imports"
     },
     {
-      "source": "file_src_app_promo_codes_page_tsx",
+      "source": "file_src_app_rbac_page_tsx",
       "target": "file_src_lib_api_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_rbac_page_tsx",
+      "target": "file_src_lib_permission_labels_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_rbac_page_tsx",
+      "target": "file_src_providers_auth_provider_tsx",
       "relation": "imports"
     },
     {
       "source": "file_src_app_register_page_tsx",
-      "target": "file_src_lib_admin_ui_ts",
+      "target": "file_src_features_auth_register_form_tsx",
       "relation": "imports"
     },
     {
@@ -1160,17 +1159,12 @@
     },
     {
       "source": "file_src_app_staff_page_tsx",
+      "target": "file_src_components_admin_confirm_action_dialog_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_staff_page_tsx",
       "target": "file_src_lib_api_ts",
-      "relation": "imports"
-    },
-    {
-      "source": "file_src_app_staff_page_tsx",
-      "target": "file_src_lib_export_csv_ts",
-      "relation": "imports"
-    },
-    {
-      "source": "file_src_app_staff_page_tsx",
-      "target": "file_src_lib_export_xlsx_ts",
       "relation": "imports"
     },
     {
@@ -1186,6 +1180,36 @@
     {
       "source": "file_src_app_staff_page_tsx",
       "target": "file_src_hooks_use_debounced_value_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_tags_page_tsx",
+      "target": "dir_src_components_admin_data_table",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_tags_page_tsx",
+      "target": "file_src_components_admin_table_pagination_footer_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_tags_page_tsx",
+      "target": "file_src_components_admin_confirm_action_dialog_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_tags_page_tsx",
+      "target": "file_src_lib_api_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_tags_page_tsx",
+      "target": "file_src_hooks_use_debounced_value_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_tags_page_tsx",
+      "target": "file_src_providers_auth_provider_tsx",
       "relation": "imports"
     },
     {
@@ -1220,6 +1244,11 @@
     },
     {
       "source": "file_src_components_admin_shell_tsx",
+      "target": "file_src_components_admin_notification_bell_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_admin_shell_tsx",
       "target": "file_src_lib_auth_session_ts",
       "relation": "imports"
     },
@@ -1244,17 +1273,52 @@
       "relation": "assets"
     },
     {
+      "source": "file_src_features_auth_index_ts",
+      "target": "file_src_features_auth_sign_in_form_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_features_auth_index_ts",
+      "target": "file_src_features_auth_register_form_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_features_auth_register_form_tsx",
+      "target": "file_src_lib_auth_routes_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_features_auth_register_form_tsx",
+      "target": "file_src_features_auth_auth_api_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_features_auth_session_ts",
+      "target": "file_src_features_auth_auth_api_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_features_auth_sign_in_form_tsx",
+      "target": "file_src_providers_auth_provider_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_features_auth_sign_in_form_tsx",
+      "target": "file_src_features_auth_auth_api_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_features_auth_sign_in_form_tsx",
+      "target": "file_src_lib_auth_routes_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_features_auth_sign_in_form_tsx",
+      "target": "file_src_lib_auth_session_ts",
+      "relation": "imports"
+    },
+    {
       "source": "file_src_hooks_queries_ts",
-      "target": "file_src_lib_api_ts",
-      "relation": "imports"
-    },
-    {
-      "source": "file_src_lib_admin_inventory_tree_ts",
-      "target": "file_src_lib_api_ts",
-      "relation": "imports"
-    },
-    {
-      "source": "file_src_lib_admin_orders_tree_ts",
       "target": "file_src_lib_api_ts",
       "relation": "imports"
     },
@@ -1264,18 +1328,8 @@
       "relation": "imports"
     },
     {
-      "source": "file_src_lib_inventory_api_filters_ts",
-      "target": "file_src_lib_admin_inventory_tree_ts",
-      "relation": "imports"
-    },
-    {
-      "source": "file_src_lib_product_price_ts",
-      "target": "file_src_lib_api_ts",
-      "relation": "imports"
-    },
-    {
       "source": "file_src_providers_auth_provider_tsx",
-      "target": "file_src_lib_api_ts",
+      "target": "file_src_features_auth_auth_api_ts",
       "relation": "imports"
     },
     {
@@ -1284,8 +1338,8 @@
       "relation": "imports"
     },
     {
-      "source": "file_src_providers_query_provider_tsx",
-      "target": "file_src_lib_api_ts",
+      "source": "file_src_providers_auth_provider_tsx",
+      "target": "file_src_lib_auth_routes_ts",
       "relation": "imports"
     }
   ]

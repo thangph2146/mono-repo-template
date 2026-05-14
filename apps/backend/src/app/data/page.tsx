@@ -20,6 +20,7 @@ import {
   CardTitle,
 } from "@ui/components/card";
 import { PageSection } from "@ui/components/layout";
+import { TypographyH1, TypographyH2 } from "@ui/components/typography";
 import { ADMIN_PAGE_TITLE_DOCUMENT_CLASS } from "@ui/lib/layout-shell";
 import { cn } from "@ui/lib/utils";
 import { readAdminSession } from "@/lib/auth-session";
@@ -233,9 +234,9 @@ export default function DataBackupPage() {
           </div>
           <div className="min-w-0 flex-1 space-y-2">
             <div className="flex flex-wrap items-center gap-2">
-              <h1 className={ADMIN_PAGE_TITLE_DOCUMENT_CLASS}>
+              <TypographyH1 className={ADMIN_PAGE_TITLE_DOCUMENT_CLASS}>
                 Sao lưu &amp; phục hồi dữ liệu
-              </h1>
+              </TypographyH1>
               <Badge variant="secondary" className="font-normal">
                 Admin
               </Badge>
@@ -288,9 +289,12 @@ export default function DataBackupPage() {
       <section className="space-y-4" aria-labelledby="export-heading">
         <div className="flex items-center gap-2">
           <Sparkles className="size-5 text-primary" aria-hidden />
-          <h2 id="export-heading" className="text-lg font-semibold tracking-tight">
+          <TypographyH2
+            id="export-heading"
+            className="text-lg font-semibold tracking-tight"
+          >
             Xuất snapshot hiện tại
-          </h2>
+          </TypographyH2>
         </div>
         <p className="text-muted-foreground -mt-1 text-sm">
           Có thể xuất cùng snapshot hệ thống ở định dạng JSON hoặc Excel `.xlsx`.

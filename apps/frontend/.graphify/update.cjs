@@ -355,13 +355,27 @@ function generateContext() {
 
 console.log('Generating context snapshot...');
 const context = generateContext();
-const contextPath = path.join(__dirname, 'context.json');
+const snapshotDir = path.join(__dirname, 'snapshot');
+fs.mkdirSync(snapshotDir, { recursive: true });
+const contextPath = path.join(snapshotDir, 'context.json');
 fs.writeFileSync(contextPath, JSON.stringify(context, null, 2));
 console.log(`Updated: ${contextPath} (${Object.keys(context.files).length} files snapshotted)`);
 
 // Write JSON
-const jsonPath = path.join(__dirname, 'graph.json');
+const jsonPath = path.join(snapshotDir, 'graph.json');
 fs.writeFileSync(jsonPath, finalDataStr);
 console.log(`Updated: ${jsonPath}`);
+
+for (const legacy of [
+    path.join(__dirname, 'context.json'),
+    path.join(__dirname, 'graph.json'),
+]) {
+    if (fs.existsSync(legacy)) {
+        try {
+            fs.unlinkSync(legacy);
+            console.log(`Removed legacy (flat): ${legacy}`);
+        } catch {}
+    }
+}
 
 console.log('Success! Graph synchronized with Next.js architecture.');

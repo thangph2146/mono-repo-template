@@ -1,11 +1,10 @@
 import {
-  INSERT_UNORDERED_LIST_COMMAND,
   REMOVE_LIST_COMMAND,
   $isListItemNode,
   $isListNode,
   $insertList,
 } from "@lexical/list"
-import { $findMatchingParent, $getNearestNodeOfType } from "@lexical/utils"
+import { $findMatchingParent } from "@lexical/utils"
 import {
   $getNodeByKey,
   $getSelection,
@@ -16,10 +15,7 @@ import {
 
 import type { ListMarkerPresetValue } from "../../../config/editor-list-config"
 import { useToolbarContext } from "../../../context/toolbar-context"
-import {
-  $isListWithColorNode,
-  ListWithColorNode,
-} from "../../../nodes/list-with-color-node"
+import { $isListWithColorNode } from "../../../nodes/list-with-color-node"
 import { createListWithColorNodeFromRegistry } from "../../../editor-x/nodes"
 import { $tryPartialListTypeConversion } from "../../../plugins/list/partial-list-type-conversion"
 import { blockTypeToBlockName } from "../../../plugins/toolbar/block-format/block-format-data"
@@ -88,10 +84,6 @@ export function FormatBulletMarker({
                 }
         
                 if (listKeys.size === 0) {
-                  const nearest = $getNearestNodeOfType(
-                    newSel.anchor.getNode(),
-                    ListWithColorNode
-                  ) // Actually it might be a normal ListNode if it was just created
                   const nearestList = $findMatchingParent(newSel.anchor.getNode(), $isListNode)
                   if (
                     nearestList && $isListNode(nearestList) &&

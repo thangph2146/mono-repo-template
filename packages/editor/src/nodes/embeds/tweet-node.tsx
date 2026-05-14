@@ -187,9 +187,7 @@ export class TweetNode extends DecoratorBlockNode {
   }
 
   getTextContent(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars -- Lexical override signature
     _includeInert?: boolean | undefined,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars -- Lexical override signature
     _includeDirectionless?: false | undefined
   ): string {
     return `https://x.com/i/web/status/${this.__id}`

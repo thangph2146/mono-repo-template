@@ -219,6 +219,24 @@ export class PublicPostsService {
     };
   }
 
+  /**
+   * Tăng lượt xem theo slug (public). Dùng từ client sau khi trang chi tiết đã hiển thị,
+   * tránh ghi DB mỗi lần SSR/revalidate của GET /public/posts/:slug.
+   */
+  async incrementPostViewBySlug(
+    slug: string,
+  ): Promise<{ viewCount: number } | null> {
+    const post = await this.em.findOne(Post, {
+      slug,
+      published: true,
+      deletedAt: null,
+      publishedAt: { $lte: new Date() },
+    });
+    if (!post) return null;
+    const viewCount = await this.increaseViewCount(post.id);
+    return { viewCount };
+  }
+
   /** Bài cho block "Thông tin tuyển sinh" trang chủ: Thông báo mới nhất + Tin tuyển sinh */
   async getHomeAdmissionPosts(params?: {
     latestLimit?: number;

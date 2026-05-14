@@ -1,0 +1,1962 @@
+{
+  "nodes": [
+    {
+      "id": "dir_src",
+      "label": "src/",
+      "path": "src",
+      "color": "#ff9d00",
+      "size": 28,
+      "community": "root",
+      "type": "directory"
+    },
+    {
+      "id": "dir_src_app",
+      "label": "app/",
+      "path": "src/app",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "dir_src_app__public_",
+      "label": "(public)",
+      "path": "src/app/(public)",
+      "color": "#888800",
+      "size": 15,
+      "community": "src/app",
+      "type": "route-group"
+    },
+    {
+      "id": "dir_src_app__public__bai_viet",
+      "label": "bai-viet/",
+      "path": "src/app/(public)/bai-viet",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app/(public)",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_app__public__bai_viet_page_tsx",
+      "label": "page.tsx",
+      "path": "src/app/(public)/bai-viet/page.tsx",
+      "color": "#00ff41",
+      "size": 14,
+      "community": "src/app/(public)/bai-viet",
+      "type": "page",
+      "client": false
+    },
+    {
+      "id": "dir_src_app__public__bai_viet__slug_",
+      "label": "[slug]/",
+      "path": "src/app/(public)/bai-viet/[slug]",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app/(public)/bai-viet",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_app__public__bai_viet__slug__page_tsx",
+      "label": "page.tsx",
+      "path": "src/app/(public)/bai-viet/[slug]/page.tsx",
+      "color": "#00ff41",
+      "size": 14,
+      "community": "src/app/(public)/bai-viet/[slug]",
+      "type": "page",
+      "client": false
+    },
+    {
+      "id": "dir_src_app__public__huong_dan_su_dung",
+      "label": "huong-dan-su-dung/",
+      "path": "src/app/(public)/huong-dan-su-dung",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app/(public)",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_app__public__huong_dan_su_dung_page_tsx",
+      "label": "page.tsx",
+      "path": "src/app/(public)/huong-dan-su-dung/page.tsx",
+      "color": "#00ff41",
+      "size": 14,
+      "community": "src/app/(public)/huong-dan-su-dung",
+      "type": "page",
+      "client": false
+    },
+    {
+      "id": "file_src_app__public__layout_tsx",
+      "label": "layout.tsx",
+      "path": "src/app/(public)/layout.tsx",
+      "color": "#ff6b35",
+      "size": 20,
+      "community": "src/app/(public)",
+      "type": "layout",
+      "client": false
+    },
+    {
+      "id": "dir_src_app__public__lien_he",
+      "label": "lien-he/",
+      "path": "src/app/(public)/lien-he",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app/(public)",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_app__public__lien_he_page_tsx",
+      "label": "page.tsx",
+      "path": "src/app/(public)/lien-he/page.tsx",
+      "color": "#00ff41",
+      "size": 14,
+      "community": "src/app/(public)/lien-he",
+      "type": "page",
+      "client": false
+    },
+    {
+      "id": "dir_src_app__public__login",
+      "label": "login/",
+      "path": "src/app/(public)/login",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app/(public)",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_app__public__login_page_tsx",
+      "label": "page.tsx",
+      "path": "src/app/(public)/login/page.tsx",
+      "color": "#00ff41",
+      "size": 14,
+      "community": "src/app/(public)/login",
+      "type": "page",
+      "client": false
+    },
+    {
+      "id": "file_src_app__public__page_tsx",
+      "label": "page.tsx",
+      "path": "src/app/(public)/page.tsx",
+      "color": "#00ff41",
+      "size": 14,
+      "community": "src/app/(public)",
+      "type": "page",
+      "client": false
+    },
+    {
+      "id": "dir_src_app__public__register",
+      "label": "register/",
+      "path": "src/app/(public)/register",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app/(public)",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_app__public__register_page_tsx",
+      "label": "page.tsx",
+      "path": "src/app/(public)/register/page.tsx",
+      "color": "#00ff41",
+      "size": 14,
+      "community": "src/app/(public)/register",
+      "type": "page",
+      "client": false
+    },
+    {
+      "id": "dir_src_app__public__ve_chung_toi",
+      "label": "ve-chung-toi/",
+      "path": "src/app/(public)/ve-chung-toi",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app/(public)",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_app__public__ve_chung_toi_page_tsx",
+      "label": "page.tsx",
+      "path": "src/app/(public)/ve-chung-toi/page.tsx",
+      "color": "#00ff41",
+      "size": 14,
+      "community": "src/app/(public)/ve-chung-toi",
+      "type": "page",
+      "client": false
+    },
+    {
+      "id": "dir_src_app_api",
+      "label": "api/",
+      "path": "src/app/api",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app",
+      "type": "directory"
+    },
+    {
+      "id": "dir_src_app_api_graphify",
+      "label": "graphify/",
+      "path": "src/app/api/graphify",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app/api",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_app_api_graphify_route_ts",
+      "label": "route.ts",
+      "path": "src/app/api/graphify/route.ts",
+      "color": "#00ccff",
+      "size": 12,
+      "community": "src/app/api/graphify",
+      "type": "api-route",
+      "client": false
+    },
+    {
+      "id": "dir_src_app_graph",
+      "label": "graph/",
+      "path": "src/app/graph",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_app_graph_layout_tsx",
+      "label": "layout.tsx",
+      "path": "src/app/graph/layout.tsx",
+      "color": "#ff6b35",
+      "size": 20,
+      "community": "src/app/graph",
+      "type": "layout",
+      "client": false
+    },
+    {
+      "id": "file_src_app_graph_loading_tsx",
+      "label": "loading.tsx",
+      "path": "src/app/graph/loading.tsx",
+      "color": "#888800",
+      "size": 10,
+      "community": "src/app/graph",
+      "type": "loading",
+      "client": false
+    },
+    {
+      "id": "file_src_app_graph_page_tsx",
+      "label": "page.tsx",
+      "path": "src/app/graph/page.tsx",
+      "color": "#00ff41",
+      "size": 14,
+      "community": "src/app/graph",
+      "type": "page",
+      "client": true
+    },
+    {
+      "id": "dir_src_components",
+      "label": "components/",
+      "path": "src/components",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "dir_src_components_graphify",
+      "label": "graphify/",
+      "path": "src/components/graphify",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/components",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_components_graphify_force_graph_3d_tsx",
+      "label": "force-graph-3d.tsx",
+      "path": "src/components/graphify/force-graph-3d.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/components/graphify",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "dir_src_components_icons",
+      "label": "icons/",
+      "path": "src/components/icons",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/components",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_components_icons_logo_tsx",
+      "label": "logo.tsx",
+      "path": "src/components/icons/logo.tsx",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/components/icons",
+      "type": "tsx",
+      "client": false
+    },
+    {
+      "id": "dir_src_components_shared",
+      "label": "shared/",
+      "path": "src/components/shared",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/components",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_components_shared_footer_tsx",
+      "label": "footer.tsx",
+      "path": "src/components/shared/footer.tsx",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/components/shared",
+      "type": "tsx",
+      "client": false
+    },
+    {
+      "id": "file_src_components_shared_header_tsx",
+      "label": "header.tsx",
+      "path": "src/components/shared/header.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/components/shared",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_components_shared_post_content_renderer_tsx",
+      "label": "post-content-renderer.tsx",
+      "path": "src/components/shared/post-content-renderer.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/components/shared",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_components_shared_public_post_view_badge_tsx",
+      "label": "public-post-view-badge.tsx",
+      "path": "src/components/shared/public-post-view-badge.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/components/shared",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_components_shared_route_loading_tsx",
+      "label": "route-loading.tsx",
+      "path": "src/components/shared/route-loading.tsx",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/components/shared",
+      "type": "tsx",
+      "client": false
+    },
+    {
+      "id": "file_src_components_shared_scroll_to_top_tsx",
+      "label": "scroll-to-top.tsx",
+      "path": "src/components/shared/scroll-to-top.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/components/shared",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_components_shared_store_auth_gate_tsx",
+      "label": "store-auth-gate.tsx",
+      "path": "src/components/shared/store-auth-gate.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/components/shared",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "dir_src_features",
+      "label": "features/",
+      "path": "src/features",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "dir_src_features_auth",
+      "label": "auth/",
+      "path": "src/features/auth",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/features",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_features_auth_admin_bridge_ts",
+      "label": "admin-bridge.ts",
+      "path": "src/features/auth/admin-bridge.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/features/auth",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_features_pages",
+      "label": "pages/",
+      "path": "src/features/pages",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/features",
+      "type": "directory"
+    },
+    {
+      "id": "dir_src_features_pages_about_page",
+      "label": "about-page/",
+      "path": "src/features/pages/about-page",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/features/pages",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_features_pages_about_page_about_client_tsx",
+      "label": "about-client.tsx",
+      "path": "src/features/pages/about-page/about-client.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/features/pages/about-page",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_features_pages_about_page_about_tsx",
+      "label": "about.tsx",
+      "path": "src/features/pages/about-page/about.tsx",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/features/pages/about-page",
+      "type": "tsx",
+      "client": false
+    },
+    {
+      "id": "file_src_features_pages_about_page_constants_tsx",
+      "label": "constants.tsx",
+      "path": "src/features/pages/about-page/constants.tsx",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/features/pages/about-page",
+      "type": "tsx",
+      "client": false
+    },
+    {
+      "id": "file_src_features_pages_about_page_index_ts",
+      "label": "index.ts",
+      "path": "src/features/pages/about-page/index.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/features/pages/about-page",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_features_pages_about_page_sub_sections",
+      "label": "sub-sections/",
+      "path": "src/features/pages/about-page/sub-sections",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/features/pages/about-page",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_features_pages_about_page_sub_sections_about_hub_section_tsx",
+      "label": "about-hub-section.tsx",
+      "path": "src/features/pages/about-page/sub-sections/about-hub-section.tsx",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/features/pages/about-page/sub-sections",
+      "type": "tsx",
+      "client": false
+    },
+    {
+      "id": "file_src_features_pages_about_page_sub_sections_core_values_section_tsx",
+      "label": "core-values-section.tsx",
+      "path": "src/features/pages/about-page/sub-sections/core-values-section.tsx",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/features/pages/about-page/sub-sections",
+      "type": "tsx",
+      "client": false
+    },
+    {
+      "id": "file_src_features_pages_about_page_sub_sections_departments_section_tsx",
+      "label": "departments-section.tsx",
+      "path": "src/features/pages/about-page/sub-sections/departments-section.tsx",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/features/pages/about-page/sub-sections",
+      "type": "tsx",
+      "client": false
+    },
+    {
+      "id": "file_src_features_pages_about_page_sub_sections_education_philosophy_section_tsx",
+      "label": "education-philosophy-section.tsx",
+      "path": "src/features/pages/about-page/sub-sections/education-philosophy-section.tsx",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/features/pages/about-page/sub-sections",
+      "type": "tsx",
+      "client": false
+    },
+    {
+      "id": "file_src_features_pages_about_page_sub_sections_facilities_section_tsx",
+      "label": "facilities-section.tsx",
+      "path": "src/features/pages/about-page/sub-sections/facilities-section.tsx",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/features/pages/about-page/sub-sections",
+      "type": "tsx",
+      "client": false
+    },
+    {
+      "id": "file_src_features_pages_about_page_sub_sections_faculty_scientists_section_tsx",
+      "label": "faculty-scientists-section.tsx",
+      "path": "src/features/pages/about-page/sub-sections/faculty-scientists-section.tsx",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/features/pages/about-page/sub-sections",
+      "type": "tsx",
+      "client": false
+    },
+    {
+      "id": "file_src_features_pages_about_page_sub_sections_history_section_tsx",
+      "label": "history-section.tsx",
+      "path": "src/features/pages/about-page/sub-sections/history-section.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/features/pages/about-page/sub-sections",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_features_pages_about_page_sub_sections_index_ts",
+      "label": "index.ts",
+      "path": "src/features/pages/about-page/sub-sections/index.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/features/pages/about-page/sub-sections",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_features_pages_about_page_sub_sections_leaders_section_tsx",
+      "label": "leaders-section.tsx",
+      "path": "src/features/pages/about-page/sub-sections/leaders-section.tsx",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/features/pages/about-page/sub-sections",
+      "type": "tsx",
+      "client": false
+    },
+    {
+      "id": "file_src_features_pages_about_page_sub_sections_organization_structure_section_tsx",
+      "label": "organization-structure-section.tsx",
+      "path": "src/features/pages/about-page/sub-sections/organization-structure-section.tsx",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/features/pages/about-page/sub-sections",
+      "type": "tsx",
+      "client": false
+    },
+    {
+      "id": "file_src_features_pages_about_page_sub_sections_overview_section_tsx",
+      "label": "overview-section.tsx",
+      "path": "src/features/pages/about-page/sub-sections/overview-section.tsx",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/features/pages/about-page/sub-sections",
+      "type": "tsx",
+      "client": false
+    },
+    {
+      "id": "file_src_features_pages_about_page_sub_sections_vision_mission_section_tsx",
+      "label": "vision-mission-section.tsx",
+      "path": "src/features/pages/about-page/sub-sections/vision-mission-section.tsx",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/features/pages/about-page/sub-sections",
+      "type": "tsx",
+      "client": false
+    },
+    {
+      "id": "file_src_features_pages_about_page_utils_tsx",
+      "label": "utils.tsx",
+      "path": "src/features/pages/about-page/utils.tsx",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/features/pages/about-page",
+      "type": "tsx",
+      "client": false
+    },
+    {
+      "id": "dir_src_features_pages_home_page",
+      "label": "home-page/",
+      "path": "src/features/pages/home-page",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/features/pages",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_features_pages_home_page_constants_ts",
+      "label": "constants.ts",
+      "path": "src/features/pages/home-page/constants.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/features/pages/home-page",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_features_pages_home_page_data_tsx",
+      "label": "data.tsx",
+      "path": "src/features/pages/home-page/data.tsx",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/features/pages/home-page",
+      "type": "tsx",
+      "client": false
+    },
+    {
+      "id": "file_src_features_pages_home_page_home_client_tsx",
+      "label": "home-client.tsx",
+      "path": "src/features/pages/home-page/home-client.tsx",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/features/pages/home-page",
+      "type": "tsx",
+      "client": false
+    },
+    {
+      "id": "file_src_features_pages_home_page_home_tsx",
+      "label": "home.tsx",
+      "path": "src/features/pages/home-page/home.tsx",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/features/pages/home-page",
+      "type": "tsx",
+      "client": false
+    },
+    {
+      "id": "file_src_features_pages_home_page_index_ts",
+      "label": "index.ts",
+      "path": "src/features/pages/home-page/index.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/features/pages/home-page",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_features_pages_home_page_sub_sections",
+      "label": "sub-sections/",
+      "path": "src/features/pages/home-page/sub-sections",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/features/pages/home-page",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_features_pages_home_page_sub_sections_about_hub_section_tsx",
+      "label": "about-hub-section.tsx",
+      "path": "src/features/pages/home-page/sub-sections/about-hub-section.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/features/pages/home-page/sub-sections",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_features_pages_home_page_sub_sections_contact_section_tsx",
+      "label": "contact-section.tsx",
+      "path": "src/features/pages/home-page/sub-sections/contact-section.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/features/pages/home-page/sub-sections",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_features_pages_home_page_sub_sections_content_card_tsx",
+      "label": "content-card.tsx",
+      "path": "src/features/pages/home-page/sub-sections/content-card.tsx",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/features/pages/home-page/sub-sections",
+      "type": "tsx",
+      "client": false
+    },
+    {
+      "id": "file_src_features_pages_home_page_sub_sections_featured_posts_section_tsx",
+      "label": "featured-posts-section.tsx",
+      "path": "src/features/pages/home-page/sub-sections/featured-posts-section.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/features/pages/home-page/sub-sections",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_features_pages_home_page_sub_sections_guide_register_section_tsx",
+      "label": "guide-register-section.tsx",
+      "path": "src/features/pages/home-page/sub-sections/guide-register-section.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/features/pages/home-page/sub-sections",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_features_pages_home_page_sub_sections_hero_section_tsx",
+      "label": "hero-section.tsx",
+      "path": "src/features/pages/home-page/sub-sections/hero-section.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/features/pages/home-page/sub-sections",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_features_pages_home_page_sub_sections_index_ts",
+      "label": "index.ts",
+      "path": "src/features/pages/home-page/sub-sections/index.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/features/pages/home-page/sub-sections",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_features_pages_home_page_sub_sections_overview_section_tsx",
+      "label": "overview-section.tsx",
+      "path": "src/features/pages/home-page/sub-sections/overview-section.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/features/pages/home-page/sub-sections",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_features_pages_home_page_sub_sections_scroll_indicator_tsx",
+      "label": "scroll-indicator.tsx",
+      "path": "src/features/pages/home-page/sub-sections/scroll-indicator.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/features/pages/home-page/sub-sections",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "dir_src_hooks",
+      "label": "hooks/",
+      "path": "src/hooks",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_hooks_use_client_ready_ts",
+      "label": "use-client-ready.ts",
+      "path": "src/hooks/use-client-ready.ts",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/hooks",
+      "type": "ts",
+      "client": true
+    },
+    {
+      "id": "file_src_hooks_use_debounced_value_ts",
+      "label": "use-debounced-value.ts",
+      "path": "src/hooks/use-debounced-value.ts",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/hooks",
+      "type": "ts",
+      "client": true
+    },
+    {
+      "id": "file_src_hooks_use_graphify_ts",
+      "label": "use-graphify.ts",
+      "path": "src/hooks/use-graphify.ts",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/hooks",
+      "type": "ts",
+      "client": true
+    },
+    {
+      "id": "file_src_hooks_use_mobile_ts",
+      "label": "use-mobile.ts",
+      "path": "src/hooks/use-mobile.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/hooks",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_hooks_use_session_ts",
+      "label": "use-session.ts",
+      "path": "src/hooks/use-session.ts",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/hooks",
+      "type": "ts",
+      "client": true
+    },
+    {
+      "id": "file_src_hooks_usetodos_ts",
+      "label": "useTodos.ts",
+      "path": "src/hooks/useTodos.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/hooks",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_lib",
+      "label": "lib/",
+      "path": "src/lib",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_lib_api_ts",
+      "label": "api.ts",
+      "path": "src/lib/api.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/lib",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_lib_auth_routes_ts",
+      "label": "auth-routes.ts",
+      "path": "src/lib/auth-routes.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/lib",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_lib_category_icons_ts",
+      "label": "category-icons.ts",
+      "path": "src/lib/category-icons.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/lib",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_lib_dev_route_log_ts",
+      "label": "dev-route-log.ts",
+      "path": "src/lib/dev-route-log.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/lib",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_lib_format_ts",
+      "label": "format.ts",
+      "path": "src/lib/format.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/lib",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_lib_graphify_context_ts",
+      "label": "graphify-context.ts",
+      "path": "src/lib/graphify-context.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/lib",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_lib_public_posts_ts",
+      "label": "public-posts.ts",
+      "path": "src/lib/public-posts.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/lib",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_lib_scroll_ts",
+      "label": "scroll.ts",
+      "path": "src/lib/scroll.ts",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/lib",
+      "type": "ts",
+      "client": true
+    },
+    {
+      "id": "file_src_lib_storage_ts",
+      "label": "storage.ts",
+      "path": "src/lib/storage.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/lib",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_lib_utils_ts",
+      "label": "utils.ts",
+      "path": "src/lib/utils.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/lib",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_providers",
+      "label": "providers/",
+      "path": "src/providers",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_providers_query_provider_tsx",
+      "label": "query-provider.tsx",
+      "path": "src/providers/query-provider.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/providers",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_proxy_ts",
+      "label": "proxy.ts",
+      "path": "src/proxy.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_types",
+      "label": "types/",
+      "path": "src/types",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_types_todo_ts",
+      "label": "todo.ts",
+      "path": "src/types/todo.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/types",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_public",
+      "label": "public/",
+      "path": "public",
+      "color": "#ff9d00",
+      "size": 28,
+      "community": "root",
+      "type": "directory"
+    }
+  ],
+  "links": [
+    {
+      "source": "dir_src",
+      "target": "dir_src_app",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app",
+      "target": "dir_src_app__public_",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app__public_",
+      "target": "dir_src_app__public__bai_viet",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app__public__bai_viet",
+      "target": "file_src_app__public__bai_viet_page_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app__public__bai_viet",
+      "target": "dir_src_app__public__bai_viet__slug_",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app__public__bai_viet__slug_",
+      "target": "file_src_app__public__bai_viet__slug__page_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app__public_",
+      "target": "dir_src_app__public__huong_dan_su_dung",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app__public__huong_dan_su_dung",
+      "target": "file_src_app__public__huong_dan_su_dung_page_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app__public_",
+      "target": "file_src_app__public__layout_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app__public_",
+      "target": "dir_src_app__public__lien_he",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app__public__lien_he",
+      "target": "file_src_app__public__lien_he_page_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app__public_",
+      "target": "dir_src_app__public__login",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app__public__login",
+      "target": "file_src_app__public__login_page_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app__public_",
+      "target": "file_src_app__public__page_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app__public_",
+      "target": "dir_src_app__public__register",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app__public__register",
+      "target": "file_src_app__public__register_page_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app__public_",
+      "target": "dir_src_app__public__ve_chung_toi",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app__public__ve_chung_toi",
+      "target": "file_src_app__public__ve_chung_toi_page_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app",
+      "target": "dir_src_app_api",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_api",
+      "target": "dir_src_app_api_graphify",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_api_graphify",
+      "target": "file_src_app_api_graphify_route_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app",
+      "target": "dir_src_app_graph",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_graph",
+      "target": "file_src_app_graph_layout_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_graph",
+      "target": "file_src_app_graph_loading_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_graph",
+      "target": "file_src_app_graph_page_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_components",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components",
+      "target": "dir_src_components_graphify",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_graphify",
+      "target": "file_src_components_graphify_force_graph_3d_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components",
+      "target": "dir_src_components_icons",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_icons",
+      "target": "file_src_components_icons_logo_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components",
+      "target": "dir_src_components_shared",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_shared",
+      "target": "file_src_components_shared_footer_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_shared",
+      "target": "file_src_components_shared_header_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_shared",
+      "target": "file_src_components_shared_post_content_renderer_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_shared",
+      "target": "file_src_components_shared_public_post_view_badge_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_shared",
+      "target": "file_src_components_shared_route_loading_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_shared",
+      "target": "file_src_components_shared_scroll_to_top_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_shared",
+      "target": "file_src_components_shared_store_auth_gate_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_features",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_features",
+      "target": "dir_src_features_auth",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_features_auth",
+      "target": "file_src_features_auth_admin_bridge_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_features",
+      "target": "dir_src_features_pages",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_features_pages",
+      "target": "dir_src_features_pages_about_page",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_features_pages_about_page",
+      "target": "file_src_features_pages_about_page_about_client_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_features_pages_about_page",
+      "target": "file_src_features_pages_about_page_about_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_features_pages_about_page",
+      "target": "file_src_features_pages_about_page_constants_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_features_pages_about_page",
+      "target": "file_src_features_pages_about_page_index_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_features_pages_about_page",
+      "target": "dir_src_features_pages_about_page_sub_sections",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_features_pages_about_page_sub_sections",
+      "target": "file_src_features_pages_about_page_sub_sections_about_hub_section_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_features_pages_about_page_sub_sections",
+      "target": "file_src_features_pages_about_page_sub_sections_core_values_section_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_features_pages_about_page_sub_sections",
+      "target": "file_src_features_pages_about_page_sub_sections_departments_section_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_features_pages_about_page_sub_sections",
+      "target": "file_src_features_pages_about_page_sub_sections_education_philosophy_section_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_features_pages_about_page_sub_sections",
+      "target": "file_src_features_pages_about_page_sub_sections_facilities_section_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_features_pages_about_page_sub_sections",
+      "target": "file_src_features_pages_about_page_sub_sections_faculty_scientists_section_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_features_pages_about_page_sub_sections",
+      "target": "file_src_features_pages_about_page_sub_sections_history_section_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_features_pages_about_page_sub_sections",
+      "target": "file_src_features_pages_about_page_sub_sections_index_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_features_pages_about_page_sub_sections",
+      "target": "file_src_features_pages_about_page_sub_sections_leaders_section_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_features_pages_about_page_sub_sections",
+      "target": "file_src_features_pages_about_page_sub_sections_organization_structure_section_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_features_pages_about_page_sub_sections",
+      "target": "file_src_features_pages_about_page_sub_sections_overview_section_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_features_pages_about_page_sub_sections",
+      "target": "file_src_features_pages_about_page_sub_sections_vision_mission_section_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_features_pages_about_page",
+      "target": "file_src_features_pages_about_page_utils_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_features_pages",
+      "target": "dir_src_features_pages_home_page",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_features_pages_home_page",
+      "target": "file_src_features_pages_home_page_constants_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_features_pages_home_page",
+      "target": "file_src_features_pages_home_page_data_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_features_pages_home_page",
+      "target": "file_src_features_pages_home_page_home_client_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_features_pages_home_page",
+      "target": "file_src_features_pages_home_page_home_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_features_pages_home_page",
+      "target": "file_src_features_pages_home_page_index_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_features_pages_home_page",
+      "target": "dir_src_features_pages_home_page_sub_sections",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_features_pages_home_page_sub_sections",
+      "target": "file_src_features_pages_home_page_sub_sections_about_hub_section_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_features_pages_home_page_sub_sections",
+      "target": "file_src_features_pages_home_page_sub_sections_contact_section_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_features_pages_home_page_sub_sections",
+      "target": "file_src_features_pages_home_page_sub_sections_content_card_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_features_pages_home_page_sub_sections",
+      "target": "file_src_features_pages_home_page_sub_sections_featured_posts_section_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_features_pages_home_page_sub_sections",
+      "target": "file_src_features_pages_home_page_sub_sections_guide_register_section_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_features_pages_home_page_sub_sections",
+      "target": "file_src_features_pages_home_page_sub_sections_hero_section_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_features_pages_home_page_sub_sections",
+      "target": "file_src_features_pages_home_page_sub_sections_index_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_features_pages_home_page_sub_sections",
+      "target": "file_src_features_pages_home_page_sub_sections_overview_section_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_features_pages_home_page_sub_sections",
+      "target": "file_src_features_pages_home_page_sub_sections_scroll_indicator_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_hooks",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_hooks",
+      "target": "file_src_hooks_use_client_ready_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_hooks",
+      "target": "file_src_hooks_use_debounced_value_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_hooks",
+      "target": "file_src_hooks_use_graphify_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_hooks",
+      "target": "file_src_hooks_use_mobile_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_hooks",
+      "target": "file_src_hooks_use_session_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_hooks",
+      "target": "file_src_hooks_usetodos_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_lib",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_lib",
+      "target": "file_src_lib_api_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_lib",
+      "target": "file_src_lib_auth_routes_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_lib",
+      "target": "file_src_lib_category_icons_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_lib",
+      "target": "file_src_lib_dev_route_log_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_lib",
+      "target": "file_src_lib_format_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_lib",
+      "target": "file_src_lib_graphify_context_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_lib",
+      "target": "file_src_lib_public_posts_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_lib",
+      "target": "file_src_lib_scroll_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_lib",
+      "target": "file_src_lib_storage_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_lib",
+      "target": "file_src_lib_utils_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_providers",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_providers",
+      "target": "file_src_providers_query_provider_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "file_src_proxy_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_types",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_types",
+      "target": "file_src_types_todo_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "file_src_app__public__layout_tsx",
+      "target": "file_src_app__public__page_tsx",
+      "relation": "renders"
+    },
+    {
+      "source": "file_src_app_graph_layout_tsx",
+      "target": "file_src_app_graph_page_tsx",
+      "relation": "renders"
+    },
+    {
+      "source": "file_src_app__public__bai_viet_page_tsx",
+      "target": "file_src_lib_dev_route_log_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__public__bai_viet_page_tsx",
+      "target": "file_src_lib_public_posts_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__public__bai_viet__slug__page_tsx",
+      "target": "file_src_lib_dev_route_log_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__public__bai_viet__slug__page_tsx",
+      "target": "file_src_lib_public_posts_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__public__bai_viet__slug__page_tsx",
+      "target": "file_src_components_shared_post_content_renderer_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__public__bai_viet__slug__page_tsx",
+      "target": "file_src_components_shared_public_post_view_badge_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__public__layout_tsx",
+      "target": "file_src_components_shared_header_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__public__layout_tsx",
+      "target": "file_src_components_shared_footer_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__public__layout_tsx",
+      "target": "file_src_providers_query_provider_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__public__layout_tsx",
+      "target": "file_src_components_shared_scroll_to_top_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__public__layout_tsx",
+      "target": "file_src_components_shared_store_auth_gate_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__public__lien_he_page_tsx",
+      "target": "file_src_features_pages_home_page_sub_sections_contact_section_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__public__login_page_tsx",
+      "target": "file_src_features_auth_admin_bridge_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__public__page_tsx",
+      "target": "dir_src_features_pages_home_page",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__public__register_page_tsx",
+      "target": "file_src_features_auth_admin_bridge_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app__public__ve_chung_toi_page_tsx",
+      "target": "dir_src_features_pages_about_page",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_api_graphify_route_ts",
+      "target": "file_src_lib_graphify_context_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_graph_loading_tsx",
+      "target": "file_src_components_shared_route_loading_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_graph_page_tsx",
+      "target": "file_src_hooks_use_graphify_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_graph_page_tsx",
+      "target": "file_src_lib_graphify_context_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_graph_page_tsx",
+      "target": "file_src_components_graphify_force_graph_3d_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_graph_page_tsx",
+      "target": "dir_public",
+      "relation": "assets"
+    },
+    {
+      "source": "file_src_components_graphify_force_graph_3d_tsx",
+      "target": "file_src_lib_graphify_context_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_shared_footer_tsx",
+      "target": "file_src_components_icons_logo_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_shared_footer_tsx",
+      "target": "dir_public",
+      "relation": "assets"
+    },
+    {
+      "source": "file_src_components_shared_header_tsx",
+      "target": "file_src_features_auth_admin_bridge_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_shared_header_tsx",
+      "target": "file_src_components_icons_logo_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_shared_header_tsx",
+      "target": "dir_public",
+      "relation": "assets"
+    },
+    {
+      "source": "file_src_components_shared_scroll_to_top_tsx",
+      "target": "file_src_lib_scroll_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_shared_store_auth_gate_tsx",
+      "target": "file_src_hooks_use_session_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_shared_store_auth_gate_tsx",
+      "target": "file_src_hooks_use_client_ready_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_shared_store_auth_gate_tsx",
+      "target": "file_src_lib_auth_routes_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_features_pages_about_page_about_client_tsx",
+      "target": "file_src_features_pages_about_page_sub_sections_overview_section_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_features_pages_about_page_about_client_tsx",
+      "target": "file_src_features_pages_about_page_sub_sections_about_hub_section_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_features_pages_about_page_about_client_tsx",
+      "target": "file_src_features_pages_about_page_sub_sections_history_section_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_features_pages_about_page_about_client_tsx",
+      "target": "file_src_features_pages_about_page_sub_sections_vision_mission_section_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_features_pages_about_page_about_client_tsx",
+      "target": "file_src_features_pages_about_page_sub_sections_core_values_section_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_features_pages_about_page_about_client_tsx",
+      "target": "file_src_features_pages_about_page_sub_sections_education_philosophy_section_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_features_pages_about_page_about_client_tsx",
+      "target": "file_src_features_pages_about_page_sub_sections_organization_structure_section_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_features_pages_about_page_about_client_tsx",
+      "target": "file_src_features_pages_about_page_sub_sections_departments_section_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_features_pages_about_page_about_client_tsx",
+      "target": "file_src_features_pages_about_page_sub_sections_facilities_section_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_features_pages_about_page_about_client_tsx",
+      "target": "file_src_features_pages_about_page_sub_sections_faculty_scientists_section_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_features_pages_about_page_about_client_tsx",
+      "target": "file_src_features_pages_about_page_sub_sections_leaders_section_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_features_pages_about_page_about_tsx",
+      "target": "file_src_features_pages_about_page_about_client_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_features_pages_about_page_index_ts",
+      "target": "dir_src_features_pages_about_page_sub_sections",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_features_pages_about_page_sub_sections_core_values_section_tsx",
+      "target": "file_src_features_pages_about_page_utils_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_features_pages_about_page_sub_sections_core_values_section_tsx",
+      "target": "file_src_features_pages_about_page_constants_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_features_pages_about_page_sub_sections_departments_section_tsx",
+      "target": "file_src_features_pages_about_page_constants_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_features_pages_about_page_sub_sections_education_philosophy_section_tsx",
+      "target": "file_src_features_pages_about_page_utils_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_features_pages_about_page_sub_sections_education_philosophy_section_tsx",
+      "target": "file_src_features_pages_about_page_constants_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_features_pages_about_page_sub_sections_facilities_section_tsx",
+      "target": "file_src_features_pages_about_page_constants_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_features_pages_about_page_sub_sections_history_section_tsx",
+      "target": "file_src_features_pages_about_page_constants_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_features_pages_about_page_sub_sections_index_ts",
+      "target": "file_src_features_pages_about_page_about_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_features_pages_about_page_sub_sections_index_ts",
+      "target": "file_src_features_pages_about_page_about_client_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_features_pages_about_page_sub_sections_leaders_section_tsx",
+      "target": "file_src_features_pages_about_page_constants_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_features_pages_home_page_constants_ts",
+      "target": "file_src_features_auth_admin_bridge_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_features_pages_home_page_data_tsx",
+      "target": "file_src_features_pages_home_page_constants_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_features_pages_home_page_home_client_tsx",
+      "target": "file_src_features_pages_home_page_sub_sections_hero_section_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_features_pages_home_page_home_client_tsx",
+      "target": "file_src_features_pages_home_page_data_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_features_pages_home_page_home_client_tsx",
+      "target": "file_src_features_pages_home_page_sub_sections_about_hub_section_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_features_pages_home_page_home_client_tsx",
+      "target": "file_src_features_pages_home_page_sub_sections_overview_section_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_features_pages_home_page_home_client_tsx",
+      "target": "file_src_features_pages_home_page_sub_sections_guide_register_section_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_features_pages_home_page_home_client_tsx",
+      "target": "file_src_features_pages_home_page_sub_sections_contact_section_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_features_pages_home_page_home_tsx",
+      "target": "file_src_features_pages_home_page_home_client_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_features_pages_home_page_index_ts",
+      "target": "file_src_features_pages_home_page_home_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_features_pages_home_page_index_ts",
+      "target": "file_src_features_pages_home_page_home_client_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_features_pages_home_page_index_ts",
+      "target": "file_src_features_pages_home_page_data_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_features_pages_home_page_index_ts",
+      "target": "dir_src_features_pages_home_page_sub_sections",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_features_pages_home_page_sub_sections_about_hub_section_tsx",
+      "target": "file_src_features_pages_home_page_constants_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_features_pages_home_page_sub_sections_about_hub_section_tsx",
+      "target": "file_src_features_pages_home_page_sub_sections_scroll_indicator_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_features_pages_home_page_sub_sections_contact_section_tsx",
+      "target": "file_src_lib_api_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_features_pages_home_page_sub_sections_featured_posts_section_tsx",
+      "target": "file_src_features_pages_home_page_constants_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_features_pages_home_page_sub_sections_guide_register_section_tsx",
+      "target": "file_src_features_pages_home_page_constants_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_features_pages_home_page_sub_sections_guide_register_section_tsx",
+      "target": "file_src_features_pages_home_page_sub_sections_scroll_indicator_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_features_pages_home_page_sub_sections_hero_section_tsx",
+      "target": "file_src_features_pages_home_page_sub_sections_content_card_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_features_pages_home_page_sub_sections_hero_section_tsx",
+      "target": "file_src_features_auth_admin_bridge_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_features_pages_home_page_sub_sections_hero_section_tsx",
+      "target": "file_src_features_pages_home_page_sub_sections_scroll_indicator_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_features_pages_home_page_sub_sections_index_ts",
+      "target": "file_src_features_pages_home_page_sub_sections_hero_section_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_features_pages_home_page_sub_sections_index_ts",
+      "target": "file_src_features_pages_home_page_sub_sections_about_hub_section_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_features_pages_home_page_sub_sections_index_ts",
+      "target": "file_src_features_pages_home_page_sub_sections_overview_section_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_features_pages_home_page_sub_sections_index_ts",
+      "target": "file_src_features_pages_home_page_sub_sections_guide_register_section_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_features_pages_home_page_sub_sections_index_ts",
+      "target": "file_src_features_pages_home_page_sub_sections_featured_posts_section_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_features_pages_home_page_sub_sections_index_ts",
+      "target": "file_src_features_pages_home_page_sub_sections_contact_section_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_features_pages_home_page_sub_sections_index_ts",
+      "target": "file_src_features_pages_home_page_sub_sections_scroll_indicator_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_features_pages_home_page_sub_sections_index_ts",
+      "target": "file_src_features_pages_home_page_sub_sections_content_card_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_features_pages_home_page_sub_sections_overview_section_tsx",
+      "target": "file_src_features_pages_home_page_sub_sections_scroll_indicator_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_features_pages_home_page_sub_sections_scroll_indicator_tsx",
+      "target": "file_src_lib_scroll_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_hooks_use_graphify_ts",
+      "target": "file_src_lib_graphify_context_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_hooks_usetodos_ts",
+      "target": "file_src_types_todo_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_hooks_usetodos_ts",
+      "target": "file_src_lib_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_hooks_usetodos_ts",
+      "target": "file_src_lib_storage_ts",
+      "relation": "imports"
+    }
+  ]
+}

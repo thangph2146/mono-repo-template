@@ -37,21 +37,30 @@ export class DatabaseHttpExceptionFilter
     const requestBody = this.safeJson(req?.body ?? {});
 
     if (exception instanceof Error) {
-      const err = exception as any;
-      const code = err.code || err.driverError?.code || err.sqlState;
+      const extra = exception as Error & Record<string, unknown>;
+      const driverError = extra.driverError;
+      const drvCode =
+        driverError !== null &&
+        driverError !== undefined &&
+        typeof driverError === 'object' &&
+        'code' in driverError
+          ? (driverError as { code?: unknown }).code
+          : undefined;
+      const code = extra.code ?? drvCode ?? extra.sqlState;
 
       let message = '';
+      const lowerMsg = exception.message.toLowerCase();
       if (
         code === 'ER_DUP_ENTRY' ||
         code === '23505' ||
-        err.message?.toLowerCase().includes('unique constraint')
+        lowerMsg.includes('unique constraint')
       ) {
         message =
           'Giá trị này đã tồn tại (trùng dữ liệu). Vui lòng chọn giá trị khác.';
       } else if (
         code === 'ER_ROW_IS_REFERENCED_2' ||
         code === '23503' ||
-        err.message?.toLowerCase().includes('foreign key constraint')
+        lowerMsg.includes('foreign key constraint')
       ) {
         message = 'Tham chiếu không hợp lệ. Kiểm tra dữ liệu liên quan.';
       }
@@ -62,9 +71,9 @@ export class DatabaseHttpExceptionFilter
           JSON.stringify(
             {
               code,
-              error: err.message,
-              sql: err.sql,
-              sqlMessage: err.sqlMessage,
+              error: exception.message,
+              sql: extra.sql,
+              sqlMessage: extra.sqlMessage,
               query,
               body: requestBody,
             },
@@ -147,17 +156,17 @@ export class DatabaseHttpExceptionFilter
       return { raw: this.safeJson(exception) };
     }
 
-    const err = exception as any;
+    const extra = exception as Error & Record<string, unknown>;
     return {
       name: exception.name,
       message: exception.message,
-      code: err.code,
-      status: err.status ?? err.statusCode,
-      sqlState: err.sqlState,
-      sqlMessage: err.sqlMessage,
-      sql: err.sql,
-      driverError: err.driverError,
-      response: err.response,
+      code: extra.code,
+      status: extra.status ?? extra.statusCode,
+      sqlState: extra.sqlState,
+      sqlMessage: extra.sqlMessage,
+      sql: extra.sql,
+      driverError: extra.driverError,
+      response: extra.response,
       stack: exception.stack?.split('\n').slice(0, 20).join('\n'),
     };
   }

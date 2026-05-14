@@ -57,7 +57,7 @@ function getImportUserFallbackPasswordHash(): string {
       'ImportFallback#2026';
     importUserFallbackPasswordHash = hashSync(plain, 10);
   }
-  return importUserFallbackPasswordHash!;
+  return importUserFallbackPasswordHash;
 }
 
 const entityByModelName: Record<string, EntityName<any>> = {
@@ -376,10 +376,10 @@ export class SystemService {
   }
 
   async exportExcelData(modelName?: string): Promise<Buffer> {
-    const data = (await this.exportData(modelName)) as Record<string, Record<
+    const data = (await this.exportData(modelName)) as Record<
       string,
-      unknown
-    >[]>;
+      Record<string, unknown>[]
+    >;
     const workbook = new ExcelJS.Workbook();
     workbook.creator = 'HUB API';
     workbook.created = new Date();

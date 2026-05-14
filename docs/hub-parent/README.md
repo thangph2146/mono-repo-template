@@ -10,8 +10,8 @@ Thư mục này gom tài liệu Markdown để agent/AI đọc nhanh kiến trú
 
 ## Graphify theo service
 
-- `apps/frontend/.graphify/SUMMARY_FOR_AI.md`
-- `apps/backend/.graphify/SUMMARY_FOR_AI.md`
-- `apps/api/.graphify/SUMMARY_FOR_AI.md`
+- `apps/frontend/.graphify/markdown/SUMMARY_FOR_AI.md`
+- `apps/backend/.graphify/markdown/SUMMARY_FOR_AI.md`
+- `apps/api/.graphify/markdown/SUMMARY_FOR_AI.md`
 
-Ưu tiên đọc `SUMMARY_FOR_AI.md` trước, chỉ mở `context.json` khi cần trích đoạn cụ thể.
+Ưu tiên đọc `markdown/SUMMARY_FOR_AI.md` trước, chỉ mở `snapshot/context.json` khi cần trích đoạn cụ thể.

@@ -30,7 +30,7 @@ export const UNORDERED_LIST: ElementTransformer = {
     return output.join("\n")
   },
   regExp: /^(\s*)([*+-])\s/,
-  replace: (parentNode, _children, match, isImport) => {
+  replace: (parentNode, _children, match, _isImport) => {
     const marker = match[2]
     const list = $createListWithColorNode("bullet")
 

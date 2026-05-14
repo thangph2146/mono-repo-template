@@ -1,0 +1,21 @@
+{
+  "generatedAt": "2026-05-14T01:55:49.148Z",
+  "projectRoot": "C:/HUB/source/hub-parent-template",
+  "summary": {
+    "totalFiles": 2,
+    "clientComponents": 0,
+    "pages": [],
+    "layouts": [],
+    "apiRoutes": []
+  },
+  "files": {
+    "tsconfig.json": {
+      "type": "config",
+      "content": "{\r\n  \"extends\": \"@workspace/typescript-config/base.json\"\r\n}\r\n\r\n"
+    },
+    "package.json": {
+      "type": "config",
+      "content": "{\r\n  \"name\": \"hub-parent-template\",\r\n  \"version\": \"0.0.1\",\r\n  \"private\": true,\r\n  \"scripts\": {\r\n    \"build\": \"turbo build\",\r\n    \"dev\": \"turbo dev\",\r\n    \"predev\": \"pnpm kill\",\r\n    \"dev:fresh\": \"pnpm kill && turbo dev\",\r\n    \"kill\": \"node scripts/kill-ports.mjs 3000 3001 3002 3100 3101\",\r\n    \"kill:web\": \"node scripts/kill-ports.mjs 3000 3001 3100 3101\",\r\n    \"kill:api\": \"node scripts/kill-ports.mjs 3002\",\r\n    \"lint\": \"turbo lint\",\r\n    \"graphify:ai-summary\": \"node scripts/graphify-ai-summary.mjs\",\r\n    \"verify:bounds\": \"node scripts/verify-service-boundaries.mjs\",\r\n    \"check\": \"pnpm verify:bounds && pnpm lint && pnpm typecheck\",\r\n    \"check:full\": \"pnpm verify:bounds && pnpm lint && pnpm typecheck && pnpm graphify:ai-summary\",\r\n    \"format\": \"turbo format\",\r\n    \"typecheck\": \"turbo typecheck\",\r\n    \"api\": \"pnpm --filter @api\",\r\n    \"db\": \"pnpm --filter @api exec mikro-orm\",\r\n    \"db:fresh\": \"pnpm --filter @api run db:fresh\",\r\n    \"db:migration:fresh\": \"pnpm --filter @api run db:migration:fresh\",\r\n    \"db:seed\": \"pnpm --filter @api run db:seed\"\r\n  },\r\n  \"devDependencies\": {\r\n    \"@workspace/eslint-config\": \"workspace:*\",\r\n    \"@workspace/typescript-config\": \"workspace:*\",\r\n    \"prettier\": \"^3.8.1\",\r\n    \"prettier-plugin-tailwindcss\": \"^0.7.2\",\r\n    \"turbo\": \"^2.8.17\",\r\n    \"typescript\": \"5.9.3\"\r\n  },\r\n  \"packageManager\": \"pnpm@9.15.9\",\r\n  \"engines\": {\r\n    \"node\": \">=20\"\r\n  }\r\n}\r\n"
+    }
+  }
+}

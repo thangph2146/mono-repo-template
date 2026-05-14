@@ -1,26 +1,36 @@
-# Graphify — `@frontend` (store-sync)
+# Graphify — `@frontend` (Hub storefront)
 
-Thư mục này phục vụ **đồ thị / ngữ cảnh codebase** cho người và cho AI. Trong monorepo, **mỗi app giữ `.graphify` riêng** — không gộp với `@backend` hay `@api`.
+Thư mục **`apps/frontend/.graphify/`** chứa artefact Graphify cho storefront Next (HUB công khai).
+
+- **`markdown/`** — mọi `.md` sinh bởi `pnpm graphify:ai-summary` (đúng scope app).
+- **`snapshot/`** — `context.json` + `graph.json` từ `update.cjs` (JSON nặng, tránh mở bừa).
+
+## File Markdown sinh (`pnpm graphify:ai-summary`)
+
+| File | Mục đích |
+|------|----------|
+| `markdown/SUMMARY_FOR_AI.md` | Routes, module map, import/export (từ `../snapshot/context.json`). |
+| `markdown/FOLDER_TREE.md` | Cây thư mục `src/` từ `../snapshot/graph.json`. |
+| `markdown/GRAPH_STATS.md` | Quy mô graph, top in/out-degree. |
 
 ## Thứ tự đọc cho AI (ưu tiên)
 
-1. **`SUMMARY_FOR_AI.md`** — bản gọn: routes, bảng import/export, không nhúng full source.
-2. **`context.json`** — đầy đủ (có `content` từng file): chỉ dùng khi cần trích đoạn cụ thể; rất tốn ngữ cảnh.
-3. **`graph.json`** — nút/cạnh cho visualization hoặc công cụ graphifyy.
-4. **`GRAPH_REPORT.md`** — báo cáo community từ graphifyy; **cần chạy lại graphify** nếu số liệu không khớp repo hiện tại.
-5. **`cache/`** — cache nội bộ; **không** dùng làm nguồn hiểu kiến trúc.
+1. **`markdown/SUMMARY_FOR_AI.md`** — định vị nhanh; không nhúng full source.
+2. **`markdown/FOLDER_TREE.md`**, **`markdown/GRAPH_STATS.md`** — cấu trúc + điểm nóng import.
+3. **[Chỉ mục monorepo + chỉ dẫn theo chủ đề](../../../.graphify/markdown/SUMMARY_FOR_AI.md)** — khi cần liên kết sang `packages/` hoặc app khác.
+4. **`snapshot/context.json`** — chỉ khi cần trích đoạn (file lớn).
+5. **`snapshot/graph.json`**, **`GRAPH_REPORT.md`**, **`cache/`** — visualization / cache; `cache/` không dùng làm nguồn hiểu business.
 
 ## Làm mới dữ liệu
 
-- Script local: `update.cjs` (đồ thị tùy biến trong repo).
-- Hoặc CLI [graphifyy](https://www.npmjs.com/package/graphifyy) theo skill `/graphify`.
-- Sau khi có `context.json` mới, từ **root monorepo**:
+```bash
+# từ thư mục app (hoặc dùng đường dẫn đầy đủ từ root monorepo)
+node .graphify/update.cjs
+pnpm graphify:ai-summary
+```
 
-  ```bash
-  pnpm graphify:ai-summary
-  ```
+## Monorepo
 
-## Lưu ý
-
-- **`manifest.json`** chỉ lưu mtime theo đường dẫn tuyệt đối; nếu lệch project, xoá hoặc để `{}` rồi chạy lại công cụ sinh graph.
-- **API Nest** (`apps/api`) có `.graphify` riêng + `SUMMARY_FOR_AI.md` — không trộn với repo này.
+- **Chỉ mục gốc:** `../../../.graphify/markdown/SUMMARY_FOR_AI.md`
+- **Packages:** `../../../packages/.graphify/` (`README.md`, `markdown/SUMMARY_FOR_AI.md`, `markdown/WORKSPACE_DEPS.md`)
+- **API Nest:** `apps/api/.graphify/`

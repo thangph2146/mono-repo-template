@@ -1,4 +1,4 @@
-import type { ProductUnitType } from "@/lib/api";
+import type { ProductUnitType } from "@workspace/api-client";
 import { effectiveLineUnitPrice } from "@workspace/api-client";
 
 /**

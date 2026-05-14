@@ -33,7 +33,6 @@ export function LazyImage({
   src,
   width,
   height,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- prop reserved for future use
   maxWidth: _maxWidth,
   onError,
   fetchPriority = "auto",

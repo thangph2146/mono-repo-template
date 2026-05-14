@@ -78,7 +78,10 @@ export class LoggingInterceptor implements NestInterceptor {
         this.logSuccessBody &&
         sanitizedResponse !== undefined &&
         sanitizedResponse !== null
-          ? ['│  response:', ...this.formatBodyLines(sanitizedResponse, this.responseMaxLen)]
+          ? [
+              '│  response:',
+              ...this.formatBodyLines(sanitizedResponse, this.responseMaxLen),
+            ]
           : [];
       this.logger.log(
         `\n┌── RESPONSE ${statusIcon} ${status} ${apiTag} ── ${duration}ms ── size:${responseSize} ── req:${requestId}\n` +
@@ -290,7 +293,6 @@ export class LoggingInterceptor implements NestInterceptor {
       }
     }
     // Primitive only at this point (object handled above)
-    // eslint-disable-next-line @typescript-eslint/no-base-to-string -- value narrowed to primitive
     return typeof value === 'symbol' ? value.toString() : String(value);
   }
 
@@ -311,8 +313,7 @@ export class LoggingInterceptor implements NestInterceptor {
           ? JSON.stringify(value, null, 2)
           : typeof value === 'symbol'
             ? value.toString()
-            : // eslint-disable-next-line @typescript-eslint/no-base-to-string -- primitive after object/symbol check
-              String(value);
+            : String(value);
       const str =
         maxLen > 0 && raw.length > maxLen ? `${raw.slice(0, maxLen)}...` : raw;
       const lines = str.split('\n');

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Button } from "@ui/components/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@ui/components/card";
 import { PageSection } from "@ui/components/layout";
+import { TypographyH1 } from "@ui/components/typography";
 import {
   ADMIN_PAGE_SUBTITLE_CLASS,
   ADMIN_PAGE_TITLE_ICON_CLASS,
@@ -22,10 +23,10 @@ export function ApiScopeNotice(props: {
   return (
     <PageSection max="full" className="min-w-0 space-y-6">
       <div>
-        <h1 className={ADMIN_PAGE_TITLE_PRIMARY_CLASS}>
+        <TypographyH1 className={ADMIN_PAGE_TITLE_PRIMARY_CLASS}>
           <Icon className={ADMIN_PAGE_TITLE_ICON_CLASS} aria-hidden />
           {props.title}
-        </h1>
+        </TypographyH1>
         <p className={ADMIN_PAGE_SUBTITLE_CLASS}>{props.subtitle}</p>
       </div>
 

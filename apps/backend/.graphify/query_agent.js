@@ -1,7 +1,7 @@
 const fs = require('fs');
 const Graph = require('graphology');
 
-const data = JSON.parse(fs.readFileSync('./.graphify/graph.json', 'utf-8'));
+const data = JSON.parse(fs.readFileSync('./.graphify/snapshot/graph.json', 'utf-8'));
 const G = new Graph({type: 'undirected'});
 for (const n of data.nodes) { const {id, ...a} = n; G.mergeNode(id, a); }
 for (const l of data.links) { const {source, target, ...a} = l; if (G.hasNode(source) && G.hasNode(target)) try { G.mergeEdge(source, target, a); } catch {} }

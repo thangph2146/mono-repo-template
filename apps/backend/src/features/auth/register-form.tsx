@@ -3,15 +3,9 @@
 import { FormEvent, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Eye, EyeOff, MailPlus, ShieldCheck, Smartphone, UserRound } from "lucide-react";
+import { Eye, EyeOff, MailPlus, Smartphone } from "lucide-react";
 import { Button } from "@ui/components/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@ui/components/card";
+import { Card, CardContent } from "@ui/components/card";
 import {
   Field,
   FieldDescription,
@@ -22,6 +16,7 @@ import {
 } from "@ui/components/field";
 import { Input } from "@ui/components/input";
 import { PointerHighlight } from "@ui/components/pointer-highlight";
+import { TypographyH2 } from "@ui/components/typography";
 import { toast } from "sonner";
 import { AUTH_LOGIN_PATH } from "@/lib/auth-routes";
 import { registerAccount } from "./auth-api";
@@ -107,9 +102,9 @@ export function RegisterForm() {
             <form onSubmit={handleSubmit} className="p-6 md:p-8 lg:p-10">
               <FieldGroup className="gap-4">
                 <div className="flex flex-col items-center justify-center gap-4 text-center">
-                  <h2 className="text-2xl font-bold text-secondary sm:text-xl md:text-3xl lg:text-3xl">
+                  <TypographyH2 className="text-2xl font-bold text-secondary sm:text-xl md:text-3xl lg:text-3xl">
                     Đăng ký hệ thống
-                  </h2>
+                  </TypographyH2>
                   <div className="flex flex-col items-center gap-1">
                     <PointerHighlight>
                       <p className="relative z-10 text-xl font-bold uppercase tracking-tight text-primary sm:text-sm md:text-2xl">
@@ -117,7 +112,7 @@ export function RegisterForm() {
                       </p>
                     </PointerHighlight>
                     <p className="text-xs font-medium italic text-muted-foreground sm:text-sm md:text-sm">
-                      "Nắm bắt hành trình của con, an tâm tương lai vững chắc"
+                      &ldquo;Nắm bắt hành trình của con, an tâm tương lai vững chắc&rdquo;
                     </p>
                   </div>
                 </div>

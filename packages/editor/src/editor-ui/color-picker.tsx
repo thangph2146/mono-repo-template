@@ -1962,7 +1962,7 @@ function ColorPickerPresets(props: ColorPickerPresetsProps) {
       {...presetProps}
       className={cn("editor-color-presets", className)}
     >
-      {colorPresets.map((preset, index) => (
+      {colorPresets.map((preset, _index) => (
         <Button
           key={`${preset.value}-${"alpha" in preset ? preset.alpha : 1}`}
           type="button"

@@ -163,7 +163,10 @@ export class SystemController {
         'Content-Type',
         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
       );
-      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+      res.setHeader(
+        'Content-Disposition',
+        `attachment; filename="${filename}"`,
+      );
       return res.status(200).send(buffer);
     } catch (error) {
       this.logApiError('GET /api/admin/system/export/excel', error, { model });

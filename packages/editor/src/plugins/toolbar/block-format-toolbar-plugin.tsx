@@ -116,7 +116,7 @@ export function BlockFormatDropDown({
         } else {
           setBlockType("paragraph")
         }
-      } catch (error) {
+      } catch {
         // If any error occurs, reset to paragraph
         setBlockType("paragraph")
       }

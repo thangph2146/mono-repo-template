@@ -21,7 +21,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@ui/components/pagination";
-import { Heading, Text } from "@ui/components/typography";
+import { Text } from "@ui/components/typography";
 import {
   STORE_CONTAINER_INSET,
   STORE_CONTAINER_MAX_DEFAULT,
@@ -241,19 +241,23 @@ export default async function PostsPage({
               {posts.length > 0 ? (
                 <>
                   <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                    {posts.map((post) => {
+                    {posts.map((post, postIndex) => {
                       const primaryCategory = post.categories[0]?.category;
                       const publishedDate = formatPostDate(post.publishedAt);
 
                       return (
-                        <Card key={post.id} className="rounded-lg">
+                        <Card key={post.id} className="overflow-hidden rounded-lg">
                           {post.image?.trim() ? (
-                            <img
-                              src={post.image}
-                              alt={post.title}
-                              className="h-44 w-full object-cover"
-                              loading="lazy"
-                            />
+                            <div className="relative aspect-[16/9] w-full bg-muted">
+                              <img
+                                src={post.image}
+                                alt={post.title}
+                                className="absolute inset-0 h-full w-full object-cover"
+                                loading={postIndex < 3 ? "eager" : "lazy"}
+                                decoding="async"
+                                sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
+                              />
+                            </div>
                           ) : null}
                           <CardHeader className="space-y-3">
                             <div className="flex flex-wrap items-center gap-2">

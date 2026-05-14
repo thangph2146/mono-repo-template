@@ -124,6 +124,14 @@ function extractAttribute(tag: string, attribute: string): string {
   return "";
 }
 
+/** Thêm lazy/async cho <img> trong HTML legacy (tránh tải hàng loạt ảnh dưới fold). */
+function addLazyLoadingToHtmlImages(html: string): string {
+  return html.replace(/<img\b([^>]*?)>/gi, (full, inner: string) => {
+    if (/\bloading\s*=/i.test(inner)) return full;
+    return `<img${inner} decoding="async" loading="lazy">`;
+  });
+}
+
 function collectHtmlImages(html: string): LightboxImage[] {
   const matches = html.match(/<img\b[^>]*>/gi) ?? [];
 
@@ -229,10 +237,11 @@ function renderSerializedNodes(
             options,
             `${key}-inline-${paragraphIndex}`,
           );
+          /* Không dùng <p>: buffer “inline” có thể chứa node mặc định → <div>, gây <p><div> không hợp lệ và hydration lỗi. */
           paragraphBlocks.push(
-            <p key={`${key}-p-${paragraphIndex}`} dir={node.direction ?? undefined} className="leading-7">
+            <div key={`${key}-p-${paragraphIndex}`} dir={node.direction ?? undefined} className="leading-7">
               {inlineNodes.length > 0 ? inlineNodes : <br />}
-            </p>,
+            </div>,
           );
           inlineBuffer = [];
           paragraphIndex += 1;
@@ -264,9 +273,9 @@ function renderSerializedNodes(
 
         if (paragraphBlocks.length === 0) {
           return (
-            <p key={key} dir={node.direction ?? undefined} className="leading-7">
+            <div key={key} dir={node.direction ?? undefined} className="leading-7">
               <br />
-            </p>
+            </div>
           );
         }
 
@@ -362,6 +371,8 @@ function renderSerializedNodes(
                 alt={imageAlt}
                 title={imageAlt}
                 className="h-auto max-w-full rounded-lg"
+                loading="lazy"
+                decoding="async"
               />
             </button>
             {imageCaption ? (
@@ -396,6 +407,10 @@ export function PostContentRenderer({ content }: { content?: unknown | null }) {
   );
   const htmlImages = useMemo(
     () => (htmlContent && /<[^>]+>/.test(htmlContent) ? collectHtmlImages(htmlContent) : []),
+    [htmlContent],
+  );
+  const htmlContentWithLazyImages = useMemo(
+    () => (htmlContent && /<[^>]+>/.test(htmlContent) ? addLazyLoadingToHtmlImages(htmlContent) : htmlContent),
     [htmlContent],
   );
   const [serializedLightbox, setSerializedLightbox] = useState<null | {
@@ -459,7 +474,7 @@ export function PostContentRenderer({ content }: { content?: unknown | null }) {
 
   if (typeof content === "string") {
     if (!htmlContent) {
-      return <Text variant="body">Noi dung bai viet dang duoc cap nhat.</Text>;
+      return <Text variant="body">Nội dung bài viết đang được cập nhật.</Text>;
     }
     if (/<[^>]+>/.test(htmlContent)) {
       return (
@@ -467,7 +482,7 @@ export function PostContentRenderer({ content }: { content?: unknown | null }) {
           <div
             className="space-y-4 leading-7 text-foreground [&_img]:h-auto [&_img]:max-w-full [&_img]:cursor-zoom-in [&_img]:rounded-lg"
             onClick={handleHtmlImageClick}
-            dangerouslySetInnerHTML={{ __html: htmlContent }}
+            dangerouslySetInnerHTML={{ __html: htmlContentWithLazyImages }}
           />
           {htmlLightbox ? (
             <ImageLightboxDialog
@@ -487,5 +502,5 @@ export function PostContentRenderer({ content }: { content?: unknown | null }) {
     return <div className="whitespace-pre-wrap leading-7 text-foreground">{htmlContent}</div>;
   }
 
-  return <Text variant="body">Noi dung bai viet dang duoc cap nhat.</Text>;
+  return <Text variant="body">Nội dung bài viết đang được cập nhật.</Text>;
 }

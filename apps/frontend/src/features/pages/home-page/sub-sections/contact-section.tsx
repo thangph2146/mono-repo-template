@@ -1,15 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import {
-  LifeBuoy,
-  Mail,
-  MapPin,
-  Phone,
-  SendHorizonal,
-  ShieldCheck,
-  Zap,
-} from "lucide-react";
+import { Mail, MapPin, Phone, SendHorizonal } from "lucide-react";
 import { Button } from "@ui/components/button";
 import {
   Card,
@@ -56,27 +48,6 @@ const INITIAL_FORM: ContactFormState = {
   subject: "",
   content: "",
 };
-
-const supportHighlights = [
-  {
-    icon: LifeBuoy,
-    title: "Hỗ trợ nhanh",
-    description: "Tiếp nhận yêu cầu và phản hồi trong thời gian sớm nhất.",
-    tone: "bg-emerald-500/10 text-emerald-600",
-  },
-  {
-    icon: ShieldCheck,
-    title: "Theo dõi rõ ràng",
-    description: "Mỗi yêu cầu đều được ghi vào hệ thống để bộ phận phụ trách xử lý.",
-    tone: "bg-sky-500/10 text-sky-600",
-  },
-  {
-    icon: Zap,
-    title: "Biểu mẫu đơn giản",
-    description: "Điền đúng nội dung cần hỗ trợ để nhà trường phản hồi chính xác hơn.",
-    tone: "bg-violet-500/10 text-violet-600",
-  },
-] as const;
 
 const contactChannels = [
   {

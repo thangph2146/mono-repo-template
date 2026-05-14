@@ -41,6 +41,7 @@ import { PageSection } from "@ui/components/layout";
 import { Switch } from "@ui/components/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@ui/components/tabs";
 import { Textarea } from "@ui/components/textarea";
+import { TypographyH1 } from "@ui/components/typography";
 import {
   AlertCircle,
   Archive,
@@ -65,7 +66,7 @@ import { api } from "@/lib/api";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import {
   ADMIN_ALERT_DIALOG_CONTENT_CLASS,
-  ADMIN_DIALOG_CONTENT_CATEGORY_CLASS,
+  ADMIN_DIALOG_CONTENT_POST_CLASS,
   ADMIN_PAGE_SUBTITLE_CLASS,
   ADMIN_PAGE_TITLE_ICON_CLASS,
   ADMIN_PAGE_TITLE_PRIMARY_CLASS,
@@ -915,10 +916,10 @@ export default function PostsPage() {
     <PageSection max="full" className="min-w-0 space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className={ADMIN_PAGE_TITLE_PRIMARY_CLASS}>
+          <TypographyH1 className={ADMIN_PAGE_TITLE_PRIMARY_CLASS}>
             <FileText className={ADMIN_PAGE_TITLE_ICON_CLASS} aria-hidden />
             Bài viết
-          </h1>
+          </TypographyH1>
           <p className={ADMIN_PAGE_SUBTITLE_CLASS}>
             Quản lý bài viết truyền thông, gắn danh mục và thẻ dùng chung
           </p>
@@ -955,7 +956,7 @@ export default function PostsPage() {
               Thêm bài viết
             </DialogTrigger>
             <DialogContent
-              className={`${ADMIN_DIALOG_CONTENT_CATEGORY_CLASS} max-h-[90vh] overflow-hidden p-0`}
+              className={`${ADMIN_DIALOG_CONTENT_POST_CLASS} max-h-[90vh] overflow-hidden p-0`}
             >
               <DialogHeader className="border-b border-border/70 px-6 py-5">
                 <DialogTitle className="text-2xl font-extrabold">

@@ -137,7 +137,10 @@ export async function getPublicCategories(params?: { slug?: string }) {
 
 export async function getPublicPostBySlug(slug: string) {
   try {
-    return await fetchPublicApi<PublicPostDetail>(`/public/posts/${slug}`);
+    return await fetchPublicApi<PublicPostDetail>(
+      `/public/posts/${encodeURIComponent(slug)}`,
+      { track: "false" },
+    );
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     if (/not found/i.test(message)) return null;

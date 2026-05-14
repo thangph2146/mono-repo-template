@@ -19,8 +19,12 @@ export class Migration20260503150000 extends Migration {
       this.addSql(
         'create table `posts` (`id` varchar(36) not null, `title` varchar(255) not null, `content` json not null, `excerpt` varchar(255) null, `slug` varchar(255) not null, `image` varchar(255) null, `published` tinyint(1) not null default 0, `publishedAt` datetime null, `eventStartAt` datetime null, `eventEndAt` datetime null, `createdAt` datetime not null, `updatedAt` datetime not null, `deletedAt` datetime null, `authorId` varchar(255) not null, constraint `posts_authorId_foreign` foreign key(`authorId`) references `users`(`id`) on delete cascade on update cascade, primary key (`id`)) default character set utf8mb4 collate utf8mb4_unicode_ci engine = InnoDB;',
       );
-      this.addSql('create unique index `posts_slug_unique` on `posts` (`slug`);');
-      this.addSql('create index `posts_authorId_index` on `posts` (`authorId`);');
+      this.addSql(
+        'create unique index `posts_slug_unique` on `posts` (`slug`);',
+      );
+      this.addSql(
+        'create index `posts_authorId_index` on `posts` (`authorId`);',
+      );
     }
 
     if (!(await this.tableExists('post_tags'))) {

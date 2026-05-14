@@ -43,7 +43,6 @@ import { Switch } from "@ui/components/switch";
 import { Checkbox } from "@ui/components/checkbox";
 import {
   Card,
-  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
@@ -70,6 +69,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@ui/components/tabs";
+import { TypographyH1 } from "@ui/components/typography";
 import { AdminDataTable } from "@/components/admin-data-table";
 import { AdminTablePaginationFooter } from "@/components/admin-table-pagination-footer";
 import { AdminConfirmActionDialog } from "@/components/admin-confirm-action-dialog";
@@ -674,10 +674,10 @@ export default function StaffPage() {
   if (!canManageUsers) {
     return (
       <div className={ADMIN_PAGE_FORM_COLUMN_CLASS}>
-        <h1 className={ADMIN_PAGE_TITLE_FORM_CLASS}>
+        <TypographyH1 className={ADMIN_PAGE_TITLE_FORM_CLASS}>
           <Users className={ADMIN_PAGE_TITLE_ICON_SM_CLASS} aria-hidden />
           Nhân sự
-        </h1>
+        </TypographyH1>
         <Card className="border-destructive/30 bg-destructive/5">
           <CardHeader className="flex flex-row items-start gap-3 space-y-0">
             <AlertCircle className="size-5 text-destructive shrink-0 mt-0.5" />
@@ -1019,10 +1019,10 @@ export default function StaffPage() {
   return (
     <PageSection max="full" className="mx-auto min-w-0 space-y-6">
       <div>
-        <h1 className={ADMIN_PAGE_TITLE_PRIMARY_CLASS}>
+        <TypographyH1 className={ADMIN_PAGE_TITLE_PRIMARY_CLASS}>
           <Users className={ADMIN_PAGE_TITLE_ICON_CLASS} aria-hidden />
           Nhân sự
-        </h1>
+        </TypographyH1>
         <p className={cn(ADMIN_PAGE_SUBTITLE_CLASS, "sm:text-base")}>
           Quản lý tài khoản nội bộ, gán vai trò và theo dõi trạng thái hoạt động
           của từng nhân sự trong hệ thống.

@@ -41,7 +41,6 @@ import { Button } from "../ui/button"
 import { DialogFooter } from "../ui/dialog"
 import { Input } from "../ui/input"
 import { Label } from "../ui/label"
-import { Flex } from "../ui/flex"
 import {
   Tabs,
   TabsContent,
@@ -75,11 +74,6 @@ export function InsertImageUriDialogBody({
   const [altText, setAltText] = useState(initialAltText)
   const normalizedSrc = src.trim()
   const canPreview = /^https?:\/\//i.test(normalizedSrc) || normalizedSrc.startsWith("/api/uploads")
-
-  useEffect(() => {
-    setSrc(initialSrc)
-    setAltText(initialAltText)
-  }, [initialAltText, initialSrc])
 
   const isDisabled = src === ""
 
@@ -151,12 +145,6 @@ export function InsertImageUploadedDialogBody({
   const [src, setSrc] = useState(initialSrc.startsWith("data:") ? initialSrc : "")
   const [altText, setAltText] = useState(initialAltText)
   const [uploadError, setUploadError] = useState("")
-
-  useEffect(() => {
-    setSrc(initialSrc.startsWith("data:") ? initialSrc : "")
-    setAltText(initialAltText)
-    setUploadError("")
-  }, [initialAltText, initialSrc])
 
   const isDisabled = src === ""
 

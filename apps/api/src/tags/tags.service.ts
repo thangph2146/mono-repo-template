@@ -197,7 +197,8 @@ export class TagsService {
     if (!ids.length) return { affected: 0, message: 'Không có bản ghi nào' };
 
     const trimmedIds = ids.map((x) => String(x).trim()).filter(Boolean);
-    if (!trimmedIds.length) return { affected: 0, message: 'Không có bản ghi nào' };
+    if (!trimmedIds.length)
+      return { affected: 0, message: 'Không có bản ghi nào' };
 
     if (action === 'delete') {
       const result = await this.em.nativeUpdate(

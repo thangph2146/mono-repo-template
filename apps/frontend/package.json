@@ -23,6 +23,7 @@
     "@thangph2146/lexical-editor": "workspace:*",
     "@ui": "workspace:*",
     "@workspace/api-client": "workspace:*",
+    "@workspace/query-client": "workspace:*",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",

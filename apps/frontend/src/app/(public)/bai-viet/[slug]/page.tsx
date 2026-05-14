@@ -1,12 +1,9 @@
 import type { Metadata } from "next";
-import { CalendarDays, Eye } from "lucide-react";
-import Link from "next/link";
+import { CalendarDays } from "lucide-react";
 import { notFound } from "next/navigation";
 import { Badge } from "@ui/components/badge";
-import { Button } from "@ui/components/button";
-import { Card, CardContent } from "@ui/components/card";
 import { Container, Page, PageContent } from "@ui/components/layout";
-import { Heading, Text } from "@ui/components/typography";
+import { Heading } from "@ui/components/typography";
 import {
   STORE_CONTAINER_INSET,
   STORE_CONTAINER_MAX_DEFAULT,
@@ -15,6 +12,7 @@ import {
 import { logDevRouteHit } from "@/lib/dev-route-log";
 import { formatPostDate, getPublicPostBySlug } from "@/lib/public-posts";
 import { PostContentRenderer } from "@/components/shared/post-content-renderer";
+import { PublicPostViewBadge } from "@/components/shared/public-post-view-badge";
 
 export const metadata: Metadata = {
   title: "Chi tiết bài viết",
@@ -54,10 +52,7 @@ export default async function PostDetailPage({ params }: Props) {
                 {publishedDate}
               </span>
             ) : null}
-            <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
-              <Eye className="size-3.5" />
-              {post.viewCount} luot xem
-            </span>
+            <PublicPostViewBadge slug={post.slug} initialCount={post.viewCount} />
           </div>
           <Heading as="h1" size="section">
             {post.title}

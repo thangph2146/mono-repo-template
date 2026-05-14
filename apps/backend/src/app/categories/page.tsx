@@ -24,6 +24,7 @@ import {
   DialogTrigger,
 } from "@ui/components/dialog";
 import { PageSection } from "@ui/components/layout";
+import { TypographyH1 } from "@ui/components/typography";
 import {
   Select,
   SelectContent,
@@ -37,7 +38,6 @@ import {
   ArchiveRestore,
   FilterX,
   Info,
-  Loader2,
   Plus,
   Pencil,
   RefreshCw,
@@ -641,10 +641,10 @@ export default function CategoriesPage() {
     <PageSection max="full" className="min-w-0 space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className={ADMIN_PAGE_TITLE_PRIMARY_CLASS}>
+          <TypographyH1 className={ADMIN_PAGE_TITLE_PRIMARY_CLASS}>
             <Tags className={ADMIN_PAGE_TITLE_ICON_CLASS} aria-hidden />
             Danh mục dùng chung
-          </h1>
+          </TypographyH1>
           <p className={ADMIN_PAGE_SUBTITLE_CLASS}>
             Quản lý taxonomy dùng chung để gắn cho bài viết, thẻ và các nội dung truyền thông
           </p>

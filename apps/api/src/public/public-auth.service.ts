@@ -52,7 +52,9 @@ export class PublicAuthService {
 
     const existing = await this.em.findOne(User, { email });
     if (existing) {
-      throw new Error('Email đã tồn tại. Vui lòng dùng email khác hoặc đăng nhập.');
+      throw new Error(
+        'Email đã tồn tại. Vui lòng dùng email khác hoặc đăng nhập.',
+      );
     }
 
     const parentRole = await this.ensureDefaultParentRole();
@@ -68,7 +70,9 @@ export class PublicAuthService {
 
     const payload = await this.authService.getAuthPayloadByUserId(created.id);
     if (!payload) {
-      throw new Error('Đăng ký thành công nhưng chưa thể khởi tạo phiên đăng nhập.');
+      throw new Error(
+        'Đăng ký thành công nhưng chưa thể khởi tạo phiên đăng nhập.',
+      );
     }
 
     return payload;

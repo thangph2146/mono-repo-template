@@ -11,10 +11,6 @@ import { Dispatch, JSX, useCallback, useEffect, useRef, useState } from "react"
 import * as React from "react"
 import { $isCodeHighlightNode } from "@lexical/code"
 import { $isLinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link"
-import {
-  $getSelectionStyleValueForProperty,
-  $patchStyleText,
-} from "@lexical/selection"
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"
 import { mergeRegister } from "@lexical/utils"
 import {
@@ -32,32 +28,17 @@ import {
   CodeIcon,
   ItalicIcon,
   LinkIcon,
-  PaintBucketIcon,
   StrikethroughIcon,
   SubscriptIcon,
   SuperscriptIcon,
   UnderlineIcon,
-  BaselineIcon,
 } from "lucide-react"
 import { createPortal } from "react-dom"
 
-import {
-  ColorPicker,
-  ColorPickerAlphaSlider,
-  ColorPickerArea,
-  ColorPickerContent,
-  ColorPickerEyeDropper,
-  ColorPickerFormatSelect,
-  ColorPickerHueSlider,
-  ColorPickerInput,
-  ColorPickerPresets,
-} from "../editor-ui/color-picker"
-import { useEditorModal } from "../editor-hooks/use-modal"
 import { getDOMRangeRect } from "../utils/get-dom-range-rect"
 import { getSelectedNode } from "../utils/get-selected-node"
 import { setFloatingElemPosition } from "../utils/set-floating-elem-position"
 import { Button } from "../ui/button"
-import { DialogFooter } from "../ui/dialog"
 import { Flex } from "../ui/flex"
 import { Separator } from "../ui/separator"
 import {
@@ -78,11 +59,7 @@ function FloatingTextFormat({
   isStrikethrough,
   isSubscript,
   isSuperscript,
-  fontColor,
-  bgColor,
   setIsLinkEditMode,
-  showModal,
-  isModalOpen,
 }: {
   editor: LexicalEditor
   anchorElem: HTMLElement
@@ -94,14 +71,7 @@ function FloatingTextFormat({
   isSubscript: boolean
   isSuperscript: boolean
   isUnderline: boolean
-  fontColor: string
-  bgColor: string
   setIsLinkEditMode: Dispatch<boolean>
-  showModal: (
-    title: string,
-    content: (onClose: () => void) => JSX.Element
-  ) => void
-  isModalOpen: boolean
 }): JSX.Element {
   const popupCharStylesEditorRef = useRef<HTMLDivElement | null>(null)
 
@@ -113,20 +83,6 @@ function FloatingTextFormat({
       editor.dispatchCommand(TOGGLE_LINK_COMMAND, null)
     }
   }, [editor, isLink, setIsLinkEditMode])
-
-  const applyStyleText = useCallback(
-    (styles: Record<string, string>) => {
-      editor.update(() => {
-        const selection = $getSelection()
-        if ($isRangeSelection(selection)) {
-          $patchStyleText(selection, styles)
-        }
-      })
-    },
-    [editor]
-  )
-
-
 
   useEffect(() => {
     function mouseMoveListener(e: MouseEvent) {
@@ -140,8 +96,7 @@ function FloatingTextFormat({
           const elementUnderMouse = document.elementFromPoint(x, y)
 
           if (
-            !popupCharStylesEditorRef.current.contains(elementUnderMouse) &&
-            !isModalOpen
+            !popupCharStylesEditorRef.current.contains(elementUnderMouse)
           ) {
             // Mouse is not over the target element => not a normal click, but probably a drag
             popupCharStylesEditorRef.current.style.pointerEvents = "none"
@@ -167,7 +122,7 @@ function FloatingTextFormat({
         document.removeEventListener("mouseup", mouseUpListener)
       }
     }
-  }, [popupCharStylesEditorRef, isModalOpen])
+  }, [popupCharStylesEditorRef])
 
   const $updateTextFormatFloatingToolbar = useCallback(() => {
     const selection = $getSelection()
@@ -391,12 +346,7 @@ function FloatingTextFormat({
 function useFloatingTextFormatToolbar(
   editor: LexicalEditor,
   anchorElem: HTMLDivElement | null,
-  setIsLinkEditMode: Dispatch<boolean>,
-  showModal: (
-    title: string,
-    content: (onClose: () => void) => JSX.Element
-  ) => void,
-  isModalOpen: boolean
+  setIsLinkEditMode: Dispatch<boolean>
 ): JSX.Element | null {
   const [isText, setIsText] = useState(false)
   const [isLink, setIsLink] = useState(false)
@@ -407,9 +357,6 @@ function useFloatingTextFormatToolbar(
   const [isSubscript, setIsSubscript] = useState(false)
   const [isSuperscript, setIsSuperscript] = useState(false)
   const [isCode, setIsCode] = useState(false)
-  const [fontColor, setFontColor] = useState("")
-  const [bgColor, setBgColor] = useState("")
-
   const updatePopup = useCallback(() => {
     editor.getEditorState().read(() => {
       // Should not to pop up the floating toolbar when using IME input
@@ -506,11 +453,7 @@ function useFloatingTextFormatToolbar(
       isSuperscript={isSuperscript}
       isUnderline={isUnderline}
       isCode={isCode}
-      fontColor={fontColor}
-      bgColor={bgColor}
       setIsLinkEditMode={setIsLinkEditMode}
-      showModal={showModal}
-      isModalOpen={isModalOpen}
     />,
     anchorElem
   )
@@ -524,20 +467,12 @@ export function FloatingTextFormatToolbarPlugin({
   setIsLinkEditMode: Dispatch<boolean>
 }): JSX.Element | null {
   const [editor] = useLexicalComposerContext()
-  const [modal, showModal] = useEditorModal()
 
   const toolbar = useFloatingTextFormatToolbar(
     editor,
     anchorElem,
-    setIsLinkEditMode,
-    showModal,
-    modal !== null
+    setIsLinkEditMode
   )
 
-  return (
-    <>
-      {toolbar}
-      {modal}
-    </>
-  )
+  return <>{toolbar}</>
 }
