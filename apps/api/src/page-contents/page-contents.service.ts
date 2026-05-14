@@ -25,7 +25,7 @@ export class PageContentsService {
       PageContent,
       { pageKey },
       {
-        orderBy: { updatedAt: 'DESC' },
+        orderBy: { createdAt: 'ASC' },
       },
     );
   }

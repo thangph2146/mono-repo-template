@@ -588,10 +588,23 @@ export class UploadsService {
     const targetDir = path.dirname(fullPath);
     await this.ensureDir(targetDir);
 
-    // Kiểm tra trùng tên: trong cùng thư mục đã có file cùng baseName + ext chưa
-    const exists = await this.hasFileWithSameBaseName(targetDir, baseName, ext);
-    if (exists) {
-      throw new Error('Hình ảnh hoặc file đã tồn tại');
+    // Nếu đã có file cùng baseName trong thư mục, trả về URL file đó thay vì upload lại
+    const existingFile = await this.findFileWithSameBaseName(targetDir, baseName, ext);
+    if (existingFile) {
+      const existingRelative = path
+        .join(path.dirname(relativePath), existingFile)
+        .replace(/\\/g, '/');
+      const existingUrl = serveBaseUrl
+        ? `${serveBaseUrl}/${existingRelative}`
+        : `/api/admin/uploads/serve/${existingRelative}`;
+      return {
+        fileName: existingFile,
+        originalName: file.originalname,
+        size: file.buffer.length,
+        mimeType: ALLOWED_MIME[ext] || mimePrimary || file.mimetype || 'application/octet-stream',
+        url: existingUrl,
+        relativePath: existingRelative,
+      };
     }
 
     const { writeFile } = await import('fs/promises');
@@ -617,24 +630,25 @@ export class UploadsService {
    * Kiểm tra trong thư mục đã có file có cùng baseName và ext chưa (bỏ qua phần _timestamp).
    * So sánh không phân biệt hoa/thường để trùng "Photo.jpg" và "photo.jpg".
    */
-  private async hasFileWithSameBaseName(
+  private async findFileWithSameBaseName(
     dirPath: string,
     baseName: string,
     ext: string,
-  ): Promise<boolean> {
+  ): Promise<string | null> {
     try {
       const entries = await readdir(dirPath, { withFileTypes: true });
       const prefix = baseName + '_';
       const prefixLower = prefix.toLowerCase();
       const extLower = ext.toLowerCase();
-      return entries.some(
+      const found = entries.find(
         (e) =>
           !e.isDirectory() &&
           e.name.toLowerCase().startsWith(prefixLower) &&
           e.name.toLowerCase().endsWith(extLower),
       );
+      return found ? found.name : null;
     } catch {
-      return false;
+      return null;
     }
   }
 

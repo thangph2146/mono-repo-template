@@ -188,17 +188,7 @@ export function ImageLightbox({
       <DialogContent className="h-[min(90vh,920px)] w-[min(1400px,96vw)] max-w-[min(1400px,96vw)] gap-0 overflow-hidden border-0 bg-[#0b0f19] p-0 text-white">
         <div className="flex h-full flex-col">
           <div className="relative flex flex-1 items-center justify-center bg-black/35 px-12 md:px-14">
-            <div className="absolute right-3 top-3 z-30 flex items-center gap-2 rounded-full border border-white/20 bg-black/45 px-2 py-1 text-xs text-white">
-              <button
-                type="button"
-                className="inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
-                onClick={zoomOut}
-                disabled={zoomScale <= MIN_ZOOM}
-                aria-label="Thu nho anh"
-              >
-                <ZoomOut className="size-4" />
-              </button>
-              <span className="min-w-12 text-center font-medium">{Math.round(zoomScale * 100)}%</span>
+            <div className="absolute bottom-3 right-3 z-30 flex flex-col items-center gap-1 rounded-full border border-white/20 bg-black/45 px-1 py-2 text-xs text-white">
               <button
                 type="button"
                 className="inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
@@ -207,6 +197,16 @@ export function ImageLightbox({
                 aria-label="Phong to anh"
               >
                 <ZoomIn className="size-4" />
+              </button>
+              <span className="min-w-8 text-center font-medium tabular-nums">{Math.round(zoomScale * 100)}%</span>
+              <button
+                type="button"
+                className="inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
+                onClick={zoomOut}
+                disabled={zoomScale <= MIN_ZOOM}
+                aria-label="Thu nho anh"
+              >
+                <ZoomOut className="size-4" />
               </button>
               <button
                 type="button"

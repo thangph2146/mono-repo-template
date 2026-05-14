@@ -34,6 +34,11 @@ export const PERMISSION_CODES = {
   TAGS_DELETE: "tags:delete",
   TAGS_MANAGE: "tags:manage",
   TAGS_EXPORT: "tags:export",
+  PAGE_CONTENTS_VIEW: "page_contents:view",
+  PAGE_CONTENTS_CREATE: "page_contents:create",
+  PAGE_CONTENTS_UPDATE: "page_contents:update",
+  PAGE_CONTENTS_DELETE: "page_contents:delete",
+  PAGE_CONTENTS_MANAGE: "page_contents:manage",
 } as const;
 
 export type PermissionCode =

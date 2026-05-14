@@ -18,6 +18,7 @@ import {
   Headset,
   GraduationCap,
   UserCheck,
+  BookOpen,
   type LucideIcon,
 } from "lucide-react";
 import { Button } from "@ui/components/button";
@@ -77,6 +78,13 @@ const menuTree: MenuTreeItem[] = [
     label: "Truyền thông",
     icon: FolderTree,
     children: [
+      {
+        href: "/guides",
+        label: "Hướng dẫn sử dụng",
+        icon: BookOpen,
+        permission: PERMISSION_CODES.PAGE_CONTENTS_VIEW,
+        adminOnly: true,
+      },
       {
         href: "/posts",
         label: "Bài viết",

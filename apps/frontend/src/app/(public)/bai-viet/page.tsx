@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { CalendarDays, Eye, Filter, Search } from "lucide-react";
+import { CalendarDays, Eye, Filter, ImageIcon, Search } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@ui/components/badge";
 import { Button } from "@ui/components/button";
@@ -246,7 +246,7 @@ export default async function PostsPage({
                       const publishedDate = formatPostDate(post.publishedAt);
 
                       return (
-                        <Card key={post.id} className="overflow-hidden rounded-lg">
+                        <Card key={post.id} className="overflow-hidden rounded-lg pt-0">
                           {post.image?.trim() ? (
                             <div className="relative aspect-[16/9] w-full bg-muted">
                               <img
@@ -258,7 +258,11 @@ export default async function PostsPage({
                                 sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
                               />
                             </div>
-                          ) : null}
+                          ) : (
+                            <div className="flex aspect-[16/9] w-full items-center justify-center bg-muted">
+                              <ImageIcon className="size-10 text-muted-foreground/40" />
+                            </div>
+                          )}
                           <CardHeader className="space-y-3">
                             <div className="flex flex-wrap items-center gap-2">
                               {primaryCategory ? (
