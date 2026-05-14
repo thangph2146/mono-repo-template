@@ -1,6 +1,6 @@
 // Role data
 const DEV_LOGIN_PASSWORD_HASH =
-  '$2b$10$rWympviVCbsie490UxBN0u0kEc3Yz/A2C9AXGJv.5emb3NMhYtHMK';
+  '$2a$10$HKxTCz7JvLH2qCCnliTkleWtPEu.tdp/f/AjPrSaHDigfWlnxDRIe';
 
 export const SUPERADMIN_ROLES_DATA = [
   {
