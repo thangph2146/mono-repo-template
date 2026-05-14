@@ -1,7 +1,7 @@
 module.exports = {
   apps: [
     {
-      name: "store-sync-api",
+      name: "hub-parent-api",
       cwd: "./apps/api",
       script: "pnpm",
       args: "run start:prod", 
@@ -10,13 +10,13 @@ module.exports = {
       }
     },
     {
-      name: "store-sync-frontend",
+      name: "hub-parent-frontend",
       cwd: "./apps/frontend",
       script: "pnpm",
       args: "next start -p 3000", // Không dùng -- ở giữa nếu dùng trực tiếp command
     },
     {
-      name: "store-sync-backend",
+      name: "hub-parent-backend",
       cwd: "./apps/backend",
       script: "pnpm",
       args: "next start -p 3001",
