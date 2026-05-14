@@ -21,7 +21,8 @@
     "db": "pnpm --filter @api exec mikro-orm",
     "db:fresh": "pnpm --filter @api run db:fresh",
     "db:migration:fresh": "pnpm --filter @api run db:migration:fresh",
-    "db:seed": "pnpm --filter @api run db:seed"
+    "db:seed": "pnpm --filter @api run db:seed",
+    "seed:superadmin": "pnpm --filter \"@api\" run seed:superadmin"
   },
   "devDependencies": {
     "@workspace/eslint-config": "workspace:*",

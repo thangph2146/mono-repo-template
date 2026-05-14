@@ -140,7 +140,7 @@ async function insertPostTagPivot(
 function resolveExportPath(): string {
   const fromEnv = process.env.SEED_EXPORT_PATH?.trim();
   const fromArg = process.argv[2]?.trim();
-  const fallback = path.join(__dirname, 'full-export-2026-04-28.json');
+  const fallback = path.join(__dirname, 'full-export-2026-05-14.json');
   const p = fromEnv || fromArg || fallback;
   if (!fs.existsSync(p)) {
     throw new Error(`Không tìm thấy file export: ${p}`);

@@ -34,6 +34,14 @@ async function seedData() {
   await orm.close();
 }
 
+if (process.argv.includes('--help') || process.argv.includes('-h')) {
+  console.log('Usage: pnpm run seed:superadmin');
+  console.log(
+    'Seeds/updates superadmin roles, users, role links, and optional page contents.',
+  );
+  process.exit(0);
+}
+
 seedData().catch((error) => {
   console.error('Error seeding data:', error);
   process.exit(1);
