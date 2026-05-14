@@ -191,42 +191,42 @@ export function ImageLightbox({
             <div className="absolute bottom-3 right-3 z-30 flex flex-col items-center gap-1 rounded-full border border-white/20 bg-black/45 px-1 py-2 text-xs text-white">
               <button
                 type="button"
-                className="inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
+                className="cursor-pointer inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
                 onClick={zoomIn}
                 disabled={zoomScale >= MAX_ZOOM}
                 aria-label="Phong to anh"
               >
-                <ZoomIn className="size-4" />
+                <ZoomIn className="size-6" />
               </button>
               <span className="min-w-8 text-center font-medium tabular-nums">{Math.round(zoomScale * 100)}%</span>
               <button
                 type="button"
-                className="inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
+                className="cursor-pointer inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
                 onClick={zoomOut}
                 disabled={zoomScale <= MIN_ZOOM}
                 aria-label="Thu nho anh"
               >
-                <ZoomOut className="size-4" />
+                <ZoomOut className="size-6" />
               </button>
               <button
                 type="button"
-                className="inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
+                className="cursor-pointer inline-flex h-8 w-8 items-center justify-center rounded-full hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
                 onClick={resetZoom}
                 disabled={zoomScale === 1}
                 aria-label="Dat lai ty le anh"
               >
-                <RotateCcw className="size-4" />
+                <RotateCcw className="size-6" />
               </button>
             </div>
 
             <button
               type="button"
-              className={cn("absolute left-3 top-1/2 z-20 -translate-y-1/2 rounded-full border border-white/20 bg-black/35 p-2", !canNavigate && "cursor-default opacity-45")}
+              className={cn("cursor-pointer absolute left-3 top-1/2 z-20 -translate-y-1/2 rounded-full border border-white/20 bg-black/35 p-2", !canNavigate && "cursor-default opacity-45")}
               onClick={goPrev}
               disabled={!canNavigate}
               aria-label="Anh truoc"
             >
-              <ChevronLeft className="size-5" />
+              <ChevronLeft className="size-7" />
             </button>
 
             <div
@@ -251,12 +251,12 @@ export function ImageLightbox({
 
             <button
               type="button"
-              className={cn("absolute right-3 top-1/2 z-20 -translate-y-1/2 rounded-full border border-white/20 bg-black/35 p-2", !canNavigate && "cursor-default opacity-45")}
+              className={cn("cursor-pointer absolute right-3 top-1/2 z-20 -translate-y-1/2 rounded-full border border-white/20 bg-black/35 p-2", !canNavigate && "cursor-default opacity-45")}
               onClick={goNext}
               disabled={!canNavigate}
               aria-label="Anh tiep theo"
             >
-              <ChevronRight className="size-5" />
+              <ChevronRight className="size-7" />
             </button>
           </div>
 

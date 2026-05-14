@@ -557,7 +557,7 @@ export function AdminDataTable<TData>({
       )}
 
       <div className="rounded-lg border border-border bg-card overflow-hidden">
-        <div className="overflow-x-auto py-3 sm:py-4">
+        <div className="overflow-x-auto pt-2">
         <Table className="text-sm min-w-[640px] sm:min-w-0">
           <TableHeader>
             {headerGroups.map((hg) => (

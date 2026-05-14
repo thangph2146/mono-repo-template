@@ -492,7 +492,7 @@ export function MobileSidebarPanel({ onNavigate }: { onNavigate: () => void }) {
   const roleText = roleSummaryOf(user);
 
   return (
-    <div className="flex h-full flex-col bg-[#233B80] text-white">
+    <div className="flex h-full flex-col bg-primary text-white">
       <div className="shrink-0 px-4 pb-4 pt-5">
         <Link
           href="/"
@@ -560,7 +560,7 @@ export function Sidebar({ collapsed }: SidebarProps) {
   return (
     <aside
       className={cn(
-        "sticky top-0 hidden h-screen shrink-0 flex-col overflow-hidden border-r border-[#1A2D65] bg-[#233B80] text-white transition-[width] duration-300 ease-out md:flex",
+        "sticky top-0 hidden h-screen shrink-0 flex-col overflow-hidden border-r border-[#1A2D65] bg-primary text-white transition-[width] duration-300 ease-out md:flex",
         collapsed ? "w-[4.5rem]" : "w-80",
       )}
     >
