@@ -14,8 +14,8 @@
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",
-    "@lexical/react": "^0.38.2",
     "@hookform/resolvers": "^5.2.2",
+    "@lexical/react": "^0.38.2",
     "@tanstack/react-query": "^5.100.9",
     "@tanstack/react-query-devtools": "^5.100.9",
     "@tanstack/react-table": "8.21.3",
@@ -23,6 +23,7 @@
     "@ui": "workspace:*",
     "@workspace/api-client": "workspace:*",
     "@workspace/query-client": "workspace:*",
+    "chart.js": "^4.5.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lexical": "^0.38.2",
@@ -30,6 +31,7 @@
     "next": "16.2.5",
     "nextjs-toploader": "^3.9.17",
     "react": "19.2.4",
+    "react-chartjs-2": "^5.3.1",
     "react-dom": "19.2.4",
     "react-hook-form": "^7.75.0",
     "sonner": "^2.0.1",
@@ -38,11 +40,11 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
-    "@workspace/eslint-config": "workspace:*",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@workspace/eslint-config": "workspace:*",
     "babel-plugin-react-compiler": "1.0.0",
     "eslint": "^9",
     "eslint-config-next": "16.2.5",
