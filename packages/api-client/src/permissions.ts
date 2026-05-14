@@ -74,6 +74,7 @@ export const STAFF_ADMIN_ROLE_CODES = [
   "manager",
   "sales",
   "shipper",
+  "parent",
 ] as const;
 
 /** Quyền “vận hành” — nếu có (kể cả role lạ trong DB) vẫn coi là nội bộ. */

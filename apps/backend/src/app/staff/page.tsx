@@ -73,6 +73,7 @@ import { TypographyH1 } from "@ui/components/typography";
 import { AdminDataTable } from "@/components/admin-data-table";
 import { AdminTablePaginationFooter } from "@/components/admin-table-pagination-footer";
 import { AdminConfirmActionDialog } from "@/components/admin-confirm-action-dialog";
+import { AdminPageGuard } from "@/components/admin-page-guard";
 import { ApiError, type User } from "@/lib/api";
 import { useAuth } from "@/providers/auth-provider";
 import {
@@ -118,7 +119,7 @@ function buildUsersFilterQuery(columnFilters: ColumnFiltersState): Record<string
   return query;
 }
 
-export default function StaffPage() {
+function StaffPageInner() {
   const queryClient = useQueryClient();
   const { user: session } = useAuth();
   const canManageUsers =
@@ -1329,5 +1330,13 @@ export default function StaffPage() {
         }}
       />
     </PageSection>
+  );
+}
+
+export default function StaffPage() {
+  return (
+    <AdminPageGuard roles={["super_admin", "admin"]}>
+      <StaffPageInner />
+    </AdminPageGuard>
   );
 }

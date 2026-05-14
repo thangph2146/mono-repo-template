@@ -16,6 +16,8 @@ import {
   ChevronsUpDown,
   LogOut,
   Headset,
+  GraduationCap,
+  UserCheck,
   type LucideIcon,
 } from "lucide-react";
 import { Button } from "@ui/components/button";
@@ -39,6 +41,10 @@ type MenuLeaf = {
   icon: LucideIcon;
   permission: PermissionCode | null;
   anyPermission?: PermissionCode[];
+  /** Chỉ hiển thị với role cụ thể này (khớp role.name). */
+  roleGuard?: string;
+  /** Chỉ hiển thị với super_admin hoặc admin — ẩn với parent và các role không phải staff. */
+  adminOnly?: boolean;
 };
 
 type MenuTreeItem =
@@ -59,6 +65,14 @@ const menuTree: MenuTreeItem[] = [
     permission: null,
   },
   {
+    type: "leaf",
+    href: "/my-students",
+    label: "Con tôi",
+    icon: GraduationCap,
+    permission: null,
+    roleGuard: "parent",
+  },
+  {
     type: "group",
     label: "Truyền thông",
     icon: FolderTree,
@@ -68,12 +82,14 @@ const menuTree: MenuTreeItem[] = [
         label: "Bài viết",
         icon: FileText,
         permission: null,
+        adminOnly: true,
       },
       {
         href: "/categories",
         label: "Danh mục",
         icon: FolderOpen,
         permission: null,
+        adminOnly: true,
       },
       {
         href: "/tags",
@@ -84,6 +100,7 @@ const menuTree: MenuTreeItem[] = [
           PERMISSION_CODES.TAGS_VIEW,
           PERMISSION_CODES.TAGS_MANAGE,
         ],
+        adminOnly: true,
       },
     ],
   },
@@ -98,18 +115,21 @@ const menuTree: MenuTreeItem[] = [
         icon: Users,
         permission: null,
         anyPermission: [PERMISSION_CODES.USERS_MANAGE],
+        adminOnly: true,
       },
       {
         href: "/rbac",
         label: "Phân quyền",
         icon: ShieldCheck,
         permission: PERMISSION_CODES.RBAC_READ,
+        adminOnly: true,
       },
       {
         href: "/data",
         label: "Sao lưu dữ liệu",
         icon: Database,
         permission: PERMISSION_CODES.DATA_MAINTENANCE,
+        adminOnly: true,
       },
       {
         href: "/contact-requests",
@@ -122,13 +142,35 @@ const menuTree: MenuTreeItem[] = [
           PERMISSION_CODES.CONTACT_REQUESTS_ASSIGN,
         ],
         permission: null,
+        adminOnly: true,
+      },
+      {
+        href: "/parent-students",
+        label: "Duyệt học sinh",
+        icon: UserCheck,
+        permission: null,
+        anyPermission: [PERMISSION_CODES.USERS_MANAGE],
+        adminOnly: true,
       },
     ],
   },
 ];
 
+const SUPER_ROLES = ["super_admin", "admin"] as const;
+
+function isSuperUser(user: AuthUser): boolean {
+  return user.roles?.some((r) => SUPER_ROLES.includes(r.name as (typeof SUPER_ROLES)[number])) ?? false;
+}
+
 function canSeeLeaf(user: AuthUser | null, item: MenuLeaf): boolean {
   if (!user) return false;
+  if (isSuperUser(user)) return true;
+  // roleGuard: chỉ role cụ thể này mới thấy (ví dụ: "parent" cho /my-students)
+  if (item.roleGuard) {
+    return user.roles?.some((r) => r.name === item.roleGuard) ?? false;
+  }
+  // adminOnly: ẩn với tất cả role không phải super_admin/admin
+  if (item.adminOnly) return false;
   if (item.anyPermission?.length) {
     return item.anyPermission.some((p) => canUserAccess(user, p));
   }

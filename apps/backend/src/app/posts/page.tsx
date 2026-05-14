@@ -62,6 +62,7 @@ import {
 import { AdminConfirmActionDialog } from "@/components/admin-confirm-action-dialog";
 import { AdminDataTable } from "@/components/admin-data-table";
 import { AdminTablePaginationFooter } from "@/components/admin-table-pagination-footer";
+import { AdminPageGuard } from "@/components/admin-page-guard";
 import { api } from "@/lib/api";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import {
@@ -497,7 +498,7 @@ function SummaryBadges({ items }: { items: TaxonomyOption[] }) {
   );
 }
 
-export default function PostsPage() {
+function PostsPageInner() {
   const queryClient = useQueryClient();
   const [mainTab, setMainTab] = useState<"list" | "trash">("list");
   const [editorTab, setEditorTab] = useState<"content" | "seo" | "publish" | "taxonomy">("content");
@@ -1538,5 +1539,13 @@ export default function PostsPage() {
         }}
       />
     </PageSection>
+  );
+}
+
+export default function PostsPage() {
+  return (
+    <AdminPageGuard roles={["super_admin", "admin", "manager"]}>
+      <PostsPageInner />
+    </AdminPageGuard>
   );
 }

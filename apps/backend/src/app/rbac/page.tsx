@@ -91,6 +91,48 @@ type RoleFormState = {
   permissions: string[];
 };
 
+const ROLE_PRESETS: { label: string; code: string; name: string; description: string; permissions: string[] }[] = [
+  {
+    label: "Phụ huynh",
+    code: "parent",
+    name: "Phụ huynh",
+    description: "Tài khoản phụ huynh — xem kết quả học tập của con",
+    permissions: [
+      "students:view",
+      "students:view_own",
+      "notifications:view",
+      "notifications:view_own",
+    ],
+  },
+  {
+    label: "Biên tập viên",
+    code: "editor",
+    name: "Biên tập viên",
+    description: "Quản lý bài viết, danh mục và thẻ nội dung",
+    permissions: [
+      "categories:view",
+      "categories:create",
+      "categories:update",
+      "categories:manage",
+      "tags:view",
+      "tags:create",
+      "tags:update",
+      "tags:manage",
+    ],
+  },
+  {
+    label: "Nhân viên hỗ trợ",
+    code: "support_staff",
+    name: "Nhân viên hỗ trợ",
+    description: "Xem và xử lý yêu cầu liên hệ hỗ trợ",
+    permissions: [
+      "contact_requests:view",
+      "contact_requests:update",
+      "contact_requests:assign",
+    ],
+  },
+];
+
 const EMPTY_FORM: RoleFormState = {
   id: null,
   code: "",
@@ -368,10 +410,7 @@ export default function RbacPage() {
       toast.error("Tên vai trò là bắt buộc");
       return;
     }
-    if (form.permissions.length === 0) {
-      toast.error("Chọn ít nhất một quyền");
-      return;
-    }
+
 
     const payload: RoleFormState = {
       ...form,
@@ -763,13 +802,54 @@ export default function RbacPage() {
             </div>
 
             <div className="space-y-2">
+              <Label>Bắt đầu từ mẫu</Label>
+              <div className="flex flex-wrap gap-2">
+                {ROLE_PRESETS.map((preset) => (
+                  <Button
+                    key={preset.code}
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="h-8 rounded-lg text-xs"
+                    title={preset.permissions.length === 0 ? "Role này không cần permission — quyền truy cập dựa trên tên role" : `Chọn ${preset.permissions.length} permission`}
+                    onClick={() =>
+                      setForm((current) => ({
+                        ...current,
+                        code: current.code || preset.code,
+                        name: current.name || preset.name,
+                        description: current.description || preset.description,
+                        permissions: [...new Set([...current.permissions, ...preset.permissions])],
+                      }))
+                    }
+                  >
+                    {preset.label}
+                    {preset.permissions.length > 0 && (
+                      <span className="ml-1 rounded bg-primary/10 px-1 text-[10px] text-primary">
+                        {preset.permissions.length}
+                      </span>
+                    )}
+                  </Button>
+                ))}
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 rounded-lg text-xs text-muted-foreground"
+                  onClick={() => setForm((current) => ({ ...current, permissions: [] }))}
+                >
+                  Bỏ chọn tất cả
+                </Button>
+              </div>
+            </div>
+
+            <div className="space-y-2">
               <Label>Permission ({form.permissions.length}/{permissions.length})</Label>
               <Input
                 value={permissionSearch}
                 onChange={(event) => setPermissionSearch(event.target.value)}
                 placeholder="Tìm permission..."
               />
-              <ScrollArea className="h-[320px] rounded-lg border border-border/60 bg-muted/10">
+              <ScrollArea className="h-[220px] rounded-lg border border-border/60 bg-muted/10">
                 <div className="space-y-4 p-3">
                   {permissionGroups.length === 0 ? (
                     <p className="py-8 text-center text-sm text-muted-foreground">

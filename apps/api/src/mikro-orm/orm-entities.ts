@@ -9,6 +9,7 @@ import { Message } from '../entities/message.entity';
 import { MessageRead } from '../entities/message-read.entity';
 import { Notification } from '../entities/notification.entity';
 import { PageContent } from '../entities/page-content.entity';
+import { ParentStudent } from '../entities/parent-student.entity';
 import { Post } from '../entities/post.entity';
 import { PostCategory } from '../entities/post-category.entity';
 import { PostTag } from '../entities/post-tag.entity';
@@ -33,6 +34,7 @@ export const ormEntities = [
   MessageRead,
   Notification,
   PageContent,
+  ParentStudent,
   Post,
   PostCategory,
   PostTag,

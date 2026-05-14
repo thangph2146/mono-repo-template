@@ -25,6 +25,7 @@ import { GroupsModule } from './groups/groups.module';
 import { PageContentsModule } from './page-contents/page-contents.module';
 import { SettingsModule } from './settings/settings.module';
 import { SystemModule } from './system/system.module';
+import { ParentStudentsModule } from './parent-students/parent-students.module';
 
 @Module({
   imports: [
@@ -58,6 +59,7 @@ import { SystemModule } from './system/system.module';
     PageContentsModule,
     SettingsModule,
     SystemModule,
+    ParentStudentsModule,
   ],
   providers: [
     {

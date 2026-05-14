@@ -24,6 +24,7 @@ import { TypographyH1, TypographyH2 } from "@ui/components/typography";
 import { ADMIN_PAGE_TITLE_DOCUMENT_CLASS } from "@ui/lib/layout-shell";
 import { cn } from "@ui/lib/utils";
 import { readAdminSession } from "@/lib/auth-session";
+import { AdminPageGuard } from "@/components/admin-page-guard";
 import { DEFAULT_API_URL } from "@workspace/api-client";
 import {
   Database,
@@ -48,7 +49,7 @@ type ApiEnvelope<T> = {
   data?: T;
 };
 
-export default function DataBackupPage() {
+function DataBackupPageInner() {
   const [exporting, setExporting] = useState<"json" | "excel" | null>(null);
   const [importing, setImporting] = useState<"json" | "excel" | null>(null);
 
@@ -479,5 +480,13 @@ export default function DataBackupPage() {
         </CardContent>
       </Card>
     </PageSection>
+  );
+}
+
+export default function DataBackupPage() {
+  return (
+    <AdminPageGuard roles={["super_admin", "admin"]}>
+      <DataBackupPageInner />
+    </AdminPageGuard>
   );
 }

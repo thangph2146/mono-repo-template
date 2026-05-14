@@ -32,6 +32,7 @@ import {
 import { AdminDataTable } from "@/components/admin-data-table";
 import { AdminTablePaginationFooter } from "@/components/admin-table-pagination-footer";
 import { AdminConfirmActionDialog } from "@/components/admin-confirm-action-dialog";
+import { AdminPageGuard } from "@/components/admin-page-guard";
 import { api } from "@/lib/api";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { useAuth } from "@/providers/auth-provider";
@@ -217,7 +218,7 @@ async function fetchAllActiveTags(): Promise<TagRow[]> {
   return items;
 }
 
-export default function TagsPage() {
+function TagsPageInner() {
   const queryClient = useQueryClient();
   const { user: session } = useAuth();
   const canRead =
@@ -842,5 +843,13 @@ export default function TagsPage() {
         }}
       />
     </PageSection>
+  );
+}
+
+export default function TagsPage() {
+  return (
+    <AdminPageGuard roles={["super_admin", "admin", "manager"]}>
+      <TagsPageInner />
+    </AdminPageGuard>
   );
 }

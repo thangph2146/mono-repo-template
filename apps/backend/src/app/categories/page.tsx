@@ -49,6 +49,7 @@ import {
 import { AdminDataTable } from "@/components/admin-data-table";
 import { AdminTablePaginationFooter } from "@/components/admin-table-pagination-footer";
 import { AdminConfirmActionDialog } from "@/components/admin-confirm-action-dialog";
+import { AdminPageGuard } from "@/components/admin-page-guard";
 import { type Category, ApiError } from "@/lib/api";
 import { useAuth } from "@/providers/auth-provider";
 import { canUserAccess, PERMISSION_CODES } from "@workspace/api-client";
@@ -174,7 +175,7 @@ function flattenCategoryOptions(
   return options;
 }
 
-export default function CategoriesPage() {
+function CategoriesPageInner() {
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const canWriteCategories = user
@@ -1174,5 +1175,13 @@ export default function CategoriesPage() {
         onConfirm={confirmRestore}
       />
     </PageSection>
+  );
+}
+
+export default function CategoriesPage() {
+  return (
+    <AdminPageGuard roles={["super_admin", "admin", "manager"]}>
+      <CategoriesPageInner />
+    </AdminPageGuard>
   );
 }
