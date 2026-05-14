@@ -1,19 +1,19 @@
-"use client";
+"use client"
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react"
 import type {
   ColumnDef,
   ColumnFiltersState,
   OnChangeFn,
   RowSelectionState,
-} from "@tanstack/react-table";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
-import { Button } from "@ui/components/button";
-import { Input } from "@ui/components/input";
-import { Label } from "@ui/components/label";
-import { Badge } from "@ui/components/badge";
-import { Switch } from "@ui/components/switch";
+} from "@tanstack/react-table"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { toast } from "sonner"
+import { Button } from "@ui/components/button"
+import { Input } from "@ui/components/input"
+import { Label } from "@ui/components/label"
+import { Badge } from "@ui/components/badge"
+import { Switch } from "@ui/components/switch"
 import {
   Dialog,
   DialogContent,
@@ -22,17 +22,17 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@ui/components/dialog";
-import { PageSection } from "@ui/components/layout";
-import { TypographyH1 } from "@ui/components/typography";
+} from "@ui/components/dialog"
+import { PageSection } from "@ui/components/layout"
+import { TypographyH1 } from "@ui/components/typography"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@ui/components/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@ui/components/tabs";
+} from "@ui/components/select"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@ui/components/tabs"
 import {
   Archive,
   ArchiveRestore,
@@ -45,14 +45,14 @@ import {
   Trash2,
   AlertCircle,
   Layers,
-} from "lucide-react";
-import { AdminDataTable } from "@/components/admin-data-table";
-import { AdminTablePaginationFooter } from "@/components/admin-table-pagination-footer";
-import { AdminConfirmActionDialog } from "@/components/admin-confirm-action-dialog";
-import { AdminPageGuard } from "@/components/admin-page-guard";
-import { type Category, ApiError } from "@/lib/api";
-import { useAuth } from "@/providers/auth-provider";
-import { canUserAccess, PERMISSION_CODES } from "@workspace/api-client";
+} from "lucide-react"
+import { AdminDataTable } from "@/components/admin-data-table"
+import { AdminTablePaginationFooter } from "@/components/admin-table-pagination-footer"
+import { AdminConfirmActionDialog } from "@/components/admin-confirm-action-dialog"
+import { AdminPageGuard } from "@/components/admin-page-guard"
+import { type Category, ApiError } from "@/lib/api"
+import { useAuth } from "@/providers/auth-provider"
+import { canUserAccess, PERMISSION_CODES } from "@workspace/api-client"
 import {
   useCategoriesAdmin,
   useCreateCategory,
@@ -62,35 +62,35 @@ import {
   useTrashedCategories,
   useUpdateCategory,
   queryKeys,
-} from "@/hooks/queries";
-import { useDebouncedValue } from "@/hooks/use-debounced-value";
-import { api } from "@/lib/api";
+} from "@/hooks/queries"
+import { useDebouncedValue } from "@/hooks/use-debounced-value"
+import { api } from "@/lib/api"
 import {
   CATEGORY_ICON_OPTIONS,
   resolveCategoryIcon,
-} from "@/lib/category-icons";
-import { cn } from "@ui/lib/utils";
+} from "@/lib/category-icons"
+import { cn } from "@ui/lib/utils"
 import {
   ADMIN_ALERT_DIALOG_CONTENT_CLASS,
   ADMIN_DIALOG_CONTENT_CATEGORY_CLASS,
   ADMIN_PAGE_SUBTITLE_CLASS,
   ADMIN_PAGE_TITLE_ICON_CLASS,
   ADMIN_PAGE_TITLE_PRIMARY_CLASS,
-} from "@ui/lib/layout-shell";
+} from "@ui/lib/layout-shell"
 
 interface FormState {
-  id?: string;
-  name: string;
-  slug: string;
-  description: string;
-  icon: string;
-  sortOrder: number;
-  isActive: boolean;
-  parentId: string;
+  id?: string
+  name: string
+  slug: string
+  description: string
+  icon: string
+  sortOrder: number
+  isActive: boolean
+  parentId: string
 }
 
-const ROOT_PARENT_VALUE = "__root__";
-const CATEGORY_TREE_LIMIT = 1000;
+const ROOT_PARENT_VALUE = "__root__"
+const CATEGORY_TREE_LIMIT = 1000
 
 const EMPTY_FORM: FormState = {
   name: "",
@@ -100,7 +100,7 @@ const EMPTY_FORM: FormState = {
   sortOrder: 0,
   isActive: true,
   parentId: ROOT_PARENT_VALUE,
-};
+}
 
 const slugify = (input: string): string =>
   input
@@ -109,106 +109,112 @@ const slugify = (input: string): string =>
     .replace(/[\u0300-\u036f]/g, "")
     .replace(/đ/g, "d")
     .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
+    .replace(/^-+|-+$/g, "")
 
-type CategoryRow = Category & { subRows?: CategoryRow[] };
+type CategoryRow = Category & { subRows?: CategoryRow[] }
 
-function sortCategoriesByName<T extends Pick<Category, "name">>(rows: T[]): T[] {
-  return [...rows].sort((a, b) => a.name.localeCompare(b.name, "vi"));
+function sortCategoriesByName<T extends Pick<Category, "name">>(
+  rows: T[]
+): T[] {
+  return [...rows].sort((a, b) => a.name.localeCompare(b.name, "vi"))
 }
 
 function buildCategoryTree(rows: Category[]): CategoryRow[] {
-  const byId = new Map<string, CategoryRow>();
+  const byId = new Map<string, CategoryRow>()
 
   for (const row of rows) {
     byId.set(row.id, {
       ...row,
       subRows: [],
-    });
+    })
   }
 
-  const roots: CategoryRow[] = [];
+  const roots: CategoryRow[] = []
   for (const row of byId.values()) {
-    const parentId = row.parentId ?? null;
+    const parentId = row.parentId ?? null
     if (parentId && byId.has(parentId)) {
-      byId.get(parentId)?.subRows?.push(row);
-      continue;
+      byId.get(parentId)?.subRows?.push(row)
+      continue
     }
-    roots.push(row);
+    roots.push(row)
   }
 
   const sortTree = (items: CategoryRow[]): CategoryRow[] =>
     sortCategoriesByName(items).map((item) => ({
       ...item,
       subRows: sortTree(item.subRows ?? []),
-    }));
+    }))
 
-  return sortTree(roots);
+  return sortTree(roots)
 }
 
 function buildDescendantMap(rows: CategoryRow[]): Map<string, Set<string>> {
-  const descendants = new Map<string, Set<string>>();
+  const descendants = new Map<string, Set<string>>()
 
   const walk = (row: CategoryRow): Set<string> => {
-    const ids = new Set<string>();
+    const ids = new Set<string>()
     for (const child of row.subRows ?? []) {
-      ids.add(child.id);
-      for (const nestedId of walk(child)) ids.add(nestedId);
+      ids.add(child.id)
+      for (const nestedId of walk(child)) ids.add(nestedId)
     }
-    descendants.set(row.id, ids);
-    return ids;
-  };
+    descendants.set(row.id, ids)
+    return ids
+  }
 
-  for (const row of rows) walk(row);
-  return descendants;
+  for (const row of rows) walk(row)
+  return descendants
 }
 
 function flattenCategoryOptions(
   rows: CategoryRow[],
-  depth = 0,
+  depth = 0
 ): Array<{ id: string; name: string; depth: number }> {
-  const options: Array<{ id: string; name: string; depth: number }> = [];
+  const options: Array<{ id: string; name: string; depth: number }> = []
   for (const row of rows) {
-    options.push({ id: row.id, name: row.name, depth });
-    options.push(...flattenCategoryOptions(row.subRows ?? [], depth + 1));
+    options.push({ id: row.id, name: row.name, depth })
+    options.push(...flattenCategoryOptions(row.subRows ?? [], depth + 1))
   }
-  return options;
+  return options
 }
 
 function CategoriesPageInner() {
-  const queryClient = useQueryClient();
-  const { user } = useAuth();
+  const queryClient = useQueryClient()
+  const { user } = useAuth()
   const canWriteCategories = user
     ? canUserAccess(user, PERMISSION_CODES.CATEGORIES_WRITE)
-    : false;
-  const createMutation = useCreateCategory();
-  const updateMutation = useUpdateCategory();
-  const deleteMutation = useDeleteCategory();
-  const restoreMutation = useRestoreCategory();
-  const purgeTrashedMutation = usePurgeTrashedCategory();
+    : false
+  const createMutation = useCreateCategory()
+  const updateMutation = useUpdateCategory()
+  const deleteMutation = useDeleteCategory()
+  const restoreMutation = useRestoreCategory()
+  const purgeTrashedMutation = usePurgeTrashedCategory()
 
   const bulkCategoriesMutation = useMutation({
     mutationFn: async (input: {
-      action: "delete" | "restore" | "hard-delete";
-      ids: string[];
+      action: "delete" | "restore" | "hard-delete"
+      ids: string[]
     }) => api.http.post("/admin/categories/bulk", input),
     onSuccess: async () => {
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: queryKeys.categories() }),
-        queryClient.invalidateQueries({ queryKey: queryKeys.categoriesTrashed() }),
-      ]);
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.categoriesTrashed(),
+        }),
+      ])
     },
-  });
+  })
 
-  const [mainTab, setMainTab] = useState<"list" | "trash">("list");
-  const [listCategorySelection, setListCategorySelection] = useState<RowSelectionState>({});
-  const [trashCategorySelection, setTrashCategorySelection] = useState<RowSelectionState>({});
-  const [globalFilter, setGlobalFilter] = useState("");
-  const [trashPage, setTrashPage] = useState(1);
-  const [trashPageSize, setTrashPageSize] = useState(15);
-  const [trashGlobalFilter, setTrashGlobalFilter] = useState("");
-  const debouncedTrashQ = useDebouncedValue(trashGlobalFilter, 350);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [mainTab, setMainTab] = useState<"list" | "trash">("list")
+  const [listCategorySelection, setListCategorySelection] =
+    useState<RowSelectionState>({})
+  const [trashCategorySelection, setTrashCategorySelection] =
+    useState<RowSelectionState>({})
+  const [globalFilter, setGlobalFilter] = useState("")
+  const [trashPage, setTrashPage] = useState(1)
+  const [trashPageSize, setTrashPageSize] = useState(15)
+  const [trashGlobalFilter, setTrashGlobalFilter] = useState("")
+  const debouncedTrashQ = useDebouncedValue(trashGlobalFilter, 350)
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
 
   const listParams = useMemo(
     () => ({
@@ -216,17 +222,17 @@ function CategoriesPageInner() {
       limit: CATEGORY_TREE_LIMIT,
       activeOnly: true,
     }),
-    [],
-  );
+    []
+  )
 
   useEffect(() => {
-    setTrashPage(1);
-  }, [debouncedTrashQ, mainTab, trashPageSize]);
+    setTrashPage(1)
+  }, [debouncedTrashQ, mainTab, trashPageSize])
 
   useEffect(() => {
-    setListCategorySelection({});
-    setTrashCategorySelection({});
-  }, [mainTab]);
+    setListCategorySelection({})
+    setTrashCategorySelection({})
+  }, [mainTab])
 
   const {
     data,
@@ -236,8 +242,8 @@ function CategoriesPageInner() {
     isFetching,
   } = useCategoriesAdmin({
     listParams,
-  });
-  const categories = useMemo(() => data?.items ?? [], [data?.items]);
+  })
+  const categories = useMemo(() => data?.items ?? [], [data?.items])
 
   const trashListParams = useMemo(
     () => ({
@@ -245,8 +251,8 @@ function CategoriesPageInner() {
       limit: trashPageSize,
       q: debouncedTrashQ.trim() || undefined,
     }),
-    [trashPage, trashPageSize, debouncedTrashQ],
-  );
+    [trashPage, trashPageSize, debouncedTrashQ]
+  )
 
   const {
     data: trashedData,
@@ -257,43 +263,43 @@ function CategoriesPageInner() {
   } = useTrashedCategories({
     enabled: mainTab === "trash" && canWriteCategories,
     listParams: trashListParams,
-  });
-  const trashedItems = trashedData?.items ?? [];
-  const trashTotal = trashedData?.total ?? 0;
+  })
+  const trashedItems = trashedData?.items ?? []
+  const trashTotal = trashedData?.total ?? 0
 
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [form, setForm] = useState<FormState>(EMPTY_FORM);
-  const [deleteTarget, setDeleteTarget] = useState<Category | null>(null);
-  const [restoreTarget, setRestoreTarget] = useState<Category | null>(null);
-  const [purgeTarget, setPurgeTarget] = useState<Category | null>(null);
-  const submitting = createMutation.isPending || updateMutation.isPending;
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const [form, setForm] = useState<FormState>(EMPTY_FORM)
+  const [deleteTarget, setDeleteTarget] = useState<Category | null>(null)
+  const [restoreTarget, setRestoreTarget] = useState<Category | null>(null)
+  const [purgeTarget, setPurgeTarget] = useState<Category | null>(null)
+  const submitting = createMutation.isPending || updateMutation.isPending
 
   useEffect(() => {
-    if (!canWriteCategories && mainTab === "trash") setMainTab("list");
-  }, [canWriteCategories, mainTab]);
+    if (!canWriteCategories && mainTab === "trash") setMainTab("list")
+  }, [canWriteCategories, mainTab])
 
   const tableRows = useMemo<CategoryRow[]>(
     () => buildCategoryTree(categories),
-    [categories],
-  );
+    [categories]
+  )
   const descendantMap = useMemo(
     () => buildDescendantMap(tableRows),
-    [tableRows],
-  );
+    [tableRows]
+  )
   const parentOptions = useMemo(() => {
     const excludedIds = form.id
       ? new Set([form.id, ...(descendantMap.get(form.id) ?? [])])
-      : new Set<string>();
+      : new Set<string>()
 
     return flattenCategoryOptions(tableRows).filter(
-      (option) => !excludedIds.has(option.id),
-    );
-  }, [descendantMap, form.id, tableRows]);
+      (option) => !excludedIds.has(option.id)
+    )
+  }, [descendantMap, form.id, tableRows])
 
   const openCreate = () => {
-    setForm(EMPTY_FORM);
-    setDialogOpen(true);
-  };
+    setForm(EMPTY_FORM)
+    setDialogOpen(true)
+  }
 
   const openEdit = useCallback((c: Category) => {
     setForm({
@@ -305,14 +311,14 @@ function CategoriesPageInner() {
       sortOrder: c.sortOrder,
       isActive: c.isActive,
       parentId: c.parentId ?? ROOT_PARENT_VALUE,
-    });
-    setDialogOpen(true);
-  }, []);
+    })
+    setDialogOpen(true)
+  }, [])
 
   const handleSave = async (): Promise<void> => {
     if (!form.name.trim()) {
-      toast.error("Vui lòng nhập tên danh mục");
-      return;
+      toast.error("Vui lòng nhập tên danh mục")
+      return
     }
     const payload = {
       name: form.name.trim(),
@@ -321,55 +327,57 @@ function CategoriesPageInner() {
       icon: form.icon || null,
       sortOrder: Number.isFinite(form.sortOrder) ? form.sortOrder : 0,
       isActive: form.isActive,
-      parentId:
-        form.parentId === ROOT_PARENT_VALUE ? null : form.parentId,
-    };
+      parentId: form.parentId === ROOT_PARENT_VALUE ? null : form.parentId,
+    }
     if (form.id) {
-      const invalidParentIds = descendantMap.get(form.id) ?? new Set<string>();
-      if (payload.parentId === form.id || invalidParentIds.has(payload.parentId ?? "")) {
-        toast.error("Không thể chọn danh mục con làm danh mục cha");
-        return;
+      const invalidParentIds = descendantMap.get(form.id) ?? new Set<string>()
+      if (
+        payload.parentId === form.id ||
+        invalidParentIds.has(payload.parentId ?? "")
+      ) {
+        toast.error("Không thể chọn danh mục con làm danh mục cha")
+        return
       }
     }
     try {
       if (form.id) {
-        await updateMutation.mutateAsync({ id: form.id, input: payload });
-        toast.success(`Đã cập nhật danh mục "${payload.name}"`);
+        await updateMutation.mutateAsync({ id: form.id, input: payload })
+        toast.success(`Đã cập nhật danh mục "${payload.name}"`)
       } else {
-        await createMutation.mutateAsync(payload);
-        toast.success(`Đã tạo danh mục "${payload.name}"`);
+        await createMutation.mutateAsync(payload)
+        toast.success(`Đã tạo danh mục "${payload.name}"`)
       }
-      setDialogOpen(false);
+      setDialogOpen(false)
     } catch (err) {
       const message =
         err instanceof ApiError
           ? err.message
-          : "Đã xảy ra lỗi, vui lòng thử lại";
-      toast.error(message);
+          : "Đã xảy ra lỗi, vui lòng thử lại"
+      toast.error(message)
     }
-  };
+  }
 
   const requestDelete = useCallback((c: Category): void => {
-    const childCount = c._count?.children ?? 0;
+    const childCount = c._count?.children ?? 0
     if (childCount > 0) {
       toast.error(
-        `Không thể xoá: "${c.name}" vẫn còn ${childCount} danh mục con`,
-      );
-      return;
+        `Không thể xoá: "${c.name}" vẫn còn ${childCount} danh mục con`
+      )
+      return
     }
-    const linkedPosts = c.postCount ?? 0;
+    const linkedPosts = c.postCount ?? 0
     if (linkedPosts > 0) {
       toast.error(
-        `Không thể xoá: còn ${linkedPosts} bài viết đang gắn với cây danh mục này`,
-      );
-      return;
+        `Không thể xoá: còn ${linkedPosts} bài viết đang gắn với cây danh mục này`
+      )
+      return
     }
-    setDeleteTarget(c);
-  }, []);
+    setDeleteTarget(c)
+  }, [])
 
   const confirmDelete = (): void => {
-    if (!deleteTarget) return;
-    const c = deleteTarget;
+    if (!deleteTarget) return
+    const c = deleteTarget
     toast.promise(
       deleteMutation.mutateAsync(c.id).then(() => setDeleteTarget(null)),
       {
@@ -377,13 +385,13 @@ function CategoriesPageInner() {
         success: `Đã đưa «${c.name}» vào thùng rác`,
         error: (err: unknown) =>
           err instanceof ApiError ? err.message : "Không xóa được danh mục",
-      },
-    );
-  };
+      }
+    )
+  }
 
   const confirmRestore = (): void => {
-    if (!restoreTarget) return;
-    const c = restoreTarget;
+    if (!restoreTarget) return
+    const c = restoreTarget
     toast.promise(
       restoreMutation.mutateAsync(c.id).then(() => setRestoreTarget(null)),
       {
@@ -391,13 +399,13 @@ function CategoriesPageInner() {
         success: `Đã khôi phục «${c.name}»`,
         error: (err: unknown) =>
           err instanceof ApiError ? err.message : "Không khôi phục được",
-      },
-    );
-  };
+      }
+    )
+  }
 
   const confirmPurgeTrashed = (): void => {
-    if (!purgeTarget) return;
-    const c = purgeTarget;
+    if (!purgeTarget) return
+    const c = purgeTarget
     toast.promise(
       purgeTrashedMutation.mutateAsync(c.id).then(() => setPurgeTarget(null)),
       {
@@ -405,28 +413,28 @@ function CategoriesPageInner() {
         success: `Đã xóa vĩnh viễn «${c.name}»`,
         error: (err: unknown) =>
           err instanceof ApiError ? err.message : "Không xóa vĩnh viễn được",
-      },
-    );
-  };
+      }
+    )
+  }
 
   const clearAllFilters = useCallback((): void => {
-    setColumnFilters([]);
-    setGlobalFilter("");
-  }, []);
+    setColumnFilters([])
+    setGlobalFilter("")
+  }, [])
 
   const clearTrashFilters = useCallback((): void => {
-    setTrashGlobalFilter("");
-    setTrashPage(1);
-  }, []);
+    setTrashGlobalFilter("")
+    setTrashPage(1)
+  }, [])
 
   const handleColumnFiltersChange = useCallback<OnChangeFn<ColumnFiltersState>>(
     (updater) => {
       setColumnFilters((prev) =>
-        typeof updater === "function" ? updater(prev) : updater,
-      );
+        typeof updater === "function" ? updater(prev) : updater
+      )
     },
-    [],
-  );
+    []
+  )
 
   const columns: ColumnDef<CategoryRow>[] = useMemo(
     () => [
@@ -477,8 +485,8 @@ function CategoriesPageInner() {
         header: "Nhánh con",
         cell: ({ row }) => row.original._count?.children ?? 0,
         filterFn: (row, id, v) => {
-          if (v == null || v === "") return true;
-          return Number(row.getValue(id)) === Number(v);
+          if (v == null || v === "") return true
+          return Number(row.getValue(id)) === Number(v)
         },
         meta: { filterVariant: "number", filterPlaceholder: "Nhánh con = …" },
       },
@@ -486,8 +494,8 @@ function CategoriesPageInner() {
         accessorKey: "postCount",
         header: "Bài viết",
         filterFn: (row, id, v) => {
-          if (v == null || v === "") return true;
-          return Number(row.getValue(id)) === Number(v);
+          if (v == null || v === "") return true
+          return Number(row.getValue(id)) === Number(v)
         },
         meta: { filterVariant: "number", filterPlaceholder: "Bài viết = …" },
       },
@@ -504,8 +512,8 @@ function CategoriesPageInner() {
             </Badge>
           ),
         filterFn: (row, id, v) => {
-          if (v == null || v === "") return true;
-          return row.getValue(id) === v;
+          if (v == null || v === "") return true
+          return row.getValue(id) === v
         },
         meta: {
           filterVariant: "select",
@@ -522,10 +530,10 @@ function CategoriesPageInner() {
         enableSorting: false,
         meta: { disableColumnFilter: true },
         cell: ({ row }) => {
-          const c = row.original;
-          const childCount = c._count?.children ?? 0;
-          const linkedPosts = c.postCount ?? 0;
-          if (!canWriteCategories) return null;
+          const c = row.original
+          const childCount = c._count?.children ?? 0
+          const linkedPosts = c.postCount ?? 0
+          if (!canWriteCategories) return null
           return (
             <div className="flex flex-wrap gap-1">
               <Button
@@ -534,7 +542,7 @@ function CategoriesPageInner() {
                 className="h-8 gap-1 rounded-lg"
                 onClick={() => openEdit(c)}
               >
-                <Pencil className="w-4 h-4 mr-1" /> Sửa
+                <Pencil className="mr-1 h-4 w-4" /> Sửa
               </Button>
               <Button
                 variant="outline"
@@ -543,15 +551,15 @@ function CategoriesPageInner() {
                 onClick={() => requestDelete(c)}
                 disabled={childCount > 0 || linkedPosts > 0}
               >
-                <Trash2 className="w-4 h-4" /> Xóa tạm
+                <Trash2 className="h-4 w-4" /> Xóa tạm
               </Button>
             </div>
-          );
+          )
         },
       },
     ],
-    [canWriteCategories, openEdit, requestDelete],
-  );
+    [canWriteCategories, openEdit, requestDelete]
+  )
 
   const trashColumns = useMemo<ColumnDef<Category>[]>(
     () => [
@@ -576,12 +584,12 @@ function CategoriesPageInner() {
         header: "Xóa lúc",
         enableColumnFilter: false,
         cell: ({ getValue }) => {
-          const v = getValue() as string | null | undefined;
+          const v = getValue() as string | null | undefined
           return (
             <span className="text-xs text-muted-foreground">
               {v ? new Date(v).toLocaleString("vi-VN") : "—"}
             </span>
-          );
+          )
         },
       },
       {
@@ -622,8 +630,8 @@ function CategoriesPageInner() {
         ),
       },
     ],
-    [restoreMutation.isPending, purgeTrashedMutation.isPending],
-  );
+    [restoreMutation.isPending, purgeTrashedMutation.isPending]
+  )
 
   const trashPaginationFooter = (
     <AdminTablePaginationFooter
@@ -636,7 +644,7 @@ function CategoriesPageInner() {
       emptySummary="Không có mục trong thùng rác"
       itemLabel="danh mục"
     />
-  );
+  )
 
   return (
     <PageSection max="full" className="min-w-0 space-y-6">
@@ -647,12 +655,14 @@ function CategoriesPageInner() {
             Danh mục dùng chung
           </TypographyH1>
           <p className={ADMIN_PAGE_SUBTITLE_CLASS}>
-            Quản lý taxonomy dùng chung để gắn cho bài viết, thẻ và các nội dung truyền thông
+            Quản lý taxonomy dùng chung để gắn cho bài viết, thẻ và các nội dung
+            truyền thông
           </p>
           {user && !canWriteCategories && (
             <p className="mt-2 text-sm font-medium text-amber-800 dark:text-amber-200/90">
               Chỉ xem: cần quyền{" "}
-              <span className="font-mono">categories.write</span> để thêm/sửa/xoá.
+              <span className="font-mono">categories.write</span> để
+              thêm/sửa/xoá.
             </p>
           )}
         </div>
@@ -660,16 +670,16 @@ function CategoriesPageInner() {
           <Button
             type="button"
             variant="outline"
-            className="flex h-12 items-center gap-2 rounded-lg border-outline-variant px-4 font-semibold hover:bg-muted"
+            className="border-outline-variant flex h-12 items-center gap-2 rounded-lg px-4 font-semibold hover:bg-muted"
             onClick={() => {
-              void refetch();
-              void refetchTrashedCategories();
+              void refetch()
+              void refetchTrashedCategories()
             }}
           >
             <RefreshCw
               className={cn(
                 "size-5",
-                (isFetching || trashedCategoriesFetching) && "animate-spin",
+                (isFetching || trashedCategoriesFetching) && "animate-spin"
               )}
               aria-hidden
             />
@@ -688,169 +698,170 @@ function CategoriesPageInner() {
                 <Plus className="size-5" aria-hidden /> Thêm danh mục
               </DialogTrigger>
             )}
-          <DialogContent className={ADMIN_DIALOG_CONTENT_CATEGORY_CLASS}>
-            <DialogHeader>
-              <DialogTitle className="text-2xl font-extrabold">
-                {form.id ? "Chỉnh sửa danh mục" : "Tạo danh mục mới"}
-              </DialogTitle>
-              <DialogDescription>
-                Slug được tự động sinh từ tên. Cập nhật slug sẽ tự đồng bộ lại
-                tham chiếu trên các nội dung liên quan.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4 py-2">
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div className="space-y-2 sm:col-span-2">
-                  <Label htmlFor="cat-name">Tên hiển thị</Label>
-                  <Input
-                    id="cat-name"
-                    placeholder="VD: Tin tuyển sinh"
-                    value={form.name}
-                    onChange={(e) => {
-                      const name = e.target.value;
-                      setForm((f) => ({
-                        ...f,
-                        name,
-                        slug: f.id ? f.slug : slugify(name),
-                      }));
-                    }}
-                  />
-                </div>
-                <div className="space-y-2 sm:col-span-2">
-                  <Label htmlFor="cat-slug">Slug</Label>
-                  <Input
-                    id="cat-slug"
-                    placeholder="do-uong"
-                    value={form.slug}
-                    onChange={(e) =>
-                      setForm((f) => ({
-                        ...f,
-                        slug: slugify(e.target.value),
-                      }))
-                    }
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>Biểu tượng</Label>
-                  <Select
-                    value={form.icon}
-                    onValueChange={(v) =>
-                      setForm((f) => ({ ...f, icon: v ?? "Package2" }))
-                    }
-                  >
-                    <SelectTrigger className="w-full rounded-lg">
-                      <SelectValue placeholder="Chọn biểu tượng" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {CATEGORY_ICON_OPTIONS.map((name) => {
-                        const Icon = resolveCategoryIcon(name);
-                        return (
-                          <SelectItem key={name} value={name}>
-                            <div className="flex items-center gap-2">
-                              <Icon className="size-4" /> {name}
-                            </div>
-                          </SelectItem>
-                        );
-                      })}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="cat-order">Thứ tự</Label>
-                  <Input
-                    id="cat-order"
-                    type="number"
-                    value={form.sortOrder}
-                    onChange={(e) =>
-                      setForm((f) => ({
-                        ...f,
-                        sortOrder: Number(e.target.value) || 0,
-                      }))
-                    }
-                  />
-                </div>
-                <div className="space-y-2 sm:col-span-2">
-                  <Label htmlFor="cat-desc">Mô tả</Label>
-                  <Input
-                    id="cat-desc"
-                    placeholder="Mô tả ngắn gọn"
-                    value={form.description}
-                    onChange={(e) =>
-                      setForm((f) => ({ ...f, description: e.target.value }))
-                    }
-                  />
-                </div>
-                <div className="space-y-2 sm:col-span-2">
-                  <Label>Danh mục cha</Label>
-                  <Select
-                    value={form.parentId}
-                    onValueChange={(value) =>
-                      setForm((current) => ({
-                        ...current,
-                        parentId: value || ROOT_PARENT_VALUE,
-                      }))
-                    }
-                  >
-                    <SelectTrigger className="w-full rounded-lg">
-                      <SelectValue placeholder="Chọn danh mục cha" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value={ROOT_PARENT_VALUE}>
-                        Cấp gốc
-                      </SelectItem>
-                      {parentOptions.map((option) => (
-                        <SelectItem key={option.id} value={option.id}>
-                          {`${".. ".repeat(option.depth)}${option.name}`}
+            <DialogContent className={ADMIN_DIALOG_CONTENT_CATEGORY_CLASS}>
+              <DialogHeader>
+                <DialogTitle className="text-2xl font-extrabold">
+                  {form.id ? "Chỉnh sửa danh mục" : "Tạo danh mục mới"}
+                </DialogTitle>
+                <DialogDescription>
+                  Slug được tự động sinh từ tên. Cập nhật slug sẽ tự đồng bộ lại
+                  tham chiếu trên các nội dung liên quan.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4 py-2">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <div className="space-y-2 sm:col-span-2">
+                    <Label htmlFor="cat-name">Tên hiển thị</Label>
+                    <Input
+                      id="cat-name"
+                      placeholder="VD: Tin tuyển sinh"
+                      value={form.name}
+                      onChange={(e) => {
+                        const name = e.target.value
+                        setForm((f) => ({
+                          ...f,
+                          name,
+                          slug: f.id ? f.slug : slugify(name),
+                        }))
+                      }}
+                    />
+                  </div>
+                  <div className="space-y-2 sm:col-span-2">
+                    <Label htmlFor="cat-slug">Slug</Label>
+                    <Input
+                      id="cat-slug"
+                      placeholder="do-uong"
+                      value={form.slug}
+                      onChange={(e) =>
+                        setForm((f) => ({
+                          ...f,
+                          slug: slugify(e.target.value),
+                        }))
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Biểu tượng</Label>
+                    <Select
+                      value={form.icon}
+                      onValueChange={(v) =>
+                        setForm((f) => ({ ...f, icon: v ?? "Package2" }))
+                      }
+                    >
+                      <SelectTrigger className="w-full rounded-lg">
+                        <SelectValue placeholder="Chọn biểu tượng" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {CATEGORY_ICON_OPTIONS.map((name) => {
+                          const Icon = resolveCategoryIcon(name)
+                          return (
+                            <SelectItem key={name} value={name}>
+                              <div className="flex items-center gap-2">
+                                <Icon className="size-4" /> {name}
+                              </div>
+                            </SelectItem>
+                          )
+                        })}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="cat-order">Thứ tự</Label>
+                    <Input
+                      id="cat-order"
+                      type="number"
+                      value={form.sortOrder}
+                      onChange={(e) =>
+                        setForm((f) => ({
+                          ...f,
+                          sortOrder: Number(e.target.value) || 0,
+                        }))
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2 sm:col-span-2">
+                    <Label htmlFor="cat-desc">Mô tả</Label>
+                    <Input
+                      id="cat-desc"
+                      placeholder="Mô tả ngắn gọn"
+                      value={form.description}
+                      onChange={(e) =>
+                        setForm((f) => ({ ...f, description: e.target.value }))
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2 sm:col-span-2">
+                    <Label>Danh mục cha</Label>
+                    <Select
+                      value={form.parentId}
+                      onValueChange={(value) =>
+                        setForm((current) => ({
+                          ...current,
+                          parentId: value || ROOT_PARENT_VALUE,
+                        }))
+                      }
+                    >
+                      <SelectTrigger className="w-full rounded-lg">
+                        <SelectValue placeholder="Chọn danh mục cha" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value={ROOT_PARENT_VALUE}>
+                          Cấp gốc
                         </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <p className="text-xs text-muted-foreground">
-                    Danh mục con sẽ hiển thị lùi cấp trong bảng tree.
-                  </p>
-                </div>
-                <div className="flex items-center justify-between rounded-lg border border-outline-variant px-4 py-3 sm:col-span-2">
-                  <div>
-                    <p className="text-sm font-semibold">Đang hoạt động</p>
+                        {parentOptions.map((option) => (
+                          <SelectItem key={option.id} value={option.id}>
+                            {`${".. ".repeat(option.depth)}${option.name}`}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <p className="text-xs text-muted-foreground">
-                      Khi tắt, danh mục sẽ ẩn khỏi các bộ chọn nội dung nhưng vẫn giữ lại tham chiếu cũ.
+                      Danh mục con sẽ hiển thị lùi cấp trong bảng tree.
                     </p>
                   </div>
-                  <Switch
-                    checked={form.isActive}
-                    onCheckedChange={(v) =>
-                      setForm((f) => ({ ...f, isActive: v }))
-                    }
-                  />
+                  <div className="border-outline-variant flex items-center justify-between rounded-lg border px-4 py-3 sm:col-span-2">
+                    <div>
+                      <p className="text-sm font-semibold">Đang hoạt động</p>
+                      <p className="text-xs text-muted-foreground">
+                        Khi tắt, danh mục sẽ ẩn khỏi các bộ chọn nội dung nhưng
+                        vẫn giữ lại tham chiếu cũ.
+                      </p>
+                    </div>
+                    <Switch
+                      checked={form.isActive}
+                      onCheckedChange={(v) =>
+                        setForm((f) => ({ ...f, isActive: v }))
+                      }
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
-            <DialogFooter>
-              <Button
-                variant="outline"
-                className="mr-auto rounded-lg"
-                onClick={() => setDialogOpen(false)}
-                disabled={submitting}
-              >
-                Hủy
-              </Button>
-              <Button
-                className="rounded-lg font-bold"
-                onClick={() => void handleSave()}
-                disabled={submitting}
-              >
-                {submitting ? "Đang lưu..." : "Lưu"}
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+              <DialogFooter>
+                <Button
+                  variant="outline"
+                  className="mr-auto rounded-lg"
+                  onClick={() => setDialogOpen(false)}
+                  disabled={submitting}
+                >
+                  Hủy
+                </Button>
+                <Button
+                  className="rounded-lg font-bold"
+                  onClick={() => void handleSave()}
+                  disabled={submitting}
+                >
+                  {submitting ? "Đang lưu..." : "Lưu"}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
 
       <Tabs
         value={mainTab}
         onValueChange={(v) => {
-          if (v === "list" || v === "trash") setMainTab(v);
+          if (v === "list" || v === "trash") setMainTab(v)
         }}
         className="space-y-6"
       >
@@ -882,17 +893,20 @@ function CategoriesPageInner() {
         </TabsList>
 
         <TabsContent value="list" className="mt-0 space-y-4">
-          <div className="rounded-lg border border-outline-variant bg-surface-container-low p-4 shadow-sm">
+          <div className="border-outline-variant bg-surface-container-low rounded-lg border p-4 shadow-sm">
             <p className="flex items-start gap-2 text-sm text-muted-foreground">
-              <Info className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
+              <Info
+                className="mt-0.5 size-4 shrink-0 text-primary"
+                aria-hidden
+              />
               <span className="text-muted-foreground">
-                Danh sách active tải toàn bộ cây để hiển thị đúng quan hệ cha-con.
-                Có thể tìm nhanh hoặc lọc cột trực tiếp trên bảng tree.
+                Danh sách active tải toàn bộ cây để hiển thị đúng quan hệ
+                cha-con. Có thể tìm nhanh hoặc lọc cột trực tiếp trên bảng tree.
                 {canWriteCategories ? (
                   <>
                     {" "}
-                    Chỉ cho xóa tạm khi danh mục không còn nhánh con và không còn
-                    bài viết gắn vào cây đó.
+                    Chỉ cho xóa tạm khi danh mục không còn nhánh con và không
+                    còn bài viết gắn vào cây đó.
                   </>
                 ) : null}
               </span>
@@ -941,10 +955,10 @@ function CategoriesPageInner() {
               selectedRowIds={listCategorySelection}
               onSelectedRowIdsChange={setListCategorySelection}
               canSelectRow={(row) => {
-                const c = row.original;
-                const childCount = c._count?.children ?? 0;
-                const linkedPosts = c.postCount ?? 0;
-                return !(childCount > 0 || linkedPosts > 0);
+                const c = row.original
+                const childCount = c._count?.children ?? 0
+                const linkedPosts = c.postCount ?? 0
+                return !(childCount > 0 || linkedPosts > 0)
               }}
               bulkActions={
                 canWriteCategories
@@ -955,13 +969,15 @@ function CategoriesPageInner() {
                         variant: "outline",
                         className: "border-destructive/40 text-destructive",
                         onAction: async (rows) => {
-                          const ids = rows.map((r) => r.id);
-                          if (!ids.length) return;
+                          const ids = rows.map((r) => r.id)
+                          if (!ids.length) return
                           await bulkCategoriesMutation.mutateAsync({
                             action: "delete",
                             ids,
-                          });
-                          toast.success(`Đã đưa ${ids.length} danh mục vào thùng rác`);
+                          })
+                          toast.success(
+                            `Đã đưa ${ids.length} danh mục vào thùng rác`
+                          )
                         },
                       },
                     ]
@@ -1016,7 +1032,10 @@ function CategoriesPageInner() {
             ) : (
               <>
                 <p className="flex items-start gap-2 text-sm text-muted-foreground">
-                  <Info className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
+                  <Info
+                    className="mt-0.5 size-4 shrink-0 text-primary"
+                    aria-hidden
+                  />
                   <span>
                     Danh mục trong thùng rác sẽ bị ẩn khỏi bộ chọn truyền thông.
                   </span>
@@ -1040,13 +1059,13 @@ function CategoriesPageInner() {
                       id: "bulk-category-restore",
                       label: "Khôi phục đã chọn",
                       onAction: async (rows) => {
-                        const ids = rows.map((r) => r.id);
-                        if (!ids.length) return;
+                        const ids = rows.map((r) => r.id)
+                        if (!ids.length) return
                         await bulkCategoriesMutation.mutateAsync({
                           action: "restore",
                           ids,
-                        });
-                        toast.success(`Đã khôi phục ${ids.length} danh mục`);
+                        })
+                        toast.success(`Đã khôi phục ${ids.length} danh mục`)
                       },
                     },
                     {
@@ -1055,13 +1074,13 @@ function CategoriesPageInner() {
                       variant: "outline",
                       className: "border-destructive/40 text-destructive",
                       onAction: async (rows) => {
-                        const ids = rows.map((r) => r.id);
-                        if (!ids.length) return;
+                        const ids = rows.map((r) => r.id)
+                        if (!ids.length) return
                         await bulkCategoriesMutation.mutateAsync({
                           action: "hard-delete",
                           ids,
-                        });
-                        toast.success(`Đã xóa vĩnh viễn ${ids.length} danh mục`);
+                        })
+                        toast.success(`Đã xóa vĩnh viễn ${ids.length} danh mục`)
                       },
                     },
                   ]}
@@ -1077,7 +1096,7 @@ function CategoriesPageInner() {
                         <RefreshCw
                           className={cn(
                             "size-4",
-                            trashedCategoriesFetching && "animate-spin",
+                            trashedCategoriesFetching && "animate-spin"
                           )}
                           aria-hidden
                         />
@@ -1107,17 +1126,22 @@ function CategoriesPageInner() {
       <AdminConfirmActionDialog
         open={deleteTarget != null}
         onOpenChange={(open) => {
-          if (!open) setDeleteTarget(null);
+          if (!open) setDeleteTarget(null)
         }}
         contentClassName={ADMIN_ALERT_DIALOG_CONTENT_CLASS}
-        icon={<Archive className="size-5 shrink-0 text-muted-foreground" aria-hidden />}
+        icon={
+          <Archive
+            className="size-5 shrink-0 text-muted-foreground"
+            aria-hidden
+          />
+        }
         title="Đưa danh mục vào thùng rác?"
         description={
           deleteTarget ? (
             <>
-              <strong className="text-foreground">{deleteTarget.name}</strong> (slug{" "}
-              <span className="font-mono">{deleteTarget.slug}</span>) sẽ ẩn khỏi hệ thống cho
-              đến khi khôi phục.
+              <strong className="text-foreground">{deleteTarget.name}</strong>{" "}
+              (slug <span className="font-mono">{deleteTarget.slug}</span>) sẽ
+              ẩn khỏi hệ thống cho đến khi khôi phục.
             </>
           ) : null
         }
@@ -1131,7 +1155,7 @@ function CategoriesPageInner() {
       <AdminConfirmActionDialog
         open={purgeTarget != null}
         onOpenChange={(open) => {
-          if (!open) setPurgeTarget(null);
+          if (!open) setPurgeTarget(null)
         }}
         contentClassName={ADMIN_ALERT_DIALOG_CONTENT_CLASS}
         titleClassName="flex items-center gap-2 text-left text-destructive"
@@ -1140,9 +1164,10 @@ function CategoriesPageInner() {
         description={
           purgeTarget ? (
             <>
-              <strong className="text-foreground">{purgeTarget.name}</strong> (slug{" "}
-              <span className="font-mono">{purgeTarget.slug}</span>) sẽ bị xoá khỏi cơ sở dữ liệu.
-              Không thể hoàn tác. API từ chối nếu còn sản phẩm đang hoạt động dùng slug này.
+              <strong className="text-foreground">{purgeTarget.name}</strong>{" "}
+              (slug <span className="font-mono">{purgeTarget.slug}</span>) sẽ bị
+              xoá khỏi cơ sở dữ liệu. Không thể hoàn tác. API từ chối nếu còn
+              nội dung đang hoạt động dùng slug này.
             </>
           ) : null
         }
@@ -1156,16 +1181,22 @@ function CategoriesPageInner() {
       <AdminConfirmActionDialog
         open={restoreTarget != null}
         onOpenChange={(open) => {
-          if (!open) setRestoreTarget(null);
+          if (!open) setRestoreTarget(null)
         }}
         contentClassName={ADMIN_ALERT_DIALOG_CONTENT_CLASS}
-        icon={<ArchiveRestore className="size-5 shrink-0 text-primary" aria-hidden />}
+        icon={
+          <ArchiveRestore
+            className="size-5 shrink-0 text-primary"
+            aria-hidden
+          />
+        }
         title="Khôi phục danh mục?"
         description={
           restoreTarget ? (
             <>
-              Đưa <strong className="text-foreground">{restoreTarget.name}</strong> trở lại danh
-              sách đang hoạt động.
+              Đưa{" "}
+              <strong className="text-foreground">{restoreTarget.name}</strong>{" "}
+              trở lại danh sách đang hoạt động.
             </>
           ) : null
         }
@@ -1175,7 +1206,7 @@ function CategoriesPageInner() {
         onConfirm={confirmRestore}
       />
     </PageSection>
-  );
+  )
 }
 
 export default function CategoriesPage() {
@@ -1183,5 +1214,5 @@ export default function CategoriesPage() {
     <AdminPageGuard roles={["super_admin", "admin", "manager"]}>
       <CategoriesPageInner />
     </AdminPageGuard>
-  );
+  )
 }

@@ -42,7 +42,9 @@ export class ParentStudentsPublicController {
   ) {
     const parentId = headers[APP_HEADERS.USER_ID]?.trim();
     if (!parentId) {
-      const { statusCode, body } = createErrorResponse('Chưa đăng nhập', { status: 401 });
+      const { statusCode, body } = createErrorResponse('Chưa đăng nhập', {
+        status: 401,
+      });
       return res.status(statusCode).json(body);
     }
     try {
@@ -64,11 +66,15 @@ export class ParentStudentsPublicController {
   ) {
     const parentId = headers[APP_HEADERS.USER_ID]?.trim();
     if (!parentId) {
-      const { statusCode, body: b } = createErrorResponse('Chưa đăng nhập', { status: 401 });
+      const { statusCode, body: b } = createErrorResponse('Chưa đăng nhập', {
+        status: 401,
+      });
       return res.status(statusCode).json(b);
     }
     if (!body.studentCode?.trim()) {
-      const { statusCode, body: b } = createErrorResponse('Mã sinh viên không được để trống');
+      const { statusCode, body: b } = createErrorResponse(
+        'Mã sinh viên không được để trống',
+      );
       return res.status(statusCode).json(b);
     }
     try {
@@ -96,7 +102,9 @@ export class ParentStudentsPublicController {
   ) {
     const parentId = headers[APP_HEADERS.USER_ID]?.trim();
     if (!parentId) {
-      const { statusCode, body } = createErrorResponse('Chưa đăng nhập', { status: 401 });
+      const { statusCode, body } = createErrorResponse('Chưa đăng nhập', {
+        status: 401,
+      });
       return res.status(statusCode).json(body);
     }
     try {
@@ -126,7 +134,8 @@ export class ParentStudentsPublicController {
         'Content-Type': 'application/json',
       };
       if (process.env.EXTERNAL_API_TOKEN) {
-        fetchHeaders['Authorization'] = `Bearer ${process.env.EXTERNAL_API_TOKEN}`;
+        fetchHeaders['Authorization'] =
+          `Bearer ${process.env.EXTERNAL_API_TOKEN}`;
       }
 
       const response = await fetch(
@@ -144,7 +153,9 @@ export class ParentStudentsPublicController {
       return res.status(statusCode).json(body);
     } catch (err) {
       this.logger.error('getGrades', err);
-      const { statusCode, body } = createErrorResponse('Không thể lấy dữ liệu điểm');
+      const { statusCode, body } = createErrorResponse(
+        'Không thể lấy dữ liệu điểm',
+      );
       return res.status(statusCode).json(body);
     }
   }
@@ -157,13 +168,18 @@ export class ParentStudentsPublicController {
   ) {
     const parentId = headers[APP_HEADERS.USER_ID]?.trim();
     if (!parentId) {
-      const { statusCode, body } = createErrorResponse('Chưa đăng nhập', { status: 401 });
+      const { statusCode, body } = createErrorResponse('Chưa đăng nhập', {
+        status: 401,
+      });
       return res.status(statusCode).json(body);
     }
     try {
       const ok = await this.svc.remove(id, parentId);
       if (!ok) {
-        const { statusCode, body } = createErrorResponse('Không tìm thấy hoặc không có quyền', { status: 404 });
+        const { statusCode, body } = createErrorResponse(
+          'Không tìm thấy hoặc không có quyền',
+          { status: 404 },
+        );
         return res.status(statusCode).json(body);
       }
       const { statusCode, body } = createSuccessResponse({ id });
@@ -183,14 +199,15 @@ export class ParentStudentsAdminController {
   constructor(private readonly svc: ParentStudentsService) {}
 
   @Get()
-  async list(
-    @Query() query: Record<string, string>,
-    @Res() res: Response,
-  ) {
+  async list(@Query() query: Record<string, string>, @Res() res: Response) {
     const page = Math.max(1, parseInt(query.page, 10) || 1);
     const limit = Math.min(100, Math.max(1, parseInt(query.limit, 10) || 20));
     try {
-      const result = await this.svc.listAll({ page, limit, status: query.status });
+      const result = await this.svc.listAll({
+        page,
+        limit,
+        status: query.status,
+      });
       const { statusCode, body } = createSuccessResponse(result);
       return res.status(statusCode).json(body);
     } catch (err) {
@@ -209,13 +226,17 @@ export class ParentStudentsAdminController {
   ) {
     const reviewerId = headers[APP_HEADERS.USER_ID]?.trim() ?? 'system';
     if (!['approved', 'rejected'].includes(body.action)) {
-      const { statusCode, body: b } = createErrorResponse('action phải là approved hoặc rejected');
+      const { statusCode, body: b } = createErrorResponse(
+        'action phải là approved hoặc rejected',
+      );
       return res.status(statusCode).json(b);
     }
     try {
       const data = await this.svc.review(id, body.action, reviewerId);
       if (!data) {
-        const { statusCode, body: b } = createErrorResponse('Không tìm thấy', { status: 404 });
+        const { statusCode, body: b } = createErrorResponse('Không tìm thấy', {
+          status: 404,
+        });
         return res.status(statusCode).json(b);
       }
       const { statusCode, body: b } = createSuccessResponse(data);

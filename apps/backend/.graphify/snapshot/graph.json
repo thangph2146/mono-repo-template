@@ -76,6 +76,25 @@
       "client": true
     },
     {
+      "id": "dir_src_app_guides",
+      "label": "guides/",
+      "path": "src/app/guides",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_app_guides_page_tsx",
+      "label": "page.tsx",
+      "path": "src/app/guides/page.tsx",
+      "color": "#00ff41",
+      "size": 14,
+      "community": "src/app/guides",
+      "type": "page",
+      "client": true
+    },
+    {
       "id": "file_src_app_layout_tsx",
       "label": "layout.tsx",
       "path": "src/app/layout.tsx",
@@ -115,12 +134,50 @@
       "client": false
     },
     {
+      "id": "dir_src_app_my_students",
+      "label": "my-students/",
+      "path": "src/app/my-students",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_app_my_students_page_tsx",
+      "label": "page.tsx",
+      "path": "src/app/my-students/page.tsx",
+      "color": "#00ff41",
+      "size": 14,
+      "community": "src/app/my-students",
+      "type": "page",
+      "client": true
+    },
+    {
       "id": "file_src_app_page_tsx",
       "label": "page.tsx",
       "path": "src/app/page.tsx",
       "color": "#00ff41",
       "size": 14,
       "community": "src/app",
+      "type": "page",
+      "client": true
+    },
+    {
+      "id": "dir_src_app_parent_students",
+      "label": "parent-students/",
+      "path": "src/app/parent-students",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_app_parent_students_page_tsx",
+      "label": "page.tsx",
+      "path": "src/app/parent-students/page.tsx",
+      "color": "#00ff41",
+      "size": 14,
+      "community": "src/app/parent-students",
       "type": "page",
       "client": true
     },
@@ -198,6 +255,16 @@
       "size": 14,
       "community": "src/app/register",
       "type": "page",
+      "client": false
+    },
+    {
+      "id": "file_src_app_robots_ts",
+      "label": "robots.ts",
+      "path": "src/app/robots.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/app",
+      "type": "ts",
       "client": false
     },
     {
@@ -307,6 +374,16 @@
       "client": true
     },
     {
+      "id": "file_src_components_admin_page_guard_tsx",
+      "label": "admin-page-guard.tsx",
+      "path": "src/components/admin-page-guard.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/components",
+      "type": "tsx",
+      "client": true
+    },
+    {
       "id": "file_src_components_admin_shell_tsx",
       "label": "admin-shell.tsx",
       "path": "src/components/admin-shell.tsx",
@@ -330,6 +407,16 @@
       "id": "file_src_components_api_scope_notice_tsx",
       "label": "api-scope-notice.tsx",
       "path": "src/components/api-scope-notice.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/components",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_components_dashboard_charts_tsx",
+      "label": "dashboard-charts.tsx",
+      "path": "src/components/dashboard-charts.tsx",
       "color": "#00ddff",
       "size": 10,
       "community": "src/components",
@@ -622,6 +709,25 @@
       "client": false
     },
     {
+      "id": "dir_src_types",
+      "label": "types/",
+      "path": "src/types",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_types_dashboard_ts",
+      "label": "dashboard.ts",
+      "path": "src/types/dashboard.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/types",
+      "type": "ts",
+      "client": false
+    },
+    {
       "id": "dir_public",
       "label": "public/",
       "path": "public",
@@ -669,6 +775,16 @@
     },
     {
       "source": "dir_src_app",
+      "target": "dir_src_app_guides",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_guides",
+      "target": "file_src_app_guides_page_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app",
       "target": "file_src_app_layout_tsx",
       "relation": "contains"
     },
@@ -689,7 +805,27 @@
     },
     {
       "source": "dir_src_app",
+      "target": "dir_src_app_my_students",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_my_students",
+      "target": "file_src_app_my_students_page_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app",
       "target": "file_src_app_page_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app",
+      "target": "dir_src_app_parent_students",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_parent_students",
+      "target": "file_src_app_parent_students_page_tsx",
       "relation": "contains"
     },
     {
@@ -730,6 +866,11 @@
     {
       "source": "dir_src_app_register",
       "target": "file_src_app_register_page_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app",
+      "target": "file_src_app_robots_ts",
       "relation": "contains"
     },
     {
@@ -789,6 +930,11 @@
     },
     {
       "source": "dir_src_components",
+      "target": "file_src_components_admin_page_guard_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components",
       "target": "file_src_components_admin_shell_tsx",
       "relation": "contains"
     },
@@ -800,6 +946,11 @@
     {
       "source": "dir_src_components",
       "target": "file_src_components_api_scope_notice_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components",
+      "target": "file_src_components_dashboard_charts_tsx",
       "relation": "contains"
     },
     {
@@ -948,6 +1099,16 @@
       "relation": "contains"
     },
     {
+      "source": "dir_src",
+      "target": "dir_src_types",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_types",
+      "target": "file_src_types_dashboard_ts",
+      "relation": "contains"
+    },
+    {
       "source": "file_src_app_layout_tsx",
       "target": "file_src_app_page_tsx",
       "relation": "renders"
@@ -965,6 +1126,11 @@
     {
       "source": "file_src_app_categories_page_tsx",
       "target": "file_src_components_admin_confirm_action_dialog_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_categories_page_tsx",
+      "target": "file_src_components_admin_page_guard_tsx",
       "relation": "imports"
     },
     {
@@ -1028,6 +1194,26 @@
       "relation": "imports"
     },
     {
+      "source": "file_src_app_data_page_tsx",
+      "target": "file_src_components_admin_page_guard_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_guides_page_tsx",
+      "target": "file_src_lib_api_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_guides_page_tsx",
+      "target": "file_src_lib_auth_session_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_guides_page_tsx",
+      "target": "file_src_components_admin_page_guard_tsx",
+      "relation": "imports"
+    },
+    {
       "source": "file_src_app_layout_tsx",
       "target": "file_src_providers_query_provider_tsx",
       "relation": "imports"
@@ -1048,8 +1234,53 @@
       "relation": "imports"
     },
     {
+      "source": "file_src_app_my_students_page_tsx",
+      "target": "file_src_providers_auth_provider_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_my_students_page_tsx",
+      "target": "file_src_lib_api_ts",
+      "relation": "imports"
+    },
+    {
       "source": "file_src_app_page_tsx",
-      "target": "file_src_components_api_scope_notice_tsx",
+      "target": "file_src_providers_auth_provider_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_page_tsx",
+      "target": "file_src_lib_api_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_page_tsx",
+      "target": "file_src_types_dashboard_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_page_tsx",
+      "target": "file_src_components_dashboard_charts_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_parent_students_page_tsx",
+      "target": "dir_src_components_admin_data_table",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_parent_students_page_tsx",
+      "target": "file_src_components_admin_confirm_action_dialog_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_parent_students_page_tsx",
+      "target": "file_src_components_admin_page_guard_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_parent_students_page_tsx",
+      "target": "file_src_lib_api_ts",
       "relation": "imports"
     },
     {
@@ -1065,6 +1296,11 @@
     {
       "source": "file_src_app_posts_page_tsx",
       "target": "file_src_components_admin_table_pagination_footer_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_posts_page_tsx",
+      "target": "file_src_components_admin_page_guard_tsx",
       "relation": "imports"
     },
     {
@@ -1164,6 +1400,11 @@
     },
     {
       "source": "file_src_app_staff_page_tsx",
+      "target": "file_src_components_admin_page_guard_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_staff_page_tsx",
       "target": "file_src_lib_api_ts",
       "relation": "imports"
     },
@@ -1195,6 +1436,11 @@
     {
       "source": "file_src_app_tags_page_tsx",
       "target": "file_src_components_admin_confirm_action_dialog_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_tags_page_tsx",
+      "target": "file_src_components_admin_page_guard_tsx",
       "relation": "imports"
     },
     {
@@ -1233,6 +1479,11 @@
       "relation": "imports"
     },
     {
+      "source": "file_src_components_admin_page_guard_tsx",
+      "target": "file_src_providers_auth_provider_tsx",
+      "relation": "imports"
+    },
+    {
       "source": "file_src_components_admin_shell_tsx",
       "target": "file_src_components_sidebar_tsx",
       "relation": "imports"
@@ -1255,6 +1506,11 @@
     {
       "source": "file_src_components_admin_shell_tsx",
       "target": "file_src_lib_auth_routes_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_dashboard_charts_tsx",
+      "target": "file_src_types_dashboard_ts",
       "relation": "imports"
     },
     {

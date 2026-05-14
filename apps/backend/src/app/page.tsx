@@ -1,8 +1,8 @@
-"use client";
+"use client"
 
-import dynamic from "next/dynamic";
-import type React from "react";
-import Link from "next/link";
+import dynamic from "next/dynamic"
+import type React from "react"
+import Link from "next/link"
 import {
   FileText,
   FolderOpen,
@@ -12,55 +12,51 @@ import {
   Tags,
   TrendingUp,
   Users,
-} from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
-import { Button } from "@ui/components/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@ui/components/card";
-import { PageSection } from "@ui/components/layout";
-import { Skeleton } from "@ui/components/skeleton";
-import { TypographyH1 } from "@ui/components/typography";
+} from "lucide-react"
+import { useQuery } from "@tanstack/react-query"
+import { Card, CardContent, CardHeader, CardTitle } from "@ui/components/card"
+import { PageSection } from "@ui/components/layout"
+import { Skeleton } from "@ui/components/skeleton"
+import { TypographyH1 } from "@ui/components/typography"
 import {
   ADMIN_PAGE_SUBTITLE_CLASS,
   ADMIN_PAGE_TITLE_ICON_CLASS,
   ADMIN_PAGE_TITLE_PRIMARY_CLASS,
-} from "@ui/lib/layout-shell";
-import { canUserAccess, PERMISSION_CODES } from "@workspace/api-client";
-import { useAuth } from "@/providers/auth-provider";
-import { api } from "@/lib/api";
-import type { DashboardStatsDto, DashboardOverviewDto } from "@/types/dashboard";
+} from "@ui/lib/layout-shell"
+import { PERMISSION_CODES } from "@workspace/api-client"
+import { useAuth } from "@/providers/auth-provider"
+import { api } from "@/lib/api"
+import type { DashboardStatsDto, DashboardOverviewDto } from "@/types/dashboard"
 
 const MonthlyLineChart = dynamic(
   () => import("@/components/dashboard-charts").then((m) => m.MonthlyLineChart),
-  { ssr: false },
-);
+  { ssr: false }
+)
 const MonthlyBarChart = dynamic(
   () => import("@/components/dashboard-charts").then((m) => m.MonthlyBarChart),
-  { ssr: false },
-);
+  { ssr: false }
+)
 const CategoryDoughnutChart = dynamic(
-  () => import("@/components/dashboard-charts").then((m) => m.CategoryDoughnutChart),
-  { ssr: false },
-);
+  () =>
+    import("@/components/dashboard-charts").then(
+      (m) => m.CategoryDoughnutChart
+    ),
+  { ssr: false }
+)
 const TopPostsChart = dynamic(
   () => import("@/components/dashboard-charts").then((m) => m.TopPostsChart),
-  { ssr: false },
-);
+  { ssr: false }
+)
 
 type StatCard = {
-  label: string;
-  value: number | undefined;
-  isLoading: boolean;
-  icon: React.ElementType;
-  href: string;
-  color: string;
-  change?: number;
-};
+  label: string
+  value: number | undefined
+  isLoading: boolean
+  icon: React.ElementType
+  href: string
+  color: string
+  change?: number
+}
 
 function StatCardSkeleton() {
   return (
@@ -70,23 +66,25 @@ function StatCardSkeleton() {
         <Skeleton className="size-8 rounded-lg" />
       </CardHeader>
       <CardContent>
-        <Skeleton className="h-8 w-16 mb-1" />
+        <Skeleton className="mb-1 h-8 w-16" />
         <Skeleton className="h-3 w-28" />
       </CardContent>
     </Card>
-  );
+  )
 }
 
 function StatCardItem({ card }: { card: StatCard }) {
-  const Icon = card.icon;
+  const Icon = card.icon
   return (
     <Link href={card.href} className="group block">
-      <Card className="transition-all duration-200 hover:-translate-y-px hover:shadow-md group-hover:border-primary/30">
+      <Card className="transition-all duration-200 group-hover:border-primary/30 hover:-translate-y-px hover:shadow-md">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium text-muted-foreground">
             {card.label}
           </CardTitle>
-          <div className={`flex size-8 items-center justify-center rounded-lg ${card.color}`}>
+          <div
+            className={`flex size-8 items-center justify-center rounded-lg ${card.color}`}
+          >
             <Icon className="size-4" />
           </div>
         </CardHeader>
@@ -98,18 +96,18 @@ function StatCardItem({ card }: { card: StatCard }) {
         </CardContent>
       </Card>
     </Link>
-  );
+  )
 }
 
 type QuickLink = {
-  href: string;
-  label: string;
-  description: string;
-  icon: React.ElementType;
-  permission: (typeof PERMISSION_CODES)[keyof typeof PERMISSION_CODES] | null;
-};
+  href: string
+  label: string
+  description: string
+  icon: React.ElementType
+  permission: (typeof PERMISSION_CODES)[keyof typeof PERMISSION_CODES] | null
+}
 
-const QUICK_LINKS: QuickLink[] = [
+export const QUICK_LINKS: QuickLink[] = [
   {
     href: "/posts",
     label: "Quản lý bài viết",
@@ -152,9 +150,12 @@ const QUICK_LINKS: QuickLink[] = [
     icon: Headset,
     permission: PERMISSION_CODES.CONTACT_REQUESTS_VIEW,
   },
-];
+]
 
-function buildStats(overview: DashboardOverviewDto | undefined, isLoading: boolean): StatCard[] {
+function buildStats(
+  overview: DashboardOverviewDto | undefined,
+  isLoading: boolean
+): StatCard[] {
   return [
     {
       label: "Bài viết",
@@ -192,42 +193,50 @@ function buildStats(overview: DashboardOverviewDto | undefined, isLoading: boole
       color: "bg-rose-500/10 text-rose-600 dark:text-rose-400",
       change: overview?.contactRequestsChange,
     },
-  ];
+  ]
 }
 
 export default function AdminDashboardPage() {
-  const { user } = useAuth();
+  const { user } = useAuth()
 
-  const displayName = user?.name?.trim() || user?.email || "Người dùng";
+  const displayName = user?.name?.trim() || user?.email || "Người dùng"
 
   const { data, isLoading } = useQuery<DashboardStatsDto>({
     queryKey: ["dashboard", "stats"],
     queryFn: async () => {
-      const payload = await api.http.get<unknown>("/admin/dashboard/stats");
-      const envelope = payload as { success?: boolean; data?: DashboardStatsDto };
-      return envelope.data as DashboardStatsDto;
+      const payload = await api.http.get<unknown>("/admin/dashboard/stats")
+      const envelope = payload as {
+        success?: boolean
+        data?: DashboardStatsDto
+      }
+      return envelope.data as DashboardStatsDto
     },
     staleTime: 60_000,
-  });
+  })
 
-  const stats = buildStats(data?.overview, isLoading);
+  const stats = buildStats(data?.overview, isLoading)
 
   return (
     <PageSection max="full" className="min-w-0 space-y-8">
       {/* Header */}
       <div>
         <TypographyH1 className={ADMIN_PAGE_TITLE_PRIMARY_CLASS}>
-          <LayoutDashboard className={ADMIN_PAGE_TITLE_ICON_CLASS} aria-hidden />
+          <LayoutDashboard
+            className={ADMIN_PAGE_TITLE_ICON_CLASS}
+            aria-hidden
+          />
           Tổng quan hệ thống
         </TypographyH1>
         <p className={ADMIN_PAGE_SUBTITLE_CLASS}>
-          Xin chào, <span className="font-semibold text-foreground">{displayName}</span>. Đây là bảng điều khiển quản trị HUB Parent.
+          Xin chào,{" "}
+          <span className="font-semibold text-foreground">{displayName}</span>.
+          Đây là bảng điều khiển quản trị HUB Parent.
         </p>
       </div>
 
       {/* Stat cards */}
       <div>
-        <div className="mb-3 flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+        <div className="mb-3 flex items-center gap-2 text-sm font-semibold tracking-wide text-muted-foreground uppercase">
           <TrendingUp className="size-4" aria-hidden />
           Tổng quan dữ liệu
         </div>
@@ -237,7 +246,7 @@ export default function AdminDashboardPage() {
               <StatCardSkeleton key={card.label} />
             ) : (
               <StatCardItem key={card.label} card={card} />
-            ),
+            )
           )}
         </div>
       </div>
@@ -245,7 +254,7 @@ export default function AdminDashboardPage() {
       {/* Charts */}
       {data && (data.monthlyData?.length ?? 0) > 0 && (
         <div className="space-y-4">
-          <div className="mb-1 flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+          <div className="mb-1 flex items-center gap-2 text-sm font-semibold tracking-wide text-muted-foreground uppercase">
             <TrendingUp className="size-4" aria-hidden />
             Biểu đồ thống kê
           </div>
@@ -263,7 +272,6 @@ export default function AdminDashboardPage() {
           </div>
         </div>
       )}
-
     </PageSection>
-  );
+  )
 }

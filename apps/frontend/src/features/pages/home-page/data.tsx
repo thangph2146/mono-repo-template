@@ -1,12 +1,13 @@
-import { HOME_ROUTES } from "./constants";
-import { Users, MessageSquare } from "lucide-react";
+import { Users, MessageSquare } from "lucide-react"
+import { HOME_ROUTES } from "./constants"
 
 // Dữ liệu cho HeroSection
 export const HERO_DATA = {
-  title: "Hệ thống Kết nối Phụ huynh",
-  description: "Kiến tạo cầu nối vững chắc giữa Gia đình và Nhà trường, đồng hành cùng sinh viên trên con đường tri thức.",
-  flipWords: ["Kết nối", "Đồng hành", "Phát triển", "Vươn xa"],
-  quote: '"Tâm an lòng, con vững bước – Đồng hành cùng tương lai con tại HUB"',
+  title: "HUB Parent - Kết nối phụ huynh và nhà trường",
+  description:
+    "Cổng thông tin giúp phụ huynh đồng hành cùng sinh viên HUB: cập nhật thông báo, gửi yêu cầu hỗ trợ và theo dõi các thông tin học tập được nhà trường cung cấp.",
+  flipWords: ["Kết nối", "Đồng hành", "Cập nhật", "Hỗ trợ"],
+  quote: '"Tâm an lòng, con vững bước - Đồng hành cùng tương lai con tại HUB"',
   backgroundImage: {
     src: "https://fileserver2.hub.edu.vn/IMAGES/2025/12/16/20251216103027-101020.png",
     alt: "Trường Đại học Ngân hàng TP.HCM",
@@ -27,4 +28,4 @@ export const HERO_DATA = {
       responsiveText: { mobile: "Đăng ký", desktop: "Tạo tài khoản mới" },
     },
   ],
-};
+}

@@ -1,12 +1,13 @@
-import type { Metadata } from "next";
-import { HomeClient } from "@/features/pages/home-page";  
+import type { Metadata } from "next"
+import { HomeClient } from "@/features/pages/home-page"
+import { buildSeoMetadata, SITE_DESCRIPTION, SITE_TITLE } from "@/lib/seo"
 
-export const metadata: Metadata = {
-  title: { absolute: "HUB" },
-  description:
-    "Hệ thống kết nối phụ huynh và nhà trường của Trường Đại học Ngân hàng TP.HCM.",
-};
+export const metadata: Metadata = buildSeoMetadata({
+  title: SITE_TITLE,
+  description: SITE_DESCRIPTION,
+  path: "/",
+})
 
 export default function PublicHomePage() {
-  return <HomeClient />;
+  return <HomeClient />
 }

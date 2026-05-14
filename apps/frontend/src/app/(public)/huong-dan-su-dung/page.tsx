@@ -1,46 +1,51 @@
-import type { Metadata } from "next";
-import { BookOpen, AlertCircle } from "lucide-react";
-import { Card, CardContent } from "@ui/components/card";
-import { Container, Page, PageContent } from "@ui/components/layout";
-import { Heading, Text } from "@ui/components/typography";
+import type { Metadata } from "next"
+import { BookOpen, AlertCircle } from "lucide-react"
+import { Card, CardContent } from "@ui/components/card"
+import { Container, Page, PageContent } from "@ui/components/layout"
+import { Heading, Text } from "@ui/components/typography"
 import {
   STORE_CONTAINER_INSET,
   STORE_CONTAINER_MAX_DEFAULT,
   STORE_PAGE_CONTENT_CLASS,
-} from "@ui/lib/layout-shell";
-import { GuideSections } from "./guide-sections";
+} from "@ui/lib/layout-shell"
+import { buildSeoMetadata } from "@/lib/seo"
+import { GuideSections } from "./guide-sections"
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildSeoMetadata({
   title: "Hướng dẫn sử dụng",
   description: "Hướng dẫn sử dụng hệ thống HUB.",
-};
+})
 
 interface GuideStep {
-  order: number;
-  title: string;
-  description: string;
-  imageUrl?: string;
+  order: number
+  title: string
+  description: string
+  imageUrl?: string
 }
 
 interface GuideSection {
-  id: string;
-  pageKey: string;
-  sectionKey: string;
-  isVisible: boolean;
+  id: string
+  pageKey: string
+  sectionKey: string
+  isVisible: boolean
   content: {
-    title?: string;
-    description?: string;
-    order?: number;
-    steps?: GuideStep[];
-  };
+    title?: string
+    description?: string
+    order?: number
+    steps?: GuideStep[]
+  }
 }
 
 function safeParseContent(raw: unknown): GuideSection["content"] {
   if (typeof raw === "string") {
-    try { raw = JSON.parse(raw); } catch { return {}; }
+    try {
+      raw = JSON.parse(raw)
+    } catch {
+      return {}
+    }
   }
-  if (raw == null || typeof raw !== "object") return {};
-  const r = raw as Record<string, unknown>;
+  if (raw == null || typeof raw !== "object") return {}
+  const r = raw as Record<string, unknown>
   return {
     title: typeof r.title === "string" ? r.title : undefined,
     description: typeof r.description === "string" ? r.description : undefined,
@@ -50,39 +55,47 @@ function safeParseContent(raw: unknown): GuideSection["content"] {
           order: typeof s.order === "number" ? s.order : i + 1,
           title: typeof s.title === "string" ? s.title : "",
           description: typeof s.description === "string" ? s.description : "",
-          imageUrl: typeof s.imageUrl === "string" && s.imageUrl ? s.imageUrl : undefined,
+          imageUrl:
+            typeof s.imageUrl === "string" && s.imageUrl
+              ? s.imageUrl
+              : undefined,
         }))
       : [],
-  };
+  }
 }
 
 async function fetchGuides(): Promise<GuideSection[]> {
-  const apiUrl = (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3002/api").replace(/\/$/, "");
+  const apiUrl = (
+    process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3002/api"
+  ).replace(/\/$/, "")
   try {
-    const res = await fetch(`${apiUrl}/public/page-contents/huong-dan-su-dung`, {
-      next: { revalidate: 60 },
-      cache: "no-store",
-    });
-    if (!res.ok) return [];
-    const json = (await res.json()) as { data?: unknown[] | unknown };
-    if (!json.data) return [];
-    const rows = Array.isArray(json.data) ? json.data : [json.data];
+    const res = await fetch(
+      `${apiUrl}/public/page-contents/huong-dan-su-dung`,
+      {
+        next: { revalidate: 60 },
+        cache: "no-store",
+      }
+    )
+    if (!res.ok) return []
+    const json = (await res.json()) as { data?: unknown[] | unknown }
+    if (!json.data) return []
+    const rows = Array.isArray(json.data) ? json.data : [json.data]
     return (rows as Record<string, unknown>[]).map((r) => ({
       id: String(r.id ?? ""),
       pageKey: String(r.pageKey ?? ""),
       sectionKey: String(r.sectionKey ?? ""),
       isVisible: r.isVisible !== false,
       content: safeParseContent(r.content),
-    }));
+    }))
   } catch {
-    return [];
+    return []
   }
 }
 
 export default async function GuidePage() {
   const sections = (await fetchGuides())
     .filter((s) => s.isVisible)
-    .sort((a, b) => (a.content.order ?? 0) - (b.content.order ?? 0));
+    .sort((a, b) => (a.content.order ?? 0) - (b.content.order ?? 0))
 
   return (
     <Page>
@@ -121,5 +134,5 @@ export default async function GuidePage() {
         </Container>
       </PageContent>
     </Page>
-  );
+  )
 }

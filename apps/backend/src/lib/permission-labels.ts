@@ -1,21 +1,21 @@
-import { PERMISSION_CODES } from "@workspace/api-client";
+import { PERMISSION_CODES } from "@workspace/api-client"
 
 /** Nhãn tiếng Việt cho UI (hồ sơ, ma trận RBAC). */
 export const PERMISSION_LABEL_VI: Record<string, string> = {
   [PERMISSION_CODES.ALL]: "Toàn quyền (*)",
-  [PERMISSION_CODES.PRODUCTS_READ]: "Xem sản phẩm / kho",
-  [PERMISSION_CODES.PRODUCTS_WRITE]: "Sửa sản phẩm & tồn kho",
-  [PERMISSION_CODES.CATEGORIES_READ]: "Xem loại SP",
-  [PERMISSION_CODES.CATEGORIES_WRITE]: "Sửa loại SP",
-  [PERMISSION_CODES.ORDERS_READ]: "Xem đơn hàng",
-  [PERMISSION_CODES.ORDERS_WRITE]: "Xử lý đơn (xuất kho, giao, huỷ)",
-  [PERMISSION_CODES.ORDERS_CHECKOUT]: "Đặt hàng (checkout)",
+  [PERMISSION_CODES.PRODUCTS_READ]: "Xem dữ liệu học tập",
+  [PERMISSION_CODES.PRODUCTS_WRITE]: "Cập nhật dữ liệu học tập",
+  [PERMISSION_CODES.CATEGORIES_READ]: "Xem danh mục nội dung",
+  [PERMISSION_CODES.CATEGORIES_WRITE]: "Sửa danh mục nội dung",
+  [PERMISSION_CODES.ORDERS_READ]: "Xem yêu cầu phụ huynh",
+  [PERMISSION_CODES.ORDERS_WRITE]: "Xử lý yêu cầu phụ huynh",
+  [PERMISSION_CODES.ORDERS_CHECKOUT]: "Tạo yêu cầu phụ huynh",
   [PERMISSION_CODES.USERS_MANAGE]: "Quản lý nhân sự & tài khoản",
-  [PERMISSION_CODES.USERS_CART_OWN]: "Giỏ hàng của chính mình",
+  [PERMISSION_CODES.USERS_CART_OWN]: "Xem dữ liệu cá nhân",
   [PERMISSION_CODES.RBAC_READ]: "Xem vai trò & quyền",
   [PERMISSION_CODES.DATA_MAINTENANCE]: "Sao lưu / bảo trì dữ liệu",
-  [PERMISSION_CODES.SUPPORT_READ]: "Xem trang hỗ trợ đại lý (hotline / Zalo)",
-  [PERMISSION_CODES.SUPPORT_WRITE]: "Sửa nội dung hỗ trợ đại lý trên cửa hàng",
+  [PERMISSION_CODES.SUPPORT_READ]: "Xem nội dung hỗ trợ phụ huynh",
+  [PERMISSION_CODES.SUPPORT_WRITE]: "Sửa nội dung hỗ trợ phụ huynh",
   [PERMISSION_CODES.CONTACT_REQUESTS_VIEW]: "Xem liên hệ hỗ trợ",
   [PERMISSION_CODES.CONTACT_REQUESTS_CREATE]: "Tạo liên hệ hỗ trợ",
   [PERMISSION_CODES.CONTACT_REQUESTS_UPDATE]: "Cập nhật liên hệ hỗ trợ",
@@ -30,7 +30,7 @@ export const PERMISSION_LABEL_VI: Record<string, string> = {
   [PERMISSION_CODES.TAGS_DELETE]: "Xóa thẻ nội dung",
   [PERMISSION_CODES.TAGS_MANAGE]: "Quản lý thẻ nội dung",
   [PERMISSION_CODES.TAGS_EXPORT]: "Xuất danh sách thẻ",
-};
+}
 
 const RESOURCE_LABEL_VI: Record<string, string> = {
   accounts: "tài khoản quản trị",
@@ -51,7 +51,7 @@ const RESOURCE_LABEL_VI: Record<string, string> = {
   messages: "tin nhắn",
   uploads: "tệp tải lên",
   roles: "vai trò",
-};
+}
 
 const ACTION_LABEL_VI: Record<string, string> = {
   view: "Xem",
@@ -71,50 +71,49 @@ const ACTION_LABEL_VI: Record<string, string> = {
   unactive: "Vô hiệu hóa",
   "hard-delete": "Xóa vĩnh viễn",
   "revoke-by-user": "Thu hồi theo người dùng",
-};
+}
 
 function titleCaseToken(token: string): string {
   return token
     .split(/[_-]+/)
     .filter(Boolean)
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(" ");
+    .join(" ")
 }
 
 function buildDynamicPermissionLabel(code: string): string {
-  const [resourceRaw, actionRaw] = code.split(":");
+  const [resourceRaw, actionRaw] = code.split(":")
   if (!resourceRaw || !actionRaw) {
     return code
       .split(/[:._-]+/)
       .filter(Boolean)
       .map(titleCaseToken)
-      .join(" / ");
+      .join(" / ")
   }
 
   const resourceLabel =
-    RESOURCE_LABEL_VI[resourceRaw] ?? titleCaseToken(resourceRaw).toLowerCase();
-  const actionLabel =
-    ACTION_LABEL_VI[actionRaw] ?? titleCaseToken(actionRaw);
+    RESOURCE_LABEL_VI[resourceRaw] ?? titleCaseToken(resourceRaw).toLowerCase()
+  const actionLabel = ACTION_LABEL_VI[actionRaw] ?? titleCaseToken(actionRaw)
 
-  return `${actionLabel} ${resourceLabel}`;
+  return `${actionLabel} ${resourceLabel}`
 }
 
 export function permissionLabelVi(code: string): string {
-  return PERMISSION_LABEL_VI[code] ?? buildDynamicPermissionLabel(code);
+  return PERMISSION_LABEL_VI[code] ?? buildDynamicPermissionLabel(code)
 }
 
-/** Phần resource trước dấu `:`, ví dụ `accounts:manage` → `accounts`. */
+/** Phần resource trước dấu `:`, ví dụ `accounts:manage` -> `accounts`. */
 export function permissionGroupKey(code: string): string {
-  const i = code.indexOf(":");
-  if (i <= 0) return code.trim() || "other";
-  return code.slice(0, i);
+  const i = code.indexOf(":")
+  if (i <= 0) return code.trim() || "other"
+  return code.slice(0, i)
 }
 
 /** Tiêu đề nhóm (resource) cho UI ma trận quyền. */
 export function permissionGroupLabelVi(groupKey: string): string {
-  const mapped = RESOURCE_LABEL_VI[groupKey];
+  const mapped = RESOURCE_LABEL_VI[groupKey]
   if (mapped) {
-    return mapped.charAt(0).toUpperCase() + mapped.slice(1);
+    return mapped.charAt(0).toUpperCase() + mapped.slice(1)
   }
-  return titleCaseToken(groupKey);
+  return titleCaseToken(groupKey)
 }

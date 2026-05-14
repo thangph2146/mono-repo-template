@@ -30,9 +30,10 @@ function mapRow(r: ParentStudent): ParentStudentRowDto {
   const parent = r.parent as unknown;
   return {
     id: r.id,
-    parentId: (parent != null && typeof parent === 'object' && 'id' in parent)
-      ? String((parent as { id: unknown }).id)
-      : String(r.parent),
+    parentId:
+      parent != null && typeof parent === 'object' && 'id' in parent
+        ? String((parent as { id: unknown }).id)
+        : String(r.parent),
     studentCode: r.studentCode,
     studentName: r.studentName ?? null,
     note: r.note ?? null,
@@ -57,24 +58,37 @@ export class ParentStudentsService {
     return rows.map(mapRow);
   }
 
-  async listPending(params: {
-    page: number;
-    limit: number;
-  }): Promise<{
+  async listPending(params: { page: number; limit: number }): Promise<{
     data: ParentStudentRowDto[];
-    pagination: { page: number; limit: number; total: number; totalPages: number };
+    pagination: {
+      page: number;
+      limit: number;
+      total: number;
+      totalPages: number;
+    };
   }> {
-    const { page, limit, skip } = normalizePageLimit(params.page, params.limit, 100);
+    const { page, limit, skip } = normalizePageLimit(
+      params.page,
+      params.limit,
+      100,
+    );
     const [rows, total] = await Promise.all([
-      this.em.find(ParentStudent, { status: 'pending' }, {
-        populate: ['parent'],
-        orderBy: { createdAt: 'ASC' },
-        offset: skip,
-        limit,
-      }),
+      this.em.find(
+        ParentStudent,
+        { status: 'pending' },
+        {
+          populate: ['parent'],
+          orderBy: { createdAt: 'ASC' },
+          offset: skip,
+          limit,
+        },
+      ),
       this.em.count(ParentStudent, { status: 'pending' }),
     ]);
-    return { data: rows.map(mapRow), pagination: paginationMeta(page, limit, total) };
+    return {
+      data: rows.map(mapRow),
+      pagination: paginationMeta(page, limit, total),
+    };
   }
 
   async listAll(params: {
@@ -83,11 +97,23 @@ export class ParentStudentsService {
     status?: string;
   }): Promise<{
     data: ParentStudentRowDto[];
-    pagination: { page: number; limit: number; total: number; totalPages: number };
+    pagination: {
+      page: number;
+      limit: number;
+      total: number;
+      totalPages: number;
+    };
   }> {
-    const { page, limit, skip } = normalizePageLimit(params.page, params.limit, 100);
+    const { page, limit, skip } = normalizePageLimit(
+      params.page,
+      params.limit,
+      100,
+    );
     const where: Record<string, unknown> = {};
-    if (params.status && ['pending', 'approved', 'rejected'].includes(params.status)) {
+    if (
+      params.status &&
+      ['pending', 'approved', 'rejected'].includes(params.status)
+    ) {
       where.status = params.status;
     }
     const [rows, total] = await Promise.all([
@@ -99,7 +125,10 @@ export class ParentStudentsService {
       }),
       this.em.count(ParentStudent, where),
     ]);
-    return { data: rows.map(mapRow), pagination: paginationMeta(page, limit, total) };
+    return {
+      data: rows.map(mapRow),
+      pagination: paginationMeta(page, limit, total),
+    };
   }
 
   async addStudentRequest(data: {
@@ -148,7 +177,11 @@ export class ParentStudentsService {
   }
 
   async getById(id: string): Promise<ParentStudentRowDto | null> {
-    const ps = await this.em.findOne(ParentStudent, { id }, { populate: ['parent'] });
+    const ps = await this.em.findOne(
+      ParentStudent,
+      { id },
+      { populate: ['parent'] },
+    );
     return ps ? mapRow(ps) : null;
   }
 }

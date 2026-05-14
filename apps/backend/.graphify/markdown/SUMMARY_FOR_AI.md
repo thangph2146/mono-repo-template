@@ -2,8 +2,8 @@
 
 > Tự động sinh từ `../snapshot/context.json` — **đọc file này trước**; tránh mở toàn bộ JSON snapshot (nhúng source đầy đủ).
 
-- **projectRoot:** `C:/HUB/source/hub-parent-template/apps/backend`
-- **context.generatedAt:** 2026-05-14T02:12:10.661Z
+- **projectRoot:** `D:/HUB/working/2026/hub-parrent-template/apps/backend`
+- **context.generatedAt:** 2026-05-14T07:52:06.356Z
 
 ## Mục lục artefact Graphify
 
@@ -34,15 +34,18 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 - **Thống kê graph:** [`GRAPH_STATS.md`](GRAPH_STATS.md) — quy mô node/link, top file in/out-degree (điểm nóng import).
 
 ## Thống kê
-- **totalFiles:** 44
-- **clientComponents:** 17
+- **totalFiles:** 51
+- **clientComponents:** 22
 
-## Trang (pages) (11)
+## Trang (pages) (14)
 - `src/app/categories/page.tsx`
 - `src/app/contact-requests/page.tsx`
 - `src/app/data/page.tsx`
+- `src/app/guides/page.tsx`
 - `src/app/login/page.tsx`
+- `src/app/my-students/page.tsx`
 - `src/app/page.tsx`
+- `src/app/parent-students/page.tsx`
 - `src/app/posts/page.tsx`
 - `src/app/profile/page.tsx`
 - `src/app/rbac/page.tsx`
@@ -64,22 +67,28 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 | `components.json` | config | — | — | — |
 | `next.config.ts` | config | — | — | — |
 | `package.json` | config | — | — | — |
-| `src/app/data/page.tsx` | page | yes | DataBackupPage | src/lib/auth-session.ts |
+| `src/app/data/page.tsx` | page | yes | DataBackupPage | src/lib/auth-session.ts, src/components/admin-page-guard.tsx |
+| `src/app/guides/page.tsx` | page | yes | GuidesPage | src/lib/api.ts, src/lib/auth-session.ts, src/components/admin-page-guard.tsx |
 | `src/app/layout.tsx` | layout | no | metadata, RootLayout | src/app/page.tsx, src/providers/query-provider.tsx, src/providers/auth-provider.tsx, src/components/admin-shell.tsx |
 | `src/app/loading.tsx` | loading | no | Loading |  |
 | `src/app/login/page.tsx` | page | no | AdminLoginPage | src/features/auth/sign-in-form.tsx |
-| `src/app/page.tsx` | page | yes | AdminDashboardPage | src/components/api-scope-notice.tsx |
+| `src/app/my-students/page.tsx` | page | yes | MyStudentsPage | src/providers/auth-provider.tsx, src/lib/api.ts |
+| `src/app/page.tsx` | page | yes | QUICK_LINKS, AdminDashboardPage | src/providers/auth-provider.tsx, src/lib/api.ts, src/types/dashboard.ts, src/components/dashboard-charts.tsx |
+| `src/app/parent-students/page.tsx` | page | yes | AdminParentStudentsPage | src/components/admin-data-table, src/components/admin-confirm-action-dialog.tsx, src/components/admin-page-guard.tsx, src/lib/api.ts |
 | `src/app/profile/page.tsx` | page | yes | AdminProfilePage | src/providers/auth-provider.tsx, src/lib/permission-labels.ts, src/hooks/queries.ts, src/lib/api.ts, src/lib/auth-session.ts |
 | `src/app/register/page.tsx` | page | no | RegisterPage | src/features/auth/register-form.tsx |
-| `src/app/tags/page.tsx` | page | yes | TagsPage | src/components/admin-data-table, src/components/admin-table-pagination-footer.tsx, src/components/admin-confirm-action-dialog.tsx, src/lib/api.ts, src/hooks/use-debounced-value.ts, src/providers/auth- |
+| `src/app/robots.ts` | ts | no | robots |  |
+| `src/app/tags/page.tsx` | page | yes | TagsPage | src/components/admin-data-table, src/components/admin-table-pagination-footer.tsx, src/components/admin-confirm-action-dialog.tsx, src/components/admin-page-guard.tsx, src/lib/api.ts, src/hooks/use-de |
 | `src/components/admin-confirm-action-dialog.tsx` | tsx | yes | AdminConfirmActionDialog |  |
 | `src/components/admin-data-table/admin-data-table.tsx` | tsx | yes | AdminDataTableBulkAction, AdminDataTableProps, AdminDataTable | src/lib/build-table-csv.ts, src/lib/export-csv.ts, src/lib/export-xlsx.ts |
 | `src/components/admin-data-table/index.ts` | ts | no | AdminDataTable | src/components/admin-data-table/admin-data-table.tsx |
 | `src/components/admin-data-table/table-meta.ts` | ts | no |  |  |
 | `src/components/admin-notification-bell.tsx` | tsx | yes | AdminNotificationBell |  |
+| `src/components/admin-page-guard.tsx` | tsx | yes | AdminPageGuard | src/providers/auth-provider.tsx |
 | `src/components/admin-shell.tsx` | tsx | yes | AdminShell | src/components/sidebar.tsx, src/providers/auth-provider.tsx, src/components/admin-notification-bell.tsx, src/lib/auth-session.ts, src/lib/auth-routes.ts |
 | `src/components/admin-table-pagination-footer.tsx` | tsx | yes | ADMIN_TABLE_PAGE_SIZE_OPTIONS, AdminTablePaginationFooterProps, AdminTablePaginationFooter |  |
 | `src/components/api-scope-notice.tsx` | tsx | yes | ApiScopeNotice |  |
+| `src/components/dashboard-charts.tsx` | tsx | yes | MonthlyLineChart, MonthlyBarChart, CategoryDoughnutChart, TopPostsChart | src/types/dashboard.ts |
 | `src/components/sidebar.tsx` | tsx | yes | getVisibleMenuItems, SidebarNavLinks, MobileSidebarPanel, Sidebar | src/providers/auth-provider.tsx, src/lib/api.ts |
 | `src/features/auth/admin-bridge.ts` | ts | no | getAdminBaseUrl, buildAdminBridgeLoginUrl, getAdminLoginUrl |  |
 | `src/features/auth/auth-api.ts` | ts | no | AuthLoginPayload, RegisterRequestPayload, RegisterLeadPayload, DevLoginOption, loginWithEmail, loginWithDevelopmentUser, toAdminSessionUser, registerAccount, submitRegisterRequest |  |
@@ -104,6 +113,7 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 | `src/providers/auth-provider.tsx` | tsx | yes | StaffLoginResult, AuthProvider, useAuth, useClientReady | src/features/auth/auth-api.ts, src/lib/auth-session.ts, src/lib/auth-routes.ts |
 | `src/providers/query-provider.tsx` | tsx | yes | QueryProvider |  |
 | `src/proxy.ts` | ts | no | proxy, config |  |
+| `src/types/dashboard.ts` | ts | no | DashboardOverviewDto, DashboardMonthlyItemDto, DashboardCategoryItemDto, DashboardTopPostDto, DashboardStatsDto |  |
 | `tsconfig.json` | config | — | — | — |
 ## File Markdown trong scope app
 

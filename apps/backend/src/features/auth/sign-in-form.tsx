@@ -1,13 +1,13 @@
-"use client";
+"use client"
 
-import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { toast } from "sonner";
-import { Eye, EyeOff } from "lucide-react";
-import { canAccessStaffAdmin, type AuthUser } from "@workspace/api-client";
-import { Button } from "@ui/components/button";
-import { Card, CardContent } from "@ui/components/card";
+import { useEffect, useRef, useState } from "react"
+import { useRouter } from "next/navigation"
+import Link from "next/link"
+import { toast } from "sonner"
+import { Eye, EyeOff } from "lucide-react"
+import { canAccessStaffAdmin, type AuthUser } from "@workspace/api-client"
+import { Button } from "@ui/components/button"
+import { Card, CardContent } from "@ui/components/card"
 import {
   Field,
   FieldDescription,
@@ -15,34 +15,31 @@ import {
   FieldGroup,
   FieldLabel,
   FieldSeparator,
-} from "@ui/components/field";
-import { Input } from "@ui/components/input";
-import { PointerHighlight } from "@ui/components/pointer-highlight";
-import { TypographyH2 } from "@ui/components/typography";
+} from "@ui/components/field"
+import { Input } from "@ui/components/input"
+import { PointerHighlight } from "@ui/components/pointer-highlight"
+import { TypographyH2 } from "@ui/components/typography"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@ui/components/select";
-import { useAuth, useClientReady } from "@/providers/auth-provider";
-import { fetchDevLoginOptions, type DevLoginOption } from "@/features/auth/auth-api";
+} from "@ui/components/select"
+import { useAuth, useClientReady } from "@/providers/auth-provider"
 import {
-  AUTH_LOGIN_PATH,
-  AUTH_REGISTER_PATH,
-} from "@/lib/auth-routes";
-import {
-  ADMIN_SESSION_EVENT,
-  writeAdminSession,
-} from "@/lib/auth-session";
+  fetchDevLoginOptions,
+  type DevLoginOption,
+} from "@/features/auth/auth-api"
+import { AUTH_LOGIN_PATH, AUTH_REGISTER_PATH } from "@/lib/auth-routes"
+import { ADMIN_SESSION_EVENT, writeAdminSession } from "@/lib/auth-session"
 
 function decodeBridgeSession(raw: string): AuthUser | null {
   try {
-    const binary = window.atob(raw);
-    const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0));
-    const json = new TextDecoder().decode(bytes);
-    const user = JSON.parse(json) as AuthUser;
+    const binary = window.atob(raw)
+    const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0))
+    const json = new TextDecoder().decode(bytes)
+    const user = JSON.parse(json) as AuthUser
 
     if (
       typeof user?.id !== "string" ||
@@ -55,157 +52,158 @@ function decodeBridgeSession(raw: string): AuthUser | null {
       !Array.isArray(user?.roles) ||
       !Array.isArray(user?.permissions)
     ) {
-      return null;
+      return null
     }
 
-    return user;
+    return user
   } catch {
-    return null;
+    return null
   }
 }
 
 export function SignInForm() {
-  const router = useRouter();
-  const { login, loginDevelopment } = useAuth();
-  const clientReady = useClientReady();
-  const isDevelopment = process.env.NODE_ENV === "development";
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [busy, setBusy] = useState(false);
-  const [devLoginOptions, setDevLoginOptions] = useState<DevLoginOption[]>([]);
-  const [selectedDevLoginId, setSelectedDevLoginId] = useState("");
-  const [devLoginOptionsLoading, setDevLoginOptionsLoading] = useState(false);
-  const staffOnlyToastRef = useRef(false);
-  const bridgeHandledRef = useRef(false);
+  const router = useRouter()
+  const { login, loginDevelopment } = useAuth()
+  const clientReady = useClientReady()
+  const isDevelopment = process.env.NODE_ENV === "development"
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [showPassword, setShowPassword] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [busy, setBusy] = useState(false)
+  const [devLoginOptions, setDevLoginOptions] = useState<DevLoginOption[]>([])
+  const [selectedDevLoginId, setSelectedDevLoginId] = useState("")
+  const [devLoginOptionsLoading, setDevLoginOptionsLoading] = useState(false)
+  const staffOnlyToastRef = useRef(false)
+  const bridgeHandledRef = useRef(false)
 
   useEffect(() => {
-    if (!clientReady || bridgeHandledRef.current) return;
-    if (typeof window === "undefined") return;
+    if (!clientReady || bridgeHandledRef.current) return
+    if (typeof window === "undefined") return
 
     const hash = window.location.hash.startsWith("#")
       ? window.location.hash.slice(1)
-      : window.location.hash;
-    if (!hash) return;
+      : window.location.hash
+    if (!hash) return
 
-    const params = new URLSearchParams(hash);
-    const encodedSession = params.get("session");
-    if (!encodedSession) return;
+    const params = new URLSearchParams(hash)
+    const encodedSession = params.get("session")
+    if (!encodedSession) return
 
-    bridgeHandledRef.current = true;
-    const user = decodeBridgeSession(encodedSession);
+    bridgeHandledRef.current = true
+    const user = decodeBridgeSession(encodedSession)
 
     if (!user || !canAccessStaffAdmin(user)) {
-      toast.error("Không thể đồng bộ phiên đăng nhập quản trị.");
-      router.replace(AUTH_LOGIN_PATH);
-      return;
+      toast.error("Không thể đồng bộ phiên đăng nhập quản trị.")
+      router.replace(AUTH_LOGIN_PATH)
+      return
     }
 
-    writeAdminSession(user);
-    window.dispatchEvent(new Event(ADMIN_SESSION_EVENT));
-    toast.success("Đã chuyển sang cổng quản trị.");
-    router.replace("/");
-  }, [clientReady, router]);
+    writeAdminSession(user)
+    window.dispatchEvent(new Event(ADMIN_SESSION_EVENT))
+    toast.success("Đã chuyển sang cổng quản trị.")
+    router.replace("/")
+  }, [clientReady, router])
 
   useEffect(() => {
-    if (!clientReady || staffOnlyToastRef.current) return;
-    if (typeof window === "undefined") return;
-    const q = new URLSearchParams(window.location.search);
-    if (q.get("reason") !== "staff_only") return;
-    staffOnlyToastRef.current = true;
+    if (!clientReady || staffOnlyToastRef.current) return
+    if (typeof window === "undefined") return
+    const q = new URLSearchParams(window.location.search)
+    if (q.get("reason") !== "staff_only") return
+    staffOnlyToastRef.current = true
     toast.error(
-      "Tài khoản khách / đại lý không dùng được cổng quản trị. Hãy đăng nhập trên cửa hàng để đặt hàng.",
-    );
-    router.replace(AUTH_LOGIN_PATH);
-  }, [clientReady, router]);
+      "Tài khoản phụ huynh không dùng được cổng quản trị nội bộ. Hãy đăng nhập ở cổng phụ huynh HUB Parent."
+    )
+    router.replace(AUTH_LOGIN_PATH)
+  }, [clientReady, router])
 
   useEffect(() => {
-    if (!clientReady || !isDevelopment) return;
+    if (!clientReady || !isDevelopment) return
 
-    let cancelled = false;
-    setDevLoginOptionsLoading(true);
+    let cancelled = false
+    setDevLoginOptionsLoading(true)
 
     void fetchDevLoginOptions()
       .then((options) => {
-        if (cancelled) return;
-        setDevLoginOptions(options);
+        if (cancelled) return
+        setDevLoginOptions(options)
       })
       .finally(() => {
-        if (cancelled) return;
-        setDevLoginOptionsLoading(false);
-      });
+        if (cancelled) return
+        setDevLoginOptionsLoading(false)
+      })
 
     return () => {
-      cancelled = true;
-    };
-  }, [clientReady, isDevelopment]);
+      cancelled = true
+    }
+  }, [clientReady, isDevelopment])
 
   const onSelectDevLogin = (value: string | null) => {
-    const nextValue = value ?? "";
-    setSelectedDevLoginId(nextValue);
-    if (!nextValue) return;
-    const picked = devLoginOptions.find((option) => option.id === nextValue);
-    if (!picked) return;
-    setEmail(picked.email);
-    setPassword("");
-    setError(null);
-  };
+    const nextValue = value ?? ""
+    setSelectedDevLoginId(nextValue)
+    if (!nextValue) return
+    const picked = devLoginOptions.find((option) => option.id === nextValue)
+    if (!picked) return
+    setEmail(picked.email)
+    setPassword("")
+    setError(null)
+  }
 
   const runLogin = async (nextEmail: string, nextPassword: string) => {
-    setError(null);
-    setBusy(true);
+    setError(null)
+    setBusy(true)
     try {
-      const result = await login(nextEmail, nextPassword);
+      const result = await login(nextEmail, nextPassword)
       if (result === "invalid_credentials") {
-        const message = "Sai email hoặc mật khẩu.";
-        setError(message);
-        toast.error(message);
-        return;
+        const message = "Sai email hoặc mật khẩu."
+        setError(message)
+        toast.error(message)
+        return
       }
       if (result === "staff_only") {
         const message =
-          "Tài khoản này chỉ dùng trên cửa hàng (khách/đại lý). Cổng quản trị cần tài khoản nội bộ.";
-        setError(message);
-        toast.error(message);
-        return;
+          "Tài khoản này chỉ dùng cho phụ huynh. Cổng quản trị cần tài khoản nội bộ của nhà trường."
+        setError(message)
+        toast.error(message)
+        return
       }
-      toast.success("Đăng nhập thành công.");
-      router.replace("/");
+      toast.success("Đăng nhập thành công.")
+      router.replace("/")
     } finally {
-      setBusy(false);
+      setBusy(false)
     }
-  };
+  }
 
   const onSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
+    event.preventDefault()
     if (isDevelopment && selectedDevLoginId) {
-      setError(null);
-      setBusy(true);
+      setError(null)
+      setBusy(true)
       try {
-        const result = await loginDevelopment(selectedDevLoginId);
+        const result = await loginDevelopment(selectedDevLoginId)
         if (result === "invalid_credentials") {
-          const message = "Không thể đăng nhập bằng tài khoản development đã chọn.";
-          setError(message);
-          toast.error(message);
-          return;
+          const message =
+            "Không thể đăng nhập bằng tài khoản development đã chọn."
+          setError(message)
+          toast.error(message)
+          return
         }
         if (result === "staff_only") {
           const message =
-            "Tài khoản development này không có quyền dùng cổng quản trị.";
-          setError(message);
-          toast.error(message);
-          return;
+            "Tài khoản development này không có quyền dùng cổng quản trị."
+          setError(message)
+          toast.error(message)
+          return
         }
-        toast.success("Đăng nhập development thành công.");
-        router.replace("/");
+        toast.success("Đăng nhập development thành công.")
+        router.replace("/")
       } finally {
-        setBusy(false);
+        setBusy(false)
       }
-      return;
+      return
     }
-    await runLogin(email, password);
-  };
+    await runLogin(email, password)
+  }
 
   return (
     <div className="flex min-h-[100vh] flex-col items-center justify-center bg-muted p-6 md:p-10">
@@ -221,13 +219,13 @@ export function SignInForm() {
                     </TypographyH2>
                     <div className="flex flex-col items-center gap-1">
                       <PointerHighlight>
-                        <p className="relative z-10 text-lg font-bold uppercase tracking-tight text-primary sm:text-sm md:text-xl xl:text-2xl">
+                        <p className="relative z-10 text-lg font-bold tracking-tight text-primary uppercase sm:text-sm md:text-xl xl:text-2xl">
                           Hệ thống Kết nối Phụ huynh
                         </p>
                       </PointerHighlight>
-                      <p className="text-sm font-medium italic text-muted-foreground md:text-base">
-                        &quot;Tâm an lòng, con vững bước - Đồng hành cùng tương lai
-                        con tại HUB&quot;
+                      <p className="text-sm font-medium text-muted-foreground italic md:text-base">
+                        &quot;Tâm an lòng, con vững bước - Đồng hành cùng tương
+                        lai con tại HUB&quot;
                       </p>
                     </div>
                   </div>
@@ -264,16 +262,19 @@ export function SignInForm() {
                           </SelectContent>
                         </Select>
                         <FieldDescription>
-                          Danh sách chỉ hiện ở môi trường development. Khi chọn sẽ
-                          đăng nhập trực tiếp theo user trong database, không cần
-                          điều chỉnh hay biết mật khẩu.
+                          Danh sách chỉ hiện ở môi trường development. Khi chọn
+                          sẽ đăng nhập trực tiếp theo user trong database, không
+                          cần điều chỉnh hay biết mật khẩu.
                         </FieldDescription>
                       </>
                     ) : null}
                   </Field>
 
                   <Field>
-                    <FieldLabel htmlFor="email" className="font-medium text-primary">
+                    <FieldLabel
+                      htmlFor="email"
+                      className="font-medium text-primary"
+                    >
                       Email
                     </FieldLabel>
                     <Input
@@ -283,9 +284,9 @@ export function SignInForm() {
                       value={email}
                       onChange={(event) => {
                         if (selectedDevLoginId) {
-                          setSelectedDevLoginId("");
+                          setSelectedDevLoginId("")
                         }
-                        setEmail(event.target.value);
+                        setEmail(event.target.value)
                       }}
                       required
                       disabled={busy}
@@ -295,7 +296,10 @@ export function SignInForm() {
 
                   <Field>
                     <div className="flex items-center justify-between">
-                      <FieldLabel htmlFor="password" className="font-medium text-primary">
+                      <FieldLabel
+                        htmlFor="password"
+                        className="font-medium text-primary"
+                      >
                         Mật khẩu
                       </FieldLabel>
                       <Link
@@ -313,12 +317,14 @@ export function SignInForm() {
                         value={password}
                         onChange={(event) => {
                           if (selectedDevLoginId) {
-                            setSelectedDevLoginId("");
+                            setSelectedDevLoginId("")
                           }
-                          setPassword(event.target.value);
+                          setPassword(event.target.value)
                         }}
                         required={!isDevelopment || !selectedDevLoginId}
-                        disabled={busy || (isDevelopment && !!selectedDevLoginId)}
+                        disabled={
+                          busy || (isDevelopment && !!selectedDevLoginId)
+                        }
                         placeholder={
                           isDevelopment && selectedDevLoginId
                             ? "Đã bỏ qua mật khẩu cho tài khoản development đã chọn"
@@ -329,7 +335,7 @@ export function SignInForm() {
                       <Button
                         type="button"
                         variant="ghost"
-                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                        className="absolute top-0 right-0 h-full px-3 py-2 hover:bg-transparent"
                         onClick={() => setShowPassword((value) => !value)}
                         disabled={busy}
                       >
@@ -368,10 +374,14 @@ export function SignInForm() {
                       variant="outline"
                       className="min-h-[44px] w-full border-secondary/30 hover:bg-secondary/10"
                       onClick={() =>
-                        toast.info("Đăng nhập Google cho cổng quản trị chưa được cấu hình.")
+                        toast.info(
+                          "Đăng nhập Google cho cổng quản trị chưa được cấu hình."
+                        )
                       }
                     >
-                      <span className="text-xl font-bold text-secondary">G</span>
+                      <span className="text-xl font-bold text-secondary">
+                        G
+                      </span>
                       <span className="text-base font-bold text-secondary">
                         Đăng nhập bằng Google
                       </span>
@@ -406,5 +416,5 @@ export function SignInForm() {
         </div>
       </div>
     </div>
-  );
+  )
 }

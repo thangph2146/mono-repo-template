@@ -2,8 +2,8 @@
 
 > Tự động sinh từ `../snapshot/context.json` — **đọc file này trước**; tránh mở toàn bộ JSON snapshot (nhúng source đầy đủ).
 
-- **projectRoot:** `C:/HUB/source/hub-parent-template/apps/frontend`
-- **context.generatedAt:** 2026-05-14T02:12:06.397Z
+- **projectRoot:** `D:/HUB/working/2026/hub-parrent-template/apps/frontend`
+- **context.generatedAt:** 2026-05-14T07:52:06.359Z
 
 ## Mục lục artefact Graphify
 
@@ -35,8 +35,8 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 - **Thống kê graph:** [`GRAPH_STATS.md`](GRAPH_STATS.md) — quy mô node/link, top file in/out-degree (điểm nóng import).
 
 ## Thống kê
-- **totalFiles:** 77
-- **clientComponents:** 22
+- **totalFiles:** 81
+- **clientComponents:** 23
 
 ## Trang (pages) (9)
 - `src/app/(public)/bai-viet/page.tsx`
@@ -67,19 +67,22 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 | `components.json` | config | — | — | — |
 | `next.config.ts` | config | — | — | — |
 | `package.json` | config | — | — | — |
-| `src/app/(public)/bai-viet/[slug]/page.tsx` | page | no | metadata | src/lib/dev-route-log.ts, src/lib/public-posts.ts, src/components/shared/post-content-renderer.tsx, src/components/shared/public-post-view-badge.tsx |
-| `src/app/(public)/bai-viet/page.tsx` | page | no | metadata | src/lib/dev-route-log.ts, src/lib/public-posts.ts |
-| `src/app/(public)/huong-dan-su-dung/page.tsx` | page | no | metadata, GuidePage |  |
+| `src/app/(public)/bai-viet/[slug]/page.tsx` | page | no |  | src/lib/dev-route-log.ts, src/lib/public-posts.ts, src/components/shared/post-content-renderer.tsx, src/components/shared/public-post-view-badge.tsx, src/lib/seo.ts |
+| `src/app/(public)/bai-viet/page.tsx` | page | no | metadata | src/lib/dev-route-log.ts, src/lib/public-posts.ts, src/lib/seo.ts |
+| `src/app/(public)/huong-dan-su-dung/guide-sections.tsx` | tsx | yes | GuideSections |  |
+| `src/app/(public)/huong-dan-su-dung/page.tsx` | page | no | metadata | src/lib/seo.ts, src/app/(public)/huong-dan-su-dung/guide-sections.tsx |
 | `src/app/(public)/layout.tsx` | layout | no | metadata, RootLayout | src/app/(public)/page.tsx, src/components/shared/header.tsx, src/components/shared/footer.tsx, src/providers/query-provider.tsx, src/components/shared/scroll-to-top.tsx, src/components/shared/store-au |
-| `src/app/(public)/lien-he/page.tsx` | page | no | metadata, ContactPage | src/features/pages/home-page/sub-sections/contact-section.tsx |
+| `src/app/(public)/lien-he/page.tsx` | page | no | metadata, ContactPage | src/features/pages/home-page/sub-sections/contact-section.tsx, src/lib/seo.ts |
 | `src/app/(public)/login/page.tsx` | page | no | LoginPage | src/features/auth/admin-bridge.ts |
-| `src/app/(public)/page.tsx` | page | no | metadata, PublicHomePage | src/features/pages/home-page |
+| `src/app/(public)/page.tsx` | page | no | metadata, PublicHomePage | src/features/pages/home-page, src/lib/seo.ts |
 | `src/app/(public)/register/page.tsx` | page | no | RegisterPage | src/features/auth/admin-bridge.ts |
-| `src/app/(public)/ve-chung-toi/page.tsx` | page | no | metadata, AboutPage | src/features/pages/about-page |
+| `src/app/(public)/ve-chung-toi/page.tsx` | page | no | metadata, AboutPage | src/features/pages/about-page, src/lib/seo.ts |
 | `src/app/api/graphify/route.ts` | api-route | no |  | src/lib/graphify-context.ts |
 | `src/app/graph/layout.tsx` | layout | no | metadata, GraphLayout | src/app/graph/page.tsx |
 | `src/app/graph/loading.tsx` | loading | no | GraphLoading | src/components/shared/route-loading.tsx |
 | `src/app/graph/page.tsx` | page | yes | GraphPage | src/hooks/use-graphify.ts, src/lib/graphify-context.ts, src/components/graphify/force-graph-3d.tsx |
+| `src/app/robots.ts` | ts | no | robots | src/lib/seo.ts |
+| `src/app/sitemap.ts` | ts | no | sitemap | src/lib/seo.ts |
 | `src/components/graphify/force-graph-3d.tsx` | tsx | yes | GraphifyForceGraph3D | src/lib/graphify-context.ts |
 | `src/components/icons/logo.tsx` | tsx | no | Logo |  |
 | `src/components/shared/footer.tsx` | tsx | no | Footer | src/components/icons/logo.tsx |
@@ -135,6 +138,7 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 | `src/lib/graphify-context.ts` | ts | no | GraphNode, GraphLink, GraphData, FileEntry, ContextData, GraphifyPayload, nodeColorByCommunity, emojiForType, resolveSourceFile, exportsOfFile, importedBy, importsOf, getLinkedNodes, communityBreakdow |  |
 | `src/lib/public-posts.ts` | ts | no | PublicPostSummary, PublicPostDetail, PublicCategoryItem, formatPostDate |  |
 | `src/lib/scroll.ts` | ts | yes | getHeaderHeight, scrollToYWithHeaderOffset |  |
+| `src/lib/seo.ts` | ts | no | SITE_NAME, SITE_TITLE, SITE_DESCRIPTION, SITE_URL, OG_IMAGE_URL, absoluteUrl, buildSeoMetadata |  |
 | `src/lib/storage.ts` | ts | no | StorageLib |  |
 | `src/lib/utils.ts` | ts | no | cn, generateId |  |
 | `src/providers/query-provider.tsx` | tsx | yes | QueryProvider |  |

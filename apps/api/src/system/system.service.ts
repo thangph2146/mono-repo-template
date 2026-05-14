@@ -20,6 +20,7 @@ import { MessageRead } from '../entities/message-read.entity';
 import { Message } from '../entities/message.entity';
 import { Notification } from '../entities/notification.entity';
 import { PageContent } from '../entities/page-content.entity';
+import { ParentStudent } from '../entities/parent-student.entity';
 import { PostCategory } from '../entities/post-category.entity';
 import { PostTag } from '../entities/post-tag.entity';
 import { Post } from '../entities/post.entity';
@@ -75,6 +76,7 @@ const entityByModelName: Record<string, EntityName<any>> = {
   account: Account,
   session: Session,
   userRole: UserRole,
+  parentStudent: ParentStudent,
   message: Message,
   post: Post,
   student: Student,
@@ -296,6 +298,7 @@ export class SystemService {
     'account',
     'session',
     'userRole',
+    'parentStudent',
     'message',
     'post',
     'student',

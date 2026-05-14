@@ -589,7 +589,11 @@ export class UploadsService {
     await this.ensureDir(targetDir);
 
     // Nếu đã có file cùng baseName trong thư mục, trả về URL file đó thay vì upload lại
-    const existingFile = await this.findFileWithSameBaseName(targetDir, baseName, ext);
+    const existingFile = await this.findFileWithSameBaseName(
+      targetDir,
+      baseName,
+      ext,
+    );
     if (existingFile) {
       const existingRelative = path
         .join(path.dirname(relativePath), existingFile)
@@ -601,7 +605,11 @@ export class UploadsService {
         fileName: existingFile,
         originalName: file.originalname,
         size: file.buffer.length,
-        mimeType: ALLOWED_MIME[ext] || mimePrimary || file.mimetype || 'application/octet-stream',
+        mimeType:
+          ALLOWED_MIME[ext] ||
+          mimePrimary ||
+          file.mimetype ||
+          'application/octet-stream',
         url: existingUrl,
         relativePath: existingRelative,
       };
