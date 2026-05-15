@@ -1398,6 +1398,13 @@ function PostsPageInner() {
                 label: "Xóa tạm đã chọn",
                 variant: "outline",
                 className: "border-destructive/40 text-destructive",
+                confirm: {
+                  title: "Đưa các bài viết đã chọn vào thùng rác?",
+                  description: (rows) =>
+                    `Bạn đã chọn ${rows.length} bài viết. Các bài viết sẽ được chuyển vào thùng rác và có thể khôi phục sau.`,
+                  confirmLabel: "Xóa tạm",
+                  destructive: true,
+                },
                 onAction: async (rows) => {
                   const ids = rows.map((r) => String(r.id));
                   if (!ids.length) return;
@@ -1440,6 +1447,13 @@ function PostsPageInner() {
               {
                 id: "bulk-post-restore",
                 label: "Khôi phục đã chọn",
+                confirm: {
+                  title: "Khôi phục các bài viết đã chọn?",
+                  description: (rows) =>
+                    `Bạn đã chọn ${rows.length} bài viết. Các bài viết sẽ được khôi phục về danh sách đang hoạt động.`,
+                  confirmLabel: "Khôi phục",
+                  destructive: false,
+                },
                 onAction: async (rows) => {
                   const ids = rows.map((r) => String(r.id));
                   if (!ids.length) return;
@@ -1452,6 +1466,13 @@ function PostsPageInner() {
                 label: "Xóa vĩnh viễn đã chọn",
                 variant: "outline",
                 className: "border-destructive/40 text-destructive",
+                confirm: {
+                  title: "Xóa vĩnh viễn các bài viết đã chọn?",
+                  description: (rows) =>
+                    `Bạn đã chọn ${rows.length} bài viết. Hành động này không thể hoàn tác!`,
+                  confirmLabel: "Xóa vĩnh viễn",
+                  destructive: true,
+                },
                 onAction: async (rows) => {
                   const ids = rows.map((r) => String(r.id));
                   if (!ids.length) return;

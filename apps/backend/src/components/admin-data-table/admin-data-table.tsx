@@ -46,6 +46,16 @@ import {
 } from "@/lib/export-xlsx";
 import { Separator } from "@ui/components/separator";
 import { TypographyPSmall } from "@ui/components/typography";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@ui/components/alert-dialog";
 
 const ALL_SELECT = "__all__";
 
@@ -59,6 +69,13 @@ export type AdminDataTableBulkAction<TData> = {
   requiresSelection?: boolean;
   clearSelectionOnSuccess?: boolean;
   disabled?: (selectedRows: TData[]) => boolean;
+  /** Hiển thị dialog xác nhận trước khi thực hiện */
+  confirm?: boolean | {
+    title: string;
+    description?: string | ((selectedRows: TData[]) => string);
+    confirmLabel?: string;
+    destructive?: boolean;
+  };
 };
 
 export type AdminDataTableProps<TData> = {
@@ -144,6 +161,7 @@ export function AdminDataTable<TData>({
   const [globalFilterInternal, setGlobalFilterInternal] = useState("");
   const [selectedRowIdsInternal, setSelectedRowIdsInternal] = useState<RowSelectionState>({});
   const [runningBulkActionId, setRunningBulkActionId] = useState<string | null>(null);
+  const [confirmAction, setConfirmAction] = useState<AdminDataTableBulkAction<TData> | null>(null);
   const columnFilters = columnFiltersControlled ?? columnFiltersInternal;
   const setColumnFilters =
     onColumnFiltersChange ?? setColumnFiltersInternal;
@@ -320,7 +338,24 @@ export function AdminDataTable<TData>({
 
   const headerGroups = table.getHeaderGroups();
   const rows = table.getRowModel().rows;
-  const selectedRows = table.getSelectedRowModel().rows.map((row) => row.original);
+  // Recursively collect selected rows including sub-rows for tree-structured tables
+  // When parent is selected, all descendants are also considered selected
+  const selectedRows = useMemo(() => {
+    const result: TData[] = [];
+    const visit = (rws: Row<TData>[], parentSelected = false) => {
+      for (const row of rws) {
+        const isSelected = row.getIsSelected() || parentSelected;
+        if (isSelected) {
+          result.push(row.original);
+        }
+        if (row.subRows?.length) {
+          visit(row.subRows, isSelected);
+        }
+      }
+    };
+    visit(table.getRowModel().rows);
+    return result;
+  }, [table]);
   const selectedCount = selectedRows.length;
 
   const runBulkAction = useCallback(
@@ -329,6 +364,11 @@ export function AdminDataTable<TData>({
       const requiresSelection = action.requiresSelection ?? true;
       if (requiresSelection && selectedRows.length === 0) return;
       if (action.disabled?.(selectedRows)) return;
+      // If action has confirm, show confirmation dialog first
+      if (action.confirm) {
+        setConfirmAction(action);
+        return;
+      }
       setRunningBulkActionId(action.id);
       try {
         await action.onAction(selectedRows);
@@ -341,6 +381,20 @@ export function AdminDataTable<TData>({
     },
     [runningBulkActionId, selectedRows, table],
   );
+
+  const handleConfirmAction = useCallback(async () => {
+    if (!confirmAction) return;
+    setRunningBulkActionId(confirmAction.id);
+    try {
+      await confirmAction.onAction(selectedRows);
+      if (confirmAction.clearSelectionOnSuccess ?? true) {
+        table.resetRowSelection();
+      }
+    } finally {
+      setRunningBulkActionId(null);
+      setConfirmAction(null);
+    }
+  }, [confirmAction, selectedRows, table]);
 
   const filterableHeaders = table
     .getFlatHeaders()
@@ -613,8 +667,14 @@ export function AdminDataTable<TData>({
                 >
                   {row.getVisibleCells().map((cell) => {
                     const colIndex = cell.column.getIndex();
+                    // Calculate which column should get indent:
+                    // if rowSelection + expander: first data column is at index 2
+                    // if only expander: first data column is at index 1
+                    // if only rowSelection: first data column is at index 1
+                    const firstDataColumnIndex =
+                      (rowSelectionEnabled ? 1 : 0) + (getSubRows ? 1 : 0);
                     const indent =
-                      getSubRows && colIndex === 1 ? row.depth * 14 : 0;
+                      getSubRows && colIndex === firstDataColumnIndex ? row.depth * 14 : 0;
                     return (
                       <TableCell
                         key={cell.id}
@@ -645,6 +705,38 @@ export function AdminDataTable<TData>({
           {footer}
         </div>
       ) : null}
+
+      {/* Bulk Action Confirmation Dialog */}
+      <AlertDialog open={confirmAction != null} onOpenChange={(open) => { if (!open) setConfirmAction(null); }}>
+        <AlertDialogContent className="sm:max-w-md">
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {typeof confirmAction?.confirm === 'object'
+                ? confirmAction.confirm.title
+                : confirmAction?.label ?? 'Xác nhận thao tác'}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {typeof confirmAction?.confirm === 'object' && confirmAction.confirm.description
+                ? typeof confirmAction.confirm.description === 'function'
+                  ? confirmAction.confirm.description(selectedRows)
+                  : confirmAction.confirm.description
+                : `Bạn đã chọn ${selectedCount} mục. Thao tác này không thể hoàn tác.`}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setConfirmAction(null)}>
+              Hủy
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => { void handleConfirmAction(); }}
+              disabled={runningBulkActionId != null}
+              className={typeof confirmAction?.confirm === 'object' && confirmAction.confirm.destructive ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90' : undefined}
+            >
+              {runningBulkActionId != null ? 'Đang xử lý...' : (typeof confirmAction?.confirm === 'object' ? confirmAction.confirm.confirmLabel : 'Xác nhận')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

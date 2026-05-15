@@ -47,7 +47,7 @@ import {
   Layers,
 } from "lucide-react"
 import { AdminDataTable } from "@/components/admin-data-table"
-import { AdminTablePaginationFooter } from "@/components/admin-table-pagination-footer"
+// AdminTablePaginationFooter not needed for trash tree view
 import { AdminConfirmActionDialog } from "@/components/admin-confirm-action-dialog"
 import { AdminPageGuard } from "@/components/admin-page-guard"
 import { type Category, ApiError } from "@/lib/api"
@@ -210,8 +210,7 @@ function CategoriesPageInner() {
   const [trashCategorySelection, setTrashCategorySelection] =
     useState<RowSelectionState>({})
   const [globalFilter, setGlobalFilter] = useState("")
-  const [trashPage, setTrashPage] = useState(1)
-  const [trashPageSize, setTrashPageSize] = useState(15)
+  // Trash uses single page with high limit for tree view (no pagination)
   const [trashGlobalFilter, setTrashGlobalFilter] = useState("")
   const debouncedTrashQ = useDebouncedValue(trashGlobalFilter, 350)
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
@@ -224,10 +223,6 @@ function CategoriesPageInner() {
     }),
     []
   )
-
-  useEffect(() => {
-    setTrashPage(1)
-  }, [debouncedTrashQ, mainTab, trashPageSize])
 
   useEffect(() => {
     setListCategorySelection({})
@@ -245,13 +240,15 @@ function CategoriesPageInner() {
   })
   const categories = useMemo(() => data?.items ?? [], [data?.items])
 
+  // For trash tree view, we need all items to build proper hierarchy
+  // Use high limit to effectively get all items (assuming trash won't have thousands)
   const trashListParams = useMemo(
     () => ({
-      page: trashPage,
-      limit: trashPageSize,
+      page: 1,
+      limit: 1000, // High limit to get all trashed items for tree view
       q: debouncedTrashQ.trim() || undefined,
     }),
-    [trashPage, trashPageSize, debouncedTrashQ]
+    [debouncedTrashQ]
   )
 
   const {
@@ -264,8 +261,11 @@ function CategoriesPageInner() {
     enabled: mainTab === "trash" && canWriteCategories,
     listParams: trashListParams,
   })
-  const trashedItems = trashedData?.items ?? []
   const trashTotal = trashedData?.total ?? 0
+  const trashTableRows = useMemo<CategoryRow[]>(
+    () => buildCategoryTree(trashedData?.items ?? []),
+    [trashedData?.items]
+  )
 
   const [dialogOpen, setDialogOpen] = useState(false)
   const [form, setForm] = useState<FormState>(EMPTY_FORM)
@@ -424,7 +424,6 @@ function CategoriesPageInner() {
 
   const clearTrashFilters = useCallback((): void => {
     setTrashGlobalFilter("")
-    setTrashPage(1)
   }, [])
 
   const handleColumnFiltersChange = useCallback<OnChangeFn<ColumnFiltersState>>(
@@ -561,8 +560,23 @@ function CategoriesPageInner() {
     [canWriteCategories, openEdit, requestDelete]
   )
 
-  const trashColumns = useMemo<ColumnDef<Category>[]>(
+  const trashColumns = useMemo<ColumnDef<CategoryRow>[]>(
     () => [
+      {
+        accessorKey: "name",
+        header: "Tên",
+        enableColumnFilter: false,
+        cell: ({ row, getValue }) => (
+          <div className="flex items-center gap-2">
+            <span className="font-medium">{String(getValue())}</span>
+            {row.depth === 0 ? (
+              <Badge variant="outline" className="text-[10px]">
+                Gốc
+              </Badge>
+            ) : null}
+          </div>
+        ),
+      },
       {
         accessorKey: "slug",
         header: "Slug",
@@ -571,14 +585,7 @@ function CategoriesPageInner() {
           <span className="font-mono text-xs">{String(getValue())}</span>
         ),
       },
-      {
-        accessorKey: "name",
-        header: "Tên",
-        enableColumnFilter: false,
-        cell: ({ getValue }) => (
-          <span className="font-medium">{String(getValue())}</span>
-        ),
-      },
+      
       {
         accessorKey: "deletedAt",
         header: "Xóa lúc",
@@ -633,17 +640,15 @@ function CategoriesPageInner() {
     [restoreMutation.isPending, purgeTrashedMutation.isPending]
   )
 
-  const trashPaginationFooter = (
-    <AdminTablePaginationFooter
-      page={trashPage}
-      pageSize={trashPageSize}
-      total={trashTotal}
-      isLoading={trashedLoading}
-      onPageChange={setTrashPage}
-      onPageSizeChange={setTrashPageSize}
-      emptySummary="Không có mục trong thùng rác"
-      itemLabel="danh mục"
-    />
+  // Simple summary footer for trash (no pagination since we fetch all for tree view)
+  const trashSummaryFooter = (
+    <div className="flex flex-wrap items-center justify-between gap-3">
+      <p className="text-sm text-muted-foreground">
+        {trashedLoading
+          ? "Đang tải..."
+          : `Tổng ${trashTotal} danh mục trong thùng rác`}
+      </p>
+    </div>
   )
 
   return (
@@ -1040,9 +1045,10 @@ function CategoriesPageInner() {
                     Danh mục trong thùng rác sẽ bị ẩn khỏi bộ chọn truyền thông.
                   </span>
                 </p>
-                <AdminDataTable<Category>
-                  data={trashedItems}
+                <AdminDataTable<CategoryRow>
+                  data={trashTableRows}
                   getRowId={(row) => row.id}
+                  getSubRows={(row) => row.subRows}
                   columns={trashColumns}
                   isLoading={trashedLoading}
                   emptyLabel="Thùng rác trống hoặc không khớp tìm kiếm."
@@ -1058,6 +1064,13 @@ function CategoriesPageInner() {
                     {
                       id: "bulk-category-restore",
                       label: "Khôi phục đã chọn",
+                      confirm: {
+                        title: "Khôi phục các danh mục đã chọn?",
+                        description: (rows) =>
+                          `Bạn đã chọn ${rows.length} danh mục. Các danh mục sẽ được khôi phục về danh sách đang hoạt động.`,
+                        confirmLabel: "Khôi phục",
+                        destructive: false,
+                      },
                       onAction: async (rows) => {
                         const ids = rows.map((r) => r.id)
                         if (!ids.length) return
@@ -1073,6 +1086,13 @@ function CategoriesPageInner() {
                       label: "Xóa vĩnh viễn đã chọn",
                       variant: "outline",
                       className: "border-destructive/40 text-destructive",
+                      confirm: {
+                        title: "Xóa vĩnh viễn các danh mục đã chọn?",
+                        description: (rows) =>
+                          `Bạn đã chọn ${rows.length} danh mục. Hành động này không thể hoàn tác!`,
+                        confirmLabel: "Xóa vĩnh viễn",
+                        destructive: true,
+                      },
                       onAction: async (rows) => {
                         const ids = rows.map((r) => r.id)
                         if (!ids.length) return
@@ -1115,7 +1135,7 @@ function CategoriesPageInner() {
                     </div>
                   }
                   csvExport={{ fileName: "danh-muc-thung-rac.csv" }}
-                  footer={trashPaginationFooter}
+                  footer={trashSummaryFooter}
                 />
               </>
             )}
