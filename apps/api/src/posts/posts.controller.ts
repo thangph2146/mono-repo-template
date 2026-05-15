@@ -205,6 +205,11 @@ export class PostsController {
       });
       return res.status(statusCode).json(body);
     } catch (error: unknown) {
+      const stack = error instanceof Error ? error.stack : undefined;
+      this.logger.error(
+        `GET /admin/posts ERROR: ${error instanceof Error ? error.message : String(error)}`,
+        stack,
+      );
       this.logApiError(
         'GET /admin/posts',
         'Lỗi khi lấy danh sách posts',

@@ -924,6 +924,16 @@ export class SystemService {
     }));
   }
 
+  /** User: đảm bảo export cả password hash (serialize() có thể bỏ qua hidden fields). */
+  private async exportUserRows(): Promise<Record<string, unknown>[]> {
+    const rows = await this.em.find(User, {});
+    return rows.map((u) => {
+      const obj = wrap(u).toObject() as Record<string, unknown>;
+      obj.password = u.password;
+      return obj;
+    });
+  }
+
   async exportData(modelName?: string) {
     this.logger.log(
       `Starting data export ${modelName ? `for ${modelName}` : 'all models'}...`,
@@ -943,6 +953,8 @@ export class SystemService {
             data[mName] = await this.exportPostCategoryRows();
           } else if (mName === 'postTag') {
             data[mName] = await this.exportPostTagRows();
+          } else if (mName === 'user') {
+            data[mName] = await this.exportUserRows();
           } else {
             const rows = await this.em.find(entity, {});
             data[mName] = serialize(rows) as object[];

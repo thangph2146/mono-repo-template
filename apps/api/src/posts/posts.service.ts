@@ -293,17 +293,30 @@ export class PostsService {
       ? {}
       : buildWhere({ ...params, filters });
 
-    const queryOptions = {
-      populate: POST_POPULATE,
-      orderBy: { updatedAt: 'DESC' },
-      offset: skip,
-      limit,
-    };
-
-    const [rows, total] = await Promise.all([
-      this.em.find(Post, where as FilterQuery<Post>, queryOptions),
+    // Two-step query to avoid "Out of sort memory" from MySQL when
+    // paginated ordering is combined with multi-table JOIN populates.
+    const [idsOnly, total] = await Promise.all([
+      this.em.find(Post, where as FilterQuery<Post>, {
+        fields: ['id'],
+        orderBy: { updatedAt: 'DESC' },
+        offset: skip,
+        limit,
+      }),
       this.em.count(Post, where as FilterQuery<Post>),
     ]);
+
+    const ids = idsOnly.map((p) => p.id);
+    const rows =
+      ids.length > 0
+        ? await this.em.find(Post, { id: { $in: ids } } as FilterQuery<Post>, {
+            populate: POST_POPULATE,
+          })
+        : [];
+
+    // Preserve the sort order from the paginated ID query
+    const orderMap = new Map<string, number>();
+    for (let i = 0; i < ids.length; i++) orderMap.set(ids[i], i);
+    rows.sort((a, b) => (orderMap.get(a.id) ?? 0) - (orderMap.get(b.id) ?? 0));
 
     let finalRows = rows;
     if (params.categoriesNone) {
