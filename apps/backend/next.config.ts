@@ -12,7 +12,7 @@ const basePath = normalizeBasePath(process.env.BACKEND_BASE_PATH);
 const nextConfig: NextConfig = {
   /* config options here */
   reactCompiler: true,
-  trailingSlash: true,
+  trailingSlash: process.env.TRAILING_SLASH === "true",
   transpilePackages: [
     "@ui",
     "@workspace/api-client",

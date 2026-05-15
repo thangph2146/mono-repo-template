@@ -257,9 +257,15 @@ export class UploadsController {
   }
 
   private getServeBaseUrl(req?: Request): string {
-    const base =
-      appConfig.publicUrl ||
-      (req && `${req.protocol || 'http'}://${req.get('host')}`);
-    return base ? `${base.replace(/\/$/, '')}/api/admin/uploads/serve` : '';
+    if (appConfig.publicUrl) {
+      return `${appConfig.publicUrl.replace(/\/$/, '')}/api/admin/uploads/serve`;
+    }
+    if (appConfig.nodeEnv === 'production') {
+      return '';
+    }
+    const fallback = req && `${req.protocol || 'http'}://${req.get('host')}`;
+    return fallback
+      ? `${fallback.replace(/\/$/, '')}/api/admin/uploads/serve`
+      : '';
   }
 }

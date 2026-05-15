@@ -90,17 +90,27 @@ function mapRow(p: PostWithRelations): PostRowDto {
     createdAt: safeIsoStringNow(p.createdAt),
     updatedAt: safeIsoStringNow(p.updatedAt),
     deletedAt: safeIsoString(p.deletedAt),
-    author: {
-      id: p.author.id,
-      name: p.author.name ?? null,
-      email: p.author.email ?? '',
-    },
+    author: p.author
+      ? {
+          id: p.author.id,
+          name: p.author.name ?? null,
+          email: p.author.email ?? '',
+        }
+      : { id: '', name: null, email: '' },
     categories:
-      p.categories?.map((pc) => ({
-        id: pc.category.id,
-        name: pc.category.name,
-      })) ?? [],
-    tags: p.tags?.map((pt) => ({ id: pt.tag.id, name: pt.tag.name })) ?? [],
+      p.categories
+        ?.map((pc) => {
+          const cat = pc?.category;
+          return cat ? { id: cat.id, name: cat.name } : null;
+        })
+        .filter((c): c is { id: string; name: string } => c !== null) ?? [],
+    tags:
+      p.tags
+        ?.map((pt) => {
+          const tag = pt?.tag;
+          return tag ? { id: tag.id, name: tag.name } : null;
+        })
+        .filter((t): t is { id: string; name: string } => t !== null) ?? [],
   };
 }
 

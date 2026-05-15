@@ -191,18 +191,38 @@ export class PostsController {
         if (m && value) filters[m[1]] = value;
       }
     }
-    const result = await this.postsService.list({
-      page: Math.max(1, parseInt(String(page), 10) || 1),
-      limit: Math.min(100, Math.max(1, parseInt(String(limit), 10) || 10)),
-      search: search?.trim(),
-      status: this.parseListStatus(status),
-      filters: Object.keys(filters).length ? filters : undefined,
-    });
-    const { statusCode, body } = createSuccessResponse({
-      data: result.data,
-      pagination: result.pagination,
-    });
-    return res.status(statusCode).json(body);
+    try {
+      const result = await this.postsService.list({
+        page: Math.max(1, parseInt(String(page), 10) || 1),
+        limit: Math.min(100, Math.max(1, parseInt(String(limit), 10) || 10)),
+        search: search?.trim(),
+        status: this.parseListStatus(status),
+        filters: Object.keys(filters).length ? filters : undefined,
+      });
+      const { statusCode, body } = createSuccessResponse({
+        data: result.data,
+        pagination: result.pagination,
+      });
+      return res.status(statusCode).json(body);
+    } catch (error: unknown) {
+      this.logApiError(
+        'GET /admin/posts',
+        'Lỗi khi lấy danh sách posts',
+        error,
+        {
+          page,
+          limit,
+          status,
+          search,
+          filters,
+        },
+      );
+      const { statusCode, body } = createErrorResponse(
+        'Lỗi server khi lấy danh sách posts',
+        { status: 500 },
+      );
+      return res.status(statusCode).json(body);
+    }
   }
 
   @Get('options')
