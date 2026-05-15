@@ -14,9 +14,17 @@ export type AuthPath = (typeof AUTH_PATHS)[number];
 
 const AUTH_SET = new Set<string>(AUTH_PATHS);
 
+const BASE_PATH =
+  typeof process !== "undefined"
+    ? (process.env.NEXT_PUBLIC_BACKEND_BASE_PATH || "")
+    : "";
+
 export function isAuthPath(pathname: string | null | undefined): boolean {
   if (!pathname) return false;
-  return AUTH_SET.has(pathname);
+  const stripped = BASE_PATH
+    ? pathname.replace(new RegExp(`^${BASE_PATH}`), "") || "/"
+    : pathname;
+  return AUTH_SET.has(stripped);
 }
 
 function inferExternalAdminBase(pathname: string | null | undefined): string {

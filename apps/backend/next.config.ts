@@ -7,12 +7,16 @@ function normalizeBasePath(raw: string | undefined): string {
   return withSlash.replace(/\/+$/, "");
 }
 
-const basePath = normalizeBasePath(process.env.BACKEND_BASE_PATH);
+const basePath = normalizeBasePath(process.env.NEXT_PUBLIC_BACKEND_BASE_PATH);
+
+// Optional: run admin under a trailingSlash production
+// Set NEXT_PUBLIC_TRAILING_SLASH=true in .env to enable trailing slashes for all routes
+const trailingSlash = process.env.NEXT_PUBLIC_TRAILING_SLASH === "true";
 
 const nextConfig: NextConfig = {
   /* config options here */
   reactCompiler: true,
-  trailingSlash: true,
+  trailingSlash,
   transpilePackages: [
     "@ui",
     "@workspace/api-client",
