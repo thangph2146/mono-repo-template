@@ -24,7 +24,8 @@ export function isAuthPath(pathname: string | null | undefined): boolean {
   const stripped = BASE_PATH
     ? pathname.replace(new RegExp(`^${BASE_PATH}`), "") || "/"
     : pathname;
-  return AUTH_SET.has(stripped);
+  const normalized = stripped.replace(/\/+$/, "") || "/";
+  return AUTH_SET.has(normalized);
 }
 
 function inferExternalAdminBase(pathname: string | null | undefined): string {
