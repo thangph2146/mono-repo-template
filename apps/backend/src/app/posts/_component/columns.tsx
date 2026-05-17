@@ -24,7 +24,7 @@ export function getPostColumns({
     {
       accessorKey: "title",
       header: "Tiêu đề",
-      meta: { filterPlaceholder: "Lọc tiêu đề…" },
+      enableColumnFilter: false,
       cell: ({ row }) => (
         <div className="space-y-1">
           <p className="font-medium">{row.original.title}</p>
@@ -147,7 +147,7 @@ export function getTrashColumns({
     {
       accessorKey: "title",
       header: "Tiêu đề",
-      meta: { filterPlaceholder: "Lọc tiêu đề…" },
+      enableColumnFilter: false,
       cell: ({ row }) => (
         <div className="space-y-1">
           <p className="font-medium">{row.original.title}</p>

@@ -80,20 +80,33 @@ export async function resolveRelationFilters(
     if (!raw?.trim()) continue;
 
     const value = raw.trim();
-    const byId = await findByEntity(em, rel, value, 'id');
-    if (byId) {
-      output = { ...output, [key]: byId.id };
-      continue;
+    const parts = value.includes(',')
+      ? value
+          .split(',')
+          .map((x) => x.trim())
+          .filter(Boolean)
+      : [value];
+
+    const resolved: string[] = [];
+    for (const part of parts) {
+      const byId = await findByEntity(em, rel, part, 'id');
+      if (byId) {
+        resolved.push(byId.id);
+        continue;
+      }
+
+      if (isUuid(part)) {
+        continue;
+      }
+
+      const byName = await findByEntity(em, rel, part, rel.nameField);
+      if (byName) {
+        resolved.push(byName.id);
+      }
     }
 
-    if (isUuid(value)) {
-      delete (output as Record<string, unknown>)[key];
-      continue;
-    }
-
-    const byName = await findByEntity(em, rel, value, rel.nameField);
-    if (byName) {
-      output = { ...output, [key]: byName.id };
+    if (resolved.length > 0) {
+      output = { ...output, [key]: resolved.join(',') };
     } else {
       delete (output as Record<string, unknown>)[key];
     }

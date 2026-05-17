@@ -100,7 +100,23 @@ function buildWhere(params: ListCategoriesParams): Record<string, unknown> {
       } else if (key === 'slug') {
         where.slug = { $like: `%${trimmed}%` };
       } else if (key === 'parentId') {
-        where.parent = trimmed;
+        const ids = trimmed.includes(',')
+          ? trimmed
+              .split(',')
+              .map((x) => x.trim())
+              .filter(Boolean)
+          : [trimmed];
+        where.parent = ids.length > 1 ? { id: { $in: ids } } : ids[0];
+      } else if (key === 'isActive') {
+        const vals = trimmed.includes(',')
+          ? trimmed
+              .split(',')
+              .map((x) => x.trim())
+              .filter(Boolean)
+          : [trimmed];
+        const boolVals = vals.map((v) => v === 'true');
+        where.isActive =
+          boolVals.length === 1 ? boolVals[0] : { $in: boolVals };
       }
     }
   }

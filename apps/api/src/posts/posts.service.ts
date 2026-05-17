@@ -353,10 +353,20 @@ export class PostsService {
       (filters?.categories?.trim() || filters?.categoryId?.trim())
     ) {
       const key = filters.categories?.trim() ? 'categories' : 'categoryId';
-      const rootId = filters[key];
-      const ids = await this.collectCategoryDescendantIds(rootId);
-      if (ids.length > 0) {
-        filters[key] = ids.join(',');
+      const rawValue = filters[key];
+      const rootIds = rawValue.includes(',')
+        ? rawValue
+            .split(',')
+            .map((x) => x.trim())
+            .filter(Boolean)
+        : [rawValue];
+      const allIds: string[] = [];
+      for (const rootId of rootIds) {
+        const ids = await this.collectCategoryDescendantIds(rootId);
+        allIds.push(...ids);
+      }
+      if (allIds.length > 0) {
+        filters[key] = allIds.join(',');
       }
     }
     const where = params.categoriesNone

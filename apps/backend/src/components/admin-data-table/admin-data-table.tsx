@@ -229,28 +229,40 @@ export function AdminDataTable<TData>({
       id: "_expand",
       header: () => null,
       cell: ({ row }) => {
+        const indent = row.depth * 24;
         if (!row.getCanExpand()) {
-          return <span className="inline-block w-8 shrink-0" aria-hidden />;
+          return (
+            <span
+              className="inline-block shrink-0"
+              style={{ width: `${48 + indent}px` }}
+              aria-hidden
+            />
+          );
         }
         return (
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 shrink-0"
-            aria-expanded={row.getIsExpanded()}
-            aria-label={row.getIsExpanded() ? "Thu gọn" : "Mở rộng"}
-            onClick={(e) => {
-              e.stopPropagation();
-              row.getToggleExpandedHandler()();
-            }}
+          <div
+            className="flex items-center"
+            style={{ paddingLeft: `${indent}px` }}
           >
-            {row.getIsExpanded() ? (
-              <ChevronDown className="size-4" />
-            ) : (
-              <ChevronRight className="size-4" />
-            )}
-          </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 shrink-0"
+              aria-expanded={row.getIsExpanded()}
+              aria-label={row.getIsExpanded() ? "Thu gọn" : "Mở rộng"}
+              onClick={(e) => {
+                e.stopPropagation();
+                row.getToggleExpandedHandler()();
+              }}
+            >
+              {row.getIsExpanded() ? (
+                <ChevronDown className="size-4" />
+              ) : (
+                <ChevronRight className="size-4" />
+              )}
+            </Button>
+          </div>
         );
       },
       enableSorting: false,
@@ -718,9 +730,16 @@ export function AdminDataTable<TData>({
                   key={row.id}
                   data-depth={row.depth}
                   className={cn(
-                    row.depth > 0 && "bg-muted/15",
+                    row.depth > 0 && "bg-muted/10",
+                    row.depth > 1 && "bg-muted/20",
                     getRowClassName?.(row),
                   )}
+                  style={{
+                    borderLeft:
+                      row.depth > 0
+                        ? `3px solid hsl(var(--primary) / ${0.15 + row.depth * 0.1})`
+                        : undefined,
+                  }}
                 >
                   {row.getVisibleCells().map((cell) => {
                     const colIndex = cell.column.getIndex();
@@ -731,7 +750,7 @@ export function AdminDataTable<TData>({
                     const firstDataColumnIndex =
                       (rowSelectionEnabled ? 1 : 0) + (getSubRows ? 1 : 0);
                     const indent =
-                      getSubRows && colIndex === firstDataColumnIndex ? row.depth * 14 : 0;
+                      getSubRows && colIndex === firstDataColumnIndex ? row.depth * 24 : 0;
                     return (
                       <TableCell
                         key={cell.id}

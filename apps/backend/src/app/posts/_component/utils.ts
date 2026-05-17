@@ -170,6 +170,9 @@ export function buildPostsFilterQuery(
       if (Array.isArray(value)) {
         const vals = value.map((v) => String(v)).filter(Boolean);
         if (vals.length) query.categoryId = vals.join(",");
+      } else if (typeof value === "string" && value.includes(",")) {
+        const vals = value.split(",").map((v) => v.trim()).filter(Boolean);
+        if (vals.length) query.categoryId = vals.join(",");
       } else {
         const v = String(value).trim();
         if (v) query.categoryId = v;

@@ -54,13 +54,11 @@ function TreeMultiSelectItem({
   return (
     <button
       type="button"
-      disabled={isParent}
       onClick={() => onSelect(value)}
       className={cn(
         "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm text-left",
         isSelected && "bg-primary/10 text-primary font-medium",
-        !isSelected && !isParent && "hover:bg-muted cursor-pointer",
-        isParent && "text-muted-foreground cursor-default opacity-60",
+        !isSelected && "hover:bg-muted cursor-pointer",
       )}
       style={{ paddingLeft: `${12 + depth * 16}px` }}
     >

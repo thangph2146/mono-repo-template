@@ -43,7 +43,7 @@ function TreeMultiSelectInlineItem({
       <div
         className={cn(
           "flex items-center gap-2 bg-background px-2 py-1.5 text-sm",
-          isSelected && !isParent && "border-primary/50 bg-primary/5"
+          isSelected && "border-primary/50 bg-primary/5"
         )}
         style={{ marginLeft: `${depth * 16}px` }}
       >
@@ -57,22 +57,19 @@ function TreeMultiSelectInlineItem({
         ) : (
           <div className="size-5 shrink-0" />
         )}
-        {isParent ? (
-          <Folder className="size-4 shrink-0 text-amber-500" />
-        ) : (
-          <Checkbox
-            checked={isSelected}
-            onCheckedChange={() => onSelect(value)}
-            aria-label={`Chọn danh mục ${label}`}
-          />
-        )}
+        <Checkbox
+          checked={isSelected}
+          onCheckedChange={() => onSelect(value)}
+          aria-label={`Chọn danh mục ${label}`}
+        />
+        {isParent && <Folder className="size-4 shrink-0 text-amber-500" />}
         <span className="min-w-0 flex-1 truncate">{label}</span>
         {hasChildren ? (
           <Badge variant="secondary" className="shrink-0 text-[10px]">
             {subOptions?.length} mục con
           </Badge>
         ) : null}
-        {isSelected && !isParent && <Check className="size-4 shrink-0 text-primary" />}
+        {isSelected && <Check className="size-4 shrink-0 text-primary" />}
       </div>
       {hasChildren && (
         <CollapsibleContent>
