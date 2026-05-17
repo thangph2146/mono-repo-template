@@ -65,27 +65,6 @@ export function getCategoryColumns({
       },
     },
     {
-      id: "isActive",
-      accessorFn: (r) => (r.isActive ? "true" : "false"),
-      header: "Trạng thái",
-      cell: ({ row }) =>
-        row.original.isActive ? (
-          <Badge className="text-xs">Đang dùng</Badge>
-        ) : (
-          <Badge variant="outline" className="text-xs">
-            Ẩn
-          </Badge>
-        ),
-      filterFn: () => true,
-      meta: {
-        filterVariant: "multi-select",
-        selectOptions: [
-          { value: "true", label: "Đang dùng" },
-          { value: "false", label: "Ẩn" },
-        ],
-      },
-    },
-    {
       id: "actions",
       header: "Thao tác",
       enableColumnFilter: false,
@@ -176,27 +155,6 @@ export function getTrashColumns({
             children: s.subRows?.map((ss) => ({ value: ss.id, label: ss.name })),
           })),
         })),
-      },
-    },
-    {
-      id: "isActive",
-      accessorFn: (r) => (r.isActive ? "true" : "false"),
-      header: "Trạng thái",
-      cell: ({ row }) =>
-        row.original.isActive ? (
-          <Badge className="text-xs">Đang dùng</Badge>
-        ) : (
-          <Badge variant="outline" className="text-xs">
-            Ẩn
-          </Badge>
-        ),
-      filterFn: () => true,
-      meta: {
-        filterVariant: "multi-select",
-        selectOptions: [
-          { value: "true", label: "Đang dùng" },
-          { value: "false", label: "Ẩn" },
-        ],
       },
     },
     {

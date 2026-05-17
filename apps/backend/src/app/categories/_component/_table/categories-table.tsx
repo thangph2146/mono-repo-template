@@ -3,7 +3,6 @@
 import type { ColumnDef, ColumnFiltersState, OnChangeFn, RowSelectionState, Row } from "@tanstack/react-table";
 import { Button } from "@ui/components/button";
 import { AdminDataTable } from "@/components/admin-data-table";
-import { AdminTablePaginationFooter } from "@/components/admin-table-pagination-footer";
 import { RefreshCw, FilterX } from "lucide-react";
 import type { CategoryRow } from "../types";
 
@@ -17,11 +16,7 @@ export interface CategoriesTableProps {
   onGlobalFilterChange: OnChangeFn<string>;
   selectedRowIds: RowSelectionState;
   onSelectedRowIdsChange: OnChangeFn<RowSelectionState>;
-  page: number;
-  pageSize: number;
   total: number;
-  onPageChange: (page: number) => void;
-  onPageSizeChange: (size: number) => void;
   onRefresh: () => void;
   onClearFilters: () => void;
   onBulkDelete: (rows: CategoryRow[]) => Promise<void>;
@@ -39,11 +34,7 @@ export function CategoriesTable({
   onGlobalFilterChange,
   selectedRowIds,
   onSelectedRowIdsChange,
-  page,
-  pageSize,
   total,
-  onPageChange,
-  onPageSizeChange,
   onRefresh,
   onClearFilters,
   onBulkDelete,
@@ -113,16 +104,11 @@ export function CategoriesTable({
         },
       ]}
       footer={
-        <AdminTablePaginationFooter
-          page={page}
-          pageSize={pageSize}
-          total={total}
-          isLoading={isLoading}
-          onPageChange={onPageChange}
-          onPageSizeChange={onPageSizeChange}
-          emptySummary="Không có danh mục"
-          itemLabel="danh mục"
-        />
+        <div className="flex items-center justify-between">
+          <p className="text-sm text-muted-foreground">
+            {isLoading ? "Đang tải..." : `Tổng ${total} danh mục`}
+          </p>
+        </div>
       }
     />
   );

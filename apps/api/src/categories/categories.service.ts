@@ -107,16 +107,6 @@ function buildWhere(params: ListCategoriesParams): Record<string, unknown> {
               .filter(Boolean)
           : [trimmed];
         where.parent = ids.length > 1 ? { id: { $in: ids } } : ids[0];
-      } else if (key === 'isActive') {
-        const vals = trimmed.includes(',')
-          ? trimmed
-              .split(',')
-              .map((x) => x.trim())
-              .filter(Boolean)
-          : [trimmed];
-        const boolVals = vals.map((v) => v === 'true');
-        where.isActive =
-          boolVals.length === 1 ? boolVals[0] : { $in: boolVals };
       }
     }
   }

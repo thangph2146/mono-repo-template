@@ -91,14 +91,6 @@ export function buildCategoriesFilterQuery(
         const v = String(value).trim();
         if (v) query.parentId = v;
       }
-    } else if (filter.id === "isActive") {
-      if (Array.isArray(value)) {
-        const vals = value.map((v) => String(v)).filter(Boolean);
-        if (vals.length) query.isActive = vals.join(",");
-      } else {
-        const v = String(value).trim();
-        if (v) query.isActive = v;
-      }
     }
   }
   return query;

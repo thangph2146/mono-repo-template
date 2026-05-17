@@ -8,7 +8,6 @@ export interface CategoryRow {
   createdAt: string;
   updatedAt: string;
   deletedAt: string | null;
-  isActive: boolean;
   icon: string | null;
   sortOrder: number;
   _count: { children: number };
@@ -36,7 +35,6 @@ export interface FormState {
   description: string;
   icon: string;
   sortOrder: number;
-  isActive: boolean;
   parentId: string;
 }
 

@@ -89,8 +89,6 @@ function CategoriesPageInner() {
   };
 
   const [mainTab, setMainTab] = useState<"list" | "trash">("list");
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
   const [globalFilter, setGlobalFilter] = useState("");
   const [trashPage, setTrashPage] = useState(1);
   const [trashPageSize, setTrashPageSize] = useState(10);
@@ -115,8 +113,6 @@ function CategoriesPageInner() {
 
   const categoriesQuery = useCategoriesQuery({
     api,
-    page,
-    pageSize,
     debouncedQ,
     columnFilterQuery: listColumnFilterQuery,
   });
@@ -184,10 +180,6 @@ function CategoriesPageInner() {
       await invalidateAll();
     },
   });
-
-  useEffect(() => {
-    setPage(1);
-  }, [columnFilters, debouncedQ, pageSize]);
 
   useEffect(() => {
     setTrashPage(1);
@@ -362,11 +354,7 @@ function CategoriesPageInner() {
             onGlobalFilterChange={setGlobalFilter}
             selectedRowIds={listCategorySelection}
             onSelectedRowIdsChange={setListCategorySelection}
-            page={page}
-            pageSize={pageSize}
             total={categoriesQuery.data?.total ?? 0}
-            onPageChange={setPage}
-            onPageSizeChange={setPageSize}
             onRefresh={() => void categoriesQuery.refetch()}
             onClearFilters={clearListFilters}
             onBulkDelete={async (rows) => {

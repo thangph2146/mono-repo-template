@@ -11,7 +11,6 @@ import {
 } from "@ui/components/dialog";
 import { Input } from "@ui/components/input";
 import { Label } from "@ui/components/label";
-import { Switch } from "@ui/components/switch";
 import { Button } from "@ui/components/button";
 import {
   Select,
@@ -20,6 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@ui/components/select";
+import { TreePicker, type TreeOption } from "@ui/components/pickers";
 import { Plus } from "lucide-react";
 import type { FormState, CategoryTreeOption } from "../types";
 import {
@@ -46,21 +46,23 @@ export interface CategoriesFormDialogProps {
 
 const ROOT_PARENT_VALUE = "__root__";
 
-function flattenCategoryOptions(
+function buildParentTreeOptions(
   rows: CategoryTreeOption[],
-  excludedIds: Set<string>,
-  depth = 0
-): Array<{ id: string; name: string; depth: number }> {
-  const options: Array<{ id: string; name: string; depth: number }> = [];
+  excludedIds: Set<string>
+): TreeOption[] {
+  const result: TreeOption[] = [];
   for (const row of rows) {
-    if (!excludedIds.has(row.id)) {
-      options.push({ id: row.id, name: row.name, depth });
-    }
-    if (row.subRows) {
-      options.push(...flattenCategoryOptions(row.subRows, excludedIds, depth + 1));
-    }
+    if (excludedIds.has(row.id)) continue;
+    const children = row.subRows
+      ? buildParentTreeOptions(row.subRows, excludedIds)
+      : [];
+    result.push({
+      value: row.id,
+      label: row.name,
+      children: children.length > 0 ? children : undefined,
+    });
   }
-  return options;
+  return result;
 }
 
 export function CategoriesFormDialog({
@@ -79,7 +81,7 @@ export function CategoriesFormDialog({
     ? new Set([form.id])
     : new Set<string>();
 
-  const parentOptions = flattenCategoryOptions(categoryTreeOptions, excludedIds);
+  const parentTreeOptions = buildParentTreeOptions(categoryTreeOptions, excludedIds);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -94,7 +96,6 @@ export function CategoriesFormDialog({
                   description: "",
                   icon: "Package2",
                   sortOrder: 0,
-                  isActive: true,
                   parentId: ROOT_PARENT_VALUE,
                 })
               }
@@ -199,47 +200,20 @@ export function CategoriesFormDialog({
             </div>
             <div className="space-y-2 sm:col-span-2">
               <Label>Danh mục cha</Label>
-              <Select
-                value={form.parentId}
-                onValueChange={(value) =>
+              <TreePicker
+                value={form.parentId === ROOT_PARENT_VALUE ? "" : form.parentId}
+                onChange={(value) =>
                   onFormChange({
                     ...form,
-                    parentId: value || ROOT_PARENT_VALUE,
+                    parentId: (typeof value === "string" && value) || ROOT_PARENT_VALUE,
                   })
                 }
-              >
-                <SelectTrigger className="w-full rounded-lg">
-                  <SelectValue placeholder="Chọn danh mục cha" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={ROOT_PARENT_VALUE}>
-                    Cấp gốc
-                  </SelectItem>
-                  {parentOptions.map((option) => (
-                    <SelectItem key={option.id} value={option.id}>
-                      {`${".. ".repeat(option.depth)}${option.name}`}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                options={parentTreeOptions}
+                placeholder="Cấp gốc"
+              />
               <p className="text-xs text-muted-foreground">
                 Danh mục con sẽ hiển thị lùi cấp trong bảng tree.
               </p>
-            </div>
-            <div className="border-outline-variant flex items-center justify-between rounded-lg border px-4 py-3 sm:col-span-2">
-              <div>
-                <p className="text-sm font-semibold">Đang hoạt động</p>
-                <p className="text-xs text-muted-foreground">
-                  Khi tắt, danh mục sẽ ẩn khỏi các bộ chọn nội dung nhưng
-                  vẫn giữ lại tham chiếu cũ.
-                </p>
-              </div>
-              <Switch
-                checked={form.isActive}
-                onCheckedChange={(v) =>
-                  onFormChange({ ...form, isActive: v })
-                }
-              />
             </div>
           </div>
         </div>

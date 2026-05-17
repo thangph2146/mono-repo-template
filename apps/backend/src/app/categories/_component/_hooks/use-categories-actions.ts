@@ -12,7 +12,6 @@ const EMPTY_FORM: FormState = {
   description: "",
   icon: "Package2",
   sortOrder: 0,
-  isActive: true,
   parentId: ROOT_PARENT_VALUE,
 };
 
@@ -40,8 +39,7 @@ export function useOpenEdit({
           description: (data.description as string) ?? "",
           icon: (data.icon as string) ?? "Package2",
           sortOrder: (data.sortOrder as number) ?? 0,
-          isActive: (data.isActive as boolean) ?? true,
-          parentId: (data.parentId as string) ?? "__root__",
+          parentId: (data.parentId as string) ?? ROOT_PARENT_VALUE,
         });
         setDialogOpen(true);
       } catch {
@@ -78,7 +76,6 @@ export function useHandleSave({
       description: form.description.trim() || null,
       icon: form.icon || null,
       sortOrder: Number.isFinite(form.sortOrder) ? form.sortOrder : 0,
-      isActive: form.isActive,
       parentId: form.parentId === ROOT_PARENT_VALUE ? null : form.parentId,
     };
     try {

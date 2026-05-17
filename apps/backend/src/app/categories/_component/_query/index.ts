@@ -6,27 +6,23 @@ import { normalizePaged } from "../utils";
 
 export interface UseCategoriesQueryProps {
   api: StoreSyncSdk;
-  page: number;
-  pageSize: number;
   debouncedQ: string;
   columnFilterQuery: Record<string, unknown>;
 }
 
 export function useCategoriesQuery({
   api,
-  page,
-  pageSize,
   debouncedQ,
   columnFilterQuery,
 }: UseCategoriesQueryProps): UseQueryResult<PagedResult<CategoryRow>> {
   return useQuery({
-    queryKey: ["categories", "list", page, pageSize, debouncedQ, columnFilterQuery],
+    queryKey: ["categories", "list", debouncedQ, columnFilterQuery],
     queryFn: async (): Promise<PagedResult<CategoryRow>> =>
       normalizePaged(
         await api.http.get("/admin/categories", {
           query: {
-            page,
-            limit: pageSize,
+            page: 1,
+            limit: 1000,
             search: debouncedQ.trim() || undefined,
             status: "active",
             ...Object.fromEntries(
