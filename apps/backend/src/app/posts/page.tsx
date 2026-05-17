@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import type {
   ColumnDef,
   ColumnFiltersState,
@@ -15,18 +16,16 @@ import {
   AlertCircle,
   FileText,
   RefreshCw,
+  Plus,
 } from "lucide-react";
 import { AdminPageGuard } from "@/components/admin-page-guard";
 import { api } from "@/lib/api";
 import { PostsTable, PostsTrashTable } from "./_component/_table";
-import { PostsFormDialog } from "./_component/_dialog";
 import { PostsConfirmDialog } from "./_component/_alert-dialog";
 import {
   useColumnFiltersChange,
   useClearListFilters,
   useClearTrashFilters,
-  useOpenEdit,
-  useHandleSave,
   useHandleConfirmActionWithAction,
 } from "./_component/_hooks";
 import {
@@ -34,8 +33,6 @@ import {
   useTrashQuery,
   useCategoriesQuery,
   useTagsQuery,
-  useCreateMutation,
-  useUpdateMutation,
   useDeleteMutation,
   useRestoreMutation,
   usePurgeMutation,
@@ -44,7 +41,6 @@ import {
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import {
   ADMIN_ALERT_DIALOG_CONTENT_CLASS,
-  ADMIN_DIALOG_CONTENT_POST_CLASS,
   ADMIN_PAGE_SUBTITLE_CLASS,
   ADMIN_PAGE_TITLE_ICON_CLASS,
   ADMIN_PAGE_TITLE_PRIMARY_CLASS,
@@ -52,36 +48,19 @@ import {
 import type {
   PostListRow,
   PostConfirmAction,
-  FormState,
 } from "./_component";
 import {
-  createParagraphNode,
-  createSerializedEditorState,
-  slugify,
-  getSeoStatus,
   buildCategoryOptionTree,
   buildPostsFilterQuery,
   getPostColumns,
   getTrashColumns,
-  fromLocalInputValue,
   formatDateTime,
 } from "./_component";
 import { PageSection } from "@ui/components/layout";
 import { TypographyH1 } from "@ui/components/typography";
 
-const EMPTY_FORM: FormState = {
-  title: "",
-  slug: "",
-  excerpt: "",
-  image: "",
-  content: createSerializedEditorState([createParagraphNode()]),
-  published: false,
-  publishedAt: "",
-  categoryIds: [],
-  tagIds: [],
-};
-
 function PostsPageInner() {
+  const router = useRouter();
   const queryClient = useQueryClient();
 
   const invalidateAll = async () => {
@@ -89,7 +68,6 @@ function PostsPageInner() {
   };
 
   const [mainTab, setMainTab] = useState<"list" | "trash">("list");
-  const [editorTab, setEditorTab] = useState<"content" | "seo" | "publish" | "taxonomy">("content");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [globalFilter, setGlobalFilter] = useState("");
@@ -101,9 +79,6 @@ function PostsPageInner() {
   const [listPostSelection, setListPostSelection] = useState<RowSelectionState>({});
   const [trashPostSelection, setTrashPostSelection] = useState<RowSelectionState>({});
   const [confirmAction, setConfirmAction] = useState<PostConfirmAction | null>(null);
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [loadingDetail, setLoadingDetail] = useState(false);
-  const [form, setForm] = useState<FormState>(EMPTY_FORM);
 
   const debouncedQ = useDebouncedValue(globalFilter, 300);
   const debouncedTrashQ = useDebouncedValue(trashGlobalFilter, 300);
@@ -138,8 +113,6 @@ function PostsPageInner() {
   const categoriesQuery = useCategoriesQuery(api);
   const tagsQuery = useTagsQuery(api);
 
-  const createMutation = useCreateMutation({ api, invalidateAll });
-  const updateMutation = useUpdateMutation({ api, invalidateAll });
   const deleteMutation = useDeleteMutation({ api, invalidateAll });
   const restoreMutation = useRestoreMutation({ api, invalidateAll });
   const purgeMutation = usePurgeMutation({ api, invalidateAll });
@@ -168,31 +141,10 @@ function PostsPageInner() {
   const clearTrashFilters = useClearTrashFilters(setTrashGlobalFilter, setTrashColumnFilters);
   const handleTrashColumnFiltersChange = useColumnFiltersChange(setTrashColumnFilters);
 
-  const openEdit = useOpenEdit({
-    setLoadingDetail,
-    setForm,
-    setEditorTab,
-    setDialogOpen,
-    api,
-  });
-
-  const submitting =
-    createMutation.isPending || updateMutation.isPending || loadingDetail;
-  const normalizedSlug = form.slug.trim() || slugify(form.title);
-  const titleLength = form.title.trim().length;
-  const excerptLength = form.excerpt.trim().length;
-  const titleSeo = getSeoStatus(titleLength, 30, 65);
-  const excerptSeo = getSeoStatus(excerptLength, 70, 160);
-  const previewPath = normalizedSlug ? `/bai-viet/${normalizedSlug}` : "/bai-viet/ten-bai-viet";
-
-  const handleSave = useHandleSave({
-    form,
-    createMutation,
-    updateMutation,
-    setDialogOpen,
-    slugify,
-    fromLocalInputValue,
-  });
+  const navigateToEdit = useCallback(
+    (id: string) => router.push(`/posts/${id}`),
+    [router],
+  );
 
   const handleConfirmAction = useHandleConfirmActionWithAction(
     deleteMutation,
@@ -204,13 +156,13 @@ function PostsPageInner() {
   const columns = useMemo<ColumnDef<PostListRow>[]>(
     () =>
       getPostColumns({
-        openEdit,
+        navigateToEdit,
         setConfirmAction,
         categoryTreeOptions,
         tagsOptions: tagsQuery.data ?? [],
         formatDateTime,
       }),
-    [openEdit, tagsQuery.data, categoryTreeOptions],
+    [navigateToEdit, tagsQuery.data, categoryTreeOptions],
   );
 
   const trashColumns = useMemo<ColumnDef<PostListRow>[]>(
@@ -255,25 +207,14 @@ function PostsPageInner() {
             />
             Làm mới
           </Button>
-          <PostsFormDialog
-            open={dialogOpen}
-            onOpenChange={setDialogOpen}
-            form={form}
-            onFormChange={setForm}
-            editorTab={editorTab}
-            onEditorTabChange={setEditorTab}
-            onSubmit={handleSave}
-            submitting={submitting}
-            categoryTreeOptions={categoryTreeOptions}
-            tagsOptions={tagsQuery.data ?? []}
-            slugify={slugify}
-            previewPath={previewPath}
-            titleSeo={titleSeo}
-            excerptSeo={excerptSeo}
-            titleLength={titleLength}
-            excerptLength={excerptLength}
-            contentClassName={ADMIN_DIALOG_CONTENT_POST_CLASS}
-          />
+          <Button
+            type="button"
+            className="flex h-12 items-center gap-2 rounded-lg px-6 font-bold shadow-md"
+            onClick={() => router.push("/posts/new")}
+          >
+            <Plus className="size-5" />
+            Thêm bài viết
+          </Button>
         </div>
       </div>
 

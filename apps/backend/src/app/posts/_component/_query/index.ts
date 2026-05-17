@@ -11,8 +11,6 @@ export {
   useTagsQuery,
 } from "./use-taxonomy-queries";
 export {
-  useCreateMutation,
-  useUpdateMutation,
   useDeleteMutation,
   useRestoreMutation,
   usePurgeMutation,

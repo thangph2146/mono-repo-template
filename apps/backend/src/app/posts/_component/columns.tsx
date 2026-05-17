@@ -8,13 +8,13 @@ import type { PostListRow, TaxonomyOption, CategoryTreeOption } from "./types";
 import { SummaryBadges } from "./summary-badges";
 
 export function getPostColumns({
-  openEdit,
+  navigateToEdit,
   setConfirmAction,
   categoryTreeOptions,
   tagsOptions,
   formatDateTime,
 }: {
-  openEdit: (row: PostListRow) => void;
+  navigateToEdit: (id: string) => void;
   setConfirmAction: (action: { kind: "delete" | "restore" | "purge"; row: PostListRow }) => void;
   categoryTreeOptions: CategoryTreeOption[];
   tagsOptions: TaxonomyOption[];
@@ -111,7 +111,7 @@ export function getPostColumns({
             variant="outline"
             size="sm"
             className="h-8 gap-1 rounded-lg"
-            onClick={() => void openEdit(row.original)}
+            onClick={() => navigateToEdit(row.original.id)}
           >
             <Pencil className="size-3.5" />
             Sửa
@@ -124,7 +124,7 @@ export function getPostColumns({
             onClick={() => setConfirmAction({ kind: "delete", row: row.original })}
           >
             <Trash2 className="size-3.5" />
-            Xóa tạm
+            Xóa tạm
           </Button>
         </div>
       ),
