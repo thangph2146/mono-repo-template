@@ -218,8 +218,10 @@ function PostsPageInner() {
       getTrashColumns({
         setConfirmAction,
         formatDateTime,
+        categoryTreeOptions,
+        tagsOptions: tagsQuery.data ?? [],
       }),
-    [],
+    [setConfirmAction, categoryTreeOptions, tagsQuery.data],
   );
 
   return (

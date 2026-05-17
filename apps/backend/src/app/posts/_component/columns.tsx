@@ -135,15 +135,103 @@ export function getPostColumns({
 export function getTrashColumns({
   setConfirmAction,
   formatDateTime,
+  categoryTreeOptions,
+  tagsOptions,
 }: {
   setConfirmAction: (action: { kind: "delete" | "restore" | "purge"; row: PostListRow }) => void;
   formatDateTime: (date: string) => string;
+  categoryTreeOptions: CategoryTreeOption[];
+  tagsOptions: TaxonomyOption[];
 }): ColumnDef<PostListRow>[] {
   return [
-    { accessorKey: "title", header: "Tiêu đề" },
+    {
+      accessorKey: "title",
+      header: "Tiêu đề",
+      meta: { filterPlaceholder: "Lọc tiêu đề…" },
+      cell: ({ row }) => (
+        <div className="space-y-1">
+          <p className="font-medium">{row.original.title}</p>
+          <p className="text-xs text-muted-foreground">{row.original.slug}</p>
+        </div>
+      ),
+    },
+    {
+      accessorKey: "categories",
+      id: "categoryId",
+      header: "Danh mục",
+      meta: {
+        filterVariant: "tree-multi-select",
+        treeOptions: categoryTreeOptions.map((c) => ({
+          value: c.id,
+          label: c.name,
+          children: c.subRows?.map((s) => ({
+            value: s.id,
+            label: s.name,
+            children: s.subRows?.map((ss) => ({ value: ss.id, label: ss.name })),
+          })),
+        })),
+      },
+      cell: ({ row }) => <SummaryBadges items={row.original.categories} />,
+    },
+    {
+      accessorKey: "tags",
+      id: "tagId",
+      header: "Thẻ",
+      enableColumnFilter: true,
+      enableSorting: false,
+      filterFn: () => true,
+      meta: {
+        filterVariant: "select",
+        selectOptions: tagsOptions.map((t) => ({ value: t.id, label: t.name })),
+      },
+      cell: ({ row }) => <SummaryBadges items={row.original.tags} />,
+    },
+    {
+      accessorKey: "published",
+      header: "Trạng thái",
+      cell: ({ row }) =>
+        row.original.published ? (
+          <Badge className="text-xs">Đã xuất bản</Badge>
+        ) : (
+          <Badge variant="outline" className="text-xs">
+            Bản nháp
+          </Badge>
+        ),
+      filterFn: () => true,
+      meta: {
+        filterVariant: "multi-select",
+        selectOptions: [
+          { value: "true", label: "Đã xuất bản" },
+          { value: "false", label: "Bản nháp" },
+        ],
+      },
+    },
+    {
+      accessorKey: "updatedAt",
+      header: "Cập nhật",
+      enableColumnFilter: true,
+      enableSorting: true,
+      filterFn: () => true,
+      meta: {
+        filterVariant: "date-range",
+        filterPlaceholder: "Chọn khoảng ngày",
+      },
+      cell: ({ getValue }) => (
+        <span className="text-xs text-muted-foreground">
+          {formatDateTime(getValue() as string)}
+        </span>
+      ),
+    },
     {
       accessorKey: "deletedAt",
       header: "Xóa lúc",
+      enableColumnFilter: true,
+      enableSorting: true,
+      filterFn: () => true,
+      meta: {
+        filterVariant: "date-range",
+        filterPlaceholder: "Chọn khoảng ngày",
+      },
       cell: ({ getValue }) => (
         <span className="text-xs text-muted-foreground">
           {formatDateTime(getValue() as string)}
