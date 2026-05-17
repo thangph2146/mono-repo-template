@@ -9,8 +9,32 @@ function Popover({ ...props }: PopoverPrimitive.Root.Props) {
   return <PopoverPrimitive.Root data-slot="popover" {...props} />
 }
 
-function PopoverTrigger({ ...props }: PopoverPrimitive.Trigger.Props) {
-  return <PopoverPrimitive.Trigger data-slot="popover-trigger" suppressHydrationWarning {...props} />
+function PopoverTrigger({ children, className, ...props }: PopoverPrimitive.Trigger.Props) {
+  return (
+    <PopoverPrimitive.Trigger
+      data-slot="popover-trigger"
+      suppressHydrationWarning
+      {...props}
+      render={(renderProps) => {
+        if (React.isValidElement(children)) {
+          const childProps = children.props as React.HTMLAttributes<HTMLElement> & { className?: string }
+          return React.cloneElement(children, {
+            ...(renderProps as React.HTMLAttributes<HTMLElement>),
+            className: cn("cursor-pointer w-full", childProps.className, className),
+          } as React.HTMLAttributes<HTMLElement>)
+        }
+        return (
+          <button
+            type="button"
+            {...(renderProps as React.ButtonHTMLAttributes<HTMLButtonElement>)}
+            className={cn("cursor-pointer w-full", className)}
+          >
+            {children}
+          </button>
+        )
+      }}
+    />
+  )
 }
 
 function PopoverContent({

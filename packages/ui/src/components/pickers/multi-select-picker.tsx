@@ -1,0 +1,126 @@
+"use client";
+
+import { useState } from "react";
+import { Check, ChevronDown } from "lucide-react";
+import { Button } from "../button";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "../popover";
+import { cn } from "../../lib/utils";
+
+export interface MultiSelectPickerProps {
+  value: unknown;
+  onChange: (value: unknown) => void;
+  options: { value: string; label: string }[];
+  placeholder?: string;
+  id?: string;
+}
+
+export function MultiSelectPicker({
+  value,
+  onChange,
+  options,
+  placeholder = "Tất cả",
+  id,
+}: MultiSelectPickerProps) {
+  const [open, setOpen] = useState(false);
+  const selected = Array.isArray(value) ? (value as string[]) : [];
+  const [draft, setDraft] = useState<string[]>(selected);
+
+  const triggerLabel =
+    selected.length === 0
+      ? placeholder
+      : selected.length === 1
+        ? options.find((o) => o.value === selected[0])?.label ?? `${selected.length} đã chọn`
+        : `${selected.length} đã chọn`;
+
+  const handleOpenChange = (nextOpen: boolean) => {
+    setOpen(nextOpen);
+    if (nextOpen) {
+      setDraft(selected);
+    }
+  };
+
+  const handleToggle = (val: string) => {
+    setDraft((prev) =>
+      prev.includes(val) ? prev.filter((v) => v !== val) : [...prev, val]
+    );
+  };
+
+  const handleApply = () => {
+    onChange(draft.length ? draft : undefined);
+    setOpen(false);
+  };
+
+  const handleClear = () => {
+    setDraft([]);
+    onChange(undefined);
+    setOpen(false);
+  };
+
+  return (
+    <Popover open={open} onOpenChange={handleOpenChange}>
+      <PopoverTrigger>
+        <Button
+          type="button"
+          variant="outline"
+          id={id}
+          className="h-9 text-sm rounded-lg w-full min-w-[160px] justify-between font-normal"
+        >
+          <span className="truncate">{triggerLabel}</span>
+          <ChevronDown className="size-4 text-muted-foreground shrink-0" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-72 p-2" align="start">
+        {options.length === 0 ? (
+          <p className="text-sm text-muted-foreground px-2 py-1">Không có tùy chọn</p>
+        ) : (
+          <>
+            <div className="space-y-0.5 max-h-[min(60vh,18rem)] overflow-y-auto">
+              {options.map((o) => {
+                const isSelected = draft.includes(o.value);
+                return (
+                  <button
+                    key={o.value}
+                    type="button"
+                    onClick={() => handleToggle(o.value)}
+                    className={cn(
+                      "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm text-left",
+                      isSelected && "bg-primary/10 text-primary font-medium",
+                      !isSelected && "hover:bg-muted cursor-pointer",
+                    )}
+                  >
+                    <span className="flex-1 truncate">{o.label}</span>
+                    {isSelected && <Check className="size-4 shrink-0" />}
+                  </button>
+                );
+              })}
+            </div>
+            <div className="flex gap-2 border-t pt-2 mt-2">
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="flex-1 h-8 text-xs"
+                onClick={handleClear}
+              >
+                Xóa
+              </Button>
+              <Button
+                type="button"
+                variant="default"
+                size="sm"
+                className="flex-1 h-8 text-xs"
+                onClick={handleApply}
+              >
+                Áp dụng
+              </Button>
+            </div>
+          </>
+        )}
+      </PopoverContent>
+    </Popover>
+  );
+}

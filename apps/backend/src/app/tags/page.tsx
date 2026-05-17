@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import type { ColumnDef, RowSelectionState } from "@tanstack/react-table";
+import type { ColumnDef, ColumnFiltersState, RowSelectionState } from "@tanstack/react-table";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Badge } from "@ui/components/badge";
@@ -246,6 +246,7 @@ function TagsPageInner() {
   const [purgeTarget, setPurgeTarget] = useState<TagRow | null>(null);
   const [listTagSelection, setListTagSelection] = useState<RowSelectionState>({});
   const [trashTagSelection, setTrashTagSelection] = useState<RowSelectionState>({});
+  const [trashColumnFilters, setTrashColumnFilters] = useState<ColumnFiltersState>([]);
   const debouncedTrashQ = useDebouncedValue(trashGlobalFilter, 350);
 
   const listQuery = useQuery({
@@ -254,8 +255,19 @@ function TagsPageInner() {
     enabled: canRead,
   });
 
+function buildTagsFilterQuery(columnFilters: ColumnFiltersState): Record<string, string> {
+  const query: Record<string, string> = {};
+  for (const filter of columnFilters) {
+    const value = String(filter.value ?? "").trim();
+    if (!value) continue;
+    if (filter.id === "name") query.name = value;
+    else if (filter.id === "slug") query.slug = value;
+  }
+  return query;
+}
+
   const trashQuery = useQuery({
-    queryKey: ["media", "tags", "trash", trashPage, trashPageSize, debouncedTrashQ],
+    queryKey: ["media", "tags", "trash", trashPage, trashPageSize, debouncedTrashQ, trashColumnFilters],
     enabled: canRead && mainTab === "trash",
     queryFn: async (): Promise<PagedResult<TagRow>> =>
       normalizePaged(
@@ -265,6 +277,12 @@ function TagsPageInner() {
             limit: trashPageSize,
             search: debouncedTrashQ.trim() || undefined,
             status: "deleted",
+            ...Object.fromEntries(
+              Object.entries(buildTagsFilterQuery(trashColumnFilters)).map(([key, value]) => [
+                `filter[${key}]`,
+                value,
+              ]),
+            ),
           },
         }),
       ),
@@ -478,10 +496,11 @@ function TagsPageInner() {
 
   const trashColumns = useMemo<ColumnDef<TagRow>[]>(
     () => [
-      { accessorKey: "name", header: "Tên" },
+      { accessorKey: "name", header: "Tên", meta: { filterPlaceholder: "Lọc theo tên…" } },
       {
         accessorKey: "deletedAt",
         header: "Xóa lúc",
+        enableColumnFilter: false,
         cell: ({ getValue }) => (
           <span className="text-xs text-muted-foreground">
             {formatDateTime(getValue() as string)}
@@ -719,6 +738,8 @@ function TagsPageInner() {
             isLoading={trashQuery.isLoading}
             emptyLabel="Thùng rác trống."
             manualFiltering
+            columnFilters={trashColumnFilters}
+            onColumnFiltersChange={setTrashColumnFilters}
             globalFilter={trashGlobalFilter}
             onGlobalFilterChange={setTrashGlobalFilter}
             globalFilterPlaceholder="Tìm trong thùng rác..."

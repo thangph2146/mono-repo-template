@@ -141,6 +141,7 @@ function StaffPageInner() {
   const debouncedGlobalFilter = useDebouncedValue(globalFilter, 250)
   const [roleFilter, setRoleFilter] = useState<string>("all")
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const [trashColumnFilters, setTrashColumnFilters] = useState<ColumnFiltersState>([])
 
   useEffect(() => {
     setStaffPage(1)
@@ -174,8 +175,9 @@ function StaffPageInner() {
       page: trashPage,
       limit: trashPageSize,
       q: debouncedTrashSearch.trim() || undefined,
+      filters: buildUsersFilterQuery(trashColumnFilters),
     }),
-    [trashPage, trashPageSize, debouncedTrashSearch]
+    [trashPage, trashPageSize, debouncedTrashSearch, trashColumnFilters]
   )
 
   const usersQuery = useStaffUserList({
@@ -277,6 +279,7 @@ function StaffPageInner() {
 
   const clearTrashStaffFilters = useCallback((): void => {
     setTrashSearch("")
+    setTrashColumnFilters([])
     setTrashPage(1)
   }, [])
 
@@ -299,7 +302,7 @@ function StaffPageInner() {
     {
       accessorKey: "email",
       header: "Email",
-      enableColumnFilter: false,
+      meta: { filterPlaceholder: "Lọc email…" },
       cell: ({ getValue }) => (
         <span className="flex min-w-0 items-center gap-2 font-mono text-xs">
           <Mail
@@ -313,7 +316,7 @@ function StaffPageInner() {
     {
       accessorKey: "fullName",
       header: "Họ tên",
-      enableColumnFilter: false,
+      meta: { filterPlaceholder: "Lọc họ tên…" },
       cell: ({ getValue }) => (
         <span className="flex min-w-0 items-center gap-2">
           <UserCircle
@@ -937,6 +940,8 @@ function StaffPageInner() {
                 emptyLabel="Thùng rác trống hoặc không khớp tìm kiếm."
                 defaultExpandedAll={false}
                 manualFiltering
+                columnFilters={trashColumnFilters}
+                onColumnFiltersChange={setTrashColumnFilters}
                 globalFilter={trashSearch}
                 onGlobalFilterChange={setTrashSearch}
                 globalFilterPlaceholder="Tìm theo email, họ tên, SĐT (API)…"

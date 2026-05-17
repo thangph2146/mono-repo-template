@@ -126,7 +126,12 @@ export function SelectContent({ className, children, ...props }: React.HTMLAttri
   )
 }
 
-export function SelectItem({ value, children, className, ...props }: React.HTMLAttributes<HTMLDivElement> & { value: string }) {
+export interface SelectItemProps extends React.HTMLAttributes<HTMLDivElement> {
+  value: string
+  icon?: React.ReactNode
+}
+
+export function SelectItem({ value, icon, children, className, ...props }: SelectItemProps) {
   const context = React.useContext(SelectContext)
   if (!context) throw new Error("SelectItem must be used within Select")
 
@@ -136,6 +141,9 @@ export function SelectItem({ value, children, className, ...props }: React.HTMLA
     <div
       className={cn(
         "editor-select-item",
+        "flex items-center gap-2 rounded-md px-2 py-1.5 text-sm text-left",
+        isSelected && "bg-primary/10 text-primary font-medium",
+        !isSelected && "hover:bg-muted cursor-pointer",
         className
       )}
       data-selected={isSelected}
@@ -145,6 +153,8 @@ export function SelectItem({ value, children, className, ...props }: React.HTMLA
       }}
       {...props}
     >
+      {icon}
+      <span className="flex-1 truncate">{children}</span>
       {isSelected && (
         <span className="editor-select-item__check">
           <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" className="editor-icon-sm">
@@ -152,7 +162,6 @@ export function SelectItem({ value, children, className, ...props }: React.HTMLA
           </svg>
         </span>
       )}
-      {children}
     </div>
   )
 }

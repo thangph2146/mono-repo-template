@@ -1,5 +1,18 @@
 "use client";
 
+// Simple debounce utility
+function debounce<TArgs extends unknown[]>(fn: (...args: TArgs) => void, delay: number) {
+  let timeoutId: ReturnType<typeof setTimeout> | null = null;
+  const debouncedFn = (...args: TArgs) => {
+    if (timeoutId) clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => fn(...args), delay);
+  };
+  debouncedFn.cancel = () => {
+    if (timeoutId) clearTimeout(timeoutId);
+  };
+  return debouncedFn;
+}
+
 import {
   flexRender,
   getCoreRowModel,
@@ -17,17 +30,18 @@ import {
   type SortingState,
 } from "@tanstack/react-table";
 import { ChevronDown, ChevronRight, Download } from "lucide-react";
-import { useCallback, useMemo, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import { Button } from "@ui/components/button";
 import { Checkbox } from "@ui/components/checkbox";
 import { Input } from "@ui/components/input";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@ui/components/select";
+  DatePicker,
+  DateRangePicker,
+  MultiSelectPicker,
+  SelectPicker,
+  TreeMultiSelectPicker,
+  TreePicker,
+} from "@ui/components/pickers";
 import {
   Table,
   TableBody,
@@ -56,8 +70,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@ui/components/alert-dialog";
-
-const ALL_SELECT = "__all__";
 
 export type AdminDataTableBulkAction<TData> = {
   id: string;
@@ -342,11 +354,13 @@ export function AdminDataTable<TData>({
   // When parent is selected, all descendants are also considered selected
   const selectedRows = useMemo(() => {
     const result: TData[] = [];
+    const addedIds = new Set<string>();
     const visit = (rws: Row<TData>[], parentSelected = false) => {
       for (const row of rws) {
         const isSelected = row.getIsSelected() || parentSelected;
-        if (isSelected) {
+        if (isSelected && !addedIds.has(row.id)) {
           result.push(row.original);
+          addedIds.add(row.id);
         }
         if (row.subRows?.length) {
           visit(row.subRows, isSelected);
@@ -355,7 +369,8 @@ export function AdminDataTable<TData>({
     };
     visit(table.getRowModel().rows);
     return result;
-  }, [table]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rows, table.getState().rowSelection]);
   const selectedCount = selectedRows.length;
 
   const runBulkAction = useCallback(
@@ -404,6 +419,52 @@ export function AdminDataTable<TData>({
         !h.column.columnDef.meta?.disableColumnFilter,
     );
 
+  // Debounced column filter input component
+  function DebouncedFilterInput({
+    column,
+    controlId,
+    placeholder,
+    type = "text",
+  }: {
+    column: Header<TData, unknown>["column"];
+    controlId: string;
+    placeholder: string;
+    type?: "text" | "number";
+  }) {
+    const [value, setValue] = useState(() => (column.getFilterValue() as string) ?? "");
+
+    // Debounce the actual filter update
+    const debouncedSetFilter = useMemo(
+      () =>
+        debounce((nextValue: string) => {
+          column.setFilterValue(nextValue === "" ? undefined : type === "number" ? Number(nextValue) : nextValue);
+        }, 300),
+      [column, type]
+    );
+
+    // Cleanup debounce on unmount
+    useEffect(() => {
+      return () => {
+        debouncedSetFilter.cancel();
+      };
+    }, [debouncedSetFilter]);
+
+    return (
+      <Input
+        id={controlId}
+        type={type}
+        className="h-9 text-sm rounded-lg"
+        placeholder={placeholder}
+        value={value}
+        onChange={(e) => {
+          const next = e.target.value;
+          setValue(next);
+          debouncedSetFilter(next);
+        }}
+      />
+    );
+  }
+
   function renderOutsideColumnFilter(header: Header<TData, unknown>) {
     const col = header.column;
     const controlId = `admin-col-filter-ctl-${header.id}`;
@@ -411,62 +472,86 @@ export function AdminDataTable<TData>({
     const variant = meta?.filterVariant ?? "text";
     const ph = meta?.filterPlaceholder ?? "Lọc…";
 
-    if (variant === "select" && meta?.selectOptions?.length) {
-      const opts = meta.selectOptions;
-      const v = (col.getFilterValue() as string) ?? ALL_SELECT;
+    if (variant === "select") {
       return (
-        <Select
-          value={v === "" || v == null ? ALL_SELECT : v}
-          onValueChange={(next) =>
-            col.setFilterValue(next === ALL_SELECT ? undefined : next)
-          }
-        >
-          <SelectTrigger
-            id={controlId}
-            className="h-9 text-sm rounded-lg w-full min-w-[160px]"
-          >
-            <SelectValue placeholder="Tất cả">
-              {v === ALL_SELECT ? "Tất cả" : undefined}
-            </SelectValue>
-          </SelectTrigger>
-          <SelectContent className="max-h-[min(60vh,22rem)] overflow-y-auto">
-            <SelectItem value={ALL_SELECT}>Tất cả</SelectItem>
-            {opts.map((o) => (
-              <SelectItem key={o.value} value={o.value}>
-                {o.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <SelectPicker
+          id={controlId}
+          value={col.getFilterValue()}
+          onChange={(v: unknown) => col.setFilterValue(v)}
+          options={meta?.selectOptions ?? []}
+        />
+      );
+    }
+
+    if (variant === "multi-select") {
+      return (
+        <MultiSelectPicker
+          id={controlId}
+          value={col.getFilterValue()}
+          onChange={(v: unknown) => col.setFilterValue(v)}
+          options={meta?.selectOptions ?? []}
+        />
+      );
+    }
+
+    if (variant === "tree-select") {
+      return (
+        <TreePicker
+          id={controlId}
+          value={col.getFilterValue()}
+          onChange={(v: unknown) => col.setFilterValue(v)}
+          options={meta?.treeOptions ?? []}
+        />
+      );
+    }
+
+    if (variant === "tree-multi-select") {
+      return (
+        <TreeMultiSelectPicker
+          id={controlId}
+          value={col.getFilterValue()}
+          onChange={(v: unknown) => col.setFilterValue(v)}
+          options={meta?.treeOptions ?? []}
+        />
+      );
+    }
+
+    if (variant === "date") {
+      return (
+        <DatePicker
+          id={controlId}
+          value={col.getFilterValue()}
+          onChange={(v: unknown) => col.setFilterValue(v)}
+        />
+      );
+    }
+
+    if (variant === "date-range") {
+      return (
+        <DateRangePicker
+          id={controlId}
+          value={col.getFilterValue()}
+          onChange={(v: unknown) => col.setFilterValue(v)}
+        />
       );
     }
 
     if (variant === "number") {
       return (
-        <Input
-          id={controlId}
-          type="number"
-          className="h-9 text-sm rounded-lg"
+        <DebouncedFilterInput
+          column={col}
+          controlId={controlId}
           placeholder={ph}
-          value={(col.getFilterValue() as string) ?? ""}
-          onChange={(e) =>
-            col.setFilterValue(
-              e.target.value === "" ? undefined : Number(e.target.value),
-            )
-          }
+          type="number"
         />
       );
     }
 
     return (
-      <Input
-        id={controlId}
-        className="h-9 text-sm rounded-lg"
+      <DebouncedFilterInput
+        column={col}
+        controlId={controlId}
         placeholder={ph}
-        value={(col.getFilterValue() as string) ?? ""}
-        onChange={(e) =>
-          col.setFilterValue(e.target.value === "" ? undefined : e.target.value)
-        }
       />
     );
   }
@@ -547,42 +632,14 @@ export function AdminDataTable<TData>({
               </div>
             </div>
           ) : null}
-          {rowSelectionEnabled && hasBulkActions ? (
-            <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border/70 bg-muted/20 px-3 py-2">
-              <p className="text-xs font-medium text-muted-foreground">
-                Đã chọn <span className="font-semibold text-foreground">{selectedCount}</span> dòng
-              </p>
-              <div className="flex flex-wrap items-center gap-2">
-                {bulkActions.map((action) => {
-                  const requiresSelection = action.requiresSelection ?? true;
-                  const disabledBySelection = requiresSelection && selectedCount === 0;
-                  const disabledByAction = action.disabled?.(selectedRows) ?? false;
-                  const isRunning = runningBulkActionId === action.id;
-                  return (
-                    <Button
-                      key={action.id}
-                      type="button"
-                      size="sm"
-                      variant={action.variant ?? "outline"}
-                      className={cn("h-8 gap-1.5 rounded-lg", action.className)}
-                      disabled={
-                        isRunning ||
-                        runningBulkActionId != null ||
-                        disabledBySelection ||
-                        disabledByAction
-                      }
-                      onClick={() => {
-                        void runBulkAction(action);
-                      }}
-                    >
-                      {action.icon}
-                      {action.label}
-                    </Button>
-                  );
-                })}
-              </div>
-            </div>
-          ) : null}
+          <BulkActionsBar
+            visible={rowSelectionEnabled && hasBulkActions}
+            selectedCount={selectedCount}
+            bulkActions={bulkActions}
+            selectedRows={selectedRows}
+            runningBulkActionId={runningBulkActionId}
+            onRunAction={runBulkAction}
+          />
           {filterableHeaders.length > 0 && (
             <div className="space-y-2">
               <Separator />
@@ -706,37 +763,123 @@ export function AdminDataTable<TData>({
         </div>
       ) : null}
 
-      {/* Bulk Action Confirmation Dialog */}
-      <AlertDialog open={confirmAction != null} onOpenChange={(open) => { if (!open) setConfirmAction(null); }}>
-        <AlertDialogContent className="sm:max-w-md">
-          <AlertDialogHeader>
-            <AlertDialogTitle>
-              {typeof confirmAction?.confirm === 'object'
-                ? confirmAction.confirm.title
-                : confirmAction?.label ?? 'Xác nhận thao tác'}
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              {typeof confirmAction?.confirm === 'object' && confirmAction.confirm.description
-                ? typeof confirmAction.confirm.description === 'function'
-                  ? confirmAction.confirm.description(selectedRows)
-                  : confirmAction.confirm.description
-                : `Bạn đã chọn ${selectedCount} mục. Thao tác này không thể hoàn tác.`}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setConfirmAction(null)}>
-              Hủy
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => { void handleConfirmAction(); }}
-              disabled={runningBulkActionId != null}
-              className={typeof confirmAction?.confirm === 'object' && confirmAction.confirm.destructive ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90' : undefined}
+      <BulkActionConfirmDialog
+        confirmAction={confirmAction}
+        selectedCount={selectedCount}
+        selectedRows={selectedRows}
+        runningBulkActionId={runningBulkActionId}
+        onCancel={() => setConfirmAction(null)}
+        onConfirm={handleConfirmAction}
+      />
+    </div>
+  );
+}
+
+// Extracted component for bulk action confirmation dialog
+type BulkActionConfirmDialogProps<TData> = {
+  confirmAction: AdminDataTableBulkAction<TData> | null;
+  selectedCount: number;
+  selectedRows: TData[];
+  runningBulkActionId: string | null;
+  onCancel: () => void;
+  onConfirm: () => void;
+};
+
+function BulkActionConfirmDialog<TData>({
+  confirmAction,
+  selectedCount,
+  selectedRows,
+  runningBulkActionId,
+  onCancel,
+  onConfirm,
+}: BulkActionConfirmDialogProps<TData>) {
+  const isOpen = confirmAction != null;
+
+  const title = typeof confirmAction?.confirm === 'object'
+    ? confirmAction.confirm.title
+    : confirmAction?.label ?? 'Xác nhận thao tác';
+
+  const description = typeof confirmAction?.confirm === 'object' && confirmAction.confirm.description
+    ? typeof confirmAction.confirm.description === 'function'
+      ? confirmAction.confirm.description(selectedRows)
+      : confirmAction.confirm.description
+    : `Bạn đã chọn ${selectedCount} mục. Thao tác này không thể hoàn tác.`;
+
+  const confirmLabel = typeof confirmAction?.confirm === 'object'
+    ? confirmAction.confirm.confirmLabel
+    : 'Xác nhận';
+
+  const isDestructive = typeof confirmAction?.confirm === 'object' && confirmAction.confirm.destructive;
+
+  return (
+    <AlertDialog open={isOpen} onOpenChange={(open) => { if (!open) onCancel(); }}>
+      <AlertDialogContent className="sm:max-w-md">
+        <AlertDialogHeader>
+          <AlertDialogTitle>{title}</AlertDialogTitle>
+          <AlertDialogDescription>{description}</AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel onClick={onCancel}>Hủy</AlertDialogCancel>
+          <AlertDialogAction
+            onClick={onConfirm}
+            disabled={runningBulkActionId != null}
+            className={isDestructive ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90' : undefined}
+          >
+            {runningBulkActionId != null ? 'Đang xử lý...' : confirmLabel}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+}
+
+// Extracted component for bulk actions bar
+type BulkActionsBarProps<TData> = {
+  visible: boolean;
+  selectedCount: number;
+  bulkActions: AdminDataTableBulkAction<TData>[];
+  selectedRows: TData[];
+  runningBulkActionId: string | null;
+  onRunAction: (action: AdminDataTableBulkAction<TData>) => void;
+};
+
+function BulkActionsBar<TData>({
+  visible,
+  selectedCount,
+  bulkActions,
+  selectedRows,
+  runningBulkActionId,
+  onRunAction,
+}: BulkActionsBarProps<TData>) {
+  if (!visible) return null;
+
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border/70 bg-muted/20 px-3 py-2">
+      <p className="text-xs font-medium text-muted-foreground">
+        Đã chọn <span className="font-semibold text-foreground">{selectedCount}</span> dòng
+      </p>
+      <div className="flex flex-wrap items-center gap-2">
+        {bulkActions.map((action) => {
+          const requiresSelection = action.requiresSelection ?? true;
+          const disabledBySelection = requiresSelection && selectedCount === 0;
+          const disabledByAction = action.disabled?.(selectedRows) ?? false;
+          const isRunning = runningBulkActionId === action.id;
+          return (
+            <Button
+              key={action.id}
+              type="button"
+              size="sm"
+              variant={action.variant ?? "outline"}
+              className={cn("h-8 gap-1.5 rounded-lg", action.className)}
+              disabled={isRunning || runningBulkActionId != null || disabledBySelection || disabledByAction}
+              onClick={() => onRunAction(action)}
             >
-              {runningBulkActionId != null ? 'Đang xử lý...' : (typeof confirmAction?.confirm === 'object' ? confirmAction.confirm.confirmLabel : 'Xác nhận')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+              {action.icon}
+              {action.label}
+            </Button>
+          );
+        })}
+      </div>
     </div>
   );
 }

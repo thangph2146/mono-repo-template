@@ -133,8 +133,19 @@ function buildWhere(
       if (key === 'title') baseWhere.title = { $like: `%${v}%` };
       else if (key === 'slug') baseWhere.slug = { $like: `%${v}%` };
       else if (key === 'authorId') baseWhere.author = v;
-      else if (key === 'published') baseWhere.published = v === 'true';
-      else if (key === 'categories' || key === 'categoryId') {
+      else if (key === 'published') {
+        const vals = v.includes(',')
+          ? v
+              .split(',')
+              .map((x) => x.trim())
+              .filter(Boolean)
+          : [v];
+        if (vals.length === 1) {
+          baseWhere.published = vals[0] === 'true';
+        } else {
+          baseWhere.published = { $in: vals.map((x) => x === 'true') };
+        }
+      } else if (key === 'categories' || key === 'categoryId') {
         const ids = v.includes(',')
           ? v
               .split(',')
@@ -146,6 +157,65 @@ function buildWhere(
         };
       } else if (key === 'tags' || key === 'tagId') {
         baseWhere.tags = { tag: { id: v } };
+      } else if (key === 'updatedAt') {
+        const parts = v.includes(',')
+          ? v
+              .split(',')
+              .map((x) => x.trim())
+              .filter(Boolean)
+          : [v];
+        if (parts.length === 1) {
+          const date = new Date(parts[0]);
+          if (!Number.isNaN(date.getTime())) {
+            const start = new Date(
+              date.getFullYear(),
+              date.getMonth(),
+              date.getDate(),
+              0,
+              0,
+              0,
+            );
+            const end = new Date(
+              date.getFullYear(),
+              date.getMonth(),
+              date.getDate(),
+              23,
+              59,
+              59,
+              999,
+            );
+            baseWhere.updatedAt = {
+              $gte: start.toISOString(),
+              $lte: end.toISOString(),
+            };
+          }
+        } else if (parts.length >= 2) {
+          const from = new Date(parts[0]);
+          const to = new Date(parts[1]);
+          if (!Number.isNaN(from.getTime()) && !Number.isNaN(to.getTime())) {
+            const start = new Date(
+              from.getFullYear(),
+              from.getMonth(),
+              from.getDate(),
+              0,
+              0,
+              0,
+            );
+            const end = new Date(
+              to.getFullYear(),
+              to.getMonth(),
+              to.getDate(),
+              23,
+              59,
+              59,
+              999,
+            );
+            baseWhere.updatedAt = {
+              $gte: start.toISOString(),
+              $lte: end.toISOString(),
+            };
+          }
+        }
       }
     }
   }

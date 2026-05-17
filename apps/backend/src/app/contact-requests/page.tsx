@@ -5,7 +5,6 @@ import type {
   ColumnDef,
   ColumnFiltersState,
   OnChangeFn,
-  RowSelectionState,
 } from "@tanstack/react-table";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -70,7 +69,7 @@ import {
 import { AdminDataTable } from "@/components/admin-data-table";
 import { AdminTablePaginationFooter } from "@/components/admin-table-pagination-footer";
 import { AdminConfirmActionDialog } from "@/components/admin-confirm-action-dialog";
-import { useDebouncedValue } from "@/hooks/use-debounced-value";
+import { useAdminTableState } from "@/hooks";
 import { api } from "@/lib/api";
 import { useAuth } from "@/providers/auth-provider";
 import { canUserAccess, PERMISSION_CODES } from "@workspace/api-client";
@@ -311,61 +310,40 @@ export default function ContactRequestsPage() {
   const canLoadAssignees =
     session != null && canUserAccess(session, PERMISSION_CODES.USERS_MANAGE);
 
-  const [mainTab, setMainTab] = useState<"list" | "trash">("list");
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(15);
-  const [trashPage, setTrashPage] = useState(1);
-  const [trashPageSize, setTrashPageSize] = useState(15);
-  const [globalFilter, setGlobalFilter] = useState("");
-  const [trashGlobalFilter, setTrashGlobalFilter] = useState("");
-  const [statusFilter, setStatusFilter] = useState<
-    "all" | ContactStatus
-  >("all");
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  // Table state management
+  const tableState = useAdminTableState({ debounceMs: 300 });
+
+  // Page-specific state
+  const [statusFilter, setStatusFilter] = useState<"all" | ContactStatus>("all");
   const [detailOpen, setDetailOpen] = useState(false);
   const [form, setForm] = useState<ContactFormState>(EMPTY_FORM);
-  const [confirmAction, setConfirmAction] = useState<ContactRequestConfirmAction | null>(
-    null,
-  );
-  const [listContactSelection, setListContactSelection] = useState<RowSelectionState>({});
-  const [trashContactSelection, setTrashContactSelection] = useState<RowSelectionState>({});
+  const [confirmAction, setConfirmAction] = useState<ContactRequestConfirmAction | null>(null);
 
-  const debouncedGlobalFilter = useDebouncedValue(globalFilter, 300);
-  const debouncedTrashGlobalFilter = useDebouncedValue(trashGlobalFilter, 300);
-
+  // Reset page when status filter changes
   useEffect(() => {
-    setPage(1);
-  }, [columnFilters, debouncedGlobalFilter, pageSize, statusFilter]);
-
-  useEffect(() => {
-    setTrashPage(1);
-  }, [debouncedTrashGlobalFilter, trashPageSize]);
-
-  useEffect(() => {
-    setListContactSelection({});
-    setTrashContactSelection({});
-  }, [mainTab]);
+    tableState.resetListPagination();
+  }, [statusFilter, tableState]);
 
   const listQuery = useQuery({
     queryKey: [
       "contact-requests",
       "list",
-      page,
-      pageSize,
-      debouncedGlobalFilter,
+      tableState.page,
+      tableState.pageSize,
+      tableState.debouncedGlobalFilter,
       statusFilter,
-      columnFilters,
+      tableState.columnFilters,
     ],
     queryFn: async (): Promise<PagedResult<ContactRequestRow>> =>
       normalizePaged(
         await api.http.get("/admin/contact-requests", {
           query: {
-            page,
-            limit: pageSize,
-            search: debouncedGlobalFilter.trim() || undefined,
+            page: tableState.page,
+            limit: tableState.pageSize,
+            search: tableState.debouncedGlobalFilter.trim() || undefined,
             status: statusFilter === "all" ? "active" : statusFilter,
             ...Object.fromEntries(
-              Object.entries(buildContactFilterQuery(columnFilters)).map(([key, value]) => [
+              Object.entries(buildContactFilterQuery(tableState.columnFilters)).map(([key, value]) => [
                 `filter[${key}]`,
                 value,
               ]),
@@ -373,29 +351,39 @@ export default function ContactRequestsPage() {
           },
         }),
       ),
-    enabled: Boolean(session) && canRead && mainTab === "list",
+    enabled: Boolean(session) && canRead && tableState.mainTab === "list",
   });
+
+  // Separate column filters for trash table
+  const [trashColumnFilters, setTrashColumnFilters] = useState<ColumnFiltersState>([]);
 
   const trashQuery = useQuery({
     queryKey: [
       "contact-requests",
       "trash",
-      trashPage,
-      trashPageSize,
-      debouncedTrashGlobalFilter,
+      tableState.trashPage,
+      tableState.trashPageSize,
+      tableState.debouncedTrashGlobalFilter,
+      trashColumnFilters,
     ],
     queryFn: async (): Promise<PagedResult<ContactRequestRow>> =>
       normalizePaged(
         await api.http.get("/admin/contact-requests", {
           query: {
-            page: trashPage,
-            limit: trashPageSize,
-            search: debouncedTrashGlobalFilter.trim() || undefined,
+            page: tableState.trashPage,
+            limit: tableState.trashPageSize,
+            search: tableState.debouncedTrashGlobalFilter.trim() || undefined,
             status: "deleted",
+            ...Object.fromEntries(
+              Object.entries(buildContactFilterQuery(trashColumnFilters)).map(([key, value]) => [
+                `filter[${key}]`,
+                value,
+              ]),
+            ),
           },
         }),
       ),
-    enabled: Boolean(session) && canRead && mainTab === "trash",
+    enabled: Boolean(session) && canRead && tableState.mainTab === "trash",
   });
 
   const assigneesQuery = useQuery({
@@ -562,25 +550,26 @@ export default function ContactRequestsPage() {
   }, [confirmAction, deleteMutation, purgeMutation, restoreMutation]);
 
   const clearListFilters = useCallback(() => {
-    setGlobalFilter("");
+    tableState.setGlobalFilter("");
     setStatusFilter("all");
-    setColumnFilters([]);
-    setPage(1);
-  }, []);
+    tableState.setColumnFilters([]);
+    tableState.setPage(1);
+  }, [tableState]);
 
   const handleColumnFiltersChange = useCallback<OnChangeFn<ColumnFiltersState>>(
     (updater) => {
-      setColumnFilters((prev) =>
+      tableState.setColumnFilters((prev: ColumnFiltersState) =>
         typeof updater === "function" ? updater(prev) : updater,
       );
     },
-    [],
+    [tableState],
   );
 
   const clearTrashFilters = useCallback(() => {
-    setTrashGlobalFilter("");
-    setTrashPage(1);
-  }, []);
+    tableState.setTrashGlobalFilter("");
+    setTrashColumnFilters([]);
+    tableState.setTrashPage(1);
+  }, [tableState]);
 
   const columns = useMemo<ColumnDef<ContactRequestRow>[]>(
     () => [
@@ -825,12 +814,12 @@ export default function ContactRequestsPage() {
 
   const listPaginationFooter = (
     <AdminTablePaginationFooter
-      page={page}
-      pageSize={pageSize}
+      page={tableState.page}
+      pageSize={tableState.pageSize}
       total={listTotal}
       isLoading={listQuery.isLoading}
-      onPageChange={setPage}
-      onPageSizeChange={setPageSize}
+      onPageChange={tableState.setPage}
+      onPageSizeChange={tableState.setPageSize}
       emptySummary="Không có liên hệ hỗ trợ"
       itemLabel="liên hệ"
     />
@@ -838,12 +827,12 @@ export default function ContactRequestsPage() {
 
   const trashPaginationFooter = (
     <AdminTablePaginationFooter
-      page={trashPage}
-      pageSize={trashPageSize}
+      page={tableState.trashPage}
+      pageSize={tableState.trashPageSize}
       total={trashTotal}
       isLoading={trashQuery.isLoading}
-      onPageChange={setTrashPage}
-      onPageSizeChange={setTrashPageSize}
+      onPageChange={tableState.setTrashPage}
+      onPageSizeChange={tableState.setTrashPageSize}
       emptySummary="Thùng rác trống"
       itemLabel="liên hệ"
     />
@@ -893,9 +882,9 @@ export default function ContactRequestsPage() {
       </div>
 
       <Tabs
-        value={mainTab}
+        value={tableState.mainTab}
         onValueChange={(value) => {
-          if (value === "list" || value === "trash") setMainTab(value);
+          if (value === "list" || value === "trash") tableState.setMainTab(value);
         }}
         className="space-y-4"
       >
@@ -922,12 +911,12 @@ export default function ContactRequestsPage() {
               variant="outline"
               className="h-11 gap-2 rounded-lg"
               onClick={() =>
-                void (mainTab === "list" ? listQuery.refetch() : trashQuery.refetch())
+                void (tableState.mainTab === "list" ? listQuery.refetch() : trashQuery.refetch())
               }
             >
               <RefreshCw
                 className={`size-4 ${
-                  (mainTab === "list" ? listQuery.isFetching : trashQuery.isFetching)
+                  (tableState.mainTab === "list" ? listQuery.isFetching : trashQuery.isFetching)
                     ? "animate-spin"
                     : ""
                 }`}
@@ -958,14 +947,14 @@ export default function ContactRequestsPage() {
               isLoading={listQuery.isLoading}
               emptyLabel="Không có liên hệ hỗ trợ khớp bộ lọc."
               manualFiltering
-              columnFilters={columnFilters}
+              columnFilters={tableState.columnFilters}
               onColumnFiltersChange={handleColumnFiltersChange}
-              globalFilter={globalFilter}
-              onGlobalFilterChange={setGlobalFilter}
+              globalFilter={tableState.globalFilter}
+              onGlobalFilterChange={tableState.setGlobalFilter}
               globalFilterPlaceholder="Tìm theo người gửi, email, SĐT, chủ đề..."
               rowSelectionEnabled={canDelete}
-              selectedRowIds={listContactSelection}
-              onSelectedRowIdsChange={setListContactSelection}
+              selectedRowIds={tableState.listSelection}
+              onSelectedRowIdsChange={tableState.setListSelection}
               bulkActions={
                 canDelete
                   ? [
@@ -1025,12 +1014,14 @@ export default function ContactRequestsPage() {
               isLoading={trashQuery.isLoading}
               emptyLabel="Thùng rác trống hoặc không khớp tìm kiếm."
               manualFiltering
-              globalFilter={trashGlobalFilter}
-              onGlobalFilterChange={setTrashGlobalFilter}
+              columnFilters={trashColumnFilters}
+              onColumnFiltersChange={setTrashColumnFilters}
+              globalFilter={tableState.trashGlobalFilter}
+              onGlobalFilterChange={tableState.setTrashGlobalFilter}
               globalFilterPlaceholder="Tìm trong thùng rác..."
               rowSelectionEnabled={canRestore || canDelete}
-              selectedRowIds={trashContactSelection}
-              onSelectedRowIdsChange={setTrashContactSelection}
+              selectedRowIds={tableState.trashSelection}
+              onSelectedRowIdsChange={tableState.setTrashSelection}
               bulkActions={[
                 ...(canRestore
                   ? [
