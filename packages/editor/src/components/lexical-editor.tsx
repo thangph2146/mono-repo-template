@@ -13,6 +13,7 @@ export interface LexicalEditorProps {
   className?: string
   placeholder?: string
   uploadsContext?: import("../context/uploads-context").EditorUploadsContextType
+  stickyTop?: number
 }
 
 function isValidSerializedEditorState(value: unknown): value is SerializedEditorState {
@@ -34,6 +35,7 @@ export function LexicalEditor({
   className,
   placeholder = "",
   uploadsContext,
+  stickyTop,
 }: LexicalEditorProps) {
   // Parse initial value as SerializedEditorState
   const [editorState, setEditorState] = useState<SerializedEditorState | undefined>(() => {
@@ -136,6 +138,7 @@ export function LexicalEditor({
       onSerializedChange={handleSerializedChange}
       readOnly={readOnly}
       placeholder={placeholder}
+      stickyTop={stickyTop}
     />
   )
 

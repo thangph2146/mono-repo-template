@@ -89,9 +89,11 @@ import { Flex } from "../ui/flex"
 export function Plugins({
   readOnly = false,
   placeholder = "",
+  stickyTop,
 }: {
   readOnly?: boolean
   placeholder?: string
+  stickyTop?: number
 }) {
   const [floatingAnchorElem, setFloatingAnchorElem] =
     useState<HTMLDivElement | null>(null)
@@ -108,6 +110,7 @@ export function Plugins({
       {!readOnly && (
         <ToolbarPlugin
           className="editor-toolbar"
+          stickyTop={stickyTop}
         >
           {({ blockType }) => (
             <>

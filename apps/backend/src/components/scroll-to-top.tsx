@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { ArrowUp } from "lucide-react";
+import { Button } from "@ui/components/button";
 import { cn } from "@ui/lib/utils";
 
 const VISIBILITY_THRESHOLD = 300;
@@ -45,8 +46,9 @@ export function ScrollToTop() {
   };
 
   return (
-    <button
-      type="button"
+    <Button
+      variant="secondary"
+      size="icon"
       aria-label="Cuộn lên đầu trang"
       onClick={scrollToTop}
       className={cn(
@@ -57,6 +59,6 @@ export function ScrollToTop() {
       )}
     >
       <ArrowUp className="size-5 text-secondary-foreground" />
-    </button>
+    </Button>
   );
 }

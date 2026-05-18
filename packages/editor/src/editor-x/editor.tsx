@@ -40,6 +40,7 @@ export function Editor({
   onSerializedChange,
   readOnly = false,
   placeholder = "",
+  stickyTop,
 }: {
   editorState?: EditorState
   editorSerializedState?: SerializedEditorState
@@ -47,13 +48,14 @@ export function Editor({
   onSerializedChange?: (editorSerializedState: SerializedEditorState) => void
   readOnly?: boolean
   placeholder?: string
+  stickyTop?: number
 }) {
   const { ref: editorRef, width: editorWidth } = useElementSize<HTMLDivElement>()
   const editorMaxWidth = editorWidth || undefined
 
   const [config, setConfig] = useState<{
     nodes: InitialConfigType["nodes"]
-    Plugins: React.ComponentType<{ readOnly?: boolean; placeholder?: string }>
+    Plugins: React.ComponentType<{ readOnly?: boolean; placeholder?: string; stickyTop?: number }>
   } | null>(null)
 
   useEffect(() => {
@@ -113,7 +115,7 @@ export function Editor({
           }}
         >
           <TooltipProvider>
-            <Plugins readOnly={readOnly} placeholder={placeholder} />
+            <Plugins readOnly={readOnly} placeholder={placeholder} stickyTop={stickyTop} />
 
             {!readOnly && (
               <OnChangePlugin

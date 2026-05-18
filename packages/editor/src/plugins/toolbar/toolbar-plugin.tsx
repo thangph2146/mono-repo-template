@@ -24,10 +24,12 @@ export function ToolbarPlugin({
   children,
   className,
   style,
+  stickyTop,
 }: {
   children: (props: { blockType: string }) => ReactNode
   className?: string
   style?: CSSProperties
+  stickyTop?: number
 }) {
   const [editor] = useLexicalComposerContext()
   const { headerHeight } = useHeaderHeight()
@@ -111,7 +113,7 @@ export function ToolbarPlugin({
         )}
         style={{
           ...style,
-          top: Math.round(headerHeight),
+          top: stickyTop ?? Math.round(headerHeight),
         }}
       >
         {children({ blockType })}
