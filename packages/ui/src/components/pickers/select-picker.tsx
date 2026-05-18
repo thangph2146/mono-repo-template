@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import type { ReactNode } from "react";
 import { Check, ChevronDown } from "lucide-react";
 import { Button } from "../button";
 import {
@@ -10,10 +11,16 @@ import {
 } from "../popover";
 import { cn } from "../../lib/utils";
 
+export interface SelectPickerOption {
+  value: string;
+  label: string;
+  render?: () => ReactNode;
+}
+
 export interface SelectPickerProps {
   value: unknown;
   onChange: (value: unknown) => void;
-  options: { value: string; label: string }[];
+  options: SelectPickerOption[];
   placeholder?: string;
   id?: string;
 }
@@ -27,9 +34,10 @@ export function SelectPicker({
 }: SelectPickerProps) {
   const [open, setOpen] = useState(false);
   const selected = typeof value === "string" ? value : "";
-  const selectedLabel = selected
-    ? options.find((o) => o.value === selected)?.label ?? selected
-    : placeholder;
+  const selectedOption = selected
+    ? options.find((o) => o.value === selected)
+    : null;
+  const selectedLabel = selectedOption?.label ?? (selected ? selected : placeholder);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -40,7 +48,9 @@ export function SelectPicker({
           id={id}
           className="h-9 text-sm rounded-lg w-full min-w-[160px] justify-between font-normal"
         >
-          <span className="truncate">{selectedLabel}</span>
+          <span className="truncate">
+            {selectedOption?.render ? selectedOption.render() : selectedLabel}
+          </span>
           <ChevronDown className="size-4 text-muted-foreground shrink-0" />
         </Button>
       </PopoverTrigger>
@@ -80,7 +90,9 @@ export function SelectPicker({
                     !isSelected && "hover:bg-muted cursor-pointer",
                   )}
                 >
-                  <span className="flex-1 truncate">{o.label}</span>
+                  <span className="flex-1 truncate">
+                    {o.render ? o.render() : o.label}
+                  </span>
                   {isSelected && <Check className="size-4 shrink-0" />}
                 </button>
               );

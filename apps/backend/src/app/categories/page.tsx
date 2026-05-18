@@ -17,6 +17,18 @@ import {
   RefreshCw,
   Tags,
 } from "lucide-react";
+import { useDebouncedValue } from "@/hooks/use-debounced-value";
+import { useAuth } from "@/providers/auth-provider";
+import { canUserAccess, PERMISSION_CODES } from "@workspace/api-client";
+import { PageSection } from "@ui/components/layout";
+import { TypographyH1 } from "@ui/components/typography";
+import {
+  ADMIN_ALERT_DIALOG_CONTENT_CLASS,
+  ADMIN_PAGE_SUBTITLE_CLASS,
+  ADMIN_PAGE_TITLE_ICON_CLASS,
+  ADMIN_PAGE_TITLE_PRIMARY_CLASS,
+} from "@ui/lib/layout-shell";
+import { cn } from "@ui/lib/utils";
 import { AdminPageGuard } from "@/components/admin-page-guard";
 import { api } from "@/lib/api";
 import {
@@ -33,10 +45,9 @@ import {
   useColumnFiltersChange,
   useClearListFilters,
   useClearTrashFilters,
-  useOpenEdit,
   useHandleSave,
   useHandleConfirmAction,
-  useFormState,
+  useCategoryForm,
   useConfirmAction,
   useCategoriesQuery,
   useTrashQuery,
@@ -64,18 +75,6 @@ function buildCategoryTree(rows: CategoryRow[]): CategoryRow[] {
       .map((item) => ({ ...item, subRows: sortTree(item.subRows ?? []) }));
   return sortTree(roots);
 }
-import { useDebouncedValue } from "@/hooks/use-debounced-value";
-import { useAuth } from "@/providers/auth-provider";
-import { canUserAccess, PERMISSION_CODES } from "@workspace/api-client";
-import { PageSection } from "@ui/components/layout";
-import { TypographyH1 } from "@ui/components/typography";
-import {
-  ADMIN_ALERT_DIALOG_CONTENT_CLASS,
-  ADMIN_PAGE_SUBTITLE_CLASS,
-  ADMIN_PAGE_TITLE_ICON_CLASS,
-  ADMIN_PAGE_TITLE_PRIMARY_CLASS,
-} from "@ui/lib/layout-shell";
-import { cn } from "@ui/lib/utils";
 
 function CategoriesPageInner() {
   const queryClient = useQueryClient();
@@ -195,21 +194,22 @@ function CategoriesPageInner() {
   const clearTrashFilters = useClearTrashFilters(setTrashGlobalFilter, setTrashColumnFilters);
   const handleTrashColumnFiltersChange = useColumnFiltersChange(setTrashColumnFilters);
 
-  const { form, setForm, dialogOpen, setDialogOpen, loadingDetail, setLoadingDetail } = useFormState();
-  const { confirmAction, setConfirmAction } = useConfirmAction();
-
-  const openEdit = useOpenEdit({
-    setLoadingDetail,
-    setForm,
+  const {
+    form,
+    dialogOpen,
     setDialogOpen,
-    api,
-  });
+    loadingDetail,
+    editingId,
+    openCreate,
+    openEdit,
+  } = useCategoryForm();
+  const { confirmAction, setConfirmAction } = useConfirmAction();
 
   const submitting =
     createMutation.isPending || updateMutation.isPending || loadingDetail;
 
   const handleSave = useHandleSave({
-    form,
+    editingId,
     createMutation,
     updateMutation,
     setDialogOpen,
@@ -226,7 +226,7 @@ function CategoriesPageInner() {
   const columns = useMemo<ColumnDef<CategoryRow>[]>(
     () =>
       getCategoryColumns({
-        openEdit,
+        openEdit: (row) => void openEdit(row, api),
         setConfirmAction,
         categoryTreeOptions,
         canWriteCategories,
@@ -277,22 +277,23 @@ function CategoriesPageInner() {
             <RefreshCw
               className={cn(
                 "size-5",
-                (categoriesQuery.isFetching || trashQuery.isFetching) && "animate-spin"
+                (categoriesQuery.isFetching || trashQuery.isFetching) && "animate-spin",
               )}
               aria-hidden
             />
             Làm mới
           </Button>
           <CategoriesFormDialog
+            form={form}
             open={dialogOpen}
             onOpenChange={setDialogOpen}
-            form={form}
-            onFormChange={setForm}
             onSubmit={handleSave}
             submitting={submitting}
             categoryTreeOptions={categoryTreeOptions}
             slugify={slugify}
             canWriteCategories={canWriteCategories}
+            editingId={editingId}
+            onOpenCreate={openCreate}
           />
         </div>
       </div>

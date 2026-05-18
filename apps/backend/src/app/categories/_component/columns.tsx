@@ -1,9 +1,8 @@
 "use client";
 
 import type { ColumnDef } from "@tanstack/react-table";
-import { Badge } from "@ui/components/badge";
 import { Button } from "@ui/components/button";
-import { Pencil, Trash2, ArchiveRestore } from "lucide-react";
+import { Pencil, Trash2, ArchiveRestore, FolderTree, Folder } from "lucide-react";
 import type { CategoryRow, CategoryTreeOption } from "./types";
 
 export function getCategoryColumns({
@@ -24,12 +23,12 @@ export function getCategoryColumns({
       enableColumnFilter: false,
       cell: ({ row, getValue }) => (
         <div className="flex min-w-0 items-center gap-2">
-          <span className="truncate font-medium">{String(getValue())}</span>
           {row.depth === 0 ? (
-            <Badge variant="outline" className="text-[10px]">
-              Gốc
-            </Badge>
-          ) : null}
+            <FolderTree className="size-4 shrink-0 text-primary" aria-hidden />
+          ) : (
+            <Folder className="size-4 shrink-0 text-muted-foreground" aria-hidden />
+          )}
+          <span className="truncate font-medium">{String(getValue())}</span>
         </div>
       ),
     },
@@ -117,12 +116,12 @@ export function getTrashColumns({
       enableColumnFilter: false,
       cell: ({ row, getValue }) => (
         <div className="flex items-center gap-2">
-          <span className="font-medium">{String(getValue())}</span>
           {row.depth === 0 ? (
-            <Badge variant="outline" className="text-[10px]">
-              Gốc
-            </Badge>
-          ) : null}
+            <FolderTree className="size-4 shrink-0 text-primary" aria-hidden />
+          ) : (
+            <Folder className="size-4 shrink-0 text-muted-foreground" aria-hidden />
+          )}
+          <span className="font-medium">{String(getValue())}</span>
         </div>
       ),
     },

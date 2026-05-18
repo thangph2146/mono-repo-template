@@ -4,9 +4,10 @@ export {
   useClearTrashFilters,
 } from "./use-categories-filters";
 export {
-  useOpenEdit,
-  useHandleSave,
   useHandleConfirmAction,
-  useFormState,
+  useHandleSave,
+  useCategoryForm,
   useConfirmAction,
+  categoryFormSchema,
 } from "./use-categories-actions";
+export type { CategoryFormValues } from "./use-categories-actions";

@@ -1,12 +1,26 @@
 import { useCallback, useState } from "react";
+import { useForm } from "react-hook-form";
 import type { UseMutationResult } from "@tanstack/react-query";
 import type { StoreSyncSdk } from "@workspace/api-client";
 import { toast } from "sonner";
-import type { CategoryRow, CategoryConfirmAction, FormState } from "../types";
+import type { CategoryRow, CategoryConfirmAction } from "../types";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 const ROOT_PARENT_VALUE = "__root__";
 
-const EMPTY_FORM: FormState = {
+export const categoryFormSchema = z.object({
+  name: z.string().min(1, "Tên danh mục không được để trống"),
+  slug: z.string(),
+  description: z.string(),
+  icon: z.string(),
+  sortOrder: z.coerce.number(),
+  parentId: z.string(),
+});
+
+export type CategoryFormValues = z.infer<typeof categoryFormSchema>;
+
+const EMPTY_VALUES: CategoryFormValues = {
   name: "",
   slug: "",
   description: "",
@@ -15,32 +29,43 @@ const EMPTY_FORM: FormState = {
   parentId: ROOT_PARENT_VALUE,
 };
 
-export function useOpenEdit({
-  setLoadingDetail,
-  setForm,
-  setDialogOpen,
-  api,
-}: {
-  setLoadingDetail: React.Dispatch<React.SetStateAction<boolean>>;
-  setForm: React.Dispatch<React.SetStateAction<FormState>>;
-  setDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  api: StoreSyncSdk;
-}) {
-  return useCallback(
-    async (c: CategoryRow) => {
+export function useCategoryForm() {
+  const form = useForm<CategoryFormValues>({
+    resolver: zodResolver(categoryFormSchema),
+    defaultValues: EMPTY_VALUES,
+  });
+
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [loadingDetail, setLoadingDetail] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+
+  const resetForm = useCallback(() => {
+    form.reset(EMPTY_VALUES);
+    setEditingId(null);
+  }, [form]);
+
+  const openCreate = useCallback(() => {
+    resetForm();
+    setDialogOpen(true);
+  }, [resetForm]);
+
+  const openEdit = useCallback(
+    async (c: CategoryRow, api: StoreSyncSdk) => {
       setLoadingDetail(true);
       try {
         const res = await api.http.get(`/admin/categories/${c.id}`);
-        const data = (res as Record<string, unknown>)?.data as Record<string, unknown> ?? res as Record<string, unknown>;
-        setForm({
-          id: data.id as string,
-          name: data.name as string,
-          slug: data.slug as string,
+        const data =
+          (res as Record<string, unknown>)?.data as Record<string, unknown> ??
+          (res as Record<string, unknown>);
+        form.reset({
+          name: (data.name as string) ?? "",
+          slug: (data.slug as string) ?? "",
           description: (data.description as string) ?? "",
           icon: (data.icon as string) ?? "Package2",
           sortOrder: (data.sortOrder as number) ?? 0,
           parentId: (data.parentId as string) ?? ROOT_PARENT_VALUE,
         });
+        setEditingId(c.id);
         setDialogOpen(true);
       } catch {
         toast.error("Không tải được chi tiết danh mục");
@@ -48,58 +73,73 @@ export function useOpenEdit({
         setLoadingDetail(false);
       }
     },
-    [api, setLoadingDetail, setForm, setDialogOpen]
+    [form],
   );
+
+  return {
+    form,
+    dialogOpen,
+    setDialogOpen,
+    loadingDetail,
+    setLoadingDetail,
+    editingId,
+    openCreate,
+    openEdit,
+    resetForm,
+  };
 }
 
 export function useHandleSave({
-  form,
+  editingId,
   createMutation,
   updateMutation,
   setDialogOpen,
   slugify,
 }: {
-  form: FormState;
+  editingId: string | null;
   createMutation: UseMutationResult<unknown, Error, Record<string, unknown>>;
-  updateMutation: UseMutationResult<unknown, Error, { id: string; input: Record<string, unknown> }>;
-  setDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  updateMutation: UseMutationResult<
+    unknown,
+    Error,
+    { id: string; input: Record<string, unknown> }
+  >;
+  setDialogOpen: (open: boolean) => void;
   slugify: (input: string) => string;
 }) {
-  return useCallback(async (): Promise<void> => {
-    if (!form.name.trim()) {
-      toast.error("Vui lòng nhập tên danh mục");
-      return;
-    }
-    const payload = {
-      name: form.name.trim(),
-      slug: form.slug.trim() || slugify(form.name),
-      description: form.description.trim() || null,
-      icon: form.icon || null,
-      sortOrder: Number.isFinite(form.sortOrder) ? form.sortOrder : 0,
-      parentId: form.parentId === ROOT_PARENT_VALUE ? null : form.parentId,
-    };
-    try {
-      if (form.id) {
-        await updateMutation.mutateAsync({ id: form.id, input: payload });
-        toast.success(`Đã cập nhật danh mục "${payload.name}"`);
-      } else {
-        await createMutation.mutateAsync(payload);
-        toast.success(`Đã tạo danh mục "${payload.name}"`);
+  return useCallback(
+    async (values: CategoryFormValues): Promise<void> => {
+      const payload = {
+        name: values.name.trim(),
+        slug: values.slug.trim() || slugify(values.name),
+        description: values.description.trim() || null,
+        icon: values.icon || null,
+        sortOrder: Number.isFinite(values.sortOrder) ? values.sortOrder : 0,
+        parentId: values.parentId === ROOT_PARENT_VALUE ? null : values.parentId,
+      };
+      try {
+        if (editingId) {
+          await updateMutation.mutateAsync({ id: editingId, input: payload });
+          toast.success(`Đã cập nhật danh mục "${payload.name}"`);
+        } else {
+          await createMutation.mutateAsync(payload);
+          toast.success(`Đã tạo danh mục "${payload.name}"`);
+        }
+        setDialogOpen(false);
+      } catch (err: unknown) {
+        const message =
+          err instanceof Error ? err.message : "Đã xảy ra lỗi, vui lòng thử lại";
+        toast.error(message);
       }
-      setDialogOpen(false);
-    } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : "Đã xảy ra lỗi, vui lòng thử lại";
-      toast.error(message);
-    }
-  }, [form, createMutation, updateMutation, setDialogOpen, slugify]);
+    },
+    [editingId, createMutation, updateMutation, setDialogOpen, slugify],
+  );
 }
 
 export function useHandleConfirmAction(
   deleteMutation: UseMutationResult<unknown, Error, string>,
   restoreMutation: UseMutationResult<unknown, Error, string>,
   purgeMutation: UseMutationResult<unknown, Error, string>,
-  setConfirmAction: React.Dispatch<React.SetStateAction<CategoryConfirmAction | null>>
+  setConfirmAction: React.Dispatch<React.SetStateAction<CategoryConfirmAction | null>>,
 ) {
   return useCallback(
     async ({ kind, row }: CategoryConfirmAction) => {
@@ -122,16 +162,8 @@ export function useHandleConfirmAction(
         setConfirmAction(null);
       }
     },
-    [deleteMutation, restoreMutation, purgeMutation, setConfirmAction]
+    [deleteMutation, restoreMutation, purgeMutation, setConfirmAction],
   );
-}
-
-export function useFormState() {
-  const [form, setForm] = useState<FormState>(EMPTY_FORM);
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [loadingDetail, setLoadingDetail] = useState(false);
-
-  return { form, setForm, dialogOpen, setDialogOpen, loadingDetail, setLoadingDetail };
 }
 
 export function useConfirmAction() {

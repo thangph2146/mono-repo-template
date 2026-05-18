@@ -1,4 +1,4 @@
-export { SelectPicker, type SelectPickerProps } from "./select-picker";
+export { SelectPicker, type SelectPickerProps, type SelectPickerOption } from "./select-picker";
 export { MultiSelectPicker, type MultiSelectPickerProps } from "./multi-select-picker";
 export { TreePicker, type TreePickerProps, type TreeOption } from "./tree-picker";
 export { TreeMultiSelectPicker, type TreeMultiSelectPickerProps } from "./tree-multi-select-picker";
