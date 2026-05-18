@@ -4,6 +4,12 @@ import type { StoreSyncSdk } from "@workspace/api-client";
 import type { CategoryRow, PagedResult } from "../types";
 import { normalizePaged } from "../utils";
 
+function toFilterQuery(filters: Record<string, unknown>): Record<string, unknown> {
+  return Object.fromEntries(
+    Object.entries(filters).map(([key, value]) => [`filter[${key}]`, value]),
+  );
+}
+
 export interface UseCategoriesQueryProps {
   api: StoreSyncSdk;
   debouncedQ: string;
@@ -25,12 +31,7 @@ export function useCategoriesQuery({
             limit: 1000,
             search: debouncedQ.trim() || undefined,
             status: "active",
-            ...Object.fromEntries(
-              Object.entries(columnFilterQuery).map(([key, value]) => [
-                `filter[${key}]`,
-                value,
-              ]),
-            ),
+            ...toFilterQuery(columnFilterQuery),
           },
         }),
       ),
@@ -65,12 +66,7 @@ export function useTrashQuery({
             limit: trashPageSize,
             search: debouncedTrashQ.trim() || undefined,
             status: "deleted",
-            ...Object.fromEntries(
-              Object.entries(trashColumnFilterQuery ?? {}).map(([key, value]) => [
-                `filter[${key}]`,
-                value,
-              ]),
-            ),
+            ...toFilterQuery(trashColumnFilterQuery ?? {}),
           },
         }),
       ),
@@ -83,11 +79,12 @@ export function useCategoriesOptionsQuery(
   return useQuery({
     queryKey: ["categories", "options"],
     queryFn: async (): Promise<CategoryRow[]> => {
-      const result = await api.http.get("/admin/categories", {
-        query: { page: 1, limit: 1000, status: "active" },
-      });
-      const normalized = normalizePaged(result);
-      return normalized.items as CategoryRow[];
+      const paged = normalizePaged<CategoryRow>(
+        await api.http.get("/admin/categories", {
+          query: { page: 1, limit: 1000, status: "active" },
+        }),
+      );
+      return paged.items;
     },
   });
 }

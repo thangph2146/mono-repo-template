@@ -115,7 +115,7 @@ export function TreeMultiSelectInline({
       {options.length === 0 ? (
         <p className="text-sm text-muted-foreground px-2 py-1">Không có tùy chọn</p>
       ) : (
-        <div className="max-h-60 space-y-0.5 overflow-y-auto">
+        <div className="max-h-80 space-y-0.5 overflow-y-auto">
           {options.map((node) => (
             <TreeMultiSelectInlineItem
               key={node.value}

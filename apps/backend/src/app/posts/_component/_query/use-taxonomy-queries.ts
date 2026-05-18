@@ -8,7 +8,7 @@ export function useCategoriesQuery(
   api: StoreSyncSdk
 ): UseQueryResult<CategoryTreeOption[]> {
   return useQuery({
-    queryKey: ["media", "categories", "options"],
+    queryKey: ["categories", "options"],
     queryFn: async (): Promise<CategoryTreeOption[]> => {
       const paged = normalizePaged<CategoryTreeOption>(
         await api.http.get("/admin/categories", {
@@ -27,7 +27,7 @@ export function useCategoriesQuery(
 
 export function useTagsQuery(api: StoreSyncSdk): UseQueryResult<TaxonomyOption[]> {
   return useQuery({
-    queryKey: ["media", "tags", "options"],
+    queryKey: ["tags", "options"],
     queryFn: async (): Promise<TaxonomyOption[]> => {
       const paged = normalizePaged<TaxonomyOption>(
         await api.http.get("/admin/tags", {

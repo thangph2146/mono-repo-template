@@ -4,6 +4,12 @@ import type { StoreSyncSdk } from "@workspace/api-client";
 import type { PostListRow, PagedResult } from "../types";
 import { normalizePaged } from "../utils";
 
+function toFilterQuery(filters: Record<string, unknown>): Record<string, unknown> {
+  return Object.fromEntries(
+    Object.entries(filters).map(([key, value]) => [`filter[${key}]`, value]),
+  );
+}
+
 export interface UsePostsQueriesProps {
   api: StoreSyncSdk;
   page: number;
@@ -29,12 +35,7 @@ export function usePostsQuery({
             limit: pageSize,
             search: debouncedQ.trim() || undefined,
             status: "active",
-            ...Object.fromEntries(
-              Object.entries(postColumnFilterQuery).map(([key, value]) => [
-                `filter[${key}]`,
-                value,
-              ]),
-            ),
+            ...toFilterQuery(postColumnFilterQuery),
           },
         }),
       ),
@@ -69,12 +70,7 @@ export function useTrashQuery({
             limit: trashPageSize,
             search: debouncedTrashQ.trim() || undefined,
             status: "deleted",
-            ...Object.fromEntries(
-              Object.entries(trashColumnFilterQuery ?? {}).map(([key, value]) => [
-                `filter[${key}]`,
-                value,
-              ]),
-            ),
+            ...toFilterQuery(trashColumnFilterQuery ?? {}),
           },
         }),
       ),

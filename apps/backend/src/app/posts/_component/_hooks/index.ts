@@ -2,7 +2,7 @@ export {
   useColumnFiltersChange,
   useClearListFilters,
   useClearTrashFilters,
-} from "./use-posts-filters";
+} from "@/hooks/use-table-filters";
 export {
   useHandleConfirmActionWithAction,
 } from "./use-posts-actions";

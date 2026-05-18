@@ -13,6 +13,7 @@ import {
   useCategoryForm,
   useCategoriesOptionsQuery,
   buildCategoryOptionTree,
+  buildCategoryPayload,
   unwrapEnvelope,
 } from "../../_component";
 import type { CategoryFormValues } from "../../_component";
@@ -84,15 +85,7 @@ function EditCategoryPageInner() {
 
   const handleSubmit = useCallback(
     async (values: CategoryFormValues) => {
-      const payload = {
-        name: values.name.trim(),
-        slug: values.slug.trim() || values.name.trim().toLowerCase().replace(/\s+/g, "-"),
-        description: values.description.trim() || null,
-        icon: values.icon || null,
-        sortOrder: Number.isFinite(values.sortOrder) ? values.sortOrder : 0,
-        parentId: values.parentId === "__root__" ? null : values.parentId,
-      };
-      await updateMutation.mutateAsync(payload);
+      await updateMutation.mutateAsync(buildCategoryPayload(values));
     },
     [updateMutation],
   );

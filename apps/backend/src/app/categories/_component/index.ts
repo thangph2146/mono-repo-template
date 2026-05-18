@@ -11,15 +11,14 @@ export {
   useColumnFiltersChange,
   useClearListFilters,
   useClearTrashFilters,
-  useHandleSave,
   useHandleConfirmAction,
   useCategoryForm,
   useConfirmAction,
+  buildCategoryPayload,
   categoryFormSchema,
 } from "./_hooks";
 export type { CategoryFormValues } from "./_hooks";
 export { CategoriesTable, CategoriesTrashTable } from "./_table";
-export { CategoriesFormDialog } from "./_dialog";
 export { CategoriesConfirmDialog } from "./_alert-dialog";
 export {
   useCategoriesQuery,

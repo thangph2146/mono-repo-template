@@ -82,9 +82,7 @@ function PostDetailInner() {
         <div className="flex items-center gap-3">
           <Button
             type="button"
-            variant="ghost"
-            size="sm"
-            className="gap-1 px-2"
+            variant="outline"
             onClick={() => router.push("/posts")}
           >
             <ArrowLeft className="size-4" />

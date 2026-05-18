@@ -14,6 +14,8 @@ type ApiCategoryRow = {
   parentId?: string | null;
   parentName?: string | null;
   description?: string | null;
+  icon?: string | null;
+  sortOrder?: number;
   _count?: { children?: number };
   postCount?: number;
   createdAt?: string;
@@ -27,8 +29,8 @@ function mapCategory(row: ApiCategoryRow): Category {
     name: row.name,
     slug: row.slug,
     description: row.description ?? null,
-    icon: null,
-    sortOrder: 0,
+    icon: row.icon ?? null,
+    sortOrder: row.sortOrder ?? 0,
     isActive: row.deletedAt == null,
     parentId: row.parentId ?? null,
     parentName: row.parentName ?? null,

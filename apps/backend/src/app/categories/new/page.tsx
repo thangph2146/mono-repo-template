@@ -10,6 +10,7 @@ import { api } from "@/lib/api";
 import {
   CategoryFormShell,
   useCategoryForm,
+  buildCategoryPayload,
 } from "../_component";
 import type { CategoryFormValues } from "../_component";
 
@@ -38,15 +39,7 @@ function NewCategoryPageInner() {
 
   const handleSubmit = useCallback(
     async (values: CategoryFormValues) => {
-      const payload = {
-        name: values.name.trim(),
-        slug: values.slug.trim() || values.name.trim().toLowerCase().replace(/\s+/g, "-"),
-        description: values.description.trim() || null,
-        icon: values.icon || null,
-        sortOrder: Number.isFinite(values.sortOrder) ? values.sortOrder : 0,
-        parentId: values.parentId === "__root__" ? null : values.parentId,
-      };
-      await createMutation.mutateAsync(payload);
+      await createMutation.mutateAsync(buildCategoryPayload(values));
     },
     [createMutation],
   );
