@@ -1,4 +1,4 @@
-export type { TagRow, TagTreeRow, TagFormValues, TagConfirmAction, TagDetail, PagedResult } from "./types";
+export type { TagRow, TagTreeRow, TagFormValues, TagConfirmAction, TagDetail } from "./types";
 export { tagFormSchema } from "./types";
 export {
   slugify,

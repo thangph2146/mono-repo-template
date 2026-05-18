@@ -6,6 +6,7 @@ export {
   normalizePaged,
   buildCategoriesFilterQuery,
   formatDateTime,
+  type CategoryTreeNode,
 } from "./utils";
 export {
   useColumnFiltersChange,

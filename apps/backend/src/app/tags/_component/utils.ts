@@ -1,38 +1,10 @@
-import type { ApiEnvelope, PagedResult, TagRow, TagTreeRow, TagsApiShape } from "./types";
+import type { TagRow, TagTreeRow } from "./types";
 
-export function slugify(input: string): string {
-  return input
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/đ/g, "d")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-}
-
-export function unwrapEnvelope<T>(payload: unknown): T {
-  if (!payload || typeof payload !== "object") return payload as T;
-  const envelope = payload as ApiEnvelope<T>;
-  if (envelope.success === false) {
-    throw new Error(envelope.message || envelope.error || "Yeu cau that bai");
-  }
-  return "data" in envelope ? (envelope.data as T) : (payload as T);
-}
-
-export function normalizePaged(payload: unknown): PagedResult<TagRow> {
-  const data = unwrapEnvelope<TagsApiShape | TagRow[]>(payload);
-  if (Array.isArray(data)) return { items: data, total: data.length };
-  if (data && typeof data === "object" && Array.isArray(data.data)) {
-    return {
-      items: data.data,
-      total:
-        typeof data.pagination?.total === "number"
-          ? data.pagination.total
-          : data.data.length,
-    };
-  }
-  return { items: [], total: 0 };
-}
+export {
+  slugify,
+  unwrapApiEnvelope as unwrapEnvelope,
+  normalizePagedResult as normalizePaged,
+} from "@workspace/api-client";
 
 export function formatDateTime(value: string | null | undefined): string {
   if (!value) return "—";

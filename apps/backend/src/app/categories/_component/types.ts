@@ -1,3 +1,5 @@
+import type { ChildCategory, RelatedPost, CategoryTreeNode } from "@workspace/api-client";
+
 export interface CategoryRow {
   id: string;
   name: string;
@@ -15,13 +17,7 @@ export interface CategoryRow {
   subRows?: CategoryRow[];
 }
 
-export interface CategoryTreeOption {
-  id: string;
-  name: string;
-  parentId: string | null;
-  sortOrder: number;
-  subRows?: CategoryTreeOption[];
-}
+export type CategoryTreeOption = CategoryTreeNode;
 
 export interface CategoryConfirmAction {
   kind: "delete" | "restore" | "purge";
@@ -38,46 +34,9 @@ export interface FormState {
   parentId: string;
 }
 
-export interface ChildCategory {
-  id: string;
-  name: string;
-  slug: string;
-  _count: { children: number };
-  postCount: number;
-}
-
-export interface RelatedPost {
-  id: string;
-  title: string;
-  slug: string;
-  published: boolean;
-  publishedAt: string | null;
-  createdAt: string;
-}
-
 export interface CategoryDetail extends CategoryRow {
   children: ChildCategory[];
   posts: RelatedPost[];
 }
 
-export interface PagedResult<T> {
-  items: T[];
-  total: number;
-}
-
-export interface ApiEnvelope<T> {
-  success: boolean;
-  message?: string;
-  error?: string | null;
-  data?: T;
-}
-
-export interface PagedApiShape<T> {
-  data: T[];
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-  };
-}
+export type { ChildCategory, RelatedPost } from "@workspace/api-client";

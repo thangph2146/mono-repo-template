@@ -1,5 +1,6 @@
 import { ApiClient, type ApiClientOptions } from './client';
 import { CategoriesApi } from './resources/categories';
+import { GuidesApi } from './resources/guides';
 import { PostsApi } from './resources/posts';
 import { RbacApi } from './resources/rbac';
 import { TagsApi } from './resources/tags';
@@ -25,6 +26,7 @@ export class StoreSyncSdk {
   readonly posts: PostsApi;
   readonly categories: CategoriesApi;
   readonly tags: TagsApi;
+  readonly guides: GuidesApi;
   readonly rbac: RbacApi;
 
   constructor(options: ApiClientOptions) {
@@ -33,6 +35,7 @@ export class StoreSyncSdk {
     this.posts = new PostsApi(this.http);
     this.categories = new CategoriesApi(this.http);
     this.tags = new TagsApi(this.http);
+    this.guides = new GuidesApi(this.http);
     this.rbac = new RbacApi(this.http);
   }
 

@@ -4,9 +4,6 @@ export type {
   PostListRow,
   PostConfirmAction,
   PostDetail,
-  PagedResult,
-  ApiEnvelope,
-  PagedApiShape,
   FormState,
   EditorTextNodeShape,
   EditorParagraphNodeShape,
@@ -27,6 +24,7 @@ export {
   toLocalInputValue,
   formatDateTime,
   normalizeContentForEditor,
+  type CategoryTreeNode,
 } from "./utils";
 
 export { SummaryBadges } from "./summary-badges";

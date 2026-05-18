@@ -97,7 +97,7 @@ export function getCategoryColumns({
         return (
           <div className="flex flex-wrap gap-1">
             <Button
-              variant="outline"
+              variant="default"
               className="gap-1"
               onClick={() => openDetail(c)}
             >

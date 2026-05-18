@@ -1,7 +1,7 @@
 import type { UseQueryResult } from "@tanstack/react-query";
 import { useQuery } from "@tanstack/react-query";
-import type { StoreSyncSdk } from "@workspace/api-client";
-import type { CategoryDetail, CategoryRow, PagedResult } from "../types";
+import type { StoreSyncSdk, PagedResult } from "@workspace/api-client";
+import type { CategoryDetail, CategoryRow } from "../types";
 
 export function useCategoryDetailQuery(
   api: StoreSyncSdk,

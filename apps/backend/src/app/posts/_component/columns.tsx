@@ -110,7 +110,7 @@ export function getPostColumns({
         <div className="flex flex-wrap gap-1">
           <Button
             type="button"
-            variant="outline"
+            variant="default"
             size="sm"
             className="h-8 gap-1 rounded-lg"
             onClick={() => navigateToView(row.original.id)}

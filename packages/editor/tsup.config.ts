@@ -10,8 +10,6 @@ export default defineConfig({
   treeshake: true,
   sourcemap: true,
   splitting: false,
-  banner: {
-    js: '"use client";',
-  },
+  silent: true,
   esbuildPlugins: [sassPlugin()],
 })

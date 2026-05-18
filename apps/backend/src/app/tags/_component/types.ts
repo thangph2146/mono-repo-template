@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { RelatedPost } from "@workspace/api-client";
 
 export type TagRow = {
   id: string;
@@ -27,38 +28,9 @@ export const tagFormSchema = z.object({
 
 export type TagFormValues = z.infer<typeof tagFormSchema>;
 
-export interface RelatedPost {
-  id: string;
-  title: string;
-  slug: string;
-  published: boolean;
-  publishedAt: string | null;
-  createdAt: string;
-}
-
 export interface TagDetail extends TagRow {
   postCount: number;
   posts: RelatedPost[];
 }
 
-export interface PagedResult<T> {
-  items: T[];
-  total: number;
-}
-
-export interface ApiEnvelope<T> {
-  success?: boolean;
-  message?: string;
-  error?: string | null;
-  data?: T;
-}
-
-export interface PagedApiShape<T> {
-  data: T[];
-  pagination?: { total?: number };
-}
-
-export type TagsApiShape = {
-  data: TagRow[];
-  pagination?: { total?: number };
-};
+export type { RelatedPost } from "@workspace/api-client";

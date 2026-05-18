@@ -1,7 +1,7 @@
 import type { UseQueryResult } from "@tanstack/react-query";
 import { useQuery } from "@tanstack/react-query";
-import type { StoreSyncSdk } from "@workspace/api-client";
-import type { PostDetail, PostListRow, PagedResult } from "../types";
+import type { StoreSyncSdk, PagedResult } from "@workspace/api-client";
+import type { PostDetail, PostListRow } from "../types";
 
 function toFilterQuery(filters: Record<string, unknown>): Record<string, string | number | boolean | undefined | null> {
   return Object.fromEntries(

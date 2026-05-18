@@ -11,7 +11,7 @@ export const postFormSchema = z.object({
   slug: z.string(),
   excerpt: z.string(),
   image: z.string(),
-  content: z.any(),
+  content: z.record(z.any()),
   published: z.boolean(),
   publishedAt: z.string(),
   categoryIds: z.array(z.string()),

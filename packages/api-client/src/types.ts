@@ -351,3 +351,45 @@ export interface RbacRole {
   description: string | null;
   permissions: string[];
 }
+
+/** PageContent — hướng dẫn sử dụng / nội dung trang động */
+export interface PageContentStep {
+  order: number;
+  title: string;
+  description: string;
+  imageUrl?: string | null;
+}
+
+export interface PageContent extends Omit<AuditFields, 'id'> {
+  id: string;
+  pageKey: string;
+  sectionKey: string;
+  isVisible: boolean;
+  content: {
+    title?: string | null;
+    description?: string | null;
+    order?: number;
+    steps?: PageContentStep[];
+  };
+  deletedAt?: Iso8601 | null;
+}
+
+export type CreatePageContentInput = {
+  pageKey: string;
+  sectionKey: string;
+  isVisible?: boolean;
+  content?: {
+    title?: string | null;
+    description?: string | null;
+    order?: number;
+    steps?: PageContentStep[];
+  };
+};
+
+export type UpdatePageContentInput = Partial<Omit<CreatePageContentInput, 'pageKey' | 'sectionKey'>>;
+
+/** Alias cho Guides (huong-dan-su-dung) */
+export type GuideStep = PageContentStep;
+export type GuideGroup = PageContent;
+export type CreateGuideInput = CreatePageContentInput;
+export type UpdateGuideInput = UpdatePageContentInput;
