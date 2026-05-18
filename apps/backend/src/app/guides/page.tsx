@@ -13,11 +13,9 @@ import {
 } from "@ui/lib/layout-shell";
 import { AdminPageGuard } from "@/components/admin-page-guard";
 import { api } from "@/lib/api";
+import { useRouter } from "next/navigation";
 import {
   useGuidesQuery,
-  useGuidesActions,
-  useDeleteGuideMutation,
-  GroupFormDialog,
   GuidesConfirmDialog,
   getGuidesColumns,
   GuidesTable,
@@ -27,9 +25,11 @@ import {
 } from "./_component";
 
 function GuidesPageInner() {
+  const router = useRouter();
   const [globalFilter, setGlobalFilter] = useState("");
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [confirmAction, setConfirmAction] = useState<GuideConfirmAction | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const { data, isLoading, isFetching, refetch } = useGuidesQuery({
     api,
@@ -37,18 +37,6 @@ function GuidesPageInner() {
     limit: 1000,
     search: globalFilter,
   });
-
-  const deleteMutation = useDeleteGuideMutation();
-
-  const {
-    formOpen,
-    editTarget,
-    openCreateForm,
-    openEditForm,
-    closeForm,
-    handleSave,
-    isSaving,
-  } = useGuidesActions({ api, groups: data?.data ?? [] });
 
   const sortedGroups = useMemo(
     () => sortGroupsByOrder((data?.data ?? []).filter((g) => g.pageKey === PAGE_KEY)),
@@ -58,16 +46,23 @@ function GuidesPageInner() {
   const columns = useMemo(
     () =>
       getGuidesColumns({
-        onEdit: openEditForm,
+        onView: (row) => router.push(`/guides/${row.id}`),
+        onEdit: (row) => router.push(`/guides/${row.id}/edit`),
         onDelete: (row) => setConfirmAction({ kind: "delete", row }),
       }),
-    [openEditForm],
+    [router],
   );
 
   const handleConfirmAction = async () => {
     if (!confirmAction) return;
     if (confirmAction.kind === "delete" && confirmAction.row) {
-      await deleteMutation.mutateAsync({ api, id: confirmAction.row.id });
+      setIsDeleting(true);
+      try {
+        await api.guides.remove(confirmAction.row.id);
+        await refetch();
+      } finally {
+        setIsDeleting(false);
+      }
     }
     setConfirmAction(null);
   };
@@ -85,7 +80,7 @@ function GuidesPageInner() {
           </p>
         </div>
         <div className="flex shrink-0 items-center gap-2">
-          <Button onClick={openCreateForm} className="gap-2">
+          <Button onClick={() => router.push("/guides/new")} className="gap-2">
             <Plus className="size-4" />
             Thêm nhóm
           </Button>
@@ -109,18 +104,9 @@ function GuidesPageInner() {
         isFetching={isFetching}
       />
 
-      <GroupFormDialog
-        key={editTarget?.id ?? "new"}
-        open={formOpen}
-        initial={editTarget}
-        onClose={closeForm}
-        onSave={handleSave}
-        isSaving={isSaving}
-      />
-
       <GuidesConfirmDialog
         confirmAction={confirmAction}
-        deleteMutation={deleteMutation}
+        deleteMutation={{ isPending: isDeleting }}
         onOpenChange={(open) => !open && setConfirmAction(null)}
         onConfirm={() => {
           void handleConfirmAction();

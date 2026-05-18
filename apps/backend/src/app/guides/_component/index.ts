@@ -32,6 +32,8 @@ export {
 
 // Hooks
 export { useGuidesActions } from "./_hooks";
+export { useGuideForm, buildGuidePayload, guideFormSchema } from "./_hooks";
+export type { GuideFormValues } from "./_hooks";
 
 // Query hooks
 export {
@@ -44,7 +46,7 @@ export {
 } from "./_query";
 
 // Form components
-export { GroupFormDialog, StepEditor, ImageUploadField } from "./_form";
+export { GuideFormShell, StepEditor, ImageUploadField } from "./_form";
 
 // Alert dialog components
 export { GuidesConfirmDialog } from "./_alert-dialog";

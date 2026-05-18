@@ -1,18 +1,20 @@
-"use client";
+"use client"
 
-import type { ColumnDef } from "@tanstack/react-table";
-import { Button } from "@ui/components/button";
-import { Badge } from "@ui/components/badge";
-import { Eye, Pencil, Trash2, EyeOff } from "lucide-react";
-import type { GuideGroup } from "./types";
-import { parseContent } from "./utils";
+import type { ColumnDef } from "@tanstack/react-table"
+import { Button } from "@ui/components/button"
+import { Badge } from "@ui/components/badge"
+import { Eye, Pencil, Trash2, EyeOff } from "lucide-react"
+import type { GuideGroup } from "./types"
+import { parseContent } from "./utils"
 
 export interface GuideColumnsProps {
-  onEdit: (row: GuideGroup) => void;
-  onDelete: (row: GuideGroup) => void;
+  onView: (row: GuideGroup) => void
+  onEdit: (row: GuideGroup) => void
+  onDelete: (row: GuideGroup) => void
 }
 
 export function getGuidesColumns({
+  onView,
   onEdit,
   onDelete,
 }: GuideColumnsProps): ColumnDef<GuideGroup>[] {
@@ -62,7 +64,7 @@ export function getGuidesColumns({
       header: "Hiển thị",
       enableColumnFilter: false,
       cell: ({ getValue }) => {
-        const visible = getValue();
+        const visible = getValue()
         return (
           <Badge variant={visible ? "default" : "secondary"} className="gap-1">
             {visible ? (
@@ -77,7 +79,7 @@ export function getGuidesColumns({
               </>
             )}
           </Badge>
-        );
+        )
       },
     },
     {
@@ -87,12 +89,19 @@ export function getGuidesColumns({
       enableSorting: false,
       meta: { disableColumnFilter: true },
       cell: ({ row }) => {
-        const data = row.original;
-        if (!data) return null;
+        const data = row.original
+        if (!data) return null
         return (
           <div className="flex flex-wrap gap-1">
             <Button
               variant="default"
+              onClick={() => onView(data)}
+              aria-label="Xem"
+            >
+              <Eye className="size-4" aria-hidden /> xem
+            </Button>
+            <Button
+              variant="outline"
               onClick={() => onEdit(data)}
               aria-label="Sửa"
             >
@@ -106,8 +115,8 @@ export function getGuidesColumns({
               <Trash2 className="size-4" aria-hidden /> xóa
             </Button>
           </div>
-        );
+        )
       },
     },
-  ];
+  ]
 }
