@@ -3,18 +3,20 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@ui/components/badge";
 import { Button } from "@ui/components/button";
-import { Pencil, Trash2, ArchiveRestore } from "lucide-react";
+import { Eye, Pencil, Trash2, ArchiveRestore } from "lucide-react";
 import type { PostListRow, TaxonomyOption, CategoryTreeOption } from "./types";
 import { SummaryBadges } from "./summary-badges";
 
 export function getPostColumns({
   navigateToEdit,
+  navigateToView,
   setConfirmAction,
   categoryTreeOptions,
   tagsOptions,
   formatDateTime,
 }: {
   navigateToEdit: (id: string) => void;
+  navigateToView: (id: string) => void;
   setConfirmAction: (action: { kind: "delete" | "restore" | "purge"; row: PostListRow }) => void;
   categoryTreeOptions: CategoryTreeOption[];
   tagsOptions: TaxonomyOption[];
@@ -106,6 +108,16 @@ export function getPostColumns({
       enableColumnFilter: false,
       cell: ({ row }) => (
         <div className="flex flex-wrap gap-1">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="h-8 gap-1 rounded-lg"
+            onClick={() => navigateToView(row.original.id)}
+          >
+            <Eye className="size-3.5" />
+            Xem
+          </Button>
           <Button
             type="button"
             variant="outline"

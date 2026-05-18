@@ -39,6 +39,7 @@ import { useTheme } from "@ui/components/theme-provider";
 import { canAccessStaffAdmin } from "@workspace/api-client";
 import { useAuth, useClientReady } from "@/providers/auth-provider";
 import { AdminNotificationBell } from "@/components/admin-notification-bell";
+import { ScrollToTop } from "@/components/scroll-to-top";
 import {
   ADMIN_SESSION_EVENT,
   clearAdminSession,
@@ -184,6 +185,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
   const rolesDisplay = roleSummary(user);
 
   return (
+    <>
     <div className="flex min-h-screen w-full flex-col bg-background font-sans text-foreground md:flex-row">
         <Sheet open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
           <SheetContent
@@ -368,5 +370,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
           </main>
         </div>
       </div>
+      <ScrollToTop />
+    </>
   );
 }

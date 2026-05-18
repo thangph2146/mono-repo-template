@@ -276,7 +276,7 @@ export function PostFormShell({
                           <img
                             src={watchedImage.trim()}
                             alt={watchedTitle.trim() || "Ảnh đại diện bài viết"}
-                            className="max-h-64 w-full rounded-lg border border-border/60 object-contain bg-background"
+                            className="max-h-100 w-full rounded-lg border border-border/60 object-contain bg-background"
                           />
                         </div>
                       </div>
@@ -369,58 +369,60 @@ export function PostFormShell({
                   Gắn danh mục và thẻ để bài viết dễ tìm hơn trong quản trị và ngoài công khai.
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <Controller
-                  name="categoryIds"
-                  control={control}
-                  render={({ field }) => (
-                    <FormFieldCol label={<div className="flex items-center justify-between gap-2">
-                      <Label>Danh mục dùng chung</Label>
-                      <Badge variant="outline">{field.value.length} mục</Badge>
-                    </div>}>
-                      <div className="rounded-lg border border-outline-variant p-3">
-                        <p className="mb-3 text-xs text-muted-foreground">
-                          Danh mục được hiển thị theo tree cha-con để dễ nhìn đúng cấu trúc nội dung.
-                        </p>
-                        <TreeMultiSelectInline
-                          value={field.value}
-                          onChange={(v) => field.onChange((v as string[]) ?? [])}
-                          options={categoryTreeOptions.map((c) => ({
-                            value: c.id,
-                            label: c.name,
-                            children: c.subRows?.map((s) => ({
-                              value: s.id,
-                              label: s.name,
-                              children: s.subRows?.map((ss) => ({ value: ss.id, label: ss.name })),
-                            })),
-                          }))}
-                        />
-                      </div>
-                    </FormFieldCol>
-                  )}
-                />
+              <CardContent>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <Controller
+                    name="categoryIds"
+                    control={control}
+                    render={({ field }) => (
+                      <FormFieldCol label={<div className="flex items-center justify-between gap-2">
+                        <Label>Danh mục dùng chung</Label>
+                        <Badge variant="outline">{field.value.length} mục</Badge>
+                      </div>}>
+                        <div className="rounded-lg border border-outline-variant p-3">
+                          <p className="mb-3 text-xs text-muted-foreground">
+                            Danh mục được hiển thị theo tree cha-con để dễ nhìn đúng cấu trúc nội dung.
+                          </p>
+                          <TreeMultiSelectInline
+                            value={field.value}
+                            onChange={(v) => field.onChange((v as string[]) ?? [])}
+                            options={categoryTreeOptions.map((c) => ({
+                              value: c.id,
+                              label: c.name,
+                              children: c.subRows?.map((s) => ({
+                                value: s.id,
+                                label: s.name,
+                                children: s.subRows?.map((ss) => ({ value: ss.id, label: ss.name })),
+                              })),
+                            }))}
+                          />
+                        </div>
+                      </FormFieldCol>
+                    )}
+                  />
 
-                <Controller
-                  name="tagIds"
-                  control={control}
-                  render={({ field }) => (
-                    <FormFieldCol label={<div className="flex items-center justify-between gap-2">
-                      <Label>Thẻ</Label>
-                      <Badge variant="outline">{field.value.length} thẻ</Badge>
-                    </div>}>
-                      <div className="rounded-lg border border-outline-variant p-3">
-                        <TreeMultiSelectInline
-                          value={field.value}
-                          onChange={(v) => field.onChange((v as string[]) ?? [])}
-                          options={(tagsOptions ?? []).map((t) => ({
-                            value: t.id,
-                            label: t.name,
-                          }))}
-                        />
-                      </div>
-                    </FormFieldCol>
-                  )}
-                />
+                  <Controller
+                    name="tagIds"
+                    control={control}
+                    render={({ field }) => (
+                      <FormFieldCol label={<div className="flex items-center justify-between gap-2">
+                        <Label>Thẻ</Label>
+                        <Badge variant="outline">{field.value.length} thẻ</Badge>
+                      </div>}>
+                        <div className="rounded-lg border border-outline-variant p-3">
+                          <TreeMultiSelectInline
+                            value={field.value}
+                            onChange={(v) => field.onChange((v as string[]) ?? [])}
+                            options={(tagsOptions ?? []).map((t) => ({
+                              value: t.id,
+                              label: t.name,
+                            }))}
+                          />
+                        </div>
+                      </FormFieldCol>
+                    )}
+                  />
+                </div>
               </CardContent>
             </Card>
           </TabsContent>

@@ -141,8 +141,13 @@ function PostsPageInner() {
   const clearTrashFilters = useClearTrashFilters(setTrashGlobalFilter, setTrashColumnFilters);
   const handleTrashColumnFiltersChange = useColumnFiltersChange(setTrashColumnFilters);
 
-  const navigateToEdit = useCallback(
+  const navigateToView = useCallback(
     (id: string) => router.push(`/posts/${id}`),
+    [router],
+  );
+
+  const navigateToEdit = useCallback(
+    (id: string) => router.push(`/posts/${id}/edit`),
     [router],
   );
 
@@ -157,12 +162,13 @@ function PostsPageInner() {
     () =>
       getPostColumns({
         navigateToEdit,
+        navigateToView,
         setConfirmAction,
         categoryTreeOptions,
         tagsOptions: tagsQuery.data ?? [],
         formatDateTime,
       }),
-    [navigateToEdit, tagsQuery.data, categoryTreeOptions],
+    [navigateToEdit, navigateToView, tagsQuery.data, categoryTreeOptions],
   );
 
   const trashColumns = useMemo<ColumnDef<PostListRow>[]>(
