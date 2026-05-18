@@ -39,7 +39,7 @@ function TreeMultiSelectInlineItem({
   const hasChildren = (subOptions?.length ?? 0) > 0;
 
   return (
-    <Collapsible defaultOpen className="space-y-2">
+    <Collapsible className="group space-y-2">
       <div
         className={cn(
           "flex items-center gap-2 bg-background px-2 py-1.5 text-sm",
@@ -52,7 +52,7 @@ function TreeMultiSelectInlineItem({
             className="flex size-5 shrink-0 items-center justify-center text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
             aria-label={`Ẩn/hiện danh mục con của ${label}`}
           >
-            <ChevronDown className="size-4" />
+            <ChevronDown className="size-4 transition-transform duration-200 group-data-closed:-rotate-90" />
           </CollapsibleTrigger>
         ) : (
           <div className="size-5 shrink-0" />

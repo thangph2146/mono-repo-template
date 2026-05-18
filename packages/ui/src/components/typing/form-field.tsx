@@ -5,7 +5,7 @@ import { Label } from "../label";
 import { cn } from "../../lib/utils";
 
 export interface FormFieldColProps {
-  label: string;
+  label: string | ReactNode;
   children: ReactNode;
   description?: string;
   required?: boolean;
@@ -40,7 +40,7 @@ export function FormFieldCol({
 }
 
 export interface FormFieldRowProps {
-  label: string;
+  label: string | ReactNode;
   children: ReactNode;
   description?: string;
   required?: boolean;
