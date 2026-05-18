@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { toast } from "sonner";
 import {
@@ -25,11 +25,10 @@ import { AdminPageGuard } from "@/components/admin-page-guard";
 import { api } from "@/lib/api";
 import { LexicalEditor } from "@thangph2146/lexical-editor";
 import {
-  unwrapEnvelope,
   normalizeContentForEditor,
   formatDateTime,
 } from "../_component";
-import type { PostDetail } from "../_component";
+import { usePostDetailQuery } from "../_component/_query";
 import { TypographyH1 } from "@ui/components/typography";
 import {
   ADMIN_PAGE_TITLE_PRIMARY_CLASS,
@@ -39,32 +38,17 @@ function PostDetailInner() {
   const router = useRouter();
   const params = useParams();
   const postId = params.id as string;
-  const [loading, setLoading] = useState(true);
-  const [post, setPost] = useState<PostDetail | null>(null);
+
+  const { data: post, isLoading, error } = usePostDetailQuery(api, postId);
 
   useEffect(() => {
-    let cancelled = false;
-    async function loadPost() {
-      try {
-        setLoading(true);
-        const detail = unwrapEnvelope<PostDetail>(
-          await api.http.get(`/admin/posts/${postId}`),
-        );
-        if (!cancelled) setPost(detail);
-      } catch {
-        if (!cancelled) {
-          toast.error("Không tải được bài viết");
-          router.push("/posts");
-        }
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
+    if (error) {
+      toast.error("Không tải được bài viết");
+      router.push("/posts");
     }
-    void loadPost();
-    return () => { cancelled = true; };
-  }, [postId, router]);
+  }, [error, router]);
 
-  if (loading) {
+  if (isLoading) {
     return (
       <PageSection max="full" className="min-w-0 flex items-center justify-center py-24">
         <Loader2 className="size-8 animate-spin text-muted-foreground" />

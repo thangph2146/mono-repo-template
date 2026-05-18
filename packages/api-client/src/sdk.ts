@@ -1,6 +1,8 @@
 import { ApiClient, type ApiClientOptions } from './client';
 import { CategoriesApi } from './resources/categories';
+import { PostsApi } from './resources/posts';
 import { RbacApi } from './resources/rbac';
+import { TagsApi } from './resources/tags';
 import { UsersApi } from './resources/users';
 import type { HealthStatus } from './types';
 
@@ -11,7 +13,7 @@ import type { HealthStatus } from './types';
 export const DEFAULT_API_URL = 'http://localhost:3002/api';
 
 /**
- * SDK thu gon theo pham vi entity HUB: users, categories, roles/permissions.
+ * SDK thu gon theo pham vi entity HUB: users, posts, categories, tags, roles/permissions.
  *
  * The SDK is intentionally platform-agnostic: it does not read environment
  * variables itself. Each consumer (web app, NestJS service, mobile, ...) is
@@ -20,13 +22,17 @@ export const DEFAULT_API_URL = 'http://localhost:3002/api';
 export class StoreSyncSdk {
   readonly http: ApiClient;
   readonly users: UsersApi;
+  readonly posts: PostsApi;
   readonly categories: CategoriesApi;
+  readonly tags: TagsApi;
   readonly rbac: RbacApi;
 
   constructor(options: ApiClientOptions) {
     this.http = new ApiClient(options);
     this.users = new UsersApi(this.http);
+    this.posts = new PostsApi(this.http);
     this.categories = new CategoriesApi(this.http);
+    this.tags = new TagsApi(this.http);
     this.rbac = new RbacApi(this.http);
   }
 

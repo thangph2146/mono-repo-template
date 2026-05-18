@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -12,12 +12,11 @@ import {
   PostFormShell,
   usePostForm,
   buildCategoryOptionTree,
-  unwrapEnvelope,
   normalizeContentForEditor,
   toLocalInputValue,
 } from "../../_component";
-import { useCategoriesQuery, useTagsQuery } from "../../_component/_query";
-import type { PostFormValues, PostDetail } from "../../_component";
+import { usePostDetailQuery, useCategoriesQuery, useTagsQuery } from "../../_component/_query";
+import type { PostFormValues } from "../../_component";
 
 function EditPostPageInner() {
   const router = useRouter();
@@ -25,8 +24,8 @@ function EditPostPageInner() {
   const postId = params.id as string;
   const queryClient = useQueryClient();
   const form = usePostForm();
-  const [loading, setLoading] = useState(true);
 
+  const { data: post, isLoading, error, refetch } = usePostDetailQuery(api, postId);
   const categoriesQuery = useCategoriesQuery(api);
   const tagsQuery = useTagsQuery(api);
 
@@ -36,43 +35,31 @@ function EditPostPageInner() {
   );
 
   useEffect(() => {
-    let cancelled = false;
-    async function loadPost() {
-      try {
-        setLoading(true);
-        const detail = unwrapEnvelope<PostDetail>(
-          await api.http.get(`/admin/posts/${postId}`),
-        );
-        if (!cancelled) {
-          form.reset({
-            id: detail.id,
-            title: detail.title,
-            slug: detail.slug,
-            excerpt: detail.excerpt ?? "",
-            image: detail.image ?? "",
-            content: normalizeContentForEditor(detail.content),
-            published: detail.published,
-            publishedAt: toLocalInputValue(detail.publishedAt ?? ""),
-            categoryIds: detail.categories.map((item) => item.id),
-            tagIds: detail.tags.map((item) => item.id),
-          });
-        }
-      } catch {
-        if (!cancelled) {
-          toast.error("Không tải được bài viết");
-          router.push("/posts");
-        }
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
+    if (error) {
+      toast.error("Không tải được bài viết");
+      router.push("/posts");
     }
-    void loadPost();
-    return () => { cancelled = true; };
-  }, [postId, router, form]);
+  }, [error, router]);
+
+  useEffect(() => {
+    if (!post) return;
+    form.reset({
+      id: post.id,
+      title: post.title,
+      slug: post.slug,
+      excerpt: post.excerpt ?? "",
+      image: post.image ?? "",
+      content: normalizeContentForEditor(post.content),
+      published: post.published,
+      publishedAt: toLocalInputValue(post.publishedAt ?? ""),
+      categoryIds: post.categories.map((item) => item.id),
+      tagIds: post.tags.map((item) => item.id),
+    });
+  }, [post, form]);
 
   const updateMutation = useMutation({
     mutationFn: async (input: Record<string, unknown>) =>
-      api.http.put(`/admin/posts/${postId}`, input),
+      api.posts.update(postId, input),
     onSuccess: async (_data, variables) => {
       await queryClient.invalidateQueries({ queryKey: ["media", "posts"] });
       toast.success(`Đã cập nhật bài viết "${(variables.title as string)?.trim()}"`);
@@ -102,13 +89,15 @@ function EditPostPageInner() {
     [updateMutation],
   );
 
-  if (loading) {
+  if (isLoading) {
     return (
       <PageSection max="full" className="min-w-0 flex items-center justify-center py-24">
         <Loader2 className="size-8 animate-spin text-muted-foreground" />
       </PageSection>
     );
   }
+
+  if (!post) return null;
 
   return (
     <PageSection max="full" className="min-w-0 space-y-6">
@@ -121,28 +110,7 @@ function EditPostPageInner() {
         tagsOptions={tagsQuery.data ?? []}
         onBack={() => router.push(`/posts/${postId}`)}
         onReset={async () => {
-          try {
-            setLoading(true);
-            const detail = unwrapEnvelope<PostDetail>(
-              await api.http.get(`/admin/posts/${postId}`),
-            );
-            form.reset({
-              id: detail.id,
-              title: detail.title,
-              slug: detail.slug,
-              excerpt: detail.excerpt ?? "",
-              image: detail.image ?? "",
-              content: normalizeContentForEditor(detail.content),
-              published: detail.published,
-              publishedAt: toLocalInputValue(detail.publishedAt ?? ""),
-              categoryIds: detail.categories.map((item) => item.id),
-              tagIds: detail.tags.map((item) => item.id),
-            });
-          } catch {
-            toast.error("Không tải lại được bài viết");
-          } finally {
-            setLoading(false);
-          }
+          await refetch();
         }}
       />
     </PageSection>

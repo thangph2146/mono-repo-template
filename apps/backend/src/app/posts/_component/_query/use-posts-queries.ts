@@ -1,13 +1,24 @@
 import type { UseQueryResult } from "@tanstack/react-query";
 import { useQuery } from "@tanstack/react-query";
 import type { StoreSyncSdk } from "@workspace/api-client";
-import type { PostListRow, PagedResult } from "../types";
-import { normalizePaged } from "../utils";
+import type { PostDetail, PostListRow, PagedResult } from "../types";
 
-function toFilterQuery(filters: Record<string, unknown>): Record<string, unknown> {
+function toFilterQuery(filters: Record<string, unknown>): Record<string, string | number | boolean | undefined | null> {
   return Object.fromEntries(
-    Object.entries(filters).map(([key, value]) => [`filter[${key}]`, value]),
+    Object.entries(filters).map(([key, value]) => [`filter[${key}]`, value as string | number | boolean | undefined | null]),
   );
+}
+
+export function usePostDetailQuery(
+  api: StoreSyncSdk,
+  postId: string,
+): UseQueryResult<PostDetail> {
+  return useQuery({
+    queryKey: ["media", "posts", "detail", postId],
+    queryFn: async (): Promise<PostDetail> =>
+      api.posts.get<PostDetail>(postId),
+    enabled: !!postId,
+  });
 }
 
 export interface UsePostsQueriesProps {
@@ -28,17 +39,13 @@ export function usePostsQuery({
   return useQuery({
     queryKey: ["media", "posts", "list", page, pageSize, debouncedQ, postColumnFilterQuery],
     queryFn: async (): Promise<PagedResult<PostListRow>> =>
-      normalizePaged(
-        await api.http.get("/admin/posts", {
-          query: {
-            page,
-            limit: pageSize,
-            search: debouncedQ.trim() || undefined,
-            status: "active",
-            ...toFilterQuery(postColumnFilterQuery),
-          },
-        }),
-      ),
+      api.posts.list<PostListRow>({
+        page,
+        limit: pageSize,
+        search: debouncedQ.trim() || undefined,
+        status: "active",
+        ...toFilterQuery(postColumnFilterQuery),
+      }),
   });
 }
 
@@ -63,16 +70,12 @@ export function useTrashQuery({
     queryKey: ["media", "posts", "trash", trashPage, trashPageSize, debouncedTrashQ, trashColumnFilterQuery],
     enabled,
     queryFn: async (): Promise<PagedResult<PostListRow>> =>
-      normalizePaged(
-        await api.http.get("/admin/posts", {
-          query: {
-            page: trashPage,
-            limit: trashPageSize,
-            search: debouncedTrashQ.trim() || undefined,
-            status: "deleted",
-            ...toFilterQuery(trashColumnFilterQuery ?? {}),
-          },
-        }),
-      ),
+      api.posts.list<PostListRow>({
+        page: trashPage,
+        limit: trashPageSize,
+        search: debouncedTrashQ.trim() || undefined,
+        status: "deleted",
+        ...toFilterQuery(trashColumnFilterQuery ?? {}),
+      }),
   });
 }

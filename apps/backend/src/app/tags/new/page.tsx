@@ -8,61 +8,60 @@ import { PageSection } from "@ui/components/layout";
 import { AdminPageGuard } from "@/components/admin-page-guard";
 import { api } from "@/lib/api";
 import {
-  CategoryFormShell,
-  useCategoryForm,
-  buildCategoryPayload,
+  TagFormShell,
+  useTagForm,
+  buildTagPayload,
 } from "../_component";
-import type { CategoryFormValues } from "../_component";
+import type { TagFormValues } from "../_component";
 
-function NewCategoryPageInner() {
+function NewTagPageInner() {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const form = useCategoryForm().form;
+  const { form } = useTagForm();
 
   const invalidateAll = async () => {
-    await queryClient.invalidateQueries({ queryKey: ["categories"] });
+    await queryClient.invalidateQueries({ queryKey: ["media", "tags"] });
   };
 
   const createMutation = useMutation({
     mutationFn: async (input: Record<string, unknown>) =>
-      api.categories.create(input as Parameters<typeof api.categories.create>[0]),
+      api.tags.create(input),
     onSuccess: async (_data, variables) => {
       await invalidateAll();
-      toast.success(`Đã tạo danh mục "${(variables.name as string)?.trim()}"`);
-      router.push("/categories");
+      toast.success(`Đã tạo thẻ "${(variables.name as string)?.trim()}"`);
+      router.push("/tags");
     },
     onError: (err: unknown) => {
-      const message = err instanceof Error ? err.message : "Không thể tạo danh mục";
+      const message = err instanceof Error ? err.message : "Không thể tạo thẻ";
       toast.error(message);
     },
   });
 
   const handleSubmit = useCallback(
-    async (values: CategoryFormValues) => {
-      await createMutation.mutateAsync(buildCategoryPayload(values));
+    async (values: TagFormValues) => {
+      await createMutation.mutateAsync(buildTagPayload(values));
     },
     [createMutation],
   );
 
   return (
     <PageSection max="full" className="min-w-0 space-y-6">
-      <CategoryFormShell
+      <TagFormShell
         form={form}
         onSubmit={handleSubmit}
         submitting={createMutation.isPending}
         editingId={null}
-        categoryTreeOptions={[]}
-        onBack={() => router.push("/categories")}
+        onBack={() => router.push("/tags")}
         onReset={() => { form.reset(); }}
       />
     </PageSection>
   );
 }
 
-export default function NewCategoryPage() {
+export default function NewTagPage() {
   return (
     <AdminPageGuard roles={["super_admin", "admin", "manager"]}>
-      <NewCategoryPageInner />
+      <NewTagPageInner />
     </AdminPageGuard>
   );
 }

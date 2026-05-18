@@ -1,22 +1,20 @@
 "use client";
 
-import type { ColumnDef } from "@tanstack/react-table";
+import type { ColumnDef, Row } from "@tanstack/react-table";
 import { Badge } from "@ui/components/badge";
 import { Button } from "@ui/components/button";
-import { Pencil, Trash2, ArchiveRestore } from "lucide-react";
-import type { TagRow, TagTreeRow } from "./types";
+import { Pencil, Trash2, ArchiveRestore, Eye } from "lucide-react";
+import type { TagRow, TagTreeRow, TagConfirmAction } from "./types";
 import { formatDateTime } from "./utils";
 
 export function getTagColumns({
+  openDetail,
   openEdit,
-  setDeleteTarget,
-  canWrite,
-  canDelete,
+  setConfirmAction,
 }: {
+  openDetail: (row: TagRow) => void;
   openEdit: (row: TagRow) => void;
-  setDeleteTarget: (row: TagRow) => void;
-  canWrite: boolean;
-  canDelete: boolean;
+  setConfirmAction: (action: TagConfirmAction) => void;
 }): ColumnDef<TagTreeRow>[] {
   return [
     {
@@ -33,7 +31,13 @@ export function getTagColumns({
             </Badge>
           </div>
         ) : (
-          <span className="font-medium">{String(getValue())}</span>
+          <button
+            type="button"
+            className="font-medium text-left text-foreground hover:text-primary transition-colors"
+            onClick={() => openDetail(row.original)}
+          >
+            {String(getValue())}
+          </button>
         ),
     },
     {
@@ -54,6 +58,16 @@ export function getTagColumns({
       header: "Cập nhật / quy mô",
       enableColumnFilter: true,
       meta: { filterVariant: "date-range", filterPlaceholder: "Chọn khoảng ngày" },
+      filterFn: (row: Row<TagTreeRow>, columnId: string, filterValue: unknown) => {
+        if (filterValue == null || filterValue === "") return true;
+        if (row.original.isGroup) return true;
+        const dates = String(filterValue).split(",").filter(Boolean);
+        if (!dates.length) return true;
+        const rowDate = new Date(row.getValue<string>(columnId));
+        if (Number.isNaN(rowDate.getTime())) return true;
+        if (dates.length === 1) return rowDate >= new Date(dates[0]);
+        return rowDate >= new Date(dates[0]) && rowDate <= new Date(dates[1]);
+      },
       cell: ({ row, getValue }) =>
         row.original.isGroup ? (
           <span className="text-xs text-muted-foreground">
@@ -78,8 +92,17 @@ export function getTagColumns({
               variant="outline"
               size="sm"
               className="h-8 gap-1 rounded-lg"
+              onClick={() => openDetail(row.original)}
+            >
+              <Eye className="size-3.5" />
+              Xem
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="h-8 gap-1 rounded-lg"
               onClick={() => openEdit(row.original)}
-              disabled={!canWrite}
             >
               <Pencil className="size-3.5" />
               Sửa
@@ -89,8 +112,7 @@ export function getTagColumns({
               variant="outline"
               size="sm"
               className="h-8 gap-1 rounded-lg border-destructive/40 text-destructive hover:bg-destructive/10"
-              onClick={() => setDeleteTarget(row.original)}
-              disabled={!canDelete}
+              onClick={() => setConfirmAction({ kind: "delete", row: row.original })}
             >
               <Trash2 className="size-3.5" />
               Xóa tạm
@@ -102,13 +124,9 @@ export function getTagColumns({
 }
 
 export function getTrashColumns({
-  setRestoreTarget,
-  setPurgeTarget,
-  canDelete,
+  setConfirmAction,
 }: {
-  setRestoreTarget: (row: TagRow) => void;
-  setPurgeTarget: (row: TagRow) => void;
-  canDelete: boolean;
+  setConfirmAction: (action: TagConfirmAction) => void;
 }): ColumnDef<TagRow>[] {
   return [
     {
@@ -139,8 +157,7 @@ export function getTrashColumns({
             variant="outline"
             size="sm"
             className="h-8 gap-1 rounded-lg"
-            onClick={() => setRestoreTarget(row.original)}
-            disabled={!canDelete}
+            onClick={() => setConfirmAction({ kind: "restore", row: row.original })}
           >
             <ArchiveRestore className="size-3.5" />
             Khôi phục
@@ -150,11 +167,10 @@ export function getTrashColumns({
             variant="outline"
             size="sm"
             className="h-8 gap-1 rounded-lg border-destructive/40 text-destructive hover:bg-destructive/10"
-            onClick={() => setPurgeTarget(row.original)}
-            disabled={!canDelete}
+            onClick={() => setConfirmAction({ kind: "purge", row: row.original })}
           >
             <Trash2 className="size-3.5" />
-            Xóa hẳn
+            Xóa vĩnh viễn
           </Button>
         </div>
       ),

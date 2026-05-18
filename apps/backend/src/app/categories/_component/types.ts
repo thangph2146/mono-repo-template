@@ -38,6 +38,28 @@ export interface FormState {
   parentId: string;
 }
 
+export interface ChildCategory {
+  id: string;
+  name: string;
+  slug: string;
+  _count: { children: number };
+  postCount: number;
+}
+
+export interface RelatedPost {
+  id: string;
+  title: string;
+  slug: string;
+  published: boolean;
+  publishedAt: string | null;
+  createdAt: string;
+}
+
+export interface CategoryDetail extends CategoryRow {
+  children: ChildCategory[];
+  posts: RelatedPost[];
+}
+
 export interface PagedResult<T> {
   items: T[];
   total: number;

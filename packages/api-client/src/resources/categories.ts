@@ -21,6 +21,8 @@ type ApiCategoryRow = {
   createdAt?: string;
   updatedAt?: string;
   deletedAt?: string | null;
+  children?: Array<Record<string, unknown>>;
+  posts?: Array<Record<string, unknown>>;
 };
 
 function mapCategory(row: ApiCategoryRow): Category {
@@ -39,11 +41,41 @@ function mapCategory(row: ApiCategoryRow): Category {
     createdAt: row.createdAt ?? new Date(0).toISOString(),
     updatedAt: row.updatedAt ?? new Date(0).toISOString(),
     deletedAt: row.deletedAt ?? null,
+    children: row.children as Category["children"],
+    posts: row.posts as Category["posts"],
   };
 }
 
 export class CategoriesApi {
   constructor(private readonly http: ApiClient) {}
+
+  async rawList<T = unknown>(params?: {
+    q?: string;
+    page?: number;
+    limit?: number;
+    status?: string;
+    filters?: Record<string, unknown>;
+  }): Promise<{ items: T[]; total: number }> {
+    const filterQuery: Record<string, unknown> = {};
+    if (params?.filters) {
+      for (const [key, value] of Object.entries(params.filters)) {
+        const normalized = String(value ?? "").trim();
+        if (!normalized) continue;
+        filterQuery[`filter[${key}]`] = normalized;
+      }
+    }
+    const payload = await this.http.get<unknown>("/admin/categories", {
+      query: {
+        page: params?.page ?? 1,
+        limit: params?.limit ?? 20,
+        search: params?.q,
+        status: params?.status ?? "active",
+        ...filterQuery,
+      },
+    });
+    const normalized = normalizePagedResult<T>(payload);
+    return { items: normalized.items, total: normalized.total };
+  }
 
   async list(params?: {
     q?: string;
@@ -97,6 +129,10 @@ export class CategoriesApi {
     return mapCategory(row);
   }
 
+  async rawGet<T = unknown>(id: string | number): Promise<T> {
+    return getData<T>(this.http, `/admin/categories/${id}`);
+  }
+
   async bySlug(slug: string): Promise<Category> {
     const rows = await this.list({ activeOnly: true });
     const items = Array.isArray(rows) ? rows : rows.items;
@@ -141,5 +177,9 @@ export class CategoriesApi {
 
   async purgeTrashed(id: string | number): Promise<void> {
     await deleteData<unknown>(this.http, `/admin/categories/${id}/hard-delete`);
+  }
+
+  async bulk(body: { action: string; ids: string[] }): Promise<void> {
+    await postData<unknown>(this.http, "/admin/categories/bulk", body);
   }
 }

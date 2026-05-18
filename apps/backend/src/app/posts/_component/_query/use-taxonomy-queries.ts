@@ -2,7 +2,6 @@ import type { UseQueryResult } from "@tanstack/react-query";
 import { useQuery } from "@tanstack/react-query";
 import type { StoreSyncSdk } from "@workspace/api-client";
 import type { CategoryTreeOption, TaxonomyOption } from "../types";
-import { normalizePaged } from "../utils";
 
 export function useCategoriesQuery(
   api: StoreSyncSdk
@@ -10,11 +9,11 @@ export function useCategoriesQuery(
   return useQuery({
     queryKey: ["categories", "options"],
     queryFn: async (): Promise<CategoryTreeOption[]> => {
-      const paged = normalizePaged<CategoryTreeOption>(
-        await api.http.get("/admin/categories", {
-          query: { page: 1, limit: 200, status: "active" },
-        }),
-      );
+      const paged = await api.categories.rawList<CategoryTreeOption>({
+        page: 1,
+        limit: 200,
+        status: "active",
+      });
       return paged.items.map((item) => ({
         id: String(item.id),
         name: item.name,
@@ -29,11 +28,11 @@ export function useTagsQuery(api: StoreSyncSdk): UseQueryResult<TaxonomyOption[]
   return useQuery({
     queryKey: ["tags", "options"],
     queryFn: async (): Promise<TaxonomyOption[]> => {
-      const paged = normalizePaged<TaxonomyOption>(
-        await api.http.get("/admin/tags", {
-          query: { page: 1, limit: 200, status: "active" },
-        }),
-      );
+      const paged = await api.tags.list<TaxonomyOption>({
+        page: 1,
+        limit: 200,
+        status: "active",
+      });
       return paged.items;
     },
   });

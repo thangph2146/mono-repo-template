@@ -1,5 +1,5 @@
-export type { TagRow, TagTreeRow, TagFormValues, PagedResult } from "./types";
-export { EMPTY_TAG_FORM } from "./types";
+export type { TagRow, TagTreeRow, TagFormValues, TagConfirmAction, TagDetail, PagedResult } from "./types";
+export { tagFormSchema } from "./types";
 export {
   slugify,
   unwrapEnvelope,
@@ -10,20 +10,22 @@ export {
   buildTagTree,
   buildTagsFilterQuery,
   toFilterQuery,
-  fetchAllActiveTags,
 } from "./utils";
 export { getTagColumns, getTrashColumns } from "./columns";
 export {
+  useTagDetailQuery,
   useTagsListQuery,
   useTrashQuery,
-  useCreateMutation,
-  useUpdateMutation,
-  useDeleteMutation,
-  useRestoreMutation,
-  usePurgeMutation,
-  useBulkMutation,
 } from "./_query";
-export { useHandleDelete, useHandleRestore, useHandlePurge } from "./_hooks";
-export { TagFormDialog } from "./_form";
+export {
+  useColumnFiltersChange,
+  useClearListFilters,
+  useClearTrashFilters,
+  buildTagPayload,
+  useTagForm,
+  useHandleConfirmAction,
+  useConfirmAction,
+} from "./_hooks";
+export { TagFormShell } from "./_form";
 export { TagsConfirmDialog } from "./_alert-dialog";
-export { TagsTrashTable } from "./_table";
+export { TagsTable, TagsTrashTable } from "./_table";

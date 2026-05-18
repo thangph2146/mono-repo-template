@@ -132,22 +132,21 @@ function CategoriesPageInner() {
   );
 
   const deleteMutation = useMutation({
-    mutationFn: async (id: string) => api.http.delete(`/admin/categories/${id}`),
+    mutationFn: async (id: string) => api.categories.remove(id),
     onSuccess: async () => {
       await invalidateAll();
     },
   });
 
   const restoreMutation = useMutation({
-    mutationFn: async (id: string) => api.http.post(`/admin/categories/${id}/restore`),
+    mutationFn: async (id: string) => api.categories.restore(id),
     onSuccess: async () => {
       await invalidateAll();
     },
   });
 
   const purgeMutation = useMutation({
-    mutationFn: async (id: string) =>
-      api.http.delete(`/admin/categories/${id}/hard-delete`),
+    mutationFn: async (id: string) => api.categories.purgeTrashed(id),
     onSuccess: async () => {
       await invalidateAll();
     },
@@ -157,7 +156,7 @@ function CategoriesPageInner() {
     mutationFn: async (input: {
       action: "delete" | "restore" | "hard-delete";
       ids: string[];
-    }) => api.http.post("/admin/categories/bulk", input),
+    }) => api.categories.bulk(input),
     onSuccess: async () => {
       await invalidateAll();
     },

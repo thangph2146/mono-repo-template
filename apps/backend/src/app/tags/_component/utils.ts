@@ -136,9 +136,9 @@ export function buildTagsFilterQuery(
 
 export function toFilterQuery(
   filters: Record<string, unknown>,
-): Record<string, unknown> {
+): Record<string, string | number | boolean | undefined | null> {
   return Object.fromEntries(
-    Object.entries(filters).map(([key, value]) => [`filter[${key}]`, value]),
+    Object.entries(filters).map(([key, value]) => [`filter[${key}]`, value as string | number | boolean | undefined | null]),
   );
 }
 
@@ -148,11 +148,7 @@ async function _fetchPage(
   status: string,
 ): Promise<{ items: TagRow[]; total: number }> {
   const { api } = await import("@/lib/api");
-  return normalizePaged(
-    await api.http.get("/admin/tags", {
-      query: { page, limit, status },
-    }),
-  );
+  return api.tags.list<TagRow>({ page, limit, status });
 }
 
 export async function fetchAllActiveTags(): Promise<TagRow[]> {

@@ -30,7 +30,7 @@ function NewPostPageInner() {
 
   const createMutation = useMutation({
     mutationFn: async (input: Record<string, unknown>) =>
-      api.http.post("/admin/posts", input),
+      api.posts.create(input),
     onSuccess: async (_data, variables) => {
       await queryClient.invalidateQueries({ queryKey: ["media", "posts"] });
       toast.success(`Đã tạo bài viết "${(variables.title as string)?.trim()}"`);

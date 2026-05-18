@@ -1,1 +1,1 @@
-export { TagFormDialog } from "./tag-form-dialog";
+export { TagFormShell } from "./tag-form-shell";

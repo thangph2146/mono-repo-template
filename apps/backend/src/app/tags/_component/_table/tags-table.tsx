@@ -3,13 +3,12 @@
 import type { ColumnDef, ColumnFiltersState, OnChangeFn, RowSelectionState } from "@tanstack/react-table";
 import { Button } from "@ui/components/button";
 import { AdminDataTable } from "@/components/admin-data-table";
-import { AdminTablePaginationFooter } from "@/components/admin-table-pagination-footer";
-import { FilterX, RefreshCw } from "lucide-react";
-import type { TagRow } from "../types";
+import { RefreshCw, FilterX } from "lucide-react";
+import type { TagTreeRow } from "../types";
 
-export interface TagsTrashTableProps {
-  data: TagRow[];
-  columns: ColumnDef<TagRow>[];
+export interface TagsTableProps {
+  data: TagTreeRow[];
+  columns: ColumnDef<TagTreeRow>[];
   isLoading: boolean;
   columnFilters: ColumnFiltersState;
   onColumnFiltersChange: OnChangeFn<ColumnFiltersState>;
@@ -17,19 +16,14 @@ export interface TagsTrashTableProps {
   onGlobalFilterChange: OnChangeFn<string>;
   selectedRowIds: RowSelectionState;
   onSelectedRowIdsChange: OnChangeFn<RowSelectionState>;
-  page: number;
-  pageSize: number;
   total: number;
-  onPageChange: (page: number) => void;
-  onPageSizeChange: (size: number) => void;
   onRefresh: () => void;
   onClearFilters: () => void;
-  onBulkRestore: (rows: TagRow[]) => Promise<void>;
-  onBulkPurge: (rows: TagRow[]) => Promise<void>;
+  onBulkDelete: (rows: TagTreeRow[]) => Promise<void>;
   isFetching?: boolean;
 }
 
-export function TagsTrashTable({
+export function TagsTable({
   data,
   columns,
   isLoading,
@@ -39,30 +33,27 @@ export function TagsTrashTable({
   onGlobalFilterChange,
   selectedRowIds,
   onSelectedRowIdsChange,
-  page,
-  pageSize,
   total,
-  onPageChange,
-  onPageSizeChange,
   onRefresh,
   onClearFilters,
-  onBulkRestore,
-  onBulkPurge,
+  onBulkDelete,
   isFetching,
-}: TagsTrashTableProps) {
+}: TagsTableProps) {
   return (
-    <AdminDataTable<TagRow>
+    <AdminDataTable<TagTreeRow>
       data={data}
-      getRowId={(row) => row.id}
+      getRowId={(row) => String(row.id)}
+      getSubRows={(row) => row.subRows}
+      defaultExpandedAll
+      filterFromLeafRows
       columns={columns}
       isLoading={isLoading}
-      emptyLabel="Thùng rác trống."
-      manualFiltering
+      emptyLabel='Chưa có thẻ — bấm "Thêm thẻ".'
       columnFilters={columnFilters}
       onColumnFiltersChange={onColumnFiltersChange}
       globalFilter={globalFilter}
       onGlobalFilterChange={onGlobalFilterChange}
-      globalFilterPlaceholder="Tìm trong thùng rác..."
+      globalFilterPlaceholder="Tìm theo tên nhóm, tên thẻ hoặc slug..."
       filterToolbarExtra={
         <div className="flex flex-wrap items-center gap-2">
           <Button
@@ -87,48 +78,33 @@ export function TagsTrashTable({
           </Button>
         </div>
       }
-      csvExport={{ fileName: "the-thung-rac.csv" }}
+      csvExport={{ fileName: "the-dang-hoat-dong.csv" }}
       rowSelectionEnabled
       selectedRowIds={selectedRowIds}
       onSelectedRowIdsChange={onSelectedRowIdsChange}
+      canSelectRow={(row) => !row.original.isGroup}
       bulkActions={[
         {
-          id: "bulk-tag-restore",
-          label: "Khôi phục đã chọn",
-          confirm: {
-            title: "Khôi phục các thẻ đã chọn?",
-            description: (rows) =>
-              `Bạn đã chọn ${rows.length} thẻ. Các thẻ sẽ được đưa trở lại danh sách đang hoạt động.`,
-            confirmLabel: "Khôi phục",
-          },
-          onAction: onBulkRestore,
-        },
-        {
-          id: "bulk-tag-purge",
-          label: "Xóa vĩnh viễn đã chọn",
+          id: "bulk-tag-delete",
+          label: "Xóa tạm đã chọn",
           variant: "outline",
           className: "border-destructive/40 text-destructive",
           confirm: {
-            title: "Xóa vĩnh viễn các thẻ đã chọn?",
+            title: "Đưa các thẻ đã chọn vào thùng rác?",
             description: (rows) =>
-              `Bạn đã chọn ${rows.length} thẻ. Hành động này không thể hoàn tác.`,
-            confirmLabel: "Xóa vĩnh viễn",
+              `Bạn đã chọn ${rows.length} thẻ. Các thẻ sẽ được chuyển vào thùng rác và có thể khôi phục sau.`,
+            confirmLabel: "Xóa tạm",
             destructive: true,
           },
-          onAction: onBulkPurge,
+          onAction: onBulkDelete,
         },
       ]}
       footer={
-        <AdminTablePaginationFooter
-          page={page}
-          pageSize={pageSize}
-          total={total}
-          isLoading={isLoading}
-          onPageChange={onPageChange}
-          onPageSizeChange={onPageSizeChange}
-          emptySummary="Không có thẻ trong thùng rác"
-          itemLabel="thẻ"
-        />
+        <div className="flex items-center justify-between">
+          <p className="text-sm text-muted-foreground">
+            {isLoading ? "Đang tải..." : `Tổng ${total} thẻ`}
+          </p>
+        </div>
       }
     />
   );

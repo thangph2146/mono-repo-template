@@ -105,6 +105,8 @@ export type AdminDataTableProps<TData> = {
   globalFilterPlaceholder?: string;
   /** Bật khi lọc do API/server — chỉ giữ state ô lọc, không lọc lại `data` trên client */
   manualFiltering?: boolean;
+  /** true: lọc từ lá lên (giữ cha khi còn lá con khớp) — dùng cho cây */
+  filterFromLeafRows?: boolean;
   columnFilters?: ColumnFiltersState;
   onColumnFiltersChange?: OnChangeFn<ColumnFiltersState>;
   globalFilter?: string;
@@ -153,6 +155,7 @@ export function AdminDataTable<TData>({
   getGlobalFilterText,
   globalFilterPlaceholder = "Tìm trong bảng…",
   manualFiltering = false,
+  filterFromLeafRows: filterFromLeafRowsProp = false,
   columnFilters: columnFiltersControlled,
   onColumnFiltersChange,
   globalFilter: globalFilterControlled,
@@ -335,9 +338,7 @@ export function AdminDataTable<TData>({
     getFilteredRowModel: getFilteredRowModel(),
     getExpandedRowModel: getExpandedRowModel(),
     manualFiltering,
-    // false: lọc từ dòng cha xuống (đúng cho cây SP→đơn vị). true + filterFn “luôn pass” ở lá
-    // khiến cha luôn được giữ vì còn lá con → lọc cột như không chạy.
-    filterFromLeafRows: false,
+    filterFromLeafRows: filterFromLeafRowsProp,
     globalFilterFn: manualFiltering
       ? "includesString"
       : getGlobalFilterText

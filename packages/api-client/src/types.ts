@@ -151,6 +151,23 @@ export interface ProductPagedResponse {
 export type CreateProductInput = Omit<Product, keyof AuditFields>;
 export type UpdateProductInput = Partial<CreateProductInput>;
 
+export interface ChildCategory {
+  id: string;
+  name: string;
+  slug: string;
+  _count: { children: number };
+  postCount: number;
+}
+
+export interface RelatedPost {
+  id: string;
+  title: string;
+  slug: string;
+  published: boolean;
+  publishedAt: string | null;
+  createdAt: string;
+}
+
 export interface Category extends Omit<AuditFields, 'id'> {
   id: string;
   name: string;
@@ -164,6 +181,8 @@ export interface Category extends Omit<AuditFields, 'id'> {
   _count?: { children: number };
   postCount?: number;
   deletedAt?: Iso8601 | null;
+  children?: ChildCategory[];
+  posts?: RelatedPost[];
 }
 
 export type CreateCategoryInput = {

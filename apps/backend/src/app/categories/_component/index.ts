@@ -26,3 +26,5 @@ export {
   useCategoriesOptionsQuery,
 } from "./_query";
 export { CategoryFormShell } from "./_form";
+export type { CategoryDetail, ChildCategory, RelatedPost } from "./types";
+export { useCategoryDetailQuery } from "./_query";

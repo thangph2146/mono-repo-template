@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -12,12 +12,11 @@ import {
   CategoryFormShell,
   useCategoryForm,
   useCategoriesOptionsQuery,
+  useCategoryDetailQuery,
   buildCategoryOptionTree,
   buildCategoryPayload,
-  unwrapEnvelope,
 } from "../../_component";
 import type { CategoryFormValues } from "../../_component";
-import type { CategoryRow } from "../../_component/types";
 
 function EditCategoryPageInner() {
   const router = useRouter();
@@ -25,8 +24,8 @@ function EditCategoryPageInner() {
   const categoryId = params.id as string;
   const queryClient = useQueryClient();
   const { form } = useCategoryForm();
-  const [loading, setLoading] = useState(true);
 
+  const { data: category, isLoading, isError, refetch } = useCategoryDetailQuery(api, categoryId);
   const categoriesOptionsQuery = useCategoriesOptionsQuery(api);
 
   const categoryTreeOptions = useMemo(
@@ -35,35 +34,23 @@ function EditCategoryPageInner() {
   );
 
   useEffect(() => {
-    let cancelled = false;
-    async function loadCategory() {
-      try {
-        setLoading(true);
-        const detail = unwrapEnvelope<CategoryRow>(
-          await api.http.get(`/admin/categories/${categoryId}`),
-        );
-        if (!cancelled) {
-          form.reset({
-            name: detail.name ?? "",
-            slug: detail.slug ?? "",
-            description: detail.description ?? "",
-            icon: detail.icon ?? "Package2",
-            sortOrder: detail.sortOrder ?? 0,
-            parentId: detail.parentId ?? "__root__",
-          });
-        }
-      } catch {
-        if (!cancelled) {
-          toast.error("Không tải được danh mục");
-          router.push("/categories");
-        }
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
+    if (isError) {
+      toast.error("Không tải được danh mục");
+      router.push("/categories");
     }
-    void loadCategory();
-    return () => { cancelled = true; };
-  }, [categoryId, router, form]);
+  }, [isError, router]);
+
+  useEffect(() => {
+    if (!category) return;
+    form.reset({
+      name: category.name ?? "",
+      slug: category.slug ?? "",
+      description: category.description ?? "",
+      icon: category.icon ?? "Package2",
+      sortOrder: category.sortOrder ?? 0,
+      parentId: category.parentId ?? "__root__",
+    });
+  }, [category, form]);
 
   const invalidateAll = async () => {
     await queryClient.invalidateQueries({ queryKey: ["categories"] });
@@ -71,7 +58,7 @@ function EditCategoryPageInner() {
 
   const updateMutation = useMutation({
     mutationFn: async (input: Record<string, unknown>) =>
-      api.http.put(`/admin/categories/${categoryId}`, input),
+      api.categories.update(categoryId, input as Parameters<typeof api.categories.update>[1]),
     onSuccess: async (_data, variables) => {
       await invalidateAll();
       toast.success(`Đã cập nhật danh mục "${(variables.name as string)?.trim()}"`);
@@ -90,13 +77,15 @@ function EditCategoryPageInner() {
     [updateMutation],
   );
 
-  if (loading) {
+  if (isLoading) {
     return (
       <PageSection max="full" className="min-w-0 flex items-center justify-center py-24">
         <Loader2 className="size-8 animate-spin text-muted-foreground" />
       </PageSection>
     );
   }
+
+  if (!category) return null;
 
   return (
     <PageSection max="full" className="min-w-0 space-y-6">
@@ -108,24 +97,7 @@ function EditCategoryPageInner() {
         categoryTreeOptions={categoryTreeOptions}
         onBack={() => router.push(`/categories/${categoryId}`)}
         onReset={async () => {
-          try {
-            setLoading(true);
-            const detail = unwrapEnvelope<CategoryRow>(
-              await api.http.get(`/admin/categories/${categoryId}`),
-            );
-            form.reset({
-              name: detail.name ?? "",
-              slug: detail.slug ?? "",
-              description: detail.description ?? "",
-              icon: detail.icon ?? "Package2",
-              sortOrder: detail.sortOrder ?? 0,
-              parentId: detail.parentId ?? "__root__",
-            });
-          } catch {
-            toast.error("Không tải lại được danh mục");
-          } finally {
-            setLoading(false);
-          }
+          await refetch();
         }}
       />
     </PageSection>

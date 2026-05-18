@@ -12,6 +12,8 @@ export {
 export { ApiClient, ApiError } from './client';
 export type { ApiClientOptions, RequestOptions } from './client';
 export { UsersApi } from './resources/users';
+export { PostsApi } from './resources/posts';
 export { CategoriesApi } from './resources/categories';
+export { TagsApi } from './resources/tags';
 export { RbacApi } from './resources/rbac';
 export { StoreSyncSdk, createStoreSyncSdk, DEFAULT_API_URL } from './sdk';

@@ -1,11 +1,26 @@
 import { Injectable } from '@nestjs/common';
 import { EntityManager, type FilterQuery } from '@mikro-orm/core';
 import { Tag } from '../entities/tag.entity';
+import { PostTag } from '../entities/post-tag.entity';
 import { normalizePageLimit, paginationMeta } from '../common/pagination';
 import {
   getOptionsFromModel,
   type GetOptionsConfig,
 } from '../common/get-options';
+
+export interface RelatedPostDto {
+  id: string;
+  title: string;
+  slug: string;
+  published: boolean;
+  publishedAt: string | null;
+  createdAt: string;
+}
+
+export interface TagDetailDto extends TagRowDto {
+  postCount: number;
+  posts: RelatedPostDto[];
+}
 
 export interface TagRowDto {
   id: string;
@@ -103,6 +118,27 @@ export class TagsService {
         const v = value.trim();
         if (key === 'name') where.name = { $like: `%${v}%` };
         else if (key === 'slug') where.slug = { $like: `%${v}%` };
+        else if (key === 'deletedAt') {
+          const dates = v.split(',').filter(Boolean);
+          if (dates.length === 1) {
+            where.deletedAt = { $gte: new Date(dates[0]) };
+          } else if (dates.length >= 2) {
+            where.deletedAt = {
+              $gte: new Date(dates[0]),
+              $lte: new Date(dates[1]),
+            };
+          }
+        } else if (key === 'updatedAt') {
+          const dates = v.split(',').filter(Boolean);
+          if (dates.length === 1) {
+            where.updatedAt = { $gte: new Date(dates[0]) };
+          } else if (dates.length >= 2) {
+            where.updatedAt = {
+              $gte: new Date(dates[0]),
+              $lte: new Date(dates[1]),
+            };
+          }
+        }
       }
     }
 
@@ -137,9 +173,38 @@ export class TagsService {
     );
   }
 
-  async getById(id: string): Promise<TagRowDto | null> {
+  async getById(id: string): Promise<TagDetailDto | null> {
     const r = await this.em.findOne(Tag, { id });
-    return r ? mapRow(r) : null;
+    if (!r) return null;
+
+    const postPivotRows = await this.em.find(
+      PostTag,
+      { tag: r.id },
+      {
+        populate: ['post'],
+        limit: 10,
+        orderBy: { post: { createdAt: 'DESC' } },
+      },
+    );
+
+    const postCount = await this.em.count(PostTag, { tag: r.id });
+
+    const posts = postPivotRows.map((pt) => {
+      const p = pt.post;
+      return {
+        id: p.id,
+        title: p.title,
+        slug: p.slug,
+        published: p.published,
+        publishedAt: toIsoString(p.publishedAt),
+        createdAt: toIsoStringRequired(p.createdAt),
+      };
+    });
+
+    const dto = mapRow(r);
+    (dto as TagDetailDto).postCount = postCount;
+    (dto as TagDetailDto).posts = posts;
+    return dto as TagDetailDto;
   }
 
   async create(data: { name: string; slug: string }): Promise<TagRowDto> {
