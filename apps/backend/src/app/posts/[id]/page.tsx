@@ -105,37 +105,8 @@ function PostDetailInner() {
         </Button>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid gap-6 lg:grid-cols-3 my-6">
         <div className="space-y-6 lg:col-span-2">
-          {post.excerpt && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">Tóm tắt</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">{post.excerpt}</p>
-              </CardContent>
-            </Card>
-          )}
-
-          {post.image && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-base">
-                  <ImageIcon className="size-4" />
-                  Ảnh đại diện
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <img
-                  src={post.image}
-                  alt={post.title}
-                  className="max-h-96 w-full rounded-lg object-cover"
-                />
-              </CardContent>
-            </Card>
-          )}
-
           <Card>
             <CardHeader>
               <CardTitle className="text-base">Nội dung</CardTitle>
@@ -186,6 +157,35 @@ function PostDetailInner() {
               </div>
             </CardContent>
           </Card>
+
+          {post.excerpt && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Tóm tắt</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">{post.excerpt}</p>
+              </CardContent>
+            </Card>
+          )}
+
+          {post.image && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <ImageIcon className="size-4" />
+                  Ảnh đại diện
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <img
+                  src={post.image}
+                  alt={post.title}
+                  className="max-h-96 w-full rounded-lg object-cover"
+                />
+              </CardContent>
+            </Card>
+          )}
 
           <Card>
             <CardHeader>

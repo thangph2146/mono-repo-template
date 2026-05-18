@@ -28,6 +28,25 @@
       "type": "directory"
     },
     {
+      "id": "dir_src_app_categories_new",
+      "label": "new/",
+      "path": "src/app/categories/new",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app/categories",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_app_categories_new_page_tsx",
+      "label": "page.tsx",
+      "path": "src/app/categories/new/page.tsx",
+      "color": "#00ff41",
+      "size": 14,
+      "community": "src/app/categories/new",
+      "type": "page",
+      "client": true
+    },
+    {
       "id": "file_src_app_categories_page_tsx",
       "label": "page.tsx",
       "path": "src/app/categories/page.tsx",
@@ -36,6 +55,277 @@
       "community": "src/app/categories",
       "type": "page",
       "client": true
+    },
+    {
+      "id": "dir_src_app_categories__id_",
+      "label": "[id]/",
+      "path": "src/app/categories/[id]",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app/categories",
+      "type": "directory"
+    },
+    {
+      "id": "dir_src_app_categories__id__edit",
+      "label": "edit/",
+      "path": "src/app/categories/[id]/edit",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app/categories/[id]",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_app_categories__id__edit_page_tsx",
+      "label": "page.tsx",
+      "path": "src/app/categories/[id]/edit/page.tsx",
+      "color": "#00ff41",
+      "size": 14,
+      "community": "src/app/categories/[id]/edit",
+      "type": "page",
+      "client": true
+    },
+    {
+      "id": "file_src_app_categories__id__page_tsx",
+      "label": "page.tsx",
+      "path": "src/app/categories/[id]/page.tsx",
+      "color": "#00ff41",
+      "size": 14,
+      "community": "src/app/categories/[id]",
+      "type": "page",
+      "client": true
+    },
+    {
+      "id": "dir_src_app_categories__component",
+      "label": "_component/",
+      "path": "src/app/categories/_component",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app/categories",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_app_categories__component_columns_tsx",
+      "label": "columns.tsx",
+      "path": "src/app/categories/_component/columns.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/app/categories/_component",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_app_categories__component_index_ts",
+      "label": "index.ts",
+      "path": "src/app/categories/_component/index.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/app/categories/_component",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_app_categories__component_types_ts",
+      "label": "types.ts",
+      "path": "src/app/categories/_component/types.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/app/categories/_component",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_app_categories__component_utils_ts",
+      "label": "utils.ts",
+      "path": "src/app/categories/_component/utils.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/app/categories/_component",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_app_categories__component__alert_dialog",
+      "label": "_alert-dialog/",
+      "path": "src/app/categories/_component/_alert-dialog",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app/categories/_component",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_app_categories__component__alert_dialog_categories_confirm_dialog_tsx",
+      "label": "categories-confirm-dialog.tsx",
+      "path": "src/app/categories/_component/_alert-dialog/categories-confirm-dialog.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/app/categories/_component/_alert-dialog",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_app_categories__component__alert_dialog_index_ts",
+      "label": "index.ts",
+      "path": "src/app/categories/_component/_alert-dialog/index.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/app/categories/_component/_alert-dialog",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_app_categories__component__dialog",
+      "label": "_dialog/",
+      "path": "src/app/categories/_component/_dialog",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app/categories/_component",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_app_categories__component__dialog_categories_form_dialog_tsx",
+      "label": "categories-form-dialog.tsx",
+      "path": "src/app/categories/_component/_dialog/categories-form-dialog.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/app/categories/_component/_dialog",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_app_categories__component__dialog_index_ts",
+      "label": "index.ts",
+      "path": "src/app/categories/_component/_dialog/index.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/app/categories/_component/_dialog",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_app_categories__component__form",
+      "label": "_form/",
+      "path": "src/app/categories/_component/_form",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app/categories/_component",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_app_categories__component__form_category_form_shell_tsx",
+      "label": "category-form-shell.tsx",
+      "path": "src/app/categories/_component/_form/category-form-shell.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/app/categories/_component/_form",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_app_categories__component__form_index_ts",
+      "label": "index.ts",
+      "path": "src/app/categories/_component/_form/index.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/app/categories/_component/_form",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_app_categories__component__hooks",
+      "label": "_hooks/",
+      "path": "src/app/categories/_component/_hooks",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app/categories/_component",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_app_categories__component__hooks_index_ts",
+      "label": "index.ts",
+      "path": "src/app/categories/_component/_hooks/index.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/app/categories/_component/_hooks",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_app_categories__component__hooks_use_categories_actions_ts",
+      "label": "use-categories-actions.ts",
+      "path": "src/app/categories/_component/_hooks/use-categories-actions.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/app/categories/_component/_hooks",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_app_categories__component__hooks_use_categories_filters_ts",
+      "label": "use-categories-filters.ts",
+      "path": "src/app/categories/_component/_hooks/use-categories-filters.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/app/categories/_component/_hooks",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_app_categories__component__query",
+      "label": "_query/",
+      "path": "src/app/categories/_component/_query",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app/categories/_component",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_app_categories__component__query_index_ts",
+      "label": "index.ts",
+      "path": "src/app/categories/_component/_query/index.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/app/categories/_component/_query",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_app_categories__component__table",
+      "label": "_table/",
+      "path": "src/app/categories/_component/_table",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app/categories/_component",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_app_categories__component__table_categories_table_tsx",
+      "label": "categories-table.tsx",
+      "path": "src/app/categories/_component/_table/categories-table.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/app/categories/_component/_table",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_app_categories__component__table_categories_trash_table_tsx",
+      "label": "categories-trash-table.tsx",
+      "path": "src/app/categories/_component/_table/categories-trash-table.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/app/categories/_component/_table",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_app_categories__component__table_index_ts",
+      "label": "index.ts",
+      "path": "src/app/categories/_component/_table/index.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/app/categories/_component/_table",
+      "type": "ts",
+      "client": false
     },
     {
       "id": "dir_src_app_contact_requests",
@@ -191,6 +481,25 @@
       "type": "directory"
     },
     {
+      "id": "dir_src_app_posts_new",
+      "label": "new/",
+      "path": "src/app/posts/new",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app/posts",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_app_posts_new_page_tsx",
+      "label": "page.tsx",
+      "path": "src/app/posts/new/page.tsx",
+      "color": "#00ff41",
+      "size": 14,
+      "community": "src/app/posts/new",
+      "type": "page",
+      "client": true
+    },
+    {
       "id": "file_src_app_posts_page_tsx",
       "label": "page.tsx",
       "path": "src/app/posts/page.tsx",
@@ -198,6 +507,298 @@
       "size": 14,
       "community": "src/app/posts",
       "type": "page",
+      "client": true
+    },
+    {
+      "id": "dir_src_app_posts__id_",
+      "label": "[id]/",
+      "path": "src/app/posts/[id]",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app/posts",
+      "type": "directory"
+    },
+    {
+      "id": "dir_src_app_posts__id__edit",
+      "label": "edit/",
+      "path": "src/app/posts/[id]/edit",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app/posts/[id]",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_app_posts__id__edit_page_tsx",
+      "label": "page.tsx",
+      "path": "src/app/posts/[id]/edit/page.tsx",
+      "color": "#00ff41",
+      "size": 14,
+      "community": "src/app/posts/[id]/edit",
+      "type": "page",
+      "client": true
+    },
+    {
+      "id": "file_src_app_posts__id__page_tsx",
+      "label": "page.tsx",
+      "path": "src/app/posts/[id]/page.tsx",
+      "color": "#00ff41",
+      "size": 14,
+      "community": "src/app/posts/[id]",
+      "type": "page",
+      "client": true
+    },
+    {
+      "id": "dir_src_app_posts__component",
+      "label": "_component/",
+      "path": "src/app/posts/_component",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app/posts",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_app_posts__component_columns_tsx",
+      "label": "columns.tsx",
+      "path": "src/app/posts/_component/columns.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/app/posts/_component",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_app_posts__component_index_ts",
+      "label": "index.ts",
+      "path": "src/app/posts/_component/index.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/app/posts/_component",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_app_posts__component_summary_badges_tsx",
+      "label": "summary-badges.tsx",
+      "path": "src/app/posts/_component/summary-badges.tsx",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/app/posts/_component",
+      "type": "tsx",
+      "client": false
+    },
+    {
+      "id": "file_src_app_posts__component_types_ts",
+      "label": "types.ts",
+      "path": "src/app/posts/_component/types.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/app/posts/_component",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_app_posts__component_utils_ts",
+      "label": "utils.ts",
+      "path": "src/app/posts/_component/utils.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/app/posts/_component",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_app_posts__component__alert_dialog",
+      "label": "_alert-dialog/",
+      "path": "src/app/posts/_component/_alert-dialog",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app/posts/_component",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_app_posts__component__alert_dialog_index_ts",
+      "label": "index.ts",
+      "path": "src/app/posts/_component/_alert-dialog/index.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/app/posts/_component/_alert-dialog",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_app_posts__component__alert_dialog_posts_confirm_dialog_tsx",
+      "label": "posts-confirm-dialog.tsx",
+      "path": "src/app/posts/_component/_alert-dialog/posts-confirm-dialog.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/app/posts/_component/_alert-dialog",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "dir_src_app_posts__component__form",
+      "label": "_form/",
+      "path": "src/app/posts/_component/_form",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app/posts/_component",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_app_posts__component__form_index_ts",
+      "label": "index.ts",
+      "path": "src/app/posts/_component/_form/index.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/app/posts/_component/_form",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_app_posts__component__form_post_form_shell_tsx",
+      "label": "post-form-shell.tsx",
+      "path": "src/app/posts/_component/_form/post-form-shell.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/app/posts/_component/_form",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "dir_src_app_posts__component__hooks",
+      "label": "_hooks/",
+      "path": "src/app/posts/_component/_hooks",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app/posts/_component",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_app_posts__component__hooks_index_ts",
+      "label": "index.ts",
+      "path": "src/app/posts/_component/_hooks/index.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/app/posts/_component/_hooks",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_app_posts__component__hooks_use_post_form_ts",
+      "label": "use-post-form.ts",
+      "path": "src/app/posts/_component/_hooks/use-post-form.ts",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/app/posts/_component/_hooks",
+      "type": "ts",
+      "client": true
+    },
+    {
+      "id": "file_src_app_posts__component__hooks_use_posts_actions_ts",
+      "label": "use-posts-actions.ts",
+      "path": "src/app/posts/_component/_hooks/use-posts-actions.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/app/posts/_component/_hooks",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_app_posts__component__hooks_use_posts_filters_ts",
+      "label": "use-posts-filters.ts",
+      "path": "src/app/posts/_component/_hooks/use-posts-filters.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/app/posts/_component/_hooks",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_app_posts__component__query",
+      "label": "_query/",
+      "path": "src/app/posts/_component/_query",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app/posts/_component",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_app_posts__component__query_index_ts",
+      "label": "index.ts",
+      "path": "src/app/posts/_component/_query/index.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/app/posts/_component/_query",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_app_posts__component__query_use_posts_mutations_ts",
+      "label": "use-posts-mutations.ts",
+      "path": "src/app/posts/_component/_query/use-posts-mutations.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/app/posts/_component/_query",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_app_posts__component__query_use_posts_queries_ts",
+      "label": "use-posts-queries.ts",
+      "path": "src/app/posts/_component/_query/use-posts-queries.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/app/posts/_component/_query",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_app_posts__component__query_use_taxonomy_queries_ts",
+      "label": "use-taxonomy-queries.ts",
+      "path": "src/app/posts/_component/_query/use-taxonomy-queries.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/app/posts/_component/_query",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_app_posts__component__table",
+      "label": "_table/",
+      "path": "src/app/posts/_component/_table",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app/posts/_component",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_app_posts__component__table_index_ts",
+      "label": "index.ts",
+      "path": "src/app/posts/_component/_table/index.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/app/posts/_component/_table",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_app_posts__component__table_posts_table_tsx",
+      "label": "posts-table.tsx",
+      "path": "src/app/posts/_component/_table/posts-table.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/app/posts/_component/_table",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_app_posts__component__table_posts_trash_table_tsx",
+      "label": "posts-trash-table.tsx",
+      "path": "src/app/posts/_component/_table/posts-trash-table.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/app/posts/_component/_table",
+      "type": "tsx",
       "client": true
     },
     {
@@ -424,6 +1025,16 @@
       "client": true
     },
     {
+      "id": "file_src_components_scroll_to_top_tsx",
+      "label": "scroll-to-top.tsx",
+      "path": "src/components/scroll-to-top.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/components",
+      "type": "tsx",
+      "client": true
+    },
+    {
       "id": "file_src_components_sidebar_tsx",
       "label": "sidebar.tsx",
       "path": "src/components/sidebar.tsx",
@@ -521,9 +1132,29 @@
       "type": "directory"
     },
     {
+      "id": "file_src_hooks_index_ts",
+      "label": "index.ts",
+      "path": "src/hooks/index.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/hooks",
+      "type": "ts",
+      "client": false
+    },
+    {
       "id": "file_src_hooks_queries_ts",
       "label": "queries.ts",
       "path": "src/hooks/queries.ts",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/hooks",
+      "type": "ts",
+      "client": true
+    },
+    {
+      "id": "file_src_hooks_use_admin_table_state_ts",
+      "label": "use-admin-table-state.ts",
+      "path": "src/hooks/use-admin-table-state.ts",
       "color": "#00ddff",
       "size": 10,
       "community": "src/hooks",
@@ -590,6 +1221,16 @@
       "client": false
     },
     {
+      "id": "file_src_lib_build_admin_filter_query_ts",
+      "label": "build-admin-filter-query.ts",
+      "path": "src/lib/build-admin-filter-query.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/lib",
+      "type": "ts",
+      "client": false
+    },
+    {
       "id": "file_src_lib_build_table_csv_ts",
       "label": "build-table-csv.ts",
       "path": "src/lib/build-table-csv.ts",
@@ -643,6 +1284,16 @@
       "id": "file_src_lib_format_ts",
       "label": "format.ts",
       "path": "src/lib/format.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/lib",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_lib_index_ts",
+      "label": "index.ts",
+      "path": "src/lib/index.ts",
       "color": "#00ff41",
       "size": 10,
       "community": "src/lib",
@@ -750,7 +1401,157 @@
     },
     {
       "source": "dir_src_app_categories",
+      "target": "dir_src_app_categories_new",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_categories_new",
+      "target": "file_src_app_categories_new_page_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_categories",
       "target": "file_src_app_categories_page_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_categories",
+      "target": "dir_src_app_categories__id_",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_categories__id_",
+      "target": "dir_src_app_categories__id__edit",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_categories__id__edit",
+      "target": "file_src_app_categories__id__edit_page_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_categories__id_",
+      "target": "file_src_app_categories__id__page_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_categories",
+      "target": "dir_src_app_categories__component",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_categories__component",
+      "target": "file_src_app_categories__component_columns_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_categories__component",
+      "target": "file_src_app_categories__component_index_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_categories__component",
+      "target": "file_src_app_categories__component_types_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_categories__component",
+      "target": "file_src_app_categories__component_utils_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_categories__component",
+      "target": "dir_src_app_categories__component__alert_dialog",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_categories__component__alert_dialog",
+      "target": "file_src_app_categories__component__alert_dialog_categories_confirm_dialog_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_categories__component__alert_dialog",
+      "target": "file_src_app_categories__component__alert_dialog_index_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_categories__component",
+      "target": "dir_src_app_categories__component__dialog",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_categories__component__dialog",
+      "target": "file_src_app_categories__component__dialog_categories_form_dialog_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_categories__component__dialog",
+      "target": "file_src_app_categories__component__dialog_index_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_categories__component",
+      "target": "dir_src_app_categories__component__form",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_categories__component__form",
+      "target": "file_src_app_categories__component__form_category_form_shell_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_categories__component__form",
+      "target": "file_src_app_categories__component__form_index_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_categories__component",
+      "target": "dir_src_app_categories__component__hooks",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_categories__component__hooks",
+      "target": "file_src_app_categories__component__hooks_index_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_categories__component__hooks",
+      "target": "file_src_app_categories__component__hooks_use_categories_actions_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_categories__component__hooks",
+      "target": "file_src_app_categories__component__hooks_use_categories_filters_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_categories__component",
+      "target": "dir_src_app_categories__component__query",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_categories__component__query",
+      "target": "file_src_app_categories__component__query_index_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_categories__component",
+      "target": "dir_src_app_categories__component__table",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_categories__component__table",
+      "target": "file_src_app_categories__component__table_categories_table_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_categories__component__table",
+      "target": "file_src_app_categories__component__table_categories_trash_table_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_categories__component__table",
+      "target": "file_src_app_categories__component__table_index_ts",
       "relation": "contains"
     },
     {
@@ -835,7 +1636,167 @@
     },
     {
       "source": "dir_src_app_posts",
+      "target": "dir_src_app_posts_new",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_posts_new",
+      "target": "file_src_app_posts_new_page_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_posts",
       "target": "file_src_app_posts_page_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_posts",
+      "target": "dir_src_app_posts__id_",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_posts__id_",
+      "target": "dir_src_app_posts__id__edit",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_posts__id__edit",
+      "target": "file_src_app_posts__id__edit_page_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_posts__id_",
+      "target": "file_src_app_posts__id__page_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_posts",
+      "target": "dir_src_app_posts__component",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_posts__component",
+      "target": "file_src_app_posts__component_columns_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_posts__component",
+      "target": "file_src_app_posts__component_index_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_posts__component",
+      "target": "file_src_app_posts__component_summary_badges_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_posts__component",
+      "target": "file_src_app_posts__component_types_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_posts__component",
+      "target": "file_src_app_posts__component_utils_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_posts__component",
+      "target": "dir_src_app_posts__component__alert_dialog",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_posts__component__alert_dialog",
+      "target": "file_src_app_posts__component__alert_dialog_index_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_posts__component__alert_dialog",
+      "target": "file_src_app_posts__component__alert_dialog_posts_confirm_dialog_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_posts__component",
+      "target": "dir_src_app_posts__component__form",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_posts__component__form",
+      "target": "file_src_app_posts__component__form_index_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_posts__component__form",
+      "target": "file_src_app_posts__component__form_post_form_shell_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_posts__component",
+      "target": "dir_src_app_posts__component__hooks",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_posts__component__hooks",
+      "target": "file_src_app_posts__component__hooks_index_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_posts__component__hooks",
+      "target": "file_src_app_posts__component__hooks_use_post_form_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_posts__component__hooks",
+      "target": "file_src_app_posts__component__hooks_use_posts_actions_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_posts__component__hooks",
+      "target": "file_src_app_posts__component__hooks_use_posts_filters_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_posts__component",
+      "target": "dir_src_app_posts__component__query",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_posts__component__query",
+      "target": "file_src_app_posts__component__query_index_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_posts__component__query",
+      "target": "file_src_app_posts__component__query_use_posts_mutations_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_posts__component__query",
+      "target": "file_src_app_posts__component__query_use_posts_queries_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_posts__component__query",
+      "target": "file_src_app_posts__component__query_use_taxonomy_queries_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_posts__component",
+      "target": "dir_src_app_posts__component__table",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_posts__component__table",
+      "target": "file_src_app_posts__component__table_index_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_posts__component__table",
+      "target": "file_src_app_posts__component__table_posts_table_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_posts__component__table",
+      "target": "file_src_app_posts__component__table_posts_trash_table_tsx",
       "relation": "contains"
     },
     {
@@ -955,6 +1916,11 @@
     },
     {
       "source": "dir_src_components",
+      "target": "file_src_components_scroll_to_top_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components",
       "target": "file_src_components_sidebar_tsx",
       "relation": "contains"
     },
@@ -1005,7 +1971,17 @@
     },
     {
       "source": "dir_src_hooks",
+      "target": "file_src_hooks_index_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_hooks",
       "target": "file_src_hooks_queries_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_hooks",
+      "target": "file_src_hooks_use_admin_table_state_ts",
       "relation": "contains"
     },
     {
@@ -1040,6 +2016,11 @@
     },
     {
       "source": "dir_src_lib",
+      "target": "file_src_lib_build_admin_filter_query_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_lib",
       "target": "file_src_lib_build_table_csv_ts",
       "relation": "contains"
     },
@@ -1066,6 +2047,11 @@
     {
       "source": "dir_src_lib",
       "target": "file_src_lib_format_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_lib",
+      "target": "file_src_lib_index_ts",
       "relation": "contains"
     },
     {
@@ -1114,18 +2100,28 @@
       "relation": "renders"
     },
     {
-      "source": "file_src_app_categories_page_tsx",
-      "target": "dir_src_components_admin_data_table",
+      "source": "file_src_app_categories_new_page_tsx",
+      "target": "file_src_components_admin_page_guard_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_categories_new_page_tsx",
+      "target": "file_src_lib_api_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_categories_new_page_tsx",
+      "target": "dir_src_app_categories__component",
       "relation": "imports"
     },
     {
       "source": "file_src_app_categories_page_tsx",
-      "target": "file_src_components_admin_table_pagination_footer_tsx",
+      "target": "file_src_hooks_use_debounced_value_ts",
       "relation": "imports"
     },
     {
       "source": "file_src_app_categories_page_tsx",
-      "target": "file_src_components_admin_confirm_action_dialog_tsx",
+      "target": "file_src_providers_auth_provider_tsx",
       "relation": "imports"
     },
     {
@@ -1140,22 +2136,222 @@
     },
     {
       "source": "file_src_app_categories_page_tsx",
-      "target": "file_src_providers_auth_provider_tsx",
+      "target": "dir_src_app_categories__component",
       "relation": "imports"
     },
     {
       "source": "file_src_app_categories_page_tsx",
-      "target": "file_src_hooks_queries_ts",
+      "target": "file_src_app_categories__component_types_ts",
       "relation": "imports"
     },
     {
-      "source": "file_src_app_categories_page_tsx",
-      "target": "file_src_hooks_use_debounced_value_ts",
+      "source": "file_src_app_categories__id__edit_page_tsx",
+      "target": "file_src_components_admin_page_guard_tsx",
       "relation": "imports"
     },
     {
-      "source": "file_src_app_categories_page_tsx",
+      "source": "file_src_app_categories__id__edit_page_tsx",
+      "target": "file_src_lib_api_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_categories__id__edit_page_tsx",
+      "target": "dir_src_app_categories__component",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_categories__id__edit_page_tsx",
+      "target": "file_src_app_categories__component_types_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_categories__id__page_tsx",
+      "target": "file_src_components_admin_page_guard_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_categories__id__page_tsx",
+      "target": "file_src_lib_api_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_categories__id__page_tsx",
+      "target": "dir_src_app_categories__component",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_categories__id__page_tsx",
       "target": "file_src_lib_category_icons_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_categories__id__page_tsx",
+      "target": "file_src_app_categories__component_types_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_categories__component_columns_tsx",
+      "target": "file_src_app_categories__component_types_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_categories__component_index_ts",
+      "target": "file_src_app_categories__component_columns_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_categories__component_index_ts",
+      "target": "file_src_app_categories__component_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_categories__component_index_ts",
+      "target": "dir_src_app_categories__component__hooks",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_categories__component_index_ts",
+      "target": "dir_src_app_categories__component__table",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_categories__component_index_ts",
+      "target": "dir_src_app_categories__component__dialog",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_categories__component_index_ts",
+      "target": "dir_src_app_categories__component__alert_dialog",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_categories__component_index_ts",
+      "target": "dir_src_app_categories__component__query",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_categories__component_index_ts",
+      "target": "dir_src_app_categories__component__form",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_categories__component_utils_ts",
+      "target": "file_src_app_categories__component_types_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_categories__component__alert_dialog_categories_confirm_dialog_tsx",
+      "target": "file_src_components_admin_confirm_action_dialog_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_categories__component__alert_dialog_categories_confirm_dialog_tsx",
+      "target": "file_src_app_categories__component_types_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_categories__component__alert_dialog_index_ts",
+      "target": "file_src_app_categories__component__alert_dialog_categories_confirm_dialog_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_categories__component__dialog_categories_form_dialog_tsx",
+      "target": "file_src_app_categories__component_types_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_categories__component__dialog_categories_form_dialog_tsx",
+      "target": "file_src_lib_category_icons_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_categories__component__dialog_categories_form_dialog_tsx",
+      "target": "dir_src_app_categories__component__hooks",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_categories__component__dialog_index_ts",
+      "target": "file_src_app_categories__component__dialog_categories_form_dialog_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_categories__component__form_category_form_shell_tsx",
+      "target": "file_src_app_categories__component_types_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_categories__component__form_category_form_shell_tsx",
+      "target": "file_src_lib_category_icons_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_categories__component__form_category_form_shell_tsx",
+      "target": "dir_src_app_categories__component__hooks",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_categories__component__form_index_ts",
+      "target": "file_src_app_categories__component__form_category_form_shell_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_categories__component__hooks_index_ts",
+      "target": "file_src_app_categories__component__hooks_use_categories_filters_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_categories__component__hooks_index_ts",
+      "target": "file_src_app_categories__component__hooks_use_categories_actions_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_categories__component__hooks_use_categories_actions_ts",
+      "target": "file_src_app_categories__component_types_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_categories__component__query_index_ts",
+      "target": "file_src_app_categories__component_types_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_categories__component__query_index_ts",
+      "target": "file_src_app_categories__component_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_categories__component__table_categories_table_tsx",
+      "target": "dir_src_components_admin_data_table",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_categories__component__table_categories_table_tsx",
+      "target": "file_src_app_categories__component_types_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_categories__component__table_categories_trash_table_tsx",
+      "target": "dir_src_components_admin_data_table",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_categories__component__table_categories_trash_table_tsx",
+      "target": "file_src_components_admin_table_pagination_footer_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_categories__component__table_categories_trash_table_tsx",
+      "target": "file_src_app_categories__component_types_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_categories__component__table_index_ts",
+      "target": "file_src_app_categories__component__table_categories_table_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_categories__component__table_index_ts",
+      "target": "file_src_app_categories__component__table_categories_trash_table_tsx",
       "relation": "imports"
     },
     {
@@ -1175,7 +2371,7 @@
     },
     {
       "source": "file_src_app_contact_requests_page_tsx",
-      "target": "file_src_hooks_use_debounced_value_ts",
+      "target": "dir_src_hooks",
       "relation": "imports"
     },
     {
@@ -1284,18 +2480,23 @@
       "relation": "imports"
     },
     {
-      "source": "file_src_app_posts_page_tsx",
-      "target": "file_src_components_admin_confirm_action_dialog_tsx",
+      "source": "file_src_app_posts_new_page_tsx",
+      "target": "file_src_components_admin_page_guard_tsx",
       "relation": "imports"
     },
     {
-      "source": "file_src_app_posts_page_tsx",
-      "target": "dir_src_components_admin_data_table",
+      "source": "file_src_app_posts_new_page_tsx",
+      "target": "file_src_lib_api_ts",
       "relation": "imports"
     },
     {
-      "source": "file_src_app_posts_page_tsx",
-      "target": "file_src_components_admin_table_pagination_footer_tsx",
+      "source": "file_src_app_posts_new_page_tsx",
+      "target": "dir_src_app_posts__component",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_posts_new_page_tsx",
+      "target": "dir_src_app_posts__component__query",
       "relation": "imports"
     },
     {
@@ -1310,7 +2511,262 @@
     },
     {
       "source": "file_src_app_posts_page_tsx",
+      "target": "dir_src_app_posts__component__table",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_posts_page_tsx",
+      "target": "dir_src_app_posts__component__alert_dialog",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_posts_page_tsx",
+      "target": "dir_src_app_posts__component__hooks",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_posts_page_tsx",
+      "target": "dir_src_app_posts__component__query",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_posts_page_tsx",
       "target": "file_src_hooks_use_debounced_value_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_posts_page_tsx",
+      "target": "dir_src_app_posts__component",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_posts__id__edit_page_tsx",
+      "target": "file_src_components_admin_page_guard_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_posts__id__edit_page_tsx",
+      "target": "file_src_lib_api_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_posts__id__edit_page_tsx",
+      "target": "dir_src_app_posts__component",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_posts__id__edit_page_tsx",
+      "target": "dir_src_app_posts__component__query",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_posts__id__page_tsx",
+      "target": "file_src_components_admin_page_guard_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_posts__id__page_tsx",
+      "target": "file_src_lib_api_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_posts__id__page_tsx",
+      "target": "dir_src_app_posts__component",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_posts__component_columns_tsx",
+      "target": "file_src_app_posts__component_types_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_posts__component_columns_tsx",
+      "target": "file_src_app_posts__component_summary_badges_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_posts__component_index_ts",
+      "target": "file_src_app_posts__component_types_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_posts__component_index_ts",
+      "target": "file_src_app_posts__component_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_posts__component_index_ts",
+      "target": "file_src_app_posts__component_summary_badges_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_posts__component_index_ts",
+      "target": "file_src_app_posts__component_columns_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_posts__component_index_ts",
+      "target": "dir_src_app_posts__component__hooks",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_posts__component_index_ts",
+      "target": "dir_src_app_posts__component__form",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_posts__component_summary_badges_tsx",
+      "target": "file_src_app_posts__component_types_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_posts__component_utils_ts",
+      "target": "file_src_app_posts__component_types_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_posts__component__alert_dialog_index_ts",
+      "target": "file_src_app_posts__component__alert_dialog_posts_confirm_dialog_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_posts__component__alert_dialog_posts_confirm_dialog_tsx",
+      "target": "file_src_components_admin_confirm_action_dialog_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_posts__component__alert_dialog_posts_confirm_dialog_tsx",
+      "target": "file_src_app_posts__component_types_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_posts__component__form_index_ts",
+      "target": "file_src_app_posts__component__form_post_form_shell_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_posts__component__form_post_form_shell_tsx",
+      "target": "file_src_app_posts__component_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_posts__component__form_post_form_shell_tsx",
+      "target": "dir_src_app_posts__component__hooks",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_posts__component__form_post_form_shell_tsx",
+      "target": "file_src_app_posts__component_types_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_posts__component__hooks_index_ts",
+      "target": "file_src_app_posts__component__hooks_use_posts_filters_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_posts__component__hooks_index_ts",
+      "target": "file_src_app_posts__component__hooks_use_posts_actions_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_posts__component__hooks_index_ts",
+      "target": "file_src_app_posts__component__hooks_use_post_form_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_posts__component__hooks_use_post_form_ts",
+      "target": "file_src_app_posts__component_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_posts__component__hooks_use_posts_actions_ts",
+      "target": "file_src_app_posts__component_types_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_posts__component__query_index_ts",
+      "target": "file_src_app_posts__component__query_use_posts_queries_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_posts__component__query_index_ts",
+      "target": "file_src_app_posts__component__query_use_taxonomy_queries_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_posts__component__query_index_ts",
+      "target": "file_src_app_posts__component__query_use_posts_mutations_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_posts__component__query_use_posts_mutations_ts",
+      "target": "file_src_app_posts__component_types_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_posts__component__query_use_posts_mutations_ts",
+      "target": "file_src_app_posts__component_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_posts__component__query_use_posts_queries_ts",
+      "target": "file_src_app_posts__component_types_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_posts__component__query_use_posts_queries_ts",
+      "target": "file_src_app_posts__component_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_posts__component__query_use_taxonomy_queries_ts",
+      "target": "file_src_app_posts__component_types_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_posts__component__query_use_taxonomy_queries_ts",
+      "target": "file_src_app_posts__component_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_posts__component__table_index_ts",
+      "target": "file_src_app_posts__component__table_posts_table_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_posts__component__table_index_ts",
+      "target": "file_src_app_posts__component__table_posts_trash_table_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_posts__component__table_posts_table_tsx",
+      "target": "dir_src_components_admin_data_table",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_posts__component__table_posts_table_tsx",
+      "target": "file_src_components_admin_table_pagination_footer_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_posts__component__table_posts_table_tsx",
+      "target": "file_src_app_posts__component_types_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_posts__component__table_posts_trash_table_tsx",
+      "target": "dir_src_components_admin_data_table",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_posts__component__table_posts_trash_table_tsx",
+      "target": "file_src_components_admin_table_pagination_footer_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_posts__component__table_posts_trash_table_tsx",
+      "target": "file_src_app_posts__component_types_ts",
       "relation": "imports"
     },
     {
@@ -1500,6 +2956,11 @@
     },
     {
       "source": "file_src_components_admin_shell_tsx",
+      "target": "file_src_components_scroll_to_top_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_components_admin_shell_tsx",
       "target": "file_src_lib_auth_session_ts",
       "relation": "imports"
     },
@@ -1574,13 +3035,58 @@
       "relation": "imports"
     },
     {
+      "source": "file_src_hooks_index_ts",
+      "target": "file_src_hooks_use_debounced_value_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_hooks_index_ts",
+      "target": "file_src_hooks_use_admin_table_state_ts",
+      "relation": "imports"
+    },
+    {
       "source": "file_src_hooks_queries_ts",
       "target": "file_src_lib_api_ts",
       "relation": "imports"
     },
     {
+      "source": "file_src_hooks_use_admin_table_state_ts",
+      "target": "file_src_hooks_use_debounced_value_ts",
+      "relation": "imports"
+    },
+    {
       "source": "file_src_lib_api_ts",
       "target": "file_src_lib_auth_session_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_lib_index_ts",
+      "target": "file_src_lib_build_admin_filter_query_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_lib_index_ts",
+      "target": "file_src_lib_build_table_csv_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_lib_index_ts",
+      "target": "file_src_lib_export_csv_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_lib_index_ts",
+      "target": "file_src_lib_export_xlsx_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_lib_index_ts",
+      "target": "file_src_lib_format_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_lib_index_ts",
+      "target": "file_src_lib_category_icons_ts",
       "relation": "imports"
     },
     {

@@ -104,6 +104,37 @@ export function PostFormShell({
       <form id="post-form" onSubmit={form.handleSubmit(onSubmit)}>
         <div className="grid gap-6 lg:grid-cols-3 my-6">
           <div className="space-y-6 lg:col-span-2">
+            <Card className="border border-border/70 shadow-sm overflow-visible">
+              <CardHeader className="pb-2">
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <Sparkles className="size-5 text-primary" />
+                  Biên tập nội dung
+                </CardTitle>
+                <CardDescription>
+                  Soạn thảo nội dung chính cho bài viết.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="max-w-6xl mx-auto">
+                  <Controller
+                    name="content"
+                    control={control}
+                    render={({ field }) => (
+                      <LexicalEditor
+                        value={field.value}
+                        placeholder="Nhập nội dung bài viết..."
+                        onChange={(value) => field.onChange(value)}
+                        uploadsContext={undefined}
+                        stickyTop={0}
+                      />
+                    )}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="space-y-6">
             <Card className="border border-border/70 shadow-sm">
               <CardHeader className="pb-2">
                 <CardTitle className="flex items-center gap-2 text-lg">
@@ -190,38 +221,6 @@ export function PostFormShell({
               </CardContent>
             </Card>
 
-            <Card className="border border-border/70 shadow-sm overflow-visible">
-              <CardHeader className="pb-2">
-                <CardTitle className="flex items-center gap-2 text-lg">
-                  <Sparkles className="size-5 text-primary" />
-                  Biên tập nội dung
-                </CardTitle>
-                <CardDescription>
-                  Soạn thảo nội dung chính cho bài viết.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="max-w-6xl mx-auto">
-                  <Controller
-                    name="content"
-                    control={control}
-                    render={({ field }) => (
-                      <LexicalEditor
-                        value={field.value}
-                        placeholder="Nhập nội dung bài viết..."
-                        onChange={(value) => field.onChange(value)}
-                        uploadsContext={undefined}
-                        stickyTop={0}
-                      />
-                    )}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-
-          </div>
-
-          <div className="space-y-6">
             <Card className="border border-border/70 shadow-sm">
               <CardHeader className="pb-2">
                 <CardTitle className="flex items-center gap-2 text-lg">
@@ -312,7 +311,8 @@ export function PostFormShell({
                 </div>
               </CardContent>
             </Card>
-            <Card className="border border-border/70 shadow-sm">
+
+            <Card className="sticky top-0 border border-border/70 shadow-sm">
               <CardHeader className="pb-2">
                 <CardTitle className="flex items-center gap-2 text-lg">
                   <Tags className="size-5 text-primary" />
@@ -322,7 +322,7 @@ export function PostFormShell({
                   Gắn danh mục để bài viết dễ tìm hơn.
                 </CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-4">
                 <Controller
                   name="categoryIds"
                   control={control}
@@ -352,20 +352,6 @@ export function PostFormShell({
                     </FormFieldCol>
                   )}
                 />
-              </CardContent>
-            </Card>
-
-            <Card className="border border-border/70 shadow-sm">
-              <CardHeader className="pb-2">
-                <CardTitle className="flex items-center gap-2 text-lg">
-                  <Tags className="size-5 text-primary" />
-                  Thẻ
-                </CardTitle>
-                <CardDescription>
-                  Gắn thẻ để bài viết dễ tìm hơn trong quản trị.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
                 <Controller
                   name="tagIds"
                   control={control}

@@ -26,3 +26,4 @@ export {
   useTrashQuery,
   useCategoriesOptionsQuery,
 } from "./_query";
+export { CategoryFormShell } from "./_form";

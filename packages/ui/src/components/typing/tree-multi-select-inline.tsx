@@ -115,18 +115,20 @@ export function TreeMultiSelectInline({
       {options.length === 0 ? (
         <p className="text-sm text-muted-foreground px-2 py-1">Không có tùy chọn</p>
       ) : (
-        options.map((node) => (
-          <TreeMultiSelectInlineItem
-            key={node.value}
-            label={node.label}
-            value={node.value}
-            depth={0}
-            isParent={(node.children?.length ?? 0) > 0}
-            selected={selected}
-            onSelect={handleSelect}
-            subOptions={node.children}
-          />
-        ))
+        <div className="max-h-60 space-y-0.5 overflow-y-auto">
+          {options.map((node) => (
+            <TreeMultiSelectInlineItem
+              key={node.value}
+              label={node.label}
+              value={node.value}
+              depth={0}
+              isParent={(node.children?.length ?? 0) > 0}
+              selected={selected}
+              onSelect={handleSelect}
+              subOptions={node.children}
+            />
+          ))}
+        </div>
       )}
     </div>
   );

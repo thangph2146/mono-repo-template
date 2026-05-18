@@ -12,10 +12,12 @@ import { toast } from "sonner";
 import { Badge } from "@ui/components/badge";
 import { Button } from "@ui/components/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@ui/components/tabs";
+import { useRouter } from "next/navigation";
 import {
   AlertCircle,
   RefreshCw,
   Tags,
+  Plus,
 } from "lucide-react";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { useAuth } from "@/providers/auth-provider";
@@ -34,20 +36,16 @@ import { api } from "@/lib/api";
 import {
   CategoriesTable,
   CategoriesTrashTable,
-  CategoriesFormDialog,
   CategoriesConfirmDialog,
   getCategoryColumns,
   getTrashColumns,
   buildCategoryOptionTree,
   buildCategoriesFilterQuery,
-  slugify,
   formatDateTime,
   useColumnFiltersChange,
   useClearListFilters,
   useClearTrashFilters,
-  useHandleSave,
   useHandleConfirmAction,
-  useCategoryForm,
   useConfirmAction,
   useCategoriesQuery,
   useTrashQuery,
@@ -77,6 +75,7 @@ function buildCategoryTree(rows: CategoryRow[]): CategoryRow[] {
 }
 
 function CategoriesPageInner() {
+  const router = useRouter();
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const canWriteCategories = user
@@ -132,22 +131,6 @@ function CategoriesPageInner() {
     [categoriesOptionsQuery.data],
   );
 
-  const createMutation = useMutation({
-    mutationFn: async (input: Record<string, unknown>) =>
-      api.http.post("/admin/categories", input),
-    onSuccess: async () => {
-      await invalidateAll();
-    },
-  });
-
-  const updateMutation = useMutation({
-    mutationFn: async ({ id, input }: { id: string; input: Record<string, unknown> }) =>
-      api.http.put(`/admin/categories/${id}`, input),
-    onSuccess: async () => {
-      await invalidateAll();
-    },
-  });
-
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => api.http.delete(`/admin/categories/${id}`),
     onSuccess: async () => {
@@ -194,27 +177,7 @@ function CategoriesPageInner() {
   const clearTrashFilters = useClearTrashFilters(setTrashGlobalFilter, setTrashColumnFilters);
   const handleTrashColumnFiltersChange = useColumnFiltersChange(setTrashColumnFilters);
 
-  const {
-    form,
-    dialogOpen,
-    setDialogOpen,
-    loadingDetail,
-    editingId,
-    openCreate,
-    openEdit,
-  } = useCategoryForm();
   const { confirmAction, setConfirmAction } = useConfirmAction();
-
-  const submitting =
-    createMutation.isPending || updateMutation.isPending || loadingDetail;
-
-  const handleSave = useHandleSave({
-    editingId,
-    createMutation,
-    updateMutation,
-    setDialogOpen,
-    slugify,
-  });
 
   const handleConfirmAction = useHandleConfirmAction(
     deleteMutation,
@@ -226,12 +189,13 @@ function CategoriesPageInner() {
   const columns = useMemo<ColumnDef<CategoryRow>[]>(
     () =>
       getCategoryColumns({
-        openEdit: (row) => void openEdit(row, api),
+        openDetail: (row) => router.push(`/categories/${row.id}`),
+        openEdit: (row) => router.push(`/categories/${row.id}/edit`),
         setConfirmAction,
         categoryTreeOptions,
         canWriteCategories,
       }),
-    [openEdit, setConfirmAction, categoryTreeOptions, canWriteCategories],
+    [setConfirmAction, categoryTreeOptions, canWriteCategories, router],
   );
 
   const trashColumns = useMemo<ColumnDef<CategoryRow>[]>(
@@ -283,18 +247,15 @@ function CategoriesPageInner() {
             />
             Làm mới
           </Button>
-          <CategoriesFormDialog
-            form={form}
-            open={dialogOpen}
-            onOpenChange={setDialogOpen}
-            onSubmit={handleSave}
-            submitting={submitting}
-            categoryTreeOptions={categoryTreeOptions}
-            slugify={slugify}
-            canWriteCategories={canWriteCategories}
-            editingId={editingId}
-            onOpenCreate={openCreate}
-          />
+          {canWriteCategories && (
+            <Button
+              type="button"
+              onClick={() => router.push("/categories/new")}
+              className="flex h-12 items-center gap-2 rounded-lg px-6 font-bold shadow-md"
+            >
+              <Plus className="size-5" aria-hidden /> Thêm danh mục
+            </Button>
+          )}
         </div>
       </div>
 
