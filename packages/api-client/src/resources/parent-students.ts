@@ -21,6 +21,7 @@ export interface ParentStudentsListParams {
   limit?: number;
   status?: string;
   search?: string;
+  createdAt?: string;
 }
 
 export interface UpdateParentStudentInput {
@@ -37,6 +38,7 @@ export class ParentStudentsApi {
         limit: params?.limit ?? 20,
         status: params?.status,
         search: params?.search,
+        createdAt: params?.createdAt,
       },
     });
     return payload;

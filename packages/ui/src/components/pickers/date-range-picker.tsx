@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CalendarIcon } from "lucide-react";
 import { Button } from "../button";
 import { Calendar } from "../calendar";
@@ -24,6 +24,19 @@ function formatIsoDate(d: Date): string {
   return `${y}-${m}-${day}`;
 }
 
+function parseDateRangeValue(value: unknown): { from?: Date; to?: Date } {
+  if (typeof value === "string" && value) {
+    const [fromStr, toStr] = value.split(",");
+    const from = fromStr ? new Date(fromStr) : undefined;
+    const to = toStr ? new Date(toStr) : undefined;
+    return {
+      from: from && !Number.isNaN(from.getTime()) ? from : undefined,
+      to: to && !Number.isNaN(to.getTime()) ? to : undefined,
+    };
+  }
+  return {};
+}
+
 export function DateRangePicker({
   value,
   onChange,
@@ -31,18 +44,13 @@ export function DateRangePicker({
   id,
 }: DateRangePickerProps) {
   const [open, setOpen] = useState(false);
-  const [draftRange, setDraftRange] = useState<{ from?: Date; to?: Date }>(() => {
-    if (typeof value === "string" && value) {
-      const [fromStr, toStr] = value.split(",");
-      const from = fromStr ? new Date(fromStr) : undefined;
-      const to = toStr ? new Date(toStr) : undefined;
-      return {
-        from: from && !Number.isNaN(from.getTime()) ? from : undefined,
-        to: to && !Number.isNaN(to.getTime()) ? to : undefined,
-      };
-    }
-    return {};
-  });
+  const [draftRange, setDraftRange] = useState<{ from?: Date; to?: Date }>(
+    () => parseDateRangeValue(value),
+  );
+
+  useEffect(() => {
+    setDraftRange(parseDateRangeValue(value));
+  }, [value]);
 
   const fmt = (d?: Date) =>
     d
