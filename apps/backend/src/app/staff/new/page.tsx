@@ -18,7 +18,7 @@ function NewStaffPageInner() {
   const canManageUsers =
     session != null && canUserAccess(session, PERMISSION_CODES.USERS_MANAGE);
   const { createMutation } = useStaffMutations();
-  const { form, resetForm, toggleRole, getPayload } = useStaffForm();
+  const { form, resetForm, getPayload } = useStaffForm();
 
   const rbacQuery = useRbacCatalog({
     enabled: Boolean(session) && canManageUsers,
@@ -67,7 +67,6 @@ function NewStaffPageInner() {
       isEdit={false}
       form={form}
       roles={roles}
-      onRoleToggle={toggleRole}
       onSubmit={handleSubmit}
       onCancel={handleCancel}
       submitting={createMutation.isPending}

@@ -60,9 +60,9 @@ export function useStaffForm(options: UseStaffFormOptions = {}) {
   const toggleRole = useCallback((code: string, checked: boolean) => {
     const currentRoles = form.getValues("roleCodes");
     if (checked) {
-      form.setValue("roleCodes", [...new Set([...currentRoles, code])]);
+      form.setValue("roleCodes", [...new Set([...currentRoles, code])], { shouldDirty: true });
     } else {
-      form.setValue("roleCodes", currentRoles.filter((c) => c !== code));
+      form.setValue("roleCodes", currentRoles.filter((c) => c !== code), { shouldDirty: true });
     }
   }, [form]);
 

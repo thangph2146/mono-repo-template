@@ -3,6 +3,7 @@
 import { Button } from "@ui/components/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@ui/components/card";
 import { FieldError } from "@ui/components/field";
+import { FormFieldCol } from "@ui/components/typing";
 import { Input } from "@ui/components/input";
 import { Label } from "@ui/components/label";
 import { Textarea } from "@ui/components/textarea";
@@ -132,10 +133,7 @@ export function GuideFormShell({
                   name="sectionKey"
                   control={control}
                   render={({ field, fieldState }) => (
-                    <div className="space-y-1.5">
-                      <Label htmlFor="sectionKey">
-                        Mã nhóm (sectionKey) <span className="text-rose-500">*</span>
-                      </Label>
+                    <FormFieldCol label="Mã nhóm (sectionKey)" required>
                       <Input
                         id="sectionKey"
                         placeholder="vd: dang-nhap, xem-diem"
@@ -150,7 +148,7 @@ export function GuideFormShell({
                         <span>Slug duy nhất, không dấu, dùng gạch ngang.</span>
                         <Badge variant={sectionKeyLength > 50 ? "destructive" : "outline"} className="ml-auto">{sectionKeyLength} ký tự</Badge>
                       </div>
-                    </div>
+                    </FormFieldCol>
                   )}
                 />
 
@@ -158,8 +156,7 @@ export function GuideFormShell({
                   name="content.title"
                   control={control}
                   render={({ field, fieldState }) => (
-                    <div className="space-y-1.5">
-                      <Label htmlFor="title">Tiêu đề nhóm</Label>
+                    <FormFieldCol label="Tiêu đề nhóm">
                       <Input
                         id="title"
                         placeholder="vd: Hướng dẫn đăng nhập hệ thống"
@@ -174,7 +171,7 @@ export function GuideFormShell({
                         <span>Tiêu đề ngắn gọn, dễ hiểu.</span>
                         <Badge variant={titleLength > 100 ? "destructive" : "outline"} className="ml-auto">{titleLength} ký tự</Badge>
                       </div>
-                    </div>
+                    </FormFieldCol>
                   )}
                 />
 
@@ -182,8 +179,7 @@ export function GuideFormShell({
                   name="content.description"
                   control={control}
                   render={({ field }) => (
-                    <div className="space-y-1.5">
-                      <Label htmlFor="desc">Mô tả nhóm</Label>
+                    <FormFieldCol label="Mô tả nhóm">
                       <Textarea
                         id="desc"
                         placeholder="Mô tả ngắn về nhóm hướng dẫn này…"
@@ -196,7 +192,7 @@ export function GuideFormShell({
                         <span>Mô tả ngắn giúp phân biệt nhóm.</span>
                         <Badge variant="outline">{descLength} ký tự</Badge>
                       </div>
-                    </div>
+                    </FormFieldCol>
                   )}
                 />
               </CardContent>

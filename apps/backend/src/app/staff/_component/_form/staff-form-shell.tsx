@@ -1,7 +1,8 @@
-import { ShieldHalf, CheckCircle2, Lock, Mail, UserCircle, KeyRound, X, Save, Loader2, UserPlus } from "lucide-react";
+import { ShieldHalf, CheckCircle2, Lock, UserCircle, KeyRound, X, Save, Loader2, UserPlus } from "lucide-react";
 import { Button } from "@ui/components/button";
 import { Input } from "@ui/components/input";
-import { Label } from "@ui/components/label";
+import { FieldError } from "@ui/components/field";
+import { FormFieldCol } from "@ui/components/typing";
 import { Switch } from "@ui/components/switch";
 import { Checkbox } from "@ui/components/checkbox";
 import { ADMIN_PAGE_TITLE_FORM_CLASS, ADMIN_PAGE_TITLE_ICON_SM_CLASS } from "@ui/lib/layout-shell";
@@ -14,7 +15,6 @@ interface StaffFormShellProps {
   isEdit: boolean;
   form: UseFormReturn<StaffFormValues>;
   roles: Array<{ code: string; name: string }>;
-  onRoleToggle: (code: string, checked: boolean) => void;
   onSubmit: () => Promise<void> | void;
   onCancel: () => void;
   submitting: boolean;
@@ -25,15 +25,10 @@ export function StaffFormShell(props: StaffFormShellProps) {
     isEdit,
     form,
     roles,
-    onRoleToggle,
     onSubmit,
     onCancel,
     submitting,
   } = props;
-
-  const { watch } = form;
-
-  const formRoles = watch("roleCodes");
 
   const roleChecklist = (
     <div className="max-h-[220px] space-y-3 overflow-y-auto rounded-lg border border-border p-3">
@@ -43,26 +38,37 @@ export function StaffFormShell(props: StaffFormShellProps) {
         </p>
       ) : (
         roles.map((r) => (
-          <label
+          <Controller
             key={r.code}
-            className="flex cursor-pointer items-start gap-3 rounded-lg p-2 hover:bg-muted/60"
-          >
-            <Checkbox
-              checked={formRoles.includes(r.code)}
-              onCheckedChange={(v) => onRoleToggle(r.code, v === true)}
-              className="mt-0.5"
-            />
-            <ShieldHalf
-              className="mt-0.5 size-4 shrink-0 text-primary/70"
-              aria-hidden
-            />
-            <span>
-              <span className="block text-sm font-medium">{r.name}</span>
-              <span className="font-mono text-[10px] text-muted-foreground">
-                {r.code}
-              </span>
-            </span>
-          </label>
+            name="roleCodes"
+            control={form.control}
+            render={({ field: { value, onChange } }) => (
+              <div
+                className="flex cursor-pointer items-start gap-3 rounded-lg p-2 hover:bg-muted/60"
+                onClick={() => {
+                  const newValue = value.includes(r.code)
+                    ? value.filter((c: string) => c !== r.code)
+                    : [...value, r.code];
+                  onChange(newValue);
+                }}
+              >
+                <Checkbox
+                  checked={value.includes(r.code)}
+                  className="mt-0.5"
+                />
+                <ShieldHalf
+                  className="mt-0.5 size-4 shrink-0 text-primary/70"
+                  aria-hidden
+                />
+                <span>
+                  <span className="block text-sm font-medium">{r.name}</span>
+                  <span className="font-mono text-[10px] text-muted-foreground">
+                    {r.code}
+                  </span>
+                </span>
+              </div>
+            )}
+          />
         ))
       )}
     </div>
@@ -73,7 +79,7 @@ export function StaffFormShell(props: StaffFormShellProps) {
       <div className="space-y-6 py-2">
         {/* Account Information Section */}
         <div className="space-y-4">
-          <div className="flex items-center gap-2 border-b border-border pb-2">
+          <div className="flex items-center gap-2 pb-2">
             <UserCircle className="size-4 text-primary" aria-hidden />
             <TypographyH3 className="text-sm font-semibold text-foreground">Thông tin tài khoản</TypographyH3>
           </div>
@@ -83,11 +89,7 @@ export function StaffFormShell(props: StaffFormShellProps) {
                 name="email"
                 control={form.control}
                 render={({ field, fieldState }) => (
-                  <div className="space-y-2">
-                    <Label htmlFor="c-email" className="flex items-center gap-2">
-                      <Mail className="size-3.5 text-muted-foreground" aria-hidden />
-                      Email đăng nhập
-                    </Label>
+                  <FormFieldCol label="Email đăng nhập" required>
                     <Input
                       id="c-email"
                       type="email"
@@ -98,19 +100,13 @@ export function StaffFormShell(props: StaffFormShellProps) {
                       onBlur={field.onBlur}
                       className={fieldState.error ? "border-destructive" : ""}
                     />
-                    {fieldState.error && (
-                      <p className="text-xs text-destructive">{fieldState.error.message}</p>
-                    )}
-                  </div>
+                    {fieldState.error && <FieldError>{fieldState.error.message}</FieldError>}
+                  </FormFieldCol>
                 )}
               />
             )}
             {isEdit && (
-              <div className="space-y-2">
-                <Label className="flex items-center gap-2">
-                  <Mail className="size-3.5 text-muted-foreground" aria-hidden />
-                  Email
-                </Label>
+              <FormFieldCol label="Email">
                 <Controller
                   name="email"
                   control={form.control}
@@ -122,17 +118,13 @@ export function StaffFormShell(props: StaffFormShellProps) {
                     />
                   )}
                 />
-              </div>
+              </FormFieldCol>
             )}
             <Controller
               name="fullName"
               control={form.control}
               render={({ field, fieldState }) => (
-                <div className="space-y-2">
-                  <Label htmlFor={isEdit ? "e-name" : "c-name"} className="flex items-center gap-2">
-                    <UserCircle className="size-3.5 text-muted-foreground" aria-hidden />
-                    Họ và tên
-                  </Label>
+                <FormFieldCol label="Họ và tên" required>
                   <Input
                     id={isEdit ? "e-name" : "c-name"}
                     placeholder="Nguyễn Văn A"
@@ -141,10 +133,8 @@ export function StaffFormShell(props: StaffFormShellProps) {
                     onBlur={field.onBlur}
                     className={fieldState.error ? "border-destructive" : ""}
                   />
-                  {fieldState.error && (
-                    <p className="text-xs text-destructive">{fieldState.error.message}</p>
-                  )}
-                </div>
+                  {fieldState.error && <FieldError>{fieldState.error.message}</FieldError>}
+                </FormFieldCol>
               )}
             />
           </div>
@@ -152,7 +142,7 @@ export function StaffFormShell(props: StaffFormShellProps) {
 
         {/* Password Section */}
         <div className="space-y-4">
-          <div className="flex items-center gap-2 border-b border-border pb-2">
+          <div className="flex items-center gap-2 pb-2">
             <KeyRound className="size-4 text-primary" aria-hidden />
             <TypographyH3 className="text-sm font-semibold text-foreground">Mật khẩu</TypographyH3>
           </div>
@@ -160,11 +150,7 @@ export function StaffFormShell(props: StaffFormShellProps) {
             name="password"
             control={form.control}
             render={({ field, fieldState }) => (
-              <div className="space-y-2">
-                <Label htmlFor={isEdit ? "e-pw" : "c-pw"} className="flex items-center gap-2">
-                  <KeyRound className="size-3.5 text-muted-foreground" aria-hidden />
-                  {isEdit ? "Mật khẩu mới (tuỳ chọn)" : "Mật khẩu ban đầu"}
-                </Label>
+              <FormFieldCol label={isEdit ? "Mật khẩu mới (tuỳ chọn)" : "Mật khẩu ban đầu"} required={!isEdit}>
                 <Input
                   id={isEdit ? "e-pw" : "c-pw"}
                   type="password"
@@ -175,13 +161,11 @@ export function StaffFormShell(props: StaffFormShellProps) {
                   onBlur={field.onBlur}
                   className={fieldState.error ? "border-destructive" : ""}
                 />
-                {fieldState.error && (
-                  <p className="text-xs text-destructive">{fieldState.error.message}</p>
-                )}
+                {fieldState.error && <FieldError>{fieldState.error.message}</FieldError>}
                 <p className="text-xs text-muted-foreground">
                   {isEdit ? "Để trống nếu không muốn đổi mật khẩu" : "Mật khẩu phải có tối thiểu 6 ký tự"}
                 </p>
-              </div>
+              </FormFieldCol>
             )}
           />
         </div>
@@ -189,7 +173,7 @@ export function StaffFormShell(props: StaffFormShellProps) {
         {/* Status & Roles Section */}
         <div className="grid gap-6 md:grid-cols-2">
           <div className="space-y-4">
-            <div className="flex items-center gap-2 border-b border-border pb-2">
+            <div className="flex items-center gap-2 pb-2">
               <Lock className="size-4 text-primary" aria-hidden />
               <TypographyH3 className="text-sm font-semibold text-foreground">Trạng thái</TypographyH3>
             </div>
@@ -225,15 +209,14 @@ export function StaffFormShell(props: StaffFormShellProps) {
           </div>
 
           <div className="space-y-4">
-            <div className="flex items-center gap-2 border-b border-border pb-2">
+            <div className="flex items-center gap-2 pb-2">
               <ShieldHalf className="size-4 text-primary" aria-hidden />
               <TypographyH3 className="text-sm font-semibold text-foreground">Vai trò</TypographyH3>
             </div>
             <div className="space-y-2">
-              <Label className="flex items-center gap-2">
-                <ShieldHalf className="size-3.5 text-muted-foreground" aria-hidden />
+              <p className="text-sm text-muted-foreground">
                 Chọn vai trò {isEdit && <span className="text-muted-foreground">(thay thế toàn bộ khi lưu)</span>}
-              </Label>
+              </p>
               {roleChecklist}
             </div>
           </div>

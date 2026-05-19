@@ -1,6 +1,7 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { useStaffForm, useStaffMutations } from "../../_component";
 import { StaffFormShell } from "../../_component/_form";
 import { useStaffProfile } from "@/hooks/queries";
@@ -20,7 +21,7 @@ function EditStaffPageInner() {
   const canManageUsers =
     session != null && canUserAccess(session, PERMISSION_CODES.USERS_MANAGE);
   const { updateMutation } = useStaffMutations();
-  const { form, resetForm, populateForm, toggleRole, getPayload } = useStaffForm({ editingId: params.id as string });
+  const { form, resetForm, populateForm, getPayload } = useStaffForm({ editingId: params.id as string });
 
   const userId = params.id as string;
 
@@ -33,9 +34,11 @@ function EditStaffPageInner() {
   const roles = rbacQuery.data?.roles ?? [];
 
   // Populate form when user data is loaded
-  if (user) {
-    populateForm(user);
-  }
+  useEffect(() => {
+    if (user) {
+      populateForm(user);
+    }
+  }, [user, populateForm]);
 
   const handleSubmit = async () => {
     if (!user) return;
@@ -93,7 +96,6 @@ function EditStaffPageInner() {
       isEdit={true}
       form={form}
       roles={roles}
-      onRoleToggle={toggleRole}
       onSubmit={handleSubmit}
       onCancel={handleCancel}
       submitting={updateMutation.isPending}
