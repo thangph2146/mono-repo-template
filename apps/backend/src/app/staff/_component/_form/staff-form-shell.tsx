@@ -161,7 +161,7 @@ export function StaffFormShell(props: StaffFormShellProps) {
                   className={fieldState.error ? "border-destructive" : ""}
                 />
                 {fieldState.error && <FieldError>{fieldState.error.message}</FieldError>}
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-muted-foreground mt-1">
                   {isEdit ? "Để trống nếu không muốn đổi mật khẩu" : "Mật khẩu phải có tối thiểu 6 ký tự"}
                 </p>
               </FormFieldCol>
