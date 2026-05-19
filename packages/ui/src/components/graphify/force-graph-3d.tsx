@@ -167,36 +167,46 @@ export function GraphifyForceGraph3D({
 
           const group = new THREE.Group();
 
-          // Cylinder body (dọc +Z từ 0 đến length)
+          // Cylinder body: dọc +Y mặc định, origin tại midpoint
           const cylinderGeo = new THREE.CylinderGeometry(radius, radius, length, 8, 1);
-          cylinderGeo.translate(0, length / 2, 0);
           cylinderGeo.rotateX(-Math.PI / 2);
           group.add(new THREE.Mesh(cylinderGeo, material));
 
-          // Mũi tên ở đầu link (target)
-          const arrowHeight = radius * 5;
-          const arrowRadius = radius * 2.5;
+          // Mũi tên cone ở đầu target
+          const arrowHeight = radius * 6;
+          const arrowRadius = radius * 3;
           const coneGeo = new THREE.ConeGeometry(arrowRadius, arrowHeight, 8);
-          coneGeo.translate(0, length - arrowHeight / 2, 0);
           coneGeo.rotateX(-Math.PI / 2);
+          coneGeo.translate(0, 0, length / 2 - arrowHeight / 2);
           group.add(new THREE.Mesh(coneGeo, material));
 
-          // Glow layer mờ xung quanh link
+          // Glow layer mờ xung quanh link (origin tại midpoint)
           if (isDirect || isRelated || !hasSelection) {
             const glowRadius = radius * 2.5;
             const glowGeo = new THREE.CylinderGeometry(glowRadius, glowRadius, length, 8, 1);
-            glowGeo.translate(0, length / 2, 0);
             glowGeo.rotateX(-Math.PI / 2);
             const glowMat = new THREE.MeshBasicMaterial({
               color,
               transparent: true,
-              opacity: isDirect ? 0.12 : isRelated ? 0.08 : hasSelection ? 0.0 : 0.15,
+              opacity: isDirect ? 0.04 : isRelated ? 0.04 : hasSelection ? 0.0 : 0.1,
               depthWrite: false,
             });
             group.add(new THREE.Mesh(glowGeo, glowMat));
           }
 
           return group;
+        }}
+        linkPositionUpdate={(
+          obj: unknown,
+          { start, end }: { start: { x: number; y: number; z: number }; end: { x: number; y: number; z: number } }
+        ) => {
+          const group = obj as THREE.Group;
+          group.position.set(
+            (start.x + end.x) / 2,
+            (start.y + end.y) / 2,
+            (start.z + end.z) / 2
+          );
+          group.lookAt(end.x, end.y, end.z);
         }}
         linkDirectionalParticles={(l: unknown) => {
           const link = l as { __isRelated?: boolean; __isDirectConnection?: boolean };

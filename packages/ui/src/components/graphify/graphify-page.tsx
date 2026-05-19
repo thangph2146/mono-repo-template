@@ -71,7 +71,7 @@ function FolderNode({
   return (
     <Collapsible defaultOpen={defaultOpen} className="w-full">
       <CollapsibleTrigger className="group flex items-center gap-1.5 w-full px-2 py-1.5 text-left hover:bg-muted/50 transition-colors cursor-pointer rounded-md">
-        <ChevronRight className="size-3.5 text-muted-foreground transition-transform group-data-[state=open]:rotate-90 shrink-0" />
+        <ChevronRight className="size-3.5 text-muted-foreground transition-transform group-data-[panel-open]:rotate-90 shrink-0" />
         <Folder
           className="size-4 shrink-0 transition-colors"
           style={{ color: color, fill: color, fillOpacity: 0.2 }}
