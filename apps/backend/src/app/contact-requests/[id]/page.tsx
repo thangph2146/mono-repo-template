@@ -270,15 +270,6 @@ function ContactRequestDetailPageInner() {
               </div>
             </CardContent>
           </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Ghi chú</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm whitespace-pre-wrap">{contact.notes || "Không có ghi chú"}</p>
-            </CardContent>
-          </Card>
         </div>
 
         <Card className="md:col-span-2">
