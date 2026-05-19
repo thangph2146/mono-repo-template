@@ -9,6 +9,7 @@ import { useUpdateContactRequest } from "../../_component/_query/use-contact-que
 import { AdminPageGuard } from "@/components/admin-page-guard";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@ui/components/button";
+import type { UpdateContactRequestInput } from "@workspace/api-client";
 
 function EditContactRequestPageInner() {
   const params = useParams();
@@ -61,7 +62,7 @@ function EditContactRequestPageInner() {
 
     const payload = getPayload();
     try {
-      await updateMutation.mutateAsync({ id: contactId, input: payload as any });
+      await updateMutation.mutateAsync({ id: contactId, input: payload as UpdateContactRequestInput });
       router.push(`/contact-requests/${contactId}`);
     } catch {
       // Error handled by mutation

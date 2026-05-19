@@ -301,7 +301,10 @@ function SidebarLeafLink({
 }
 
 function isLeafActive(pathname: string, href: string): boolean {
-  return pathname === href;
+  if (pathname === href) return true;
+  // Check if pathname starts with href followed by a slash (for detail/edit pages)
+  if (pathname.startsWith(`${href}/`)) return true;
+  return false;
 }
 
 function isGroupActive(pathname: string, items: MenuLeaf[]): boolean {

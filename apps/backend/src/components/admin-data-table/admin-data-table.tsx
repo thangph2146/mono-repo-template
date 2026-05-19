@@ -13,6 +13,15 @@ function debounce<TArgs extends unknown[]>(fn: (...args: TArgs) => void, delay: 
   return debouncedFn;
 }
 
+type ColumnMeta = {
+  disableColumnFilter?: boolean;
+  className?: string;
+  filterPlaceholder?: string;
+  filterVariant?: string;
+  selectOptions?: Array<{ value: string; label: string }>;
+  treeOptions?: Array<{ value: string; label: string; children?: Array<{ value: string; label: string }> }>;
+};
+
 import {
   flexRender,
   getCoreRowModel,
@@ -299,7 +308,7 @@ export function AdminDataTable<TData>({
       ),
       enableSorting: false,
       enableColumnFilter: false,
-      meta: { disableColumnFilter: true, className: "sticky left-0 bg-background z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]" } as any,
+      meta: { disableColumnFilter: true, className: "sticky left-0 bg-background z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]" } satisfies ColumnMeta,
       size: 44,
     }),
     [],
@@ -692,7 +701,7 @@ export function AdminDataTable<TData>({
                     className={cn(
                       "align-top font-semibold whitespace-normal",
                       header.column.getCanSort() && "cursor-pointer select-none",
-                      (header.column.columnDef.meta as any)?.className
+                      (header.column.columnDef.meta as ColumnMeta | undefined)?.className
                     )}
                     onClick={header.column.getToggleSortingHandler()}
                   >
@@ -758,7 +767,7 @@ export function AdminDataTable<TData>({
                         key={cell.id}
                         className={cn(
                           "whitespace-normal align-middle max-w-[min(420px,40vw)]",
-                          (cell.column.columnDef.meta as any)?.className
+                          (cell.column.columnDef.meta as ColumnMeta | undefined)?.className
                         )}
                         style={{
                           paddingLeft:

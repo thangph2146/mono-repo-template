@@ -7,7 +7,6 @@ import {
   AlertCircle,
   ArchiveRestore,
   Loader2,
-  Pencil,
   Plus,
   RefreshCw,
   Shield,
@@ -47,6 +46,7 @@ import {
   permissionLabelVi,
 } from "@/lib/permission-labels";
 import { useAuth } from "@/providers/auth-provider";
+import { getRbacColumns } from "./_component/columns";
 import {
   ADMIN_ALERT_DIALOG_CONTENT_CLASS,
   ADMIN_DIALOG_CONTENT_LG_CLASS,
@@ -432,93 +432,13 @@ export default function RbacPage() {
     }
   };
 
-  const columns = useMemo<ColumnDef<RoleRow>[]>(
-    () => [
-      {
-        accessorKey: "name",
-        header: "Vai trò",
-        meta: { filterPlaceholder: "Lọc tên vai trò…" },
-        cell: ({ row }) => (
-          <button
-            type="button"
-            onClick={() => setSelectedRoleId(row.original.id)}
-            className="min-w-0 text-left"
-          >
-            <div className="truncate font-medium">{row.original.name}</div>
-            <div className="truncate text-xs font-mono text-muted-foreground">
-              {row.original.code}
-            </div>
-          </button>
-        ),
-      },
-      {
-        id: "permissionCount",
-        header: "Số quyền",
-        accessorFn: (row) => row.permissions.length,
-        enableColumnFilter: false,
-        cell: ({ row }) => (
-          <Badge variant="secondary" className="rounded-lg">
-            {row.original.permissions.length}
-          </Badge>
-        ),
-      },
-      {
-        accessorKey: "isActive",
-        header: "Trạng thái",
-        meta: {
-          filterVariant: "select",
-          selectOptions: [
-            { value: "true", label: "Hoạt động" },
-            { value: "false", label: "Tạm tắt" },
-          ],
-        },
-        filterFn: (row, id, value) => {
-          if (!value) return true;
-          return String(row.getValue(id)) === String(value);
-        },
-        cell: ({ row }) =>
-          row.original.isActive ? (
-            <Badge variant="outline" className="border-emerald-300 text-emerald-700">
-              Hoạt động
-            </Badge>
-          ) : (
-            <Badge variant="outline">Tạm tắt</Badge>
-          ),
-      },
-      {
-        id: "actions",
-        header: "Thao tác",
-        enableSorting: false,
-        enableColumnFilter: false,
-        meta: { disableColumnFilter: true },
-        cell: ({ row }) => (
-          <div className="flex flex-wrap gap-1">
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              className="h-8 gap-1 rounded-lg"
-              onClick={() => openEditDialog(row.original)}
-              disabled={!canManageRoles}
-            >
-              <Pencil className="size-3.5" />
-              Sửa
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              className="h-8 gap-1 rounded-lg border-destructive/40 text-destructive hover:bg-destructive/10"
-              onClick={() => setDeleteTarget(row.original)}
-              disabled={!canManageRoles}
-            >
-              <Trash2 className="size-3.5" />
-              Xóa tạm
-            </Button>
-          </div>
-        ),
-      },
-    ],
+  const columns = useMemo(
+    () =>
+      getRbacColumns({
+        onEdit: openEditDialog,
+        onDelete: setDeleteTarget,
+        canManageRoles,
+      }),
     [canManageRoles],
   );
 
@@ -657,6 +577,7 @@ export default function RbacPage() {
             rowSelectionEnabled
             selectedRowIds={selectedRowIds}
             onSelectedRowIdsChange={setSelectedRowIds}
+            canSelectRow={(row) => !isSuperAdminRoleCode(row.original.code)}
             bulkActions={
               canManageRoles
                 ? [
@@ -703,6 +624,7 @@ export default function RbacPage() {
             rowSelectionEnabled
             selectedRowIds={trashSelectedRowIds}
             onSelectedRowIdsChange={setTrashSelectedRowIds}
+            canSelectRow={(row) => !isSuperAdminRoleCode(row.original.code)}
             bulkActions={
               canManageRoles
                 ? [

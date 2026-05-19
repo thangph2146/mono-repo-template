@@ -9,8 +9,8 @@ export function formatPhoneNumber(phone: string): string {
   return phone;
 }
 
-export function buildFilterQuery(search?: string, status?: string, trash?: boolean): Record<string, any> {
-  const query: Record<string, any> = {};
+export function buildFilterQuery(search?: string, status?: string, trash?: boolean): Record<string, string | number | boolean | undefined> {
+  const query: Record<string, string | number | boolean | undefined> = {};
   if (search) {
     query.search = search;
   }

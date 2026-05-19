@@ -264,7 +264,7 @@ function StaffDetailPageInner() {
                 Bài viết liên quan
               </CardTitle>
               {postsQuery.data?.total && postsQuery.data.total > 5 && (
-                <Link href="/admin/posts">
+                <Link href="/posts">
                   <Button variant="ghost" size="sm" className="gap-1">
                     Xem tất cả
                     <ArrowRight className="size-4" aria-hidden />
@@ -288,7 +288,7 @@ function StaffDetailPageInner() {
                 {posts.map((post) => (
                   <Link
                     key={post.id}
-                    href={`/admin/posts/${post.id}`}
+                    href={`/posts/${post.id}`}
                     className="block rounded-lg border border-border bg-muted/30 p-4 transition-colors hover:bg-muted/60"
                   >
                     <div className="flex items-start justify-between gap-4">

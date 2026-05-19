@@ -24,6 +24,7 @@ import {
   GraduationCap,
   Bell,
   MessageSquare,
+  type LucideIcon,
 } from "lucide-react";
 import { Button } from "@ui/components/button";
 import { Badge } from "@ui/components/badge";
@@ -101,14 +102,14 @@ function ContactRequestDetailPageInner() {
   // Parse structured content (key-value pairs)
   const parseStructuredContent = (content: string) => {
     const lines = content.split('\n').filter(line => line.trim());
-    const structured: Array<{ key: string; value: string; icon?: any }> = [];
+    const structured: Array<{ key: string; value: string; icon?: LucideIcon }> = [];
     let messageContent = '';
 
     for (const line of lines) {
       const match = line.match(/^([^:]+):\s*(.+)$/);
       if (match) {
         const [, key, value] = match;
-        const iconMap: Record<string, any> = {
+        const iconMap: Record<string, LucideIcon> = {
           'Địa chỉ': MapPin,
           'Chương trình': BookOpen,
           'Ngành': GraduationCap,

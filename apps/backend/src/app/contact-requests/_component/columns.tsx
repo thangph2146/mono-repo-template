@@ -1,5 +1,7 @@
+"use client";
+
 import type { ColumnDef } from "@tanstack/react-table";
-import { ArchiveRestore, Bell, Book, CalendarClock, CircleCheck, CircleDashed, CircleDot, Eye, GraduationCap, Mail, Map, MessageSquare, Pencil, Phone, Trash2, User } from "lucide-react";
+import { ArchiveRestore, CalendarClock, CircleCheck, CircleDashed, CircleDot, Eye, Mail, MessageSquare, Pencil, Phone, Trash2, User } from "lucide-react";
 import { Badge } from "@ui/components/badge";
 import { Button } from "@ui/components/button";
 import type { ContactRequest } from "./types";
@@ -21,10 +23,10 @@ export function getContactRequestColumns(props: ContactRequestColumnsProps): Col
     {
       accessorKey: "name",
       header: "Tên",
-      meta: { 
+      meta: {
         filterPlaceholder: "Lọc tên…",
         className: "sticky left-0 bg-background z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]",
-      } as any,
+      } as ColumnDef<ContactRequest>['meta'],
       size: 200,
       cell: ({ row }) => (
         <span className="min-w-[200px] flex min-w-0 items-center gap-2">
@@ -225,10 +227,10 @@ export function getContactRequestColumns(props: ContactRequestColumnsProps): Col
       header: "Thao tác",
       enableColumnFilter: false,
       enableSorting: false,
-      meta: { 
+      meta: {
         disableColumnFilter: true,
         className: "sticky right-0 bg-background z-10 shadow-[-2px_0_5px_-2px_rgba(0,0,0,0.1)]",
-      } as any,
+      } as ColumnDef<ContactRequest>['meta'],
       cell: ({ row }) => {
         const contact = row.original;
         return (
