@@ -1,13 +1,13 @@
-import type { ColumnFiltersState, RowSelectionState, OnChangeFn } from "@tanstack/react-table";
+import type { ColumnFiltersState, OnChangeFn, RowSelectionState } from "@tanstack/react-table";
 import { FilterX } from "lucide-react";
 import { Button } from "@ui/components/button";
 import { AdminDataTable } from "@/components/admin-data-table";
 import { AdminTablePaginationFooter } from "@/components/admin-table-pagination-footer";
 import { getStaffColumns } from "../columns";
-import type { User } from "@/lib/api";
+import type { StaffRow } from "../types";
 
 interface StaffTableProps {
-  data: User[];
+  data: StaffRow[];
   isLoading: boolean;
   total: number;
   page: number;
@@ -20,9 +20,9 @@ interface StaffTableProps {
   onGlobalFilterChange: OnChangeFn<string>;
   selectedRowIds: RowSelectionState;
   onSelectedRowIdsChange: OnChangeFn<RowSelectionState>;
-  onView: (user: User) => void;
-  onEdit: (user: User) => void;
-  onDelete: (user: User) => void;
+  onView: (user: StaffRow) => void;
+  onEdit: (user: StaffRow) => void;
+  onDelete: (user: StaffRow) => void;
   busy: boolean;
   currentUserId?: string;
   onBulkDelete: (ids: string[]) => void;
@@ -71,7 +71,7 @@ export function StaffTable(props: StaffTableProps) {
   );
 
   return (
-    <AdminDataTable<User>
+    <AdminDataTable<StaffRow>
       data={data}
       getRowId={(row) => String(row.id)}
       columns={columns}

@@ -1,3 +1,5 @@
+import { normalizeAdminFilterValues } from "@/lib";
+
 export {
   slugify,
   formatDateTime,
@@ -12,21 +14,10 @@ export function buildCategoriesFilterQuery(
 ): Record<string, string> {
   const query: Record<string, string> = {};
   for (const filter of filters) {
-    const { value } = filter;
-    if (value === undefined || value === null || value === "") continue;
+    if (filter.id !== "parentId") continue;
 
-    if (filter.id === "parentId") {
-      if (Array.isArray(value)) {
-        const vals = value.map((v) => String(v)).filter(Boolean);
-        if (vals.length) query.parentId = vals.join(",");
-      } else if (typeof value === "string" && value.includes(",")) {
-        const vals = value.split(",").map((v) => v.trim()).filter(Boolean);
-        if (vals.length) query.parentId = vals.join(",");
-      } else {
-        const v = String(value).trim();
-        if (v) query.parentId = v;
-      }
-    }
+    const values = normalizeAdminFilterValues(filter.value);
+    if (values.length) query.parentId = values.join(",");
   }
   return query;
 }

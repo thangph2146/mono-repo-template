@@ -1,40 +1,40 @@
 "use client";
 
-import type { ColumnFiltersState, RowSelectionState, OnChangeFn } from "@tanstack/react-table";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
+import type { ColumnFiltersState, OnChangeFn, RowSelectionState } from "@tanstack/react-table";
 import {
   AlertCircle,
   ArchiveRestore,
+  Info,
   Layers,
   RefreshCw,
   UserPlus,
   Users,
-  Info,
 } from "lucide-react";
-import { Button } from "@ui/components/button";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 import { Badge } from "@ui/components/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@ui/components/tabs";
+import { Button } from "@ui/components/button";
 import { PageSection } from "@ui/components/layout";
-import { AdminPageGuard } from "@/components/admin-page-guard";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@ui/components/tabs";
+import { TypographyH1, TypographyH3 } from "@ui/components/typography";
+import { ADMIN_PAGE_SUBTITLE_CLASS, ADMIN_PAGE_TITLE_ICON_CLASS, ADMIN_PAGE_TITLE_PRIMARY_CLASS } from "@ui/lib/layout-shell";
+import { cn } from "@ui/lib/utils";
 import { canUserAccess, PERMISSION_CODES } from "@workspace/api-client";
-import { useStaffUserList, useTrashedStaffUsers, useRbacCatalog, queryKeys } from "@/hooks/queries";
+import { AdminPageGuard } from "@/components/admin-page-guard";
+import { queryKeys, useRbacCatalog, useStaffUserList, useTrashedStaffUsers } from "@/hooks/queries";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { api } from "@/lib/api";
+import { useAuth } from "@/providers/auth-provider";
 import {
+  buildUsersFilterQuery,
+  StaffBulkConfirmDialog,
+  StaffConfirmDialog,
   StaffTable,
   StaffTrashTable,
-  StaffConfirmDialog,
-  StaffBulkConfirmDialog,
-  buildUsersFilterQuery,
+  type StaffRow,
 } from "./_component";
-import { ADMIN_PAGE_SUBTITLE_CLASS, ADMIN_PAGE_TITLE_PRIMARY_CLASS, ADMIN_PAGE_TITLE_ICON_CLASS } from "@ui/lib/layout-shell";
-import { TypographyH1, TypographyH3 } from "@ui/components/typography";
-import type { User } from "@/lib/api";
-import { useAuth } from "@/providers/auth-provider";
-import { cn } from "@ui/lib/utils";
 
 function StaffPageInner() {
   const router = useRouter();
@@ -61,13 +61,12 @@ function StaffPageInner() {
 
   const [globalFilter, setGlobalFilter] = useState("");
   const debouncedGlobalFilter = useDebouncedValue(globalFilter, 250);
-  const [roleFilter, setRoleFilter] = useState<string>("all");
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [trashColumnFilters, setTrashColumnFilters] = useState<ColumnFiltersState>([]);
 
-  const [deleteTarget, setDeleteTarget] = useState<User | null>(null);
-  const [restoreTarget, setRestoreTarget] = useState<User | null>(null);
-  const [purgeTarget, setPurgeTarget] = useState<User | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<StaffRow | null>(null);
+  const [restoreTarget, setRestoreTarget] = useState<StaffRow | null>(null);
+  const [purgeTarget, setPurgeTarget] = useState<StaffRow | null>(null);
   const [bulkDeleteTarget, setBulkDeleteTarget] = useState<string[] | null>(null);
   const [bulkRestoreTarget, setBulkRestoreTarget] = useState<string[] | null>(null);
   const [bulkPurgeTarget, setBulkPurgeTarget] = useState<string[] | null>(null);
@@ -75,10 +74,6 @@ function StaffPageInner() {
   useEffect(() => {
     setStaffPage(1);
   }, [debouncedGlobalFilter, staffPageSize]);
-
-  useEffect(() => {
-    setStaffPage(1);
-  }, [roleFilter]);
 
   useEffect(() => {
     setTrashPage(1);
@@ -133,6 +128,11 @@ function StaffPageInner() {
   });
 
   const roles = rbacQuery.data?.roles ?? [];
+  const roleFilter = useMemo(() => {
+    const value = columnFilters.find((filter) => filter.id === "roles")?.value;
+    const normalized = String(value ?? "").trim();
+    return normalized || "all";
+  }, [columnFilters]);
   const staffListItems = useMemo(
     () => usersQuery.data?.items ?? [],
     [usersQuery.data?.items]
@@ -169,28 +169,27 @@ function StaffPageInner() {
 
   const clearStaffFilters = useCallback((): void => {
     setGlobalFilter("");
-    setRoleFilter("all");
     setColumnFilters([]);
     setStaffPage(1);
   }, []);
 
-  const handleView = useCallback((user: User) => {
+  const handleView = useCallback((user: StaffRow) => {
     router.push(`/staff/${user.id}`);
   }, [router]);
 
-  const handleEdit = useCallback((user: User) => {
+  const handleEdit = useCallback((user: StaffRow) => {
     router.push(`/staff/${user.id}/edit`);
   }, [router]);
 
-  const handleDelete = useCallback((user: User) => {
+  const handleDelete = useCallback((user: StaffRow) => {
     setDeleteTarget(user);
   }, []);
 
-  const handleRestore = useCallback((user: User) => {
+  const handleRestore = useCallback((user: StaffRow) => {
     setRestoreTarget(user);
   }, []);
 
-  const handlePurge = useCallback((user: User) => {
+  const handlePurge = useCallback((user: StaffRow) => {
     setPurgeTarget(user);
   }, []);
 
@@ -409,7 +408,10 @@ function StaffPageInner() {
                 currentUserId={session?.id}
                 onBulkDelete={handleBulkDelete}
                 onClearFilters={clearStaffFilters}
-                roleOptions={roles.map((r) => ({ value: r.code, label: r.name }))}
+                roleOptions={[
+                  { value: "none", label: "Chưa gán vai trò" },
+                  ...roles.map((r) => ({ value: r.code, label: r.name })),
+                ]}
               />
             ) : null}
           </TabsContent>

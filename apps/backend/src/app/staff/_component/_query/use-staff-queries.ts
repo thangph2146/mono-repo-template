@@ -1,12 +1,18 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import type { User } from "@workspace/api-client";
-import type { StoreSyncSdk } from "@workspace/api-client";
-import { queryKeys } from "@/hooks/queries";
+import type { CreateUserInput, StoreSyncSdk, UpdateUserInput } from "@workspace/api-client";
 import { toast } from "sonner";
-import { ApiError } from "@/lib/api";
-import { api } from "@/lib/api";
+import { ApiError, api } from "@/lib/api";
+import { queryKeys } from "@/hooks/queries";
 
-export type UsersListData = { items: User[]; total: number };
+type CreateStaffInput = Pick<
+  CreateUserInput,
+  "email" | "fullName" | "password" | "isActive" | "roleCodes"
+>;
+
+type UpdateStaffInput = Pick<
+  UpdateUserInput,
+  "fullName" | "password" | "isActive" | "roleCodes"
+>;
 
 export interface UseStaffMutationsProps {
   api: StoreSyncSdk;
@@ -16,7 +22,7 @@ export function useStaffMutations({ api: apiClient }: UseStaffMutationsProps) {
   const queryClient = useQueryClient();
 
   const createMutation = useMutation({
-    mutationFn: async (input: { email: string; fullName: string; password: string; isActive: boolean; roleCodes: string[] }) => {
+    mutationFn: async (input: CreateStaffInput) => {
       return apiClient.users.create({
         email: input.email,
         fullName: input.fullName,
@@ -37,7 +43,7 @@ export function useStaffMutations({ api: apiClient }: UseStaffMutationsProps) {
   });
 
   const updateMutation = useMutation({
-    mutationFn: async ({ id, input }: { id: string; input: { fullName: string; isActive: boolean; roleCodes: string[]; password?: string } }) => {
+    mutationFn: async ({ id, input }: { id: string; input: UpdateStaffInput }) => {
       return apiClient.users.update(id, {
         fullName: input.fullName,
         isActive: input.isActive,

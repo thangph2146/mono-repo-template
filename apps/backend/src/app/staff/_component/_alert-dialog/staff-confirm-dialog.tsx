@@ -1,13 +1,13 @@
 import { Archive, ArchiveRestore, Trash2 } from "lucide-react";
-import { AdminConfirmActionDialog } from "@/components/admin-confirm-action-dialog";
 import { ADMIN_ALERT_DIALOG_CONTENT_CLASS } from "@ui/lib/layout-shell";
-import type { User } from "@/lib/api";
+import { AdminConfirmActionDialog } from "@/components/admin-confirm-action-dialog";
+import type { StaffRow } from "../types";
 
 interface StaffConfirmDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   action: "delete" | "restore" | "purge";
-  target: User | null;
+  target: StaffRow | null;
   onConfirm: () => Promise<void> | void;
   loading?: boolean;
 }

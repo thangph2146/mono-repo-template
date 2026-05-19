@@ -1,14 +1,14 @@
-import type { ColumnFiltersState, RowSelectionState, OnChangeFn } from "@tanstack/react-table";
+import type { ColumnFiltersState, OnChangeFn, RowSelectionState } from "@tanstack/react-table";
 import { FilterX, RefreshCw } from "lucide-react";
 import { Button } from "@ui/components/button";
+import { cn } from "@ui/lib/utils";
 import { AdminDataTable } from "@/components/admin-data-table";
 import { AdminTablePaginationFooter } from "@/components/admin-table-pagination-footer";
 import { getTrashColumns } from "../columns";
-import type { User } from "@/lib/api";
-import { cn } from "@ui/lib/utils";
+import type { StaffRow } from "../types";
 
 interface StaffTrashTableProps {
-  data: User[];
+  data: StaffRow[];
   isLoading: boolean;
   total: number;
   page: number;
@@ -21,8 +21,8 @@ interface StaffTrashTableProps {
   onGlobalFilterChange: OnChangeFn<string>;
   selectedRowIds: RowSelectionState;
   onSelectedRowIdsChange: OnChangeFn<RowSelectionState>;
-  onRestore: (user: User) => void;
-  onPurge: (user: User) => void;
+  onRestore: (user: StaffRow) => void;
+  onPurge: (user: StaffRow) => void;
   busy: boolean;
   onBulkRestore: (ids: string[]) => void;
   onBulkPurge: (ids: string[]) => void;
@@ -70,7 +70,7 @@ export function StaffTrashTable(props: StaffTrashTableProps) {
   );
 
   return (
-    <AdminDataTable<User>
+    <AdminDataTable<StaffRow>
       data={data}
       getRowId={(row) => String(row.id)}
       columns={columns}

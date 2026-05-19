@@ -1,3 +1,4 @@
+import { buildAdminFilterQuery, COMMON_FILTER_MAPPINGS } from "@/lib";
 import type { TagRow, TagTreeRow } from "./types";
 
 export {
@@ -90,27 +91,17 @@ export function buildTagTree(rows: TagRow[]): TagTreeRow[] {
 export function buildTagsFilterQuery(
   columnFilters: { id: string; value: unknown }[],
 ): Record<string, string> {
-  const query: Record<string, string> = {};
-  for (const filter of columnFilters) {
-    const value = filter.value;
-    if (value === undefined || value === null || value === "") continue;
-    if (filter.id === "name") {
-      query.name = String(value).trim();
-    } else if (filter.id === "slug") {
-      query.slug = String(value).trim();
-    } else if (filter.id === "deletedAt" || filter.id === "updatedAt") {
-      const v = String(value).trim();
-      if (v) query[filter.id] = v;
-    }
-  }
-  return query;
+  return buildAdminFilterQuery(columnFilters, COMMON_FILTER_MAPPINGS.tags);
 }
 
 export function toFilterQuery(
   filters: Record<string, unknown>,
 ): Record<string, string | number | boolean | undefined | null> {
   return Object.fromEntries(
-    Object.entries(filters).map(([key, value]) => [`filter[${key}]`, value as string | number | boolean | undefined | null]),
+    Object.entries(filters).map(([key, value]) => [
+      `filter[${key}]`,
+      value as string | number | boolean | undefined | null,
+    ]),
   );
 }
 

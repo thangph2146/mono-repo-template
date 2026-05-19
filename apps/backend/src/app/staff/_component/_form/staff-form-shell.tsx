@@ -1,17 +1,26 @@
-import { ShieldHalf, CheckCircle2, Lock, UserCircle, X, Save, Loader2, UserPlus } from "lucide-react";
+import {
+  CheckCircle2,
+  Loader2,
+  Lock,
+  Save,
+  ShieldHalf,
+  UserCircle,
+  UserPlus,
+  X,
+} from "lucide-react";
 import { Button } from "@ui/components/button";
-import { Input } from "@ui/components/input";
+import { Checkbox } from "@ui/components/checkbox";
 import { FieldError } from "@ui/components/field";
 import { FormFieldCol } from "@ui/components/typing";
+import { Input } from "@ui/components/input";
 import { Switch } from "@ui/components/switch";
-import { Checkbox } from "@ui/components/checkbox";
-import { ADMIN_PAGE_TITLE_FORM_CLASS, ADMIN_PAGE_TITLE_ICON_SM_CLASS } from "@ui/lib/layout-shell";
 import { TypographyH1, TypographyH3 } from "@ui/components/typography";
+import { ADMIN_PAGE_TITLE_FORM_CLASS, ADMIN_PAGE_TITLE_ICON_SM_CLASS } from "@ui/lib/layout-shell";
 import { Controller } from "react-hook-form";
 import type { UseFormReturn } from "react-hook-form";
 import type { StaffFormValues } from "../_hooks/use-staff-form";
 
-interface StaffFormShellProps {
+export interface StaffFormShellProps {
   isEdit: boolean;
   form: UseFormReturn<StaffFormValues>;
   roles: Array<{ code: string; name: string }>;

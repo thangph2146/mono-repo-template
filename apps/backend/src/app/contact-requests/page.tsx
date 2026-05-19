@@ -13,6 +13,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@ui/components/tabs"
 import { PageSection } from "@ui/components/layout"
 import { AdminPageGuard } from "@/components/admin-page-guard"
 import { useContactRequests } from "@/hooks/queries"
+import {
+  buildAdminFilterQuery,
+  COMMON_FILTER_MAPPINGS,
+} from "@/lib/build-admin-filter-query"
 import { useDebouncedValue } from "@/hooks/use-debounced-value"
 import {
   ContactRequestTable,
@@ -55,10 +59,16 @@ function ContactRequestsPageInner() {
     useState<ColumnFiltersState>([])
 
   const [deleteTarget, setDeleteTarget] = useState<ContactRequest | null>(null)
-  const [restoreTarget, setRestoreTarget] = useState<ContactRequest | null>(null)
+  const [restoreTarget, setRestoreTarget] = useState<ContactRequest | null>(
+    null
+  )
   const [purgeTarget, setPurgeTarget] = useState<ContactRequest | null>(null)
-  const [bulkDeleteTarget, setBulkDeleteTarget] = useState<string[] | null>(null)
-  const [bulkRestoreTarget, setBulkRestoreTarget] = useState<string[] | null>(null)
+  const [bulkDeleteTarget, setBulkDeleteTarget] = useState<string[] | null>(
+    null
+  )
+  const [bulkRestoreTarget, setBulkRestoreTarget] = useState<string[] | null>(
+    null
+  )
   const [bulkPurgeTarget, setBulkPurgeTarget] = useState<string[] | null>(null)
 
   const deleteMutation = useDeleteContactRequest()
@@ -70,11 +80,11 @@ function ContactRequestsPageInner() {
 
   useEffect(() => {
     setPage(1)
-  }, [debouncedGlobalFilter, pageSize])
+  }, [columnFilters, debouncedGlobalFilter, pageSize])
 
   useEffect(() => {
     setTrashPage(1)
-  }, [tab, trashPageSize])
+  }, [tab, trashColumnFilters, trashPageSize])
 
   useEffect(() => {
     setListSelection({})
@@ -86,9 +96,10 @@ function ContactRequestsPageInner() {
       page,
       limit: pageSize,
       search: debouncedGlobalFilter.trim() || undefined,
-      status: columnFilters.find((f) => f.id === "status")?.value as
-        | string
-        | undefined,
+      filters: buildAdminFilterQuery(
+        columnFilters,
+        COMMON_FILTER_MAPPINGS.contactRequests
+      ),
     }),
     [columnFilters, debouncedGlobalFilter, page, pageSize]
   )
@@ -99,8 +110,12 @@ function ContactRequestsPageInner() {
       limit: trashPageSize,
       search: debouncedGlobalFilter.trim() || undefined,
       trash: true,
+      filters: buildAdminFilterQuery(
+        trashColumnFilters,
+        COMMON_FILTER_MAPPINGS.contactRequests
+      ),
     }),
-    [debouncedGlobalFilter, trashPage, trashPageSize]
+    [debouncedGlobalFilter, trashColumnFilters, trashPage, trashPageSize]
   )
 
   const activeQuery = useContactRequests({
@@ -186,9 +201,14 @@ function ContactRequestsPageInner() {
     }
   }, [bulkPurgeTarget, bulkPurgeMutation])
 
-  const handleClearFilters = useCallback(() => {
+  const handleClearListFilters = useCallback(() => {
     setGlobalFilter("")
     setColumnFilters([])
+  }, [])
+
+  const handleClearTrashFilters = useCallback(() => {
+    setGlobalFilter("")
+    setTrashColumnFilters([])
   }, [])
 
   const busy =
@@ -277,7 +297,7 @@ function ContactRequestsPageInner() {
             onDelete={handleDelete}
             busy={busy}
             onBulkDelete={handleBulkDelete}
-            onClearFilters={handleClearFilters}
+            onClearFilters={handleClearListFilters}
           />
         </TabsContent>
 
@@ -301,7 +321,7 @@ function ContactRequestsPageInner() {
             busy={busy}
             onBulkRestore={handleBulkRestore}
             onBulkPurge={handleBulkPurge}
-            onClearFilters={handleClearFilters}
+            onClearFilters={handleClearTrashFilters}
           />
         </TabsContent>
       </Tabs>

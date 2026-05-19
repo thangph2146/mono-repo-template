@@ -1,12 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import type {
   ColumnFiltersState,
   RowSelectionState,
 } from "@tanstack/react-table";
-import { UserCheck, RefreshCw, CheckCircle2, XCircle } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
+import { CheckCircle2, RefreshCw, UserCheck, XCircle } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Button } from "@ui/components/button";
 import { PageSection } from "@ui/components/layout";
 import { TypographyH1 } from "@ui/components/typography";
@@ -18,12 +18,13 @@ import {
 } from "@ui/lib/layout-shell";
 import { AdminConfirmActionDialog } from "@/components/admin-confirm-action-dialog";
 import { AdminPageGuard } from "@/components/admin-page-guard";
+import { buildAdminFilterQuery, COMMON_FILTER_MAPPINGS } from "@/lib";
 import { api } from "@/lib/api";
+import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { ParentStudentTable } from "./_component/_table";
 import { useReviewParentStudentMutation } from "./_component/_query";
 import { getParentStudentsColumns } from "./_component/columns";
 import type { ParentStudent } from "./_component/types";
-import { useDebouncedValue } from "@/hooks/use-debounced-value";
 
 interface ListResult {
   data: ParentStudent[];
@@ -39,25 +40,6 @@ type ConfirmAction =
   | { kind: "approve"; row: ParentStudent }
   | { kind: "reject"; row: ParentStudent };
 
-function buildParentStudentsFilterQuery(
-  filters: { id: string; value: unknown }[]
-): Record<string, string> {
-  const query: Record<string, string> = {};
-  for (const filter of filters) {
-    const { value } = filter;
-    if (value === undefined || value === null || value === "") continue;
-
-    if (filter.id === "status") {
-      const v = String(value).trim();
-      if (v) query.status = v;
-    } else if (filter.id === "createdAt") {
-      const v = String(value).trim();
-      if (v) query.createdAt = v;
-    }
-  }
-  return query;
-}
-
 function AdminParentStudentsPageInner() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
@@ -69,7 +51,11 @@ function AdminParentStudentsPageInner() {
   const debouncedQ = useDebouncedValue(globalFilter, 300);
 
   const columnFilterQuery = useMemo(
-    () => buildParentStudentsFilterQuery(columnFilters),
+    () =>
+      buildAdminFilterQuery(
+        columnFilters,
+        COMMON_FILTER_MAPPINGS.parentStudents,
+      ),
     [columnFilters],
   );
 

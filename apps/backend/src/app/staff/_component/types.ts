@@ -1,8 +1,8 @@
-import type { User } from "@/lib/api";
+import type { User } from "@workspace/api-client";
 
 export type StaffRow = User;
 
 export interface StaffConfirmAction {
   kind: "delete" | "restore" | "purge";
-  row: User;
+  row: StaffRow;
 }

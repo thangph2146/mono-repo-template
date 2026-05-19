@@ -1,20 +1,32 @@
 import type { ColumnDef } from "@tanstack/react-table";
-import { ArchiveRestore, CalendarClock, CheckCircle2, Eye, Lock, Mail, Pencil, Phone, ShieldHalf, Trash2, UserCircle } from "lucide-react";
+import {
+  ArchiveRestore,
+  CalendarClock,
+  CheckCircle2,
+  Eye,
+  Lock,
+  Mail,
+  Pencil,
+  Phone,
+  ShieldHalf,
+  Trash2,
+  UserCircle,
+} from "lucide-react";
 import { Badge } from "@ui/components/badge";
 import { Button } from "@ui/components/button";
 import { isSuperAdminRoleCode } from "@workspace/api-client";
-import type { User } from "@/lib/api";
+import type { StaffRow } from "./types";
 
 export interface StaffColumnsProps {
-  onView: (user: User) => void;
-  onEdit: (user: User) => void;
-  onDelete: (user: User) => void;
+  onView: (user: StaffRow) => void;
+  onEdit: (user: StaffRow) => void;
+  onDelete: (user: StaffRow) => void;
   busy: boolean;
   currentUserId?: string;
   roleOptions?: { value: string; label: string }[];
 }
 
-export function getStaffColumns(props: StaffColumnsProps): ColumnDef<User>[] {
+export function getStaffColumns(props: StaffColumnsProps): ColumnDef<StaffRow>[] {
   const { onView, onEdit, onDelete, busy, currentUserId, roleOptions } = props;
 
   return [
@@ -196,10 +208,10 @@ export function getStaffColumns(props: StaffColumnsProps): ColumnDef<User>[] {
 }
 
 export function getTrashColumns(props: {
-  onRestore: (user: User) => void;
-  onPurge: (user: User) => void;
+  onRestore: (user: StaffRow) => void;
+  onPurge: (user: StaffRow) => void;
   busy: boolean;
-}): ColumnDef<User>[] {
+}): ColumnDef<StaffRow>[] {
   const { onRestore, onPurge, busy } = props;
 
   return [

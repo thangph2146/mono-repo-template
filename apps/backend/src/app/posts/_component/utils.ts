@@ -1,5 +1,5 @@
-import type { SerializedEditorState } from "lexical";
-import type { SerializedLexicalNode } from "lexical";
+import type { SerializedEditorState, SerializedLexicalNode } from "lexical";
+import { normalizeAdminFilterValue, normalizeAdminFilterValues } from "@/lib";
 import type {
   EditorParagraphNodeShape,
   EditorStateShape,
@@ -93,38 +93,17 @@ export function buildPostsFilterQuery(
 ): Record<string, string> {
   const query: Record<string, string> = {};
   for (const filter of filters) {
-    const { value } = filter;
-    if (value === undefined || value === null || value === "") continue;
-
     if (filter.id === "published") {
-      if (Array.isArray(value)) {
-        const vals = value.map((v) => String(v)).filter(Boolean);
-        if (vals.length) query.published = vals.join(",");
-      } else {
-        const v = String(value).trim();
-        if (v) query.published = v;
-      }
+      const values = normalizeAdminFilterValues(filter.value);
+      if (values.length) query.published = values.join(",");
     } else if (filter.id === "categoryId") {
-      if (Array.isArray(value)) {
-        const vals = value.map((v) => String(v)).filter(Boolean);
-        if (vals.length) query.categoryId = vals.join(",");
-      } else if (typeof value === "string" && value.includes(",")) {
-        const vals = value.split(",").map((v) => v.trim()).filter(Boolean);
-        if (vals.length) query.categoryId = vals.join(",");
-      } else {
-        const v = String(value).trim();
-        if (v) query.categoryId = v;
-      }
+      const values = normalizeAdminFilterValues(filter.value);
+      if (values.length) query.categoryId = values.join(",");
     } else if (filter.id === "tagId") {
-      if (Array.isArray(value)) {
-        const vals = value.map((v) => String(v)).filter(Boolean);
-        if (vals.length) query.tagId = vals.join(",");
-      } else {
-        const v = String(value).trim();
-        if (v) query.tagId = v;
-      }
+      const values = normalizeAdminFilterValues(filter.value);
+      if (values.length) query.tagId = values.join(",");
     } else if (filter.id === "updatedAt") {
-      const v = String(value).trim();
+      const v = normalizeAdminFilterValue(filter.value);
       if (v) query.updatedAt = v;
     }
   }

@@ -144,6 +144,7 @@ function buildWhere(
       else if (key === 'email') where.email = { $like: `%${v}%` };
       else if (key === 'phone') where.phone = { $like: `%${v}%` };
       else if (key === 'subject') where.subject = { $like: `%${v}%` };
+      else if (key === 'content') where.content = { $like: `%${v}%` };
       else if (
         key === 'status' &&
         ['NEW', 'IN_PROGRESS', 'RESOLVED', 'CLOSED'].includes(v)
