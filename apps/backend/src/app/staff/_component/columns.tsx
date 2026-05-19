@@ -11,10 +11,11 @@ export interface StaffColumnsProps {
   onDelete: (user: User) => void;
   busy: boolean;
   currentUserId?: string;
+  roleOptions?: { value: string; label: string }[];
 }
 
 export function getStaffColumns(props: StaffColumnsProps): ColumnDef<User>[] {
-  const { onView, onEdit, onDelete, busy, currentUserId } = props;
+  const { onView, onEdit, onDelete, busy, currentUserId, roleOptions } = props;
 
   return [
     {
@@ -84,28 +85,29 @@ export function getStaffColumns(props: StaffColumnsProps): ColumnDef<User>[] {
           );
         }
         return (
-          <div className="flex flex-wrap items-center gap-1.5">
-            <ShieldHalf
-              className="size-3.5 shrink-0 text-muted-foreground"
-              aria-hidden
-            />
-            <div className="flex flex-wrap gap-1">
-              {u.roles.map((r) => (
-                <Badge
-                  key={r.code}
-                  variant={
-                    isSuperAdminRoleCode(r.code) ? "default" : "secondary"
-                  }
-                  className="text-xs font-normal"
-                >
-                  {r.name}
-                </Badge>
-              ))}
-            </div>
+          <div className="flex flex-wrap gap-1">
+            {u.roles.map((r) => (
+              <Badge
+                key={r.code}
+                variant={
+                  isSuperAdminRoleCode(r.code) ? "default" : "secondary"
+                }
+                className="text-xs font-normal"
+              >
+                {r.name}
+              </Badge>
+            ))}
           </div>
         );
       },
-      meta: { filterPlaceholder: "Lọc theo tên vai trò…" },
+      enableColumnFilter: true,
+      enableSorting: false,
+      filterFn: () => true,
+      meta: {
+        filterVariant: "select",
+        filterLabel: "Vai trò",
+        selectOptions: roleOptions ?? [],
+      },
     },
     {
       id: "isActive",
@@ -152,11 +154,11 @@ export function getStaffColumns(props: StaffColumnsProps): ColumnDef<User>[] {
         const u = row.original;
         return (
           <div className="flex flex-wrap gap-1">
-            <Button 
-            variant="default" 
-            size="sm" 
-            onClick={() => onView(u)}
-              >
+            <Button
+              variant="default"
+              size="sm"
+              onClick={() => onView(u)}
+            >
               <Eye className="size-3.5" aria-hidden />
               Xem
             </Button>

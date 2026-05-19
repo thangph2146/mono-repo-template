@@ -409,6 +409,7 @@ function StaffPageInner() {
                 currentUserId={session?.id}
                 onBulkDelete={handleBulkDelete}
                 onClearFilters={clearStaffFilters}
+                roleOptions={roles.map((r) => ({ value: r.code, label: r.name }))}
               />
             ) : null}
           </TabsContent>

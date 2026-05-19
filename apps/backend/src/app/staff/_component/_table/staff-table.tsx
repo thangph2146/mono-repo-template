@@ -27,6 +27,7 @@ interface StaffTableProps {
   currentUserId?: string;
   onBulkDelete: (ids: string[]) => void;
   onClearFilters: () => void;
+  roleOptions?: { value: string; label: string }[];
 }
 
 export function StaffTable(props: StaffTableProps) {
@@ -51,9 +52,10 @@ export function StaffTable(props: StaffTableProps) {
     currentUserId,
     onBulkDelete,
     onClearFilters,
+    roleOptions,
   } = props;
 
-  const columns = getStaffColumns({ onView, onEdit, onDelete, busy, currentUserId });
+  const columns = getStaffColumns({ onView, onEdit, onDelete, busy, currentUserId, roleOptions });
 
   const paginationFooter = (
     <AdminTablePaginationFooter
