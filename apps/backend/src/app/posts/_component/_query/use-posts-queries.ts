@@ -79,3 +79,29 @@ export function useTrashQuery({
       }),
   });
 }
+
+export interface UsePostsByAuthorProps {
+  api: StoreSyncSdk;
+  authorId: string;
+  page?: number;
+  limit?: number;
+}
+
+export function usePostsByAuthor({
+  api,
+  authorId,
+  page = 1,
+  limit = 5,
+}: UsePostsByAuthorProps): UseQueryResult<PagedResult<PostListRow>> {
+  return useQuery({
+    queryKey: ["media", "posts", "by-author", authorId, page, limit],
+    queryFn: async (): Promise<PagedResult<PostListRow>> =>
+      api.posts.list<PostListRow>({
+        page,
+        limit,
+        status: "active",
+        ...toFilterQuery({ authorId }),
+      }),
+    enabled: !!authorId,
+  });
+}

@@ -1,10 +1,12 @@
-import { useState, useCallback } from "react";
+import { useCallback } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 
 export const staffFormSchema = z.object({
   email: z.string().email("Email không hợp lệ"),
   fullName: z.string().min(1, "Họ tên không được để trống"),
-  password: z.string().min(6, "Mật khẩu tối thiểu 6 ký tự"),
+  password: z.string().min(6, "Mật khẩu tối thiểu 6 ký tự").optional(),
   isActive: z.boolean(),
   roleCodes: z.array(z.string()),
 });
@@ -18,19 +20,27 @@ interface UseStaffFormOptions {
 export function useStaffForm(options: UseStaffFormOptions = {}) {
   const { editingId } = options;
 
-  const [formEmail, setFormEmail] = useState("");
-  const [formPassword, setFormPassword] = useState("");
-  const [formFullName, setFormFullName] = useState("");
-  const [formActive, setFormActive] = useState(true);
-  const [formRoles, setFormRoles] = useState<string[]>([]);
+  const form = useForm<StaffFormValues>({
+    resolver: zodResolver(staffFormSchema),
+    defaultValues: {
+      email: "",
+      fullName: "",
+      password: "",
+      isActive: true,
+      roleCodes: [],
+    },
+    mode: "onChange",
+  });
 
   const resetForm = useCallback(() => {
-    setFormEmail("");
-    setFormPassword("");
-    setFormFullName("");
-    setFormActive(true);
-    setFormRoles([]);
-  }, []);
+    form.reset({
+      email: "",
+      fullName: "",
+      password: "",
+      isActive: true,
+      roleCodes: [],
+    });
+  }, [form]);
 
   const populateForm = useCallback((user: {
     email: string;
@@ -38,63 +48,60 @@ export function useStaffForm(options: UseStaffFormOptions = {}) {
     isActive: boolean;
     roles: { code: string }[];
   }) => {
-    setFormEmail(user.email);
-    setFormPassword("");
-    setFormFullName(user.fullName);
-    setFormActive(user.isActive);
-    setFormRoles(user.roles.map((r) => r.code));
-  }, []);
+    form.reset({
+      email: user.email,
+      fullName: user.fullName,
+      password: "",
+      isActive: user.isActive,
+      roleCodes: user.roles.map((r) => r.code),
+    });
+  }, [form]);
 
   const toggleRole = useCallback((code: string, checked: boolean) => {
-    setFormRoles((prev) => {
-      if (checked) return [...new Set([...prev, code])];
-      return prev.filter((c) => c !== code);
-    });
-  }, []);
+    const currentRoles = form.getValues("roleCodes");
+    if (checked) {
+      form.setValue("roleCodes", [...new Set([...currentRoles, code])]);
+    } else {
+      form.setValue("roleCodes", currentRoles.filter((c) => c !== code));
+    }
+  }, [form]);
 
   const getPayload = useCallback((): {
-    email?: string;
+    email: string;
     fullName: string;
-    password?: string;
+    password: string;
     isActive: boolean;
     roleCodes: string[];
-  } => {
+} => {
+    const values = form.getValues();
     const payload: {
-      email?: string;
+      email: string;
       fullName: string;
-      password?: string;
+      password: string;
       isActive: boolean;
       roleCodes: string[];
     } = {
-      fullName: formFullName.trim(),
-      isActive: formActive,
-      roleCodes: formRoles,
+      fullName: values.fullName.trim(),
+      isActive: values.isActive,
+      email: "",
+      password: "",
+      roleCodes: values.roleCodes,
     };
 
     if (!editingId) {
-      payload.email = formEmail.trim();
-      payload.password = formPassword.trim();
+      payload.email = values.email.trim();
+      payload.password = values.password?.trim() || "";
     } else {
-      const pw = formPassword.trim();
-      if (pw.length > 0) {
-        payload.password = pw;
-      }
+      payload.email = values.email.trim();
+      const pw = values.password?.trim();
+      payload.password = pw || "";
     }
 
     return payload;
-  }, [formEmail, formFullName, formPassword, formActive, formRoles, editingId]);
+  }, [form, editingId]);
 
   return {
-    formEmail,
-    setFormEmail,
-    formPassword,
-    setFormPassword,
-    formFullName,
-    setFormFullName,
-    formActive,
-    setFormActive,
-    formRoles,
-    setFormRoles,
+    form,
     resetForm,
     populateForm,
     toggleRole,

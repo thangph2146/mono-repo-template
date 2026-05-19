@@ -2,6 +2,7 @@
 
 import type { ColumnFiltersState, RowSelectionState, OnChangeFn } from "@tanstack/react-table";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
@@ -36,6 +37,7 @@ import { useAuth } from "@/providers/auth-provider";
 import { cn } from "@ui/lib/utils";
 
 function StaffPageInner() {
+  const router = useRouter();
   const queryClient = useQueryClient();
   const { user: session } = useAuth();
   const canManageUsers =
@@ -172,9 +174,13 @@ function StaffPageInner() {
     setStaffPage(1);
   }, []);
 
+  const handleView = useCallback((user: User) => {
+    router.push(`/staff/${user.id}`);
+  }, [router]);
+
   const handleEdit = useCallback((user: User) => {
-    window.location.href = `/admin/staff/${user.id}/edit`;
-  }, []);
+    router.push(`/staff/${user.id}/edit`);
+  }, [router]);
 
   const handleDelete = useCallback((user: User) => {
     setDeleteTarget(user);
@@ -342,7 +348,7 @@ function StaffPageInner() {
               </Button>
               <Button
                 type="button"
-                onClick={() => (window.location.href = "/admin/staff/new")}
+                onClick={() => router.push("/staff/new")}
                 className="flex h-11 items-center gap-2 rounded-lg px-5 font-bold shadow-md"
                 disabled={busy || roles.length === 0}
               >
@@ -396,6 +402,7 @@ function StaffPageInner() {
                 onGlobalFilterChange={setGlobalFilter}
                 selectedRowIds={listStaffSelection}
                 onSelectedRowIdsChange={setListStaffSelection}
+                onView={handleView}
                 onEdit={handleEdit}
                 onDelete={handleDelete}
                 busy={busy}

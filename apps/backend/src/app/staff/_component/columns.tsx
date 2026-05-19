@@ -1,11 +1,12 @@
 import type { ColumnDef } from "@tanstack/react-table";
-import { ArchiveRestore, CalendarClock, CheckCircle2, Lock, Mail, Pencil, Phone, ShieldHalf, Trash2, UserCircle } from "lucide-react";
+import { ArchiveRestore, CalendarClock, CheckCircle2, Eye, Lock, Mail, Pencil, Phone, ShieldHalf, Trash2, UserCircle } from "lucide-react";
 import { Badge } from "@ui/components/badge";
 import { Button } from "@ui/components/button";
 import { isSuperAdminRoleCode } from "@workspace/api-client";
 import type { User } from "@/lib/api";
 
 export interface StaffColumnsProps {
+  onView: (user: User) => void;
   onEdit: (user: User) => void;
   onDelete: (user: User) => void;
   busy: boolean;
@@ -13,7 +14,7 @@ export interface StaffColumnsProps {
 }
 
 export function getStaffColumns(props: StaffColumnsProps): ColumnDef<User>[] {
-  const { onEdit, onDelete, busy, currentUserId } = props;
+  const { onView, onEdit, onDelete, busy, currentUserId } = props;
 
   return [
     {
@@ -151,6 +152,14 @@ export function getStaffColumns(props: StaffColumnsProps): ColumnDef<User>[] {
         const u = row.original;
         return (
           <div className="flex flex-wrap gap-1">
+            <Button 
+            variant="default" 
+            size="sm" 
+            onClick={() => onView(u)}
+              >
+              <Eye className="size-3.5" aria-hidden />
+              Xem
+            </Button>
             <Button
               type="button"
               variant="outline"

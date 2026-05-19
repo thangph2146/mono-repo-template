@@ -20,6 +20,7 @@ interface StaffTableProps {
   onGlobalFilterChange: OnChangeFn<string>;
   selectedRowIds: RowSelectionState;
   onSelectedRowIdsChange: OnChangeFn<RowSelectionState>;
+  onView: (user: User) => void;
   onEdit: (user: User) => void;
   onDelete: (user: User) => void;
   busy: boolean;
@@ -43,6 +44,7 @@ export function StaffTable(props: StaffTableProps) {
     onGlobalFilterChange,
     selectedRowIds,
     onSelectedRowIdsChange,
+    onView,
     onEdit,
     onDelete,
     busy,
@@ -51,7 +53,7 @@ export function StaffTable(props: StaffTableProps) {
     onClearFilters,
   } = props;
 
-  const columns = getStaffColumns({ onEdit, onDelete, busy, currentUserId });
+  const columns = getStaffColumns({ onView, onEdit, onDelete, busy, currentUserId });
 
   const paginationFooter = (
     <AdminTablePaginationFooter

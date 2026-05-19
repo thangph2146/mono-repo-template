@@ -3,69 +3,51 @@
 import { useParams, useRouter } from "next/navigation";
 import { useStaffForm, useStaffMutations } from "../../_component";
 import { StaffFormShell } from "../../_component/_form";
-import { useStaffUserList } from "@/hooks/queries";
+import { useStaffProfile } from "@/hooks/queries";
 import { useRbacCatalog } from "@/hooks/queries";
 import { useAuth } from "@/providers/auth-provider";
 import { AdminPageGuard } from "@/components/admin-page-guard";
-import { toast } from "sonner";
-import { ADMIN_PAGE_FORM_COLUMN_CLASS, ADMIN_PAGE_TITLE_FORM_CLASS, ADMIN_PAGE_TITLE_ICON_SM_CLASS } from "@ui/lib/layout-shell";
+import { ADMIN_PAGE_TITLE_FORM_CLASS, ADMIN_PAGE_TITLE_ICON_SM_CLASS } from "@ui/lib/layout-shell";
 import { TypographyH1 } from "@ui/components/typography";
 import { Pencil } from "lucide-react";
+import { canUserAccess, PERMISSION_CODES } from "@workspace/api-client";
+import { Card, CardContent } from "@ui/components/card";
 
 function EditStaffPageInner() {
   const params = useParams();
   const router = useRouter();
   const { user: session } = useAuth();
+  const canManageUsers =
+    session != null && canUserAccess(session, PERMISSION_CODES.USERS_MANAGE);
   const { updateMutation } = useStaffMutations();
-  const { formEmail, setFormEmail, formPassword, setFormPassword, formFullName, setFormFullName, formActive, setFormActive, formRoles, resetForm, populateForm, toggleRole } = useStaffForm({ editingId: params.id as string });
+  const { form, resetForm, populateForm, toggleRole, getPayload } = useStaffForm({ editingId: params.id as string });
 
   const userId = params.id as string;
 
-  const usersQuery = useStaffUserList({
-    enabled: Boolean(session) && Boolean(userId),
-    listParams: { page: 1, limit: 100 },
-  });
-
+  const userQuery = useStaffProfile(userId);
   const rbacQuery = useRbacCatalog({
-    enabled: Boolean(session),
+    enabled: Boolean(session) && canManageUsers,
   });
 
-  const user = usersQuery.data?.items.find((u) => String(u.id) === userId);
+  const user = userQuery.data;
   const roles = rbacQuery.data?.roles ?? [];
 
   // Populate form when user data is loaded
-  if (user && !formEmail) {
+  if (user) {
     populateForm(user);
   }
 
   const handleSubmit = async () => {
     if (!user) return;
-    const fullName = formFullName.trim();
-    if (!fullName) {
-      toast.error("Nhập họ tên");
+    const isValid = await form.trigger();
+    if (!isValid) {
       return;
     }
-    const payload: {
-      fullName: string;
-      isActive: boolean;
-      roleCodes: string[];
-      password?: string;
-    } = {
-      fullName,
-      isActive: formActive,
-      roleCodes: formRoles,
-    };
-    const pw = formPassword.trim();
-    if (pw.length > 0) {
-      if (pw.length < 6) {
-        toast.error("Mật khẩu mới tối thiểu 6 ký tự");
-        return;
-      }
-      payload.password = pw;
-    }
+
+    const payload = getPayload();
     try {
       await updateMutation.mutateAsync({ id: user.id, input: payload });
-      router.push(`/admin/staff/${userId}`);
+      router.push(`/staff/${userId}`);
     } catch {
       // Error handled by mutation
     }
@@ -73,12 +55,28 @@ function EditStaffPageInner() {
 
   const handleCancel = () => {
     resetForm();
-    router.push(`/admin/staff/${userId}`);
+    router.push(`/staff/${userId}`);
   };
 
-  if (!user) {
+  if (!session || !canManageUsers) {
     return (
-      <div className={ADMIN_PAGE_FORM_COLUMN_CLASS}>
+      <>
+        <TypographyH1 className={ADMIN_PAGE_TITLE_FORM_CLASS}>
+          <Pencil className={ADMIN_PAGE_TITLE_ICON_SM_CLASS} aria-hidden />
+          Sửa nhân sự
+        </TypographyH1>
+        <Card>
+          <CardContent className="py-12 text-center">
+            <p className="text-muted-foreground">Không có quyền truy cập</p>
+          </CardContent>
+        </Card>
+      </>
+    );
+  }
+
+  if (userQuery.isLoading || !user) {
+    return (
+      <>
         <TypographyH1 className={ADMIN_PAGE_TITLE_FORM_CLASS}>
           <Pencil className={ADMIN_PAGE_TITLE_ICON_SM_CLASS} aria-hidden />
           Sửa nhân sự
@@ -86,36 +84,20 @@ function EditStaffPageInner() {
         <div className="py-12 text-center">
           <p className="text-muted-foreground">Đang tải...</p>
         </div>
-      </div>
+      </>
     );
   }
 
   return (
-    <div className={ADMIN_PAGE_FORM_COLUMN_CLASS}>
-      <TypographyH1 className={ADMIN_PAGE_TITLE_FORM_CLASS}>
-        <Pencil className={ADMIN_PAGE_TITLE_ICON_SM_CLASS} aria-hidden />
-        Sửa nhân sự
-      </TypographyH1>
-      <StaffFormShell
-        open={true}
-        onOpenChange={(open) => !open && handleCancel()}
-        isEdit={true}
-        formEmail={formEmail}
-        formFullName={formFullName}
-        formPassword={formPassword}
-        formActive={formActive}
-        formRoles={formRoles}
-        roles={roles}
-        onEmailChange={setFormEmail}
-        onFullNameChange={setFormFullName}
-        onPasswordChange={setFormPassword}
-        onActiveChange={setFormActive}
-        onRoleToggle={toggleRole}
-        onSubmit={handleSubmit}
-        onCancel={handleCancel}
-        submitting={updateMutation.isPending}
-      />
-    </div>
+    <StaffFormShell
+      isEdit={true}
+      form={form}
+      roles={roles}
+      onRoleToggle={toggleRole}
+      onSubmit={handleSubmit}
+      onCancel={handleCancel}
+      submitting={updateMutation.isPending}
+    />
   );
 }
 

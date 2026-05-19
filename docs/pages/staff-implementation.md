@@ -71,14 +71,15 @@
   export const staffFormSchema = z.object({
     email: z.string().email("Email không hợp lệ"),
     fullName: z.string().min(1, "Họ tên không được để trống"),
-    password: z.string().min(6, "Mật khẩu tối thiểu 6 ký tự"),
+    password: z.string().min(6, "Mật khẩu tối thiểu 6 ký tự").optional(),
     isActive: z.boolean(),
     roleCodes: z.array(z.string()),
   });
   ```
 
-- [x] Export `useStaffForm(options)` hook:
-  - Manage form state (email, fullName, password, isActive, roleCodes)
+- [x] Export `useStaffForm(options)` hook using react-hook-form:
+  - Use `useForm` from react-hook-form with zodResolver
+  - Provide `form` object (UseFormReturn) for form control
   - Provide `resetForm()` to clear form
   - Provide `populateForm(user)` to populate from existing user
   - Provide `toggleRole(code, checked)` to add/remove roles
