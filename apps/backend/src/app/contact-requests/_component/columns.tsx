@@ -1,5 +1,5 @@
 import type { ColumnDef } from "@tanstack/react-table";
-import { ArchiveRestore, CalendarClock, CircleCheck, CircleDashed, CircleDot, Eye, Mail, MessageSquare, Pencil, Phone, Trash2, User } from "lucide-react";
+import { ArchiveRestore, Bell, Book, CalendarClock, CircleCheck, CircleDashed, CircleDot, Eye, GraduationCap, Mail, Map, MessageSquare, Pencil, Phone, Trash2, User } from "lucide-react";
 import { Badge } from "@ui/components/badge";
 import { Button } from "@ui/components/button";
 import type { ContactRequest } from "./types";
@@ -21,11 +21,15 @@ export function getContactRequestColumns(props: ContactRequestColumnsProps): Col
     {
       accessorKey: "name",
       header: "Tên",
-      meta: { filterPlaceholder: "Lọc tên…" },
+      meta: { 
+        filterPlaceholder: "Lọc tên…",
+        className: "sticky left-0 bg-background z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]",
+      } as any,
+      size: 200,
       cell: ({ row }) => (
-        <span className="flex min-w-0 items-center gap-2">
+        <span className="min-w-[200px] flex min-w-0 items-center gap-2">
           <User className="size-4 shrink-0 text-primary/80" aria-hidden />
-          <span className="truncate font-medium">{row.original.name}</span>
+          <span className="line-clamp-3 font-medium">{row.original.name}</span>
         </span>
       ),
     },
@@ -35,7 +39,7 @@ export function getContactRequestColumns(props: ContactRequestColumnsProps): Col
       cell: ({ getValue }) => (
         <span className="flex min-w-0 items-center gap-2 font-mono text-xs text-muted-foreground">
           <Mail className="size-3.5 shrink-0 opacity-80" aria-hidden />
-          <span className="truncate">{String(getValue())}</span>
+          <span className="line-clamp-3">{String(getValue())}</span>
         </span>
       ),
       meta: { filterPlaceholder: "Lọc email…" },
@@ -46,12 +50,12 @@ export function getContactRequestColumns(props: ContactRequestColumnsProps): Col
       cell: ({ getValue }) => {
         const v = getValue() as string | null | undefined;
         return v ? (
-          <span className="flex items-center gap-2 font-mono text-xs tabular-nums">
+          <span className="min-w-[120px] flex items-center gap-2 font-mono text-xs tabular-nums">
             <Phone className="size-3.5 shrink-0 text-muted-foreground" aria-hidden />
             {formatPhoneNumber(v)}
           </span>
         ) : (
-          <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+          <span className="min-w-[120px] flex items-center gap-1.5 text-xs text-muted-foreground">
             <Phone className="size-3.5 opacity-40" aria-hidden />—
           </span>
         );
@@ -62,7 +66,7 @@ export function getContactRequestColumns(props: ContactRequestColumnsProps): Col
       accessorKey: "subject",
       header: "Tiêu đề",
       cell: ({ getValue }) => (
-        <span className="truncate font-medium">{String(getValue())}</span>
+        <span className="line-clamp-3 max-w-[300px]">{String(getValue())}</span>
       ),
       meta: { filterPlaceholder: "Lọc tiêu đề…" },
     },
@@ -71,14 +75,85 @@ export function getContactRequestColumns(props: ContactRequestColumnsProps): Col
       header: "Nội dung",
       cell: ({ row }) => {
         const content = row.original.content || row.original.message || "";
+        
+        // Parse structured content to extract only the message
+        const lines = content.split('\n').filter(line => line.trim());
+        let message = "";
+        
+        for (const line of lines) {
+          const match = line.match(/^Nội dung:\s*(.+)$/);
+          if (match) {
+            message = match[1].trim();
+            break;
+          }
+        }
+        
+        // If no "Nội dung:" found, use the whole content but exclude structured fields
+        if (!message) {
+          for (const line of lines) {
+            const isStructuredField = line.match(/^(Địa chỉ|Chương trình|Ngành|Đăng ký|Số điện thoại|Email):/);
+            if (!isStructuredField) {
+              message += line + " ";
+            }
+          }
+        }
+        
         return (
-          <span className="flex min-w-0 items-start gap-2 text-xs">
+          <span className="flex items-start gap-2 text-xs">
             <MessageSquare className="size-3.5 shrink-0 mt-0.5 text-muted-foreground" aria-hidden />
-            <span className="line-clamp-2 max-w-[300px]">{content}</span>
+            <span className="line-clamp-3 max-w-[300px]">{message.trim() || content}</span>
           </span>
         );
       },
       meta: { filterPlaceholder: "Lọc nội dung…" },
+    },
+    {
+      accessorKey: "address",
+      header: "Địa chỉ",
+      enableColumnFilter: false,
+      cell: ({ row }) => {
+        const content = row.original.content || row.original.message || "";
+        const match = content.match(/Địa chỉ:\s*(.+?)(?:\n|$)/);
+        const address = match ? match[1].trim() : "";
+        
+        if (!address) return <span className="text-muted-foreground text-xs">—</span>;
+        
+        return (
+          <span className="line-clamp-3 text-xs max-w-[300px]">{address}</span>
+        );
+      },
+    },
+    {
+      accessorKey: "program",
+      header: "Chương trình",
+      enableColumnFilter: false,
+      cell: ({ row }) => {
+        const content = row.original.content || row.original.message || "";
+        const match = content.match(/Chương trình:\s*(.+?)(?:\n|$)/);
+        const program = match ? match[1].trim() : "";
+        
+        if (!program) return <span className="text-muted-foreground text-xs">—</span>;
+        
+        return (
+          <span className="line-clamp-3 text-xs max-w-[300px]">{program}</span>
+        );
+      },
+    },
+    {
+      accessorKey: "major",
+      header: "Ngành",
+      enableColumnFilter: false,
+      cell: ({ row }) => {
+        const content = row.original.content || row.original.message || "";
+        const match = content.match(/Ngành:\s*(.+?)(?:\n|$)/);
+        const major = match ? match[1].trim() : "";
+        
+        if (!major) return <span className="text-muted-foreground text-xs">—</span>;
+        
+        return (
+          <span className="line-clamp-3 text-xs max-w-[300px]">{major}</span>
+        );
+      },
     },
     {
       accessorKey: "status",
@@ -138,7 +213,7 @@ export function getContactRequestColumns(props: ContactRequestColumnsProps): Col
       cell: ({ getValue }) => {
         const v = getValue() as string;
         return (
-          <span className="flex items-center gap-2 text-xs text-muted-foreground">
+          <span className="min-w-[150px] flex items-center gap-2 text-xs text-muted-foreground">
             <CalendarClock className="size-3.5 shrink-0" aria-hidden />
             {new Date(v).toLocaleString("vi-VN")}
           </span>
@@ -150,7 +225,10 @@ export function getContactRequestColumns(props: ContactRequestColumnsProps): Col
       header: "Thao tác",
       enableColumnFilter: false,
       enableSorting: false,
-      meta: { disableColumnFilter: true },
+      meta: { 
+        disableColumnFilter: true,
+        className: "sticky right-0 bg-background z-10 shadow-[-2px_0_5px_-2px_rgba(0,0,0,0.1)]",
+      } as any,
       cell: ({ row }) => {
         const contact = row.original;
         return (
@@ -177,9 +255,9 @@ export function getContactRequestColumns(props: ContactRequestColumnsProps): Col
               className="h-8 gap-1 rounded-lg border-destructive/40 text-destructive hover:bg-destructive/10"
               onClick={() => onDelete(contact)}
               disabled={busy}
-              title="Xóa tạm"
             >
-              <Trash2 className="size-3.5" aria-hidden /> Xóa tạm
+              <Trash2 className="size-3.5" aria-hidden />
+              Xóa
             </Button>
           </div>
         );
@@ -246,7 +324,7 @@ export function getTrashColumns(props: {
       enableSorting: false,
       meta: { disableColumnFilter: true },
       cell: ({ row }) => (
-        <div className="flex flex-wrap gap-1">
+        <div className="flex flex-wrap gap-1 sticky right-0 bg-background">
           <Button
             type="button"
             variant="outline"

@@ -299,7 +299,7 @@ export function AdminDataTable<TData>({
       ),
       enableSorting: false,
       enableColumnFilter: false,
-      meta: { disableColumnFilter: true },
+      meta: { disableColumnFilter: true, className: "sticky left-0 bg-background z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]" } as any,
       size: 44,
     }),
     [],
@@ -692,6 +692,7 @@ export function AdminDataTable<TData>({
                     className={cn(
                       "align-top font-semibold whitespace-normal",
                       header.column.getCanSort() && "cursor-pointer select-none",
+                      (header.column.columnDef.meta as any)?.className
                     )}
                     onClick={header.column.getToggleSortingHandler()}
                   >
@@ -755,7 +756,10 @@ export function AdminDataTable<TData>({
                     return (
                       <TableCell
                         key={cell.id}
-                        className="whitespace-normal align-middle max-w-[min(420px,40vw)]"
+                        className={cn(
+                          "whitespace-normal align-middle max-w-[min(420px,40vw)]",
+                          (cell.column.columnDef.meta as any)?.className
+                        )}
                         style={{
                           paddingLeft:
                             indent > 0
