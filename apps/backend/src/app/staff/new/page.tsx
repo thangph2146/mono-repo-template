@@ -11,13 +11,14 @@ import { TypographyH1 } from "@ui/components/typography";
 import { UserPlus } from "lucide-react";
 import { canUserAccess, PERMISSION_CODES } from "@workspace/api-client";
 import { Card, CardContent } from "@ui/components/card";
+import { api } from "@/lib/api";
 
 function NewStaffPageInner() {
   const router = useRouter();
   const { user: session } = useAuth();
   const canManageUsers =
     session != null && canUserAccess(session, PERMISSION_CODES.USERS_MANAGE);
-  const { createMutation } = useStaffMutations();
+  const { createMutation } = useStaffMutations({ api });
   const { form, resetForm, getPayload } = useStaffForm();
 
   const rbacQuery = useRbacCatalog({
@@ -51,7 +52,7 @@ function NewStaffPageInner() {
     const payload = getPayload();
     try {
       await createMutation.mutateAsync(payload);
-      router.push("/admin/staff");
+      router.push("/staff");
     } catch {
       // Error handled by mutation
     }
@@ -59,7 +60,7 @@ function NewStaffPageInner() {
 
   const handleCancel = () => {
     resetForm();
-    router.push("/admin/staff");
+    router.push("/staff");
   };
 
   return (

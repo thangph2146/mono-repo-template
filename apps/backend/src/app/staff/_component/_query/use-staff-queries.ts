@@ -1,23 +1,30 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { User } from "@workspace/api-client";
-import { api } from "@/lib/api";
+import type { StoreSyncSdk } from "@workspace/api-client";
 import { queryKeys } from "@/hooks/queries";
 import { toast } from "sonner";
 import { ApiError } from "@/lib/api";
+import { api } from "@/lib/api";
 
 export type UsersListData = { items: User[]; total: number };
 
-export function useStaffMutations() {
+export interface UseStaffMutationsProps {
+  api: StoreSyncSdk;
+}
+
+export function useStaffMutations({ api: apiClient }: UseStaffMutationsProps) {
   const queryClient = useQueryClient();
 
   const createMutation = useMutation({
-    mutationFn: async (data: {
-      email: string;
-      fullName: string;
-      password: string;
-      isActive: boolean;
-      roleCodes?: string[];
-    }) => api.http.post("/admin/users", data),
+    mutationFn: async (input: { email: string; fullName: string; password: string; isActive: boolean; roleCodes: string[] }) => {
+      return apiClient.users.create({
+        email: input.email,
+        fullName: input.fullName,
+        password: input.password,
+        isActive: input.isActive,
+        roleCodes: input.roleCodes,
+      });
+    },
     onSuccess: async () => {
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: queryKeys.staffUserList() }),
@@ -30,11 +37,18 @@ export function useStaffMutations() {
   });
 
   const updateMutation = useMutation({
-    mutationFn: async ({ id, input }: { id: string; input: { fullName: string; isActive: boolean; roleCodes: string[]; password?: string } }) =>
-      api.http.put(`/admin/users/${id}`, input),
-    onSuccess: async () => {
+    mutationFn: async ({ id, input }: { id: string; input: { fullName: string; isActive: boolean; roleCodes: string[]; password?: string } }) => {
+      return apiClient.users.update(id, {
+        fullName: input.fullName,
+        isActive: input.isActive,
+        password: input.password,
+        roleCodes: input.roleCodes,
+      });
+    },
+    onSuccess: async (_data, variables) => {
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: queryKeys.staffUserList() }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.staffProfile(variables.id) }),
       ]);
       toast.success("Đã cập nhật nhân sự");
     },
@@ -44,7 +58,7 @@ export function useStaffMutations() {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: async (id: string) => api.http.delete(`/admin/users/${id}`),
+    mutationFn: async (id: string) => apiClient.users.remove(id),
     onSuccess: async () => {
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: queryKeys.staffUserList() }),
@@ -58,7 +72,7 @@ export function useStaffMutations() {
   });
 
   const restoreMutation = useMutation({
-    mutationFn: async (id: string) => api.http.post(`/admin/users/${id}/restore`),
+    mutationFn: async (id: string) => apiClient.users.restore(id),
     onSuccess: async () => {
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: queryKeys.staffUserList() }),
@@ -72,7 +86,7 @@ export function useStaffMutations() {
   });
 
   const purgeMutation = useMutation({
-    mutationFn: async (id: string) => api.http.delete(`/admin/users/${id}/hard-delete`),
+    mutationFn: async (id: string) => apiClient.users.purgeTrashed(id),
     onSuccess: async () => {
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: queryKeys.staffUserList() }),

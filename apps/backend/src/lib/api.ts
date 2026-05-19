@@ -32,5 +32,11 @@ export type {
   UpdateCategoryInput,
   UpdateProfileInput,
   UpdateUserInput,
+  ContactRequest,
+  UpdateContactRequestInput,
+  ParentStudent,
+  AddStudentInput,
+  ParentStudent as ParentStudentAdmin,
+  UpdateParentStudentInput,
 } from "@workspace/api-client";
 export { ApiError } from "@workspace/api-client";

@@ -14,6 +14,12 @@ import {
   type RbacRole,
   type UpdateProfileInput,
   type User,
+  type ContactRequest,
+  type UpdateContactRequestInput,
+  type ParentStudent,
+  type AddStudentInput,
+  type ParentStudentAdmin,
+  type UpdateParentStudentInput,
 } from "@/lib/api";
 
 export const queryKeys = {
@@ -21,10 +27,16 @@ export const queryKeys = {
   staffUserList: () => ["users", "staff-list"] as const,
   usersTrashed: () => ["users", "trashed"] as const,
   rbacCatalog: () => ["rbac", "catalog"] as const,
+  contactRequests: (params?: any) => ["contact-requests", params] as const,
+  myStudents: () => ["my-students"] as const,
+  parentStudents: (params?: any) => ["parent-students", params] as const,
 };
 
 export type UsersListData = { items: User[]; total: number };
 export type RbacCatalog = { permissions: RbacPermission[]; roles: RbacRole[] };
+export type ContactRequestsData = { items: ContactRequest[]; total: number };
+export type MyStudentsData = { items: ParentStudent[] };
+export type ParentStudentsData = { items: ParentStudentAdmin[]; total: number };
 
 export const useStaffProfile = (userId: string | number | null | undefined) =>
   useQuery<User, Error>({
@@ -104,6 +116,52 @@ export const useTrashedStaffUsers = (opts?: {
         q: lp?.q,
         filters: lp?.filters,
       });
+      return { items: res.items, total: res.total };
+    },
+    enabled: opts?.enabled ?? true,
+  });
+
+// Contact Requests hooks
+export const useContactRequests = (opts?: {
+  enabled?: boolean;
+  params?: { page?: number; limit?: number; status?: string; search?: string };
+}): UseQueryResult<ContactRequestsData, Error> =>
+  useQuery({
+    queryKey: queryKeys.contactRequests(opts?.params),
+    queryFn: async () => {
+      const res = await api.contactRequests.list(opts?.params);
+      return { items: res.items, total: res.total };
+    },
+    enabled: opts?.enabled ?? true,
+  });
+
+export const useContactRequestDetail = (id: string | number | null | undefined) =>
+  useQuery<ContactRequest, Error>({
+    queryKey: ["contact-requests", id],
+    queryFn: () => api.contactRequests.detail(id as string | number),
+    enabled: !!id,
+  });
+
+// My Students hooks
+export const useMyStudents = (opts?: { enabled?: boolean }): UseQueryResult<MyStudentsData, Error> =>
+  useQuery({
+    queryKey: queryKeys.myStudents(),
+    queryFn: async () => {
+      const res = await api.myStudents.list();
+      return { items: res.items };
+    },
+    enabled: opts?.enabled ?? true,
+  });
+
+// Parent Students hooks
+export const useParentStudents = (opts?: {
+  enabled?: boolean;
+  params?: { page?: number; limit?: number; status?: string; search?: string };
+}): UseQueryResult<ParentStudentsData, Error> =>
+  useQuery({
+    queryKey: queryKeys.parentStudents(opts?.params),
+    queryFn: async () => {
+      const res = await api.parentStudents.list(opts?.params);
       return { items: res.items, total: res.total };
     },
     enabled: opts?.enabled ?? true,

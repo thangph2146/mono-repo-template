@@ -13,6 +13,7 @@ import { TypographyH1 } from "@ui/components/typography";
 import { Pencil } from "lucide-react";
 import { canUserAccess, PERMISSION_CODES } from "@workspace/api-client";
 import { Card, CardContent } from "@ui/components/card";
+import { api } from "@/lib/api";
 
 function EditStaffPageInner() {
   const params = useParams();
@@ -20,7 +21,7 @@ function EditStaffPageInner() {
   const { user: session } = useAuth();
   const canManageUsers =
     session != null && canUserAccess(session, PERMISSION_CODES.USERS_MANAGE);
-  const { updateMutation } = useStaffMutations();
+  const { updateMutation } = useStaffMutations({ api });
   const { form, resetForm, populateForm, getPayload } = useStaffForm({ editingId: params.id as string });
 
   const userId = params.id as string;

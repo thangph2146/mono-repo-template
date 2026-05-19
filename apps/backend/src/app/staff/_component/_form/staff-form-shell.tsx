@@ -31,47 +31,50 @@ export function StaffFormShell(props: StaffFormShellProps) {
   } = props;
 
   const roleChecklist = (
-    <div className="max-h-[220px] space-y-3 overflow-y-auto rounded-lg border border-border p-3">
-      {roles.length === 0 ? (
-        <p className="flex items-center gap-2 text-xs text-muted-foreground">
-          Chưa tải được danh sách vai trò.
-        </p>
-      ) : (
-        roles.map((r) => (
-          <Controller
-            key={r.code}
-            name="roleCodes"
-            control={form.control}
-            render={({ field: { value, onChange } }) => (
-              <div
-                className="flex cursor-pointer items-start gap-3 rounded-lg p-2 hover:bg-muted/60"
-                onClick={() => {
-                  const newValue = value.includes(r.code)
-                    ? value.filter((c: string) => c !== r.code)
-                    : [...value, r.code];
-                  onChange(newValue);
-                }}
-              >
-                <Checkbox
-                  checked={value.includes(r.code)}
-                  className="mt-0.5"
-                />
-                <ShieldHalf
-                  className="mt-0.5 size-4 shrink-0 text-primary/70"
-                  aria-hidden
-                />
-                <span>
-                  <span className="block text-sm font-medium">{r.name}</span>
-                  <span className="font-mono text-[10px] text-muted-foreground">
-                    {r.code}
+    <Controller
+      name="roleCodes"
+      control={form.control}
+      render={({ field: { value, onChange }, fieldState }) => (
+        <div className="space-y-2">
+          <div className="max-h-[220px] space-y-3 overflow-y-auto rounded-lg border border-border p-3">
+            {roles.length === 0 ? (
+              <p className="flex items-center gap-2 text-xs text-muted-foreground">
+                Chưa tải được danh sách vai trò.
+              </p>
+            ) : (
+              roles.map((r) => (
+                <div
+                  key={r.code}
+                  className="flex cursor-pointer items-start gap-3 rounded-lg p-2 hover:bg-muted/60"
+                  onClick={() => {
+                    const newValue = value.includes(r.code)
+                      ? value.filter((c: string) => c !== r.code)
+                      : [...value, r.code];
+                    onChange(newValue);
+                  }}
+                >
+                  <Checkbox
+                    checked={value.includes(r.code)}
+                    className="mt-0.5"
+                  />
+                  <ShieldHalf
+                    className="mt-0.5 size-4 shrink-0 text-primary/70"
+                    aria-hidden
+                  />
+                  <span>
+                    <span className="block text-sm font-medium">{r.name}</span>
+                    <span className="font-mono text-[10px] text-muted-foreground">
+                      {r.code}
+                    </span>
                   </span>
-                </span>
-              </div>
+                </div>
+              ))
             )}
-          />
-        ))
+          </div>
+          {fieldState.error && <FieldError>{fieldState.error.message}</FieldError>}
+        </div>
       )}
-    </div>
+    />
   );
 
   const formContent = (
@@ -141,11 +144,7 @@ export function StaffFormShell(props: StaffFormShellProps) {
         </div>
 
         {/* Password Section */}
-        <div className="space-y-4">
-          <div className="flex items-center gap-2 pb-2">
-            <KeyRound className="size-4 text-primary" aria-hidden />
-            <TypographyH3 className="text-sm font-semibold text-foreground">Mật khẩu</TypographyH3>
-          </div>
+        <div className="grid gap-4 md:grid-cols-2">
           <Controller
             name="password"
             control={form.control}
@@ -168,15 +167,8 @@ export function StaffFormShell(props: StaffFormShellProps) {
               </FormFieldCol>
             )}
           />
-        </div>
 
-        {/* Status & Roles Section */}
-        <div className="grid gap-6 md:grid-cols-2">
           <div className="space-y-4">
-            <div className="flex items-center gap-2 pb-2">
-              <Lock className="size-4 text-primary" aria-hidden />
-              <TypographyH3 className="text-sm font-semibold text-foreground">Trạng thái</TypographyH3>
-            </div>
             <Controller
               name="isActive"
               control={form.control}
@@ -207,12 +199,11 @@ export function StaffFormShell(props: StaffFormShellProps) {
               )}
             />
           </div>
+        </div>
 
+        {/* Status & Roles Section */}
+        <div className="grid gap-6 md:grid-cols-2">
           <div className="space-y-4">
-            <div className="flex items-center gap-2 pb-2">
-              <ShieldHalf className="size-4 text-primary" aria-hidden />
-              <TypographyH3 className="text-sm font-semibold text-foreground">Vai trò</TypographyH3>
-            </div>
             <div className="space-y-2">
               <p className="text-sm text-muted-foreground">
                 Chọn vai trò {isEdit && <span className="text-muted-foreground">(thay thế toàn bộ khi lưu)</span>}

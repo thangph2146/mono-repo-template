@@ -1,6 +1,6 @@
 # Cây thư mục — api (Graphify)
 
-> **Sinh tự động:** `2026-05-19T01:18:41.658Z` từ `snapshot/graph.json` (node `directory` / `route-group` dưới `src/`).
+> **Sinh tự động:** `2026-05-19T02:20:03.860Z` từ `snapshot/graph.json` (node `directory` / `route-group` dưới `src/`).
 
 ```text
 src/

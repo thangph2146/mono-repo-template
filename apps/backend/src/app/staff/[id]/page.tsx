@@ -1,39 +1,54 @@
-"use client";
+"use client"
 
-import { useParams, useRouter } from "next/navigation";
-import { useStaffProfile } from "@/hooks/queries";
-import { useAuth } from "@/providers/auth-provider";
-import { AdminPageGuard } from "@/components/admin-page-guard";
-import { ADMIN_PAGE_TITLE_PRIMARY_CLASS, ADMIN_PAGE_TITLE_ICON_CLASS } from "@ui/lib/layout-shell";
-import { TypographyH1, TypographyH3 } from "@ui/components/typography";
-import { UserCircle, Mail, Phone, ShieldHalf, CheckCircle2, Lock, CalendarClock, Pencil, Trash2, FileText, ArrowRight } from "lucide-react";
-import { Button } from "@ui/components/button";
-import { Badge } from "@ui/components/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@ui/components/card";
-import { isSuperAdminRoleCode } from "@workspace/api-client";
-import { formatDateTime } from "@workspace/api-client";
-import { canUserAccess, PERMISSION_CODES } from "@workspace/api-client";
-import { usePostsByAuthor } from "@/app/posts/_component/_query/use-posts-queries";
-import Link from "next/link";
-import { api } from "@/lib/api";
+import { useParams, useRouter } from "next/navigation"
+import { useStaffProfile } from "@/hooks/queries"
+import { useAuth } from "@/providers/auth-provider"
+import { AdminPageGuard } from "@/components/admin-page-guard"
+import {
+  ADMIN_PAGE_TITLE_PRIMARY_CLASS,
+  ADMIN_PAGE_TITLE_ICON_CLASS,
+} from "@ui/lib/layout-shell"
+import { TypographyH1, TypographyH3 } from "@ui/components/typography"
+import {
+  UserCircle,
+  Mail,
+  Phone,
+  ShieldHalf,
+  CheckCircle2,
+  Lock,
+  CalendarClock,
+  Pencil,
+  Trash2,
+  FileText,
+  ArrowRight,
+} from "lucide-react"
+import { Button } from "@ui/components/button"
+import { Badge } from "@ui/components/badge"
+import { Card, CardContent, CardHeader, CardTitle } from "@ui/components/card"
+import { isSuperAdminRoleCode } from "@workspace/api-client"
+import { formatDateTime } from "@workspace/api-client"
+import { canUserAccess, PERMISSION_CODES } from "@workspace/api-client"
+import { usePostsByAuthor } from "@/app/posts/_component/_query/use-posts-queries"
+import Link from "next/link"
+import { api } from "@/lib/api"
 
 function StaffDetailPageInner() {
-  const params = useParams();
-  const router = useRouter();
-  const { user: session } = useAuth();
+  const params = useParams()
+  const router = useRouter()
+  const { user: session } = useAuth()
   const canManageUsers =
-    session != null && canUserAccess(session, PERMISSION_CODES.USERS_MANAGE);
-  const userId = params.id as string;
+    session != null && canUserAccess(session, PERMISSION_CODES.USERS_MANAGE)
+  const userId = params.id as string
 
-  const userQuery = useStaffProfile(userId);
+  const userQuery = useStaffProfile(userId)
   const postsQuery = usePostsByAuthor({
     api,
     authorId: userId,
     limit: 5,
-  });
+  })
 
-  const user = userQuery.data;
-  const posts = postsQuery.data?.items || [];
+  const user = userQuery.data
+  const posts = postsQuery.data?.items || []
 
   if (!session || !canManageUsers) {
     return (
@@ -48,7 +63,7 @@ function StaffDetailPageInner() {
           </CardContent>
         </Card>
       </>
-    );
+    )
   }
 
   if (userQuery.isLoading || !user) {
@@ -64,7 +79,7 @@ function StaffDetailPageInner() {
           </CardContent>
         </Card>
       </>
-    );
+    )
   }
 
   return (
@@ -83,7 +98,7 @@ function StaffDetailPageInner() {
             onClick={() => router.push(`/staff/${userId}/edit`)}
           >
             <Pencil className="size-4" aria-hidden />
-            Sửa
+            Chỉnh sửa
           </Button>
         </div>
       </div>
@@ -96,24 +111,39 @@ function StaffDetailPageInner() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-start gap-3">
-                <Mail className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden />
+                <Mail
+                  className="mt-0.5 size-4 shrink-0 text-muted-foreground"
+                  aria-hidden
+                />
                 <div className="min-w-0 flex-1">
-                  <p className="text-xs font-semibold text-muted-foreground">Email</p>
+                  <p className="text-xs font-semibold text-muted-foreground">
+                    Email
+                  </p>
                   <p className="font-mono text-sm">{user.email}</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <UserCircle className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden />
+                <UserCircle
+                  className="mt-0.5 size-4 shrink-0 text-muted-foreground"
+                  aria-hidden
+                />
                 <div className="min-w-0 flex-1">
-                  <p className="text-xs font-semibold text-muted-foreground">Họ tên</p>
+                  <p className="text-xs font-semibold text-muted-foreground">
+                    Họ tên
+                  </p>
                   <p className="text-sm">{user.fullName}</p>
                 </div>
               </div>
               {user.phone && (
                 <div className="flex items-start gap-3">
-                  <Phone className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden />
+                  <Phone
+                    className="mt-0.5 size-4 shrink-0 text-muted-foreground"
+                    aria-hidden
+                  />
                   <div className="min-w-0 flex-1">
-                    <p className="text-xs font-semibold text-muted-foreground">SĐT</p>
+                    <p className="text-xs font-semibold text-muted-foreground">
+                      SĐT
+                    </p>
                     <p className="font-mono text-sm">{user.phone}</p>
                   </div>
                 </div>
@@ -136,7 +166,9 @@ function StaffDetailPageInner() {
                   {user.roles.map((r) => (
                     <Badge
                       key={r.code}
-                      variant={isSuperAdminRoleCode(r.code) ? "default" : "secondary"}
+                      variant={
+                        isSuperAdminRoleCode(r.code) ? "default" : "secondary"
+                      }
                       className="text-xs font-normal"
                     >
                       {r.name}
@@ -180,25 +212,42 @@ function StaffDetailPageInner() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-start gap-3">
-                <CalendarClock className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden />
+                <CalendarClock
+                  className="mt-0.5 size-4 shrink-0 text-muted-foreground"
+                  aria-hidden
+                />
                 <div className="min-w-0 flex-1">
-                  <p className="text-xs font-semibold text-muted-foreground">Tạo lúc</p>
+                  <p className="text-xs font-semibold text-muted-foreground">
+                    Tạo lúc
+                  </p>
                   <p className="text-sm">{formatDateTime(user.createdAt)}</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <CalendarClock className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden />
+                <CalendarClock
+                  className="mt-0.5 size-4 shrink-0 text-muted-foreground"
+                  aria-hidden
+                />
                 <div className="min-w-0 flex-1">
-                  <p className="text-xs font-semibold text-muted-foreground">Cập nhật lần cuối</p>
+                  <p className="text-xs font-semibold text-muted-foreground">
+                    Cập nhật lần cuối
+                  </p>
                   <p className="text-sm">{formatDateTime(user.updatedAt)}</p>
                 </div>
               </div>
               {user.deletedAt && (
                 <div className="flex items-start gap-3">
-                  <Trash2 className="mt-0.5 size-4 shrink-0 text-destructive" aria-hidden />
+                  <Trash2
+                    className="mt-0.5 size-4 shrink-0 text-destructive"
+                    aria-hidden
+                  />
                   <div className="min-w-0 flex-1">
-                    <p className="text-xs font-semibold text-destructive">Xóa lúc</p>
-                    <p className="text-sm text-destructive">{formatDateTime(user.deletedAt)}</p>
+                    <p className="text-xs font-semibold text-destructive">
+                      Xóa lúc
+                    </p>
+                    <p className="text-sm text-destructive">
+                      {formatDateTime(user.deletedAt)}
+                    </p>
                   </div>
                 </div>
               )}
@@ -240,7 +289,7 @@ function StaffDetailPageInner() {
                   <Link
                     key={post.id}
                     href={`/admin/posts/${post.id}`}
-                    className="block rounded-lg border border-border bg-muted/30 p-4 hover:bg-muted/60 transition-colors"
+                    className="block rounded-lg border border-border bg-muted/30 p-4 transition-colors hover:bg-muted/60"
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div className="min-w-0 flex-1">
@@ -253,25 +302,35 @@ function StaffDetailPageInner() {
                         <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
                           <span className="flex items-center gap-1">
                             <CalendarClock className="size-3" aria-hidden />
-                            {post.publishedAt ? formatDateTime(post.publishedAt) : formatDateTime(post.createdAt)}
+                            {post.publishedAt
+                              ? formatDateTime(post.publishedAt)
+                              : formatDateTime(post.createdAt)}
                           </span>
                           {post.categories.length > 0 && (
                             <>
                               <span>•</span>
-                              <span>{post.categories.map((c) => c.name).join(", ")}</span>
+                              <span>
+                                {post.categories.map((c) => c.name).join(", ")}
+                              </span>
                             </>
                           )}
                           {post.published && (
                             <>
                               <span>•</span>
-                              <Badge variant="secondary" className="text-[10px]">
+                              <Badge
+                                variant="secondary"
+                                className="text-[10px]"
+                              >
                                 Đã xuất bản
                               </Badge>
                             </>
                           )}
                         </div>
                       </div>
-                      <ArrowRight className="mt-1 size-4 shrink-0 text-muted-foreground" aria-hidden />
+                      <ArrowRight
+                        className="mt-1 size-4 shrink-0 text-muted-foreground"
+                        aria-hidden
+                      />
                     </div>
                   </Link>
                 ))}
@@ -280,8 +339,8 @@ function StaffDetailPageInner() {
           </CardContent>
         </Card>
       </div>
-    </>  
-  );
+    </>
+  )
 }
 
 export default function StaffDetailPage() {
@@ -289,5 +348,5 @@ export default function StaffDetailPage() {
     <AdminPageGuard roles={["super_admin", "admin"]}>
       <StaffDetailPageInner />
     </AdminPageGuard>
-  );
+  )
 }

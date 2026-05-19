@@ -6,9 +6,9 @@ import { z } from "zod";
 export const staffFormSchema = z.object({
   email: z.string().email("Email không hợp lệ"),
   fullName: z.string().min(1, "Họ tên không được để trống"),
-  password: z.string().min(6, "Mật khẩu tối thiểu 6 ký tự").optional(),
+  password: z.string().min(6, "Mật khẩu tối thiểu 6 ký tự").optional().or(z.literal("")),
   isActive: z.boolean(),
-  roleCodes: z.array(z.string()),
+  roleCodes: z.array(z.string()).min(1, "Vui lòng chọn ít nhất một vai trò"),
 });
 
 export type StaffFormValues = z.infer<typeof staffFormSchema>;

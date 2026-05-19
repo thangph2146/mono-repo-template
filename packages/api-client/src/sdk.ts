@@ -5,6 +5,9 @@ import { PostsApi } from './resources/posts';
 import { RbacApi } from './resources/rbac';
 import { TagsApi } from './resources/tags';
 import { UsersApi } from './resources/users';
+import { ContactRequestsApi } from './resources/contact-requests';
+import { MyStudentsApi } from './resources/my-students';
+import { ParentStudentsApi } from './resources/parent-students';
 import type { HealthStatus } from './types';
 
 /**
@@ -28,6 +31,9 @@ export class StoreSyncSdk {
   readonly tags: TagsApi;
   readonly guides: GuidesApi;
   readonly rbac: RbacApi;
+  readonly contactRequests: ContactRequestsApi;
+  readonly myStudents: MyStudentsApi;
+  readonly parentStudents: ParentStudentsApi;
 
   constructor(options: ApiClientOptions) {
     this.http = new ApiClient(options);
@@ -37,6 +43,9 @@ export class StoreSyncSdk {
     this.tags = new TagsApi(this.http);
     this.guides = new GuidesApi(this.http);
     this.rbac = new RbacApi(this.http);
+    this.contactRequests = new ContactRequestsApi(this.http);
+    this.myStudents = new MyStudentsApi(this.http);
+    this.parentStudents = new ParentStudentsApi(this.http);
   }
 
   health(): Promise<HealthStatus> {

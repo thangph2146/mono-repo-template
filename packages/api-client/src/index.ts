@@ -1,4 +1,7 @@
 export * from './types';
+export type { ContactRequest, UpdateContactRequestInput } from './resources/contact-requests';
+export type { ParentStudent, AddStudentInput } from './resources/my-students';
+export type { ParentStudent as ParentStudentAdmin, UpdateParentStudentInput } from './resources/parent-students';
 export { effectiveLineUnitPrice } from './unit-pricing';
 export {
   PERMISSION_CODES,
@@ -17,6 +20,9 @@ export { CategoriesApi } from './resources/categories';
 export { TagsApi } from './resources/tags';
 export { GuidesApi } from './resources/guides';
 export { RbacApi } from './resources/rbac';
+export { ContactRequestsApi } from './resources/contact-requests';
+export { MyStudentsApi } from './resources/my-students';
+export { ParentStudentsApi } from './resources/parent-students';
 export { StoreSyncSdk, createStoreSyncSdk, DEFAULT_API_URL } from './sdk';
 export {
   unwrapApiEnvelope,
