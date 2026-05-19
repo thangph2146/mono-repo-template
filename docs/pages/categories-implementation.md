@@ -136,14 +136,19 @@
 
 - [ ] Define `CategoryColumnsProps` interface with `onEdit`, `onDelete` callbacks
 - [ ] Implement `getCategoryColumns(props)`:
-  - Column: Name (with tree indentation)
-  - Column: Slug
-  - Column: Post count
-  - Column: Parent category
+  - Column: Name (button with FolderTree/Folder icon, clickable to open detail)
+  - Column: Slug (monospace font)
+  - Column: Post count (Badge with variant based on count)
+  - Column: Parent category (using tree-multi-select filter)
   - Column: Actions (View, Edit, Delete/Restore)
-- [ ] Use Lucide icons for action buttons
-- [ ] Use Badge for status indicators
-- [ ] Add meta properties for filtering
+- [ ] Use Lucide icons (FolderTree for root, Folder for children, Eye, Pencil, Trash2, ArchiveRestore)
+- [ ] Use Badge for post count indicators
+- [ ] Add meta properties for filtering:
+  - Parent: `filterVariant: "tree-multi-select"` with `treeOptions`
+  - Slug: `filterPlaceholder: "Lọc slug"`
+- [ ] Implement `getTrashColumns(props)`:
+  - Similar to main columns but adds deletedAt column
+  - Actions: Restore and Purge buttons
 
 ### Phase 7: Create Table Components (`_component/_table/`)
 
@@ -395,11 +400,11 @@
 
 - [ ] Test list page loads correctly
 - [ ] Test search functionality
-- [ ] Test column filters
-- [ ] Test tree view display
+- [ ] Test column filters (tree-multi-select for parent, text for slug)
+- [ ] Test tree view display with proper indentation
 - [ ] Test pagination
 - [ ] Test row selection
-- [ ] Test bulk actions
+- [ ] Test bulk actions (delete, restore, purge, set-parent)
 - [ ] Test create new category
 - [ ] Test edit category
 - [ ] Test delete (soft delete)
@@ -408,6 +413,9 @@
 - [ ] Test parent-child relationships
 - [ ] Test permission checks
 - [ ] Test toast notifications
+- [ ] Test name button click to open detail page
+- [ ] Test FolderTree/Folder icons display correctly
+- [ ] Test post count Badge variants
 
 ### API Service
 
@@ -425,6 +433,47 @@
 - [ ] Test not found errors
 - [ ] Test parent cycle prevention
 - [ ] Test bulk operations
+
+---
+
+## Common Issues and Solutions
+
+### Issue 1: Tree View Performance
+**Problem**: Tree view becomes slow with many nested categories.
+**Solution**:
+- Use pagination with high limit (1000) for tree views
+- Implement parallel post count calculation
+- Use native bulk operations for better performance
+- Optimize tree traversal with safety limits (50 levels, 10,000 nodes)
+
+### Issue 2: Parent Cycle Prevention
+**Problem**: User can create circular parent-child relationships.
+**Solution**:
+- Implement `collectCategoryDescendantIds(rootId)` with BFS traversal
+- Validate parent changes to prevent cycles in bulk operations
+- Show error message when attempting to set parent that creates a cycle
+
+### Issue 3: Tree Indentation Not Showing
+**Problem**: Nested categories don't show proper indentation in table.
+**Solution**:
+- Use row.depth property from tree structure
+- Display FolderTree icon for root categories, Folder icon for children
+- Name column is clickable button that opens detail page
+- Tree structure is built server-side and passed to table
+
+### Issue 4: Bulk Operations Not Updating Tree
+**Problem**: After bulk set-parent, tree view doesn't reflect changes.
+**Solution**:
+- Invalidate cache after bulk operations: `queryClient.invalidateQueries({ queryKey: ["admin", "categories"] })`
+- Ensure tree is rebuilt with updated parent relationships
+- Show toast notification on success
+
+### Issue 5: Tree-Multi-Select Filter Not Working
+**Problem**: Parent category filter doesn't show tree structure.
+**Solution**:
+- Set `filterVariant: "tree-multi-select"` in column meta
+- Provide `treeOptions` with nested structure matching category hierarchy
+- Ensure AdminDataTable supports tree-multi-select filter variant
 
 ---
 

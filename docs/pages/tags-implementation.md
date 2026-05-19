@@ -130,15 +130,21 @@
 
 ### Phase 6: Create Table Columns (`_component/columns.tsx`)
 
-- [ ] Define `TagColumnsProps` interface with `onEdit`, `onDelete` callbacks
-- [ ] Implement `getTagsColumns(props)`:
-  - Column: Name (with tree indentation)
-  - Column: Slug
-  - Column: Post count
-  - Column: Actions (View, Edit, Delete/Restore)
-- [ ] Use Lucide icons for action buttons
-- [ ] Use Badge for status indicators
-- [ ] Add meta properties for filtering
+- [ ] Define `TagColumnsProps` interface with `onView`, `onEdit`, `onDelete` callbacks
+- [ ] Implement `getTagColumns(props)`:
+  - Column: Name/Group (button for tags to open detail, badge for groups showing tag count)
+  - Column: Slug (monospace font, prefixed with "nhom:" for groups)
+  - Column: Updated at / Group size (date for tags, text for groups)
+  - Column: Actions (View, Edit, Delete/Restore) - only for actual tags, not groups
+- [ ] Use Lucide icons (Eye, Pencil, Trash2, ArchiveRestore)
+- [ ] Use Badge for group tag count indicators
+- [ ] Add meta properties for filtering:
+  - Name: `filterPlaceholder: "Lọc theo tên…"`
+  - Slug: `filterPlaceholder: "Lọc theo slug…"`
+  - Updated at: `filterVariant: "date-range"` with custom filterFn to skip groups
+- [ ] Implement `getTrashColumns(props)`:
+  - Similar to main columns but without grouping logic
+  - Actions: Restore and Purge buttons
 
 ### Phase 7: Create Table Components (`_component/_table/`)
 
@@ -380,10 +386,10 @@
 
 ### Backend Admin UI
 
-- [ ] Test list page loads correctly (all tags)
+- [ ] Test list page loads correctly (all tags with prefix-based grouping)
 - [ ] Test search functionality
-- [ ] Test column filters
-- [ ] Test tree view display (prefix-based grouping)
+- [ ] Test column filters (text for name/slug, date-range for updated at)
+- [ ] Test tree view display (prefix-based grouping with isGroup property)
 - [ ] Test pagination for trash view
 - [ ] Test row selection
 - [ ] Test bulk actions (exclude group items)
@@ -394,6 +400,10 @@
 - [ ] Test hard delete from trash
 - [ ] Test permission checks
 - [ ] Test toast notifications
+- [ ] Test group badge display (showing tag count)
+- [ ] Test name button click to open detail page (only for actual tags)
+- [ ] Test slug prefix "nhom:" for groups
+- [ ] Test actions column hidden for groups
 
 ### API Service
 
@@ -411,6 +421,48 @@
 - [ ] Test not found errors
 - [ ] Test bulk operations
 - [ ] Test date range filtering
+
+---
+
+## Common Issues and Solutions
+
+### Issue 1: Prefix-Based Tree Not Displaying Correctly
+**Problem**: Tags are not grouped correctly by prefix in the tree view.
+**Solution**:
+- Ensure `buildTagTree()` function correctly extracts prefixes from tag names
+- Use consistent prefix separator (e.g., hyphen or space)
+- Sort tags alphabetically before building tree structure
+- Group items under parent nodes with matching prefix
+- Set `isGroup: true` for group rows
+
+### Issue 2: Bulk Operations Including Group Items
+**Problem**: Bulk operations try to act on group nodes (which are not real tags).
+**Solution**:
+- Filter out group items from selected rows before performing bulk operations
+- Check `isGroup` property and exclude those items
+- Actions column returns null for group items
+- Show warning if user tries to select group items
+
+### Issue 3: Date Range Filter Affecting Groups
+**Problem**: Date range filter tries to filter groups which don't have dates.
+**Solution**:
+- Implement custom filterFn in column meta to skip groups
+- Check `row.original.isGroup` in filterFn and return true for groups
+- Apply date filter only to actual tag rows
+
+### Issue 4: Group Badge Not Showing Count
+**Problem**: Group badge doesn't display the number of tags in the group.
+**Solution**:
+- Ensure `itemCount` property is set when building tree structure
+- Display Badge with `itemCount` value in the name column
+- Show badge only when `isGroup` is true
+
+### Issue 5: Slug Prefix Not Displaying for Groups
+**Problem**: Group slugs don't show "nhom:" prefix.
+**Solution**:
+- Check `row.original.isGroup` in slug column cell
+- Prefix with "nhom:" when displaying group slug
+- Display normal slug for actual tags
 
 ---
 

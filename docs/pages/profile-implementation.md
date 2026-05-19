@@ -104,6 +104,47 @@
 - [ ] Use `Container` component for layout
 - [ ] Use proper typography classes from layout-shell (ADMIN_PAGE_TITLE_PROFILE_CLASS, etc.)
 
+## Testing Checklist
+
+- [ ] Profile page loads correctly
+- [ ] Profile form displays current data
+- [ ] Profile update saves successfully
+- [ ] Password form validates correctly
+- [ ] Password change works with correct current password
+- [ ] Password change fails with wrong current password
+- [ ] Roles display correctly
+- [ ] Permissions display correctly grouped by category
+- [ ] Loading states display correctly
+- [ ] Error messages display correctly
+- [ ] Session updates after profile change
+
+## Common Issues and Solutions
+
+### Issue 1: Session Not Updating After Profile Change
+**Problem**: After updating profile, session data doesn't reflect changes.
+**Solution**:
+- Use `patchAdminSessionProfile` to update session after profile change
+- Invalidate profile query cache after update
+- Show toast notification on success
+- Reload page or navigate to refresh session data
+
+### Issue 2: Password Validation Not Working
+**Problem**: Password form doesn't validate confirmPassword correctly.
+**Solution**:
+- Use zod refine with custom validation: `refine((data) => data.newPassword === data.confirmPassword)`
+- Set error path to `["confirmPassword"]` for proper error display
+- Show FieldError for confirmPassword field
+
+### Issue 3: Permissions Not Grouped Correctly
+**Problem**: Permissions display flat instead of grouped by category.
+**Solution**:
+- Fetch RBAC catalog using `useRbacCatalog`
+- Group permissions by category from catalog
+- Display permissions in card or table grouped by category
+- Use proper data structure for grouping
+
+---
+
 ## Clean Code Guidelines
 
 - Use TypeScript interfaces for type safety

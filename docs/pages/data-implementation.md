@@ -37,6 +37,54 @@
 - [ ] Wrap with `AdminPageGuard` for permission check (super_admin only)
 - [ ] Use proper layout classes from layout-shell (ADMIN_PAGE_TITLE_DOCUMENT_CLASS, etc.)
 
+## Testing Checklist
+
+- [ ] Data export to JSON works correctly
+- [ ] Data export to CSV works correctly
+- [ ] Data import from JSON works correctly
+- [ ] Data import from CSV works correctly
+- [ ] Statistics display correctly
+- [ ] Permission checks prevent unauthorized access
+- [ ] Loading states display correctly
+- [ ] Error messages display correctly
+- [ ] Warning alerts display correctly
+
+## Common Issues and Solutions
+
+### Issue 1: Large File Export Timeout
+**Problem**: Export fails for large datasets due to timeout.
+**Solution**:
+- Increase timeout for export requests
+- Implement streaming export if possible
+- Show progress indicator for long-running operations
+- Consider chunking data export for very large datasets
+
+### Issue 2: Import File Validation
+**Problem**: Invalid file format causes import to fail without clear error.
+**Solution**:
+- Validate file format before upload (JSON/CSV)
+- Validate file structure and required fields
+- Show specific error messages for validation failures
+- Provide template files for correct format
+
+### Issue 3: Import Conflicts
+**Problem**: Import conflicts with existing data (duplicate keys, etc.).
+**Solution**:
+- Implement conflict resolution strategy (skip, overwrite, merge)
+- Show preview of conflicts before import
+- Allow user to choose conflict resolution method
+- Log all conflicts for audit trail
+
+### Issue 4: Statistics Not Updating
+**Problem**: Database statistics don't reflect recent changes.
+**Solution**:
+- Invalidate cache after export/import operations
+- Refresh statistics after successful operations
+- Use real-time queries instead of cached data
+- Show last updated timestamp
+
+---
+
 ## Clean Code Guidelines
 
 - Use TypeScript for type safety

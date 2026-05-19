@@ -129,6 +129,29 @@
 - [ ] Use FormFieldCol for form layout consistency
 - [ ] Reset form after successful submission
 
+## Testing Checklist
+
+- [ ] List page loads correctly
+- [ ] Add student dialog opens and closes correctly
+- [ ] Student code validation works
+- [ ] Add student request submits successfully
+- [ ] Remove student action works with confirmation
+- [ ] Status badges display correctly
+- [ ] Permission checks prevent unauthorized access
+- [ ] Loading states display correctly
+- [ ] Error messages display correctly
+
+## Common Issues and Solutions
+
+### Issue 1: Status Badge Case Sensitivity
+**Problem**: Status badges don't display correctly due to case mismatch.
+**Solution**:
+- Normalize status values before lookup: `status.toLowerCase()`
+- Or ensure all status values are stored in lowercase
+- Use PARENT_STUDENT_STATUS_LABELS with proper key handling
+
+---
+
 ## Clean Code Guidelines
 
 - Use TypeScript interfaces for type safety

@@ -154,6 +154,52 @@
 - [ ] Use FormFieldCol for form layout consistency
 - [ ] Populate form when editing existing role
 
+## Testing Checklist
+
+- [ ] Roles list page loads correctly
+- [ ] Search filter works correctly
+- [ ] Create role dialog opens and closes correctly
+- [ ] Role code validation works (lowercase, underscores only)
+- [ ] Role creation saves successfully
+- [ ] Role edit loads existing data
+- [ ] Role update saves successfully
+- [ ] Permission selection works correctly
+- [ ] Delete role works with confirmation
+- [ ] System roles cannot be edited or deleted
+- [ ] Super admin role cannot be edited or deleted
+- [ ] Permissions tab displays correctly
+- [ ] Permission grouping works correctly
+- [ ] Permission checks prevent unauthorized access
+- [ ] Loading states display correctly
+- [ ] Error messages display correctly
+
+## Common Issues and Solutions
+
+### Issue 1: Super Admin Role Deletion
+**Problem**: Super admin role is deleted, breaking system.
+**Solution**:
+- Use `isSuperAdminRoleCode()` from `@workspace/api-client` to check
+- Disable delete button for super admin role
+- Show Lock icon for super admin role
+- Add tooltip explaining why deletion is disabled
+
+### Issue 2: Permission Selection Not Saving
+**Problem**: Selected permissions are not saved when creating/updating role.
+**Solution**:
+- Ensure `permissionCodes` array is included in the payload
+- Verify the API accepts permission codes in the expected format
+- Check that permission codes match the catalog from RBAC service
+- Show toast notification on success/error
+
+### Issue 3: Role Code Validation Not Working
+**Problem**: Role code doesn't validate lowercase and underscores only.
+**Solution**:
+- Use regex validation in zod schema: `.regex(/^[a-z_]+$/, "Chỉ chứa chữ thường và gạch dưới")`
+- Disable role code input in edit mode to prevent changes
+- Show FieldError for validation errors
+
+---
+
 ## Clean Code Guidelines
 
 - Use TypeScript interfaces for type safety

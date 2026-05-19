@@ -100,22 +100,23 @@
 
 ### Phase 6: Create Table Columns (`_component/columns.tsx`)
 
-- [x] Define `StaffColumnsProps` interface with `onEdit`, `onDelete`, `busy`, `currentUserId` callbacks
-- [x] Implement `getStaffColumns(props)`:
+- [ ] Define `StaffColumnsProps` interface with `onView`, `onEdit`, `onDelete`, `busy`, `currentUserId` callbacks
+- [ ] Implement `getStaffColumns(props)`:
   - Column: Full name (with UserCircle icon)
   - Column: Email (with Mail icon, monospace font)
-  - Column: Phone (with Phone icon)
-  - Column: Roles (with ShieldHalf icon, badges for each role)
+  - Column: Phone (with Phone icon, handles null values)
+  - Column: Roles (with ShieldHalf icon, badges for each role, default variant for super admin)
   - Column: Active status (with CheckCircle2/Lock icons)
-  - Column: Actions (Edit, Delete buttons)
-- [x] Use Lucide icons for action buttons
-- [x] Use Badge for status indicators
-- [x] Add meta properties for filtering
-- [x] Implement `getTrashColumns(props)`:
-  - Column: Email
-  - Column: Full name
-  - Column: Deleted at (with CalendarClock icon)
-  - Column: Actions (Restore, Purge buttons)
+  - Column: Actions (View, Edit, Delete buttons)
+- [ ] Use Lucide icons (UserCircle, Mail, Phone, ShieldHalf, CheckCircle2, Lock, Eye, Pencil, Trash2, ArchiveRestore)
+- [ ] Use Badge for status indicators and role badges
+- [ ] Add meta properties for filtering:
+  - Full name: `filterPlaceholder: "Lọc họ tên…"`
+  - Email: `filterPlaceholder: "Lọc email…"`
+  - Phone: `filterPlaceholder: "Lọc SĐT…"`
+- [ ] Implement `getTrashColumns(props)`:
+  - Similar to main columns but adds deletedAt column
+  - Actions: Restore and Purge buttons
 
 ### Phase 7: Create Table Components (`_component/_table/`)
 
@@ -304,7 +305,7 @@
 
 - [x] Test list page loads correctly
 - [x] Test search functionality (debounced)
-- [x] Test column filters
+- [x] Test column filters (text for fullName, email, phone)
 - [x] Test role filtering (client-side)
 - [x] Test pagination
 - [x] Test row selection
@@ -323,6 +324,9 @@
 - [x] Test navigation to detail page
 - [x] Test navigation to edit page
 - [x] Test typecheck passes
+- [ ] Test icons display correctly (UserCircle, Mail, Phone, ShieldHalf, CheckCircle2, Lock)
+- [ ] Test role badges with default variant for super admin
+- [ ] Test phone column handles null values correctly
 
 ### API Service
 
@@ -344,6 +348,47 @@
 - [ ] Test validation errors
 - [ ] Test not found errors
 - [ ] Test role assignment in create/update
+
+---
+
+## Common Issues and Solutions
+
+### Issue 1: Role Assignment Not Saving
+**Problem**: Selected roles are not saved when creating/updating staff.
+**Solution**:
+- Ensure `roleCodes` array is included in the payload
+- Verify the API accepts role codes in the expected format
+- Check that role codes match the catalog from RBAC service
+- Show toast notification on success/error
+
+### Issue 2: Self-Deletion Prevention
+**Problem**: User can delete their own account via staff management.
+**Solution**:
+- Pass `currentUserId` to column definitions
+- Disable delete button for current user's row
+- Show tooltip explaining why deletion is disabled
+- Handle bulk operations to exclude current user
+
+### Issue 3: Bulk Operations Not Updating UI
+**Problem**: After bulk operations, list doesn't reflect changes.
+**Solution**:
+- Invalidate cache after bulk operations: `queryClient.invalidateQueries({ queryKey: ["admin", "users"] })`
+- Show toast notification on success
+- Ensure optimistic updates or proper loading states
+
+### Issue 4: Phone Null Values Display
+**Problem**: Phone column doesn't handle null values correctly.
+**Solution**:
+- Check for null/undefined values in phone column cell
+- Display dash icon (Phone with opacity) for null values
+- Only show actual phone number when value exists
+
+### Issue 5: Role Badge Variant Not Correct
+**Problem**: Super admin role doesn't show default variant badge.
+**Solution**:
+- Use `isSuperAdminRoleCode()` from `@workspace/api-client` to check
+- Set badge variant to "default" for super admin, "secondary" for others
+- Ensure function is correctly imported and called
 
 ---
 

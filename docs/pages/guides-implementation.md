@@ -135,15 +135,20 @@
 
 ### Phase 6: Create Table Columns (`_component/columns.tsx`)
 
-- [ ] Define `GuidesColumnsProps` interface with `onView`, `onEdit`, `onDelete` callbacks
+- [ ] Define `GuideColumnsProps` interface with `onView`, `onEdit`, `onDelete` callbacks
 - [ ] Implement `getGuidesColumns(props)`:
-  - Column: Section Key
-  - Column: Title
-  - Column: Steps count
-  - Column: Visible status
+  - Column: Section Key (monospace font)
+  - Column: Title (using parseContent() to extract from content)
+  - Column: Order (using parseContent() to extract, Badge variant outline)
+  - Column: Steps count (using parseContent() to extract, Badge variant secondary)
+  - Column: Visible status (Badge with Eye/EyeOff icon)
   - Column: Actions (View, Edit, Delete)
-- [ ] Use Lucide icons for action buttons
-- [ ] Use Badge for status indicators
+- [ ] Use Lucide icons (Eye, Pencil, Trash2, EyeOff)
+- [ ] Use Badge for order, steps count, and visibility indicators
+- [ ] Add meta properties for filtering:
+  - Title: `filterPlaceholder: "Lọc tiêu đề"`
+  - Actions: `disableColumnFilter: true`
+- [ ] Use `parseContent()` utility to extract data from content field
 
 ### Phase 7: Create Table Components (`_component/_table/`)
 
@@ -330,6 +335,7 @@ await api.guides.remove(id);
 
 - [ ] Test list page loads correctly
 - [ ] Test search functionality
+- [ ] Test column filters (text for title)
 - [ ] Test create new guide
 - [ ] Test edit guide
 - [ ] Test delete guide
@@ -339,6 +345,9 @@ await api.guides.remove(id);
 - [ ] Test detail page layout
 - [ ] Test permission checks
 - [ ] Test toast notifications
+- [ ] Test parseContent() utility extracts title, order, steps correctly
+- [ ] Test visibility Badge with Eye/EyeOff icons
+- [ ] Test order Badge and steps count Badge display
 
 ### API Service
 
@@ -350,6 +359,42 @@ await api.guides.remove(id);
 - [ ] Test authentication (missing X-User-Id)
 - [ ] Test validation errors
 - [ ] Test not found errors
+
+---
+
+## Common Issues and Solutions
+
+### Issue 1: Content Not Parsing Correctly
+**Problem**: Title, order, or steps don't display correctly in the table.
+**Solution**:
+- Ensure `parseContent()` function correctly extracts data from JSON content
+- Check that content field is properly structured JSON
+- Handle null/undefined values with fallback defaults (empty string, 0, empty array)
+- Verify content structure matches expected format
+
+### Issue 2: Image Upload Fails
+**Problem**: Image upload for guide steps fails with error.
+**Solution**:
+- Ensure `/admin/uploads` endpoint exists in API service
+- Check that X-User-Id header is included in upload request
+- Verify file size and type are within allowed limits
+- Handle upload errors gracefully with user-friendly messages
+
+### Issue 3: Step Reordering Not Persisting
+**Problem**: Drag-and-drop reordering of steps doesn't save to API.
+**Solution**:
+- Ensure `reorderSteps()` function correctly updates step order values
+- Call reorder mutation with updated steps array
+- Invalidate cache after successful reorder
+- Show toast notification on success
+
+### Issue 4: SDK Authentication Fails
+**Problem**: SDK calls fail with authentication errors.
+**Solution**:
+- Ensure `authHeaders()` includes X-User-Id header
+- Check that user ID is available in session/context
+- Verify API base URL is correct
+- Handle 401 errors with proper redirect or error message
 
 ---
 

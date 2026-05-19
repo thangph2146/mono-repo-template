@@ -105,6 +105,37 @@
 - [ ] Show loading states with Loader2 icon
 - [ ] Use FormFieldCol for form layout consistency
 
+## Testing Checklist
+
+- [ ] List page loads correctly with pagination
+- [ ] Status filter works correctly
+- [ ] Approve action works with confirmation
+- [ ] Reject action works with confirmation
+- [ ] Bulk approve works correctly
+- [ ] Bulk reject works correctly
+- [ ] Status badges display correctly
+- [ ] Permission checks prevent unauthorized access
+- [ ] Loading states display correctly
+- [ ] Error messages display correctly
+
+## Common Issues and Solutions
+
+### Issue 1: Bulk Operations Not Updating UI
+**Problem**: After bulk approve/reject, list doesn't reflect changes.
+**Solution**:
+- Invalidate cache after bulk operations: `queryClient.invalidateQueries({ queryKey: ["admin", "parent-students"] })`
+- Show toast notification on success
+- Ensure optimistic updates or proper loading states
+
+### Issue 2: Status Badge Case Sensitivity
+**Problem**: Status badges don't display correctly due to case mismatch.
+**Solution**:
+- Normalize status values before lookup: `status.toLowerCase()`
+- Or ensure all status values are stored in lowercase
+- Use PARENT_STUDENT_STATUS_LABELS with proper key handling
+
+---
+
 ## Clean Code Guidelines
 
 - Use TypeScript interfaces for type safety

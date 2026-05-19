@@ -244,6 +244,109 @@ All modules follow this structure:
 - Guides: `@workspace/api-client` - `PageContent` → `GuideGroup`, `PageContentStep` → `GuideStep`
 - Staff: `@workspace/api-client` - `User`
 
+## Advanced UI Patterns
+
+### Custom CSV/XLSX Export with Structured Data
+
+For modules with structured content (like contact requests):
+
+1. **Create custom export function**:
+   ```typescript
+   function buildCustomExportData(data: ContactRequest[]) {
+     const headers = ["Name", "Email", "Phone", "Address", "Program", "Major", ...];
+     const rows = data.map(item => {
+       const content = item.content || item.message || "";
+       // Parse structured fields from content
+       const address = content.match(/Địa chỉ:\s*(.+?)(?:\n|$)/)?.[1] || "";
+       const program = content.match(/Chương trình:\s*(.+?)(?:\n|$)/)?.[1] || "";
+       // ...
+       return [item.name, item.email, item.phone, address, program, ...];
+     });
+     return { headers, rows };
+   }
+   ```
+
+2. **Add custom export buttons** instead of using default `csvExport` prop:
+   ```typescript
+   const handleCsvExport = () => {
+     const { headers, rows } = buildCustomExportData(data);
+     downloadCsvFile("filename.csv", headers, rows);
+   };
+   ```
+
+### Bulk Operations Pattern
+
+For modules that need bulk delete/restore/purge:
+
+1. **Add bulk methods to API client**:
+   ```typescript
+   bulkDelete(ids: string[]): Promise<void> {
+     return this.http.post(`/admin/contact-requests/bulk-delete`, { ids });
+   }
+   ```
+
+2. **Implement bulk mutations in query hooks**:
+   ```typescript
+   const bulkDeleteMutation = useMutation({
+     mutationFn: async (ids: string[]) => {
+       return api.contactRequests.bulkDelete(ids);
+     },
+     onSuccess: async () => {
+       await queryClient.invalidateQueries({ queryKey: ["contact-requests"] });
+       toast.success("Đã xóa hàng loạt");
+     },
+   });
+   ```
+
+3. **Use bulk confirmation dialog** with `target="selected"`:
+   ```typescript
+   <ContactBulkConfirmDialog
+     action="delete"
+     target="selected"
+     count={selectedRows.length}
+     onConfirm={() => bulkDeleteMutation.mutate(selectedIds)}
+   />
+   ```
+
+### Form Optimization: Structured Fields
+
+For modules with complex form data (like contact requests):
+
+1. **Split single field into multiple structured fields**:
+   - Instead of single `message` textarea, create separate fields
+   - Use `Switch` component from `@ui/components` for boolean fields
+   - Build payload to combine structured fields into formatted content string
+
+2. **Parse and populate on edit**:
+   - Parse content field from API response
+   - Extract structured fields and populate form fields
+   - Handle both old format and new format for backward compatibility
+
+## Common Issues and Solutions
+
+### Backend Controller: Trash Parameter Mapping
+
+If trash items don't show, ensure the controller maps the `trash` query parameter to `status='deleted'`:
+```typescript
+// In controller list method
+if (trash) query.status = 'deleted';
+```
+
+### Status Badge Case Sensitivity
+
+Ensure status lookup handles case correctly:
+```typescript
+const status = row.original.status;
+const label = CONTACT_REQUEST_STATUS_LABELS[status]; // or use status.toLowerCase()
+```
+
+### Layout Breaks on Smaller Screens
+
+Use CSS Grid with responsive columns:
+```typescript
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+```
+
 ## Notes
 
 - All modules use React Hook Form with Zod validation
@@ -251,3 +354,6 @@ All modules follow this structure:
 - All modules use UI components from `@ui/components`
 - All modules use Lucide icons for consistency
 - All modules have permission checks with `AdminPageGuard`
+- For TypeScript errors with meta.className, use `(meta as any)?.className` pattern
+- Always test sticky positioning on actual table with overflow-x-auto container
+- For structured content, consider both display in table and export formats

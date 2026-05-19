@@ -161,18 +161,26 @@
 
 ### Phase 7: Create Table Columns (`_component/columns.tsx`)
 
-- [ ] Define `PostColumnsProps` interface with `onEdit`, `onDelete` callbacks
-- [ ] Implement `getPostsColumns(props)`:
-  - Column: Title
+- [ ] Define `PostColumnsProps` interface with `onView`, `onEdit`, `onDelete` callbacks
+- [ ] Implement `getPostColumns(props)`:
+  - Column: Title (with slug displayed below in smaller text)
   - Column: Slug
   - Column: Author
-  - Column: Categories
-  - Column: Tags
-  - Column: Published status
+  - Column: Categories (using SummaryBadges component)
+  - Column: Tags (using SummaryBadges component)
+  - Column: Published status (Badge)
+  - Column: Updated at (formatted date)
   - Column: Actions (View, Edit, Delete/Restore)
-- [ ] Use Lucide icons for action buttons
+- [ ] Use Lucide icons for action buttons (Eye, Pencil, Trash2, ArchiveRestore)
 - [ ] Use Badge for status indicators
-- [ ] Add meta properties for filtering
+- [ ] Add meta properties for filtering:
+  - Categories: `filterVariant: "tree-multi-select"` with `treeOptions`
+  - Tags: `filterVariant: "select"` with `selectOptions`
+  - Published: `filterVariant: "multi-select"` with published/draft options
+  - Updated at: `filterVariant: "date-range"`
+- [ ] Implement `getTrashColumns(props)`:
+  - Similar to main columns but adds deletedAt column
+  - Actions: Restore and Purge buttons
 
 ### Phase 8: Create Table Components (`_component/_table/`)
 
@@ -426,10 +434,10 @@
 
 - [ ] Test list page loads correctly
 - [ ] Test search functionality
-- [ ] Test column filters
+- [ ] Test column filters (tree-multi-select for categories, select for tags, multi-select for status, date-range for dates)
 - [ ] Test pagination
 - [ ] Test row selection
-- [ ] Test bulk actions
+- [ ] Test bulk delete action
 - [ ] Test create new post
 - [ ] Test edit post
 - [ ] Test publish/unpublish
@@ -440,6 +448,7 @@
 - [ ] Test tag assignment
 - [ ] Test permission checks
 - [ ] Test toast notifications
+- [ ] Test SummaryBadges component for categories/tags display
 
 ### API Service
 
@@ -458,6 +467,45 @@
 - [ ] Test not found errors
 - [ ] Test bulk operations
 - [ ] Test category tree filtering
+
+---
+
+## Common Issues and Solutions
+
+### Issue 1: Rich Text Editor Content Not Saving
+**Problem**: Editor content is not properly serialized when saving.
+**Solution**:
+- Use `normalizeContentForEditor()` helper to prepare content
+- Ensure content is structured as expected by the editor
+- Handle both old and new content formats for backward compatibility
+
+### Issue 2: Category Tree Performance
+**Problem**: Category dropdown becomes slow with many categories.
+**Solution**:
+- Use pagination with high limit (1000) for category tree
+- Implement parallel post count calculation
+- Use native bulk operations for better performance
+
+### Issue 3: Taxonomy Badges Not Displaying
+**Problem**: Categories and tags don't display as badges.
+**Solution**:
+- Use SummaryBadges component from `_component/summary-badges.tsx`
+- Ensure items array is properly formatted with name property
+- Check that the component is correctly imported and used
+
+### Issue 4: Bulk Operations Not Updating UI
+**Problem**: After bulk operations, list doesn't reflect changes.
+**Solution**:
+- Invalidate cache after bulk operations: `queryClient.invalidateQueries({ queryKey: ["admin", "posts"] })`
+- Show toast notification on success
+- Ensure optimistic updates or proper loading states
+
+### Issue 5: Filter Variants Not Working
+**Problem**: Column filters don't show expected filter types.
+**Solution**:
+- Set correct `filterVariant` in column meta: "tree-multi-select", "select", "multi-select", "date-range"
+- Provide proper options: `treeOptions`, `selectOptions`, etc.
+- Ensure AdminDataTable supports the filter variant types
 
 ---
 
