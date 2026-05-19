@@ -1,0 +1,120 @@
+import type { ColumnFiltersState, RowSelectionState, OnChangeFn } from "@tanstack/react-table";
+import { FilterX } from "lucide-react";
+import { Button } from "@ui/components/button";
+import { AdminDataTable } from "@/components/admin-data-table";
+import { AdminTablePaginationFooter } from "@/components/admin-table-pagination-footer";
+import { getStaffColumns } from "../columns";
+import type { User } from "@/lib/api";
+
+interface StaffTableProps {
+  data: User[];
+  isLoading: boolean;
+  total: number;
+  page: number;
+  pageSize: number;
+  onPageChange: (page: number) => void;
+  onPageSizeChange: (pageSize: number) => void;
+  columnFilters: ColumnFiltersState;
+  onColumnFiltersChange: OnChangeFn<ColumnFiltersState>;
+  globalFilter: string;
+  onGlobalFilterChange: OnChangeFn<string>;
+  selectedRowIds: RowSelectionState;
+  onSelectedRowIdsChange: OnChangeFn<RowSelectionState>;
+  onEdit: (user: User) => void;
+  onDelete: (user: User) => void;
+  busy: boolean;
+  currentUserId?: string;
+  onBulkDelete: (ids: string[]) => void;
+  onClearFilters: () => void;
+}
+
+export function StaffTable(props: StaffTableProps) {
+  const {
+    data,
+    isLoading,
+    total,
+    page,
+    pageSize,
+    onPageChange,
+    onPageSizeChange,
+    columnFilters,
+    onColumnFiltersChange,
+    globalFilter,
+    onGlobalFilterChange,
+    selectedRowIds,
+    onSelectedRowIdsChange,
+    onEdit,
+    onDelete,
+    busy,
+    currentUserId,
+    onBulkDelete,
+    onClearFilters,
+  } = props;
+
+  const columns = getStaffColumns({ onEdit, onDelete, busy, currentUserId });
+
+  const paginationFooter = (
+    <AdminTablePaginationFooter
+      page={page}
+      pageSize={pageSize}
+      total={total}
+      isLoading={isLoading}
+      onPageChange={onPageChange}
+      onPageSizeChange={onPageSizeChange}
+      emptySummary="Không có nhân sự"
+      itemLabel="tài khoản"
+    />
+  );
+
+  return (
+    <AdminDataTable<User>
+      data={data}
+      getRowId={(row) => String(row.id)}
+      columns={columns}
+      isLoading={isLoading}
+      emptyLabel="Không có tài khoản khớp tìm kiếm API hoặc bộ lọc vai trò / cột."
+      defaultExpandedAll={false}
+      manualFiltering
+      columnFilters={columnFilters}
+      onColumnFiltersChange={onColumnFiltersChange}
+      globalFilter={globalFilter}
+      onGlobalFilterChange={onGlobalFilterChange}
+      globalFilterPlaceholder="Tìm theo email, họ tên (API)…"
+      rowSelectionEnabled
+      selectedRowIds={selectedRowIds}
+      onSelectedRowIdsChange={onSelectedRowIdsChange}
+      canSelectRow={(row) => String(row.original.id) !== String(currentUserId ?? "")}
+      bulkActions={[
+        {
+          id: "bulk-staff-delete",
+          label: "Xóa tạm đã chọn",
+          variant: "outline",
+          className: "border-destructive/40 text-destructive",
+          onAction: async (rows) => {
+            const ids = rows
+              .filter((u) => String(u.id) !== String(currentUserId ?? ""))
+              .map((u) => String(u.id));
+            if (!ids.length) return;
+            await onBulkDelete(ids);
+          },
+        },
+      ]}
+      filterToolbarExtra={
+        <div className="flex flex-wrap items-end gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="h-9 gap-1.5 rounded-lg"
+            onClick={onClearFilters}
+          >
+            <FilterX className="size-4" aria-hidden />
+            Xóa bộ lọc
+          </Button>
+        </div>
+      }
+      csvExport={{ fileName: "nhan-su.csv" }}
+      footer={paginationFooter}
+    />
+  );
+}

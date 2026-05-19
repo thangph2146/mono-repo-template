@@ -2,6 +2,8 @@ import type { UseQueryResult } from "@tanstack/react-query";
 import { useQuery } from "@tanstack/react-query";
 import type { StoreSyncSdk, PagedResult } from "@workspace/api-client";
 import type { TagDetail, TagRow } from "../types";
+import { api } from "@/lib/api";
+import { buildTagsFilterQuery, toFilterQuery } from "../utils";
 
 export function useTagDetailQuery(
   api: StoreSyncSdk,
@@ -16,20 +18,19 @@ export function useTagDetailQuery(
 }
 
 export function useTagsListQuery(
-  api: StoreSyncSdk,
+  apiParam: StoreSyncSdk,
   enabled: boolean,
 ): UseQueryResult<TagRow[]> {
   return useQuery({
     queryKey: ["media", "tags", "tree"],
     queryFn: async (): Promise<TagRow[]> => {
-      const { api: dynamicApi } = await import("@/lib/api");
       const limit = 100;
       const items: TagRow[] = [];
       let page = 1;
       let total = Number.POSITIVE_INFINITY;
 
       while (items.length < total) {
-        const result = await dynamicApi.tags.list<TagRow>({ page, limit, status: "active" });
+        const result = await api.tags.list<TagRow>({ page, limit, status: "active" });
         items.push(...result.items);
         total = result.total;
         if (result.items.length === 0) break;
@@ -71,7 +72,6 @@ export function useTrashQuery({
     ],
     enabled,
     queryFn: async (): Promise<PagedResult<TagRow>> => {
-      const { buildTagsFilterQuery, toFilterQuery } = await import("../utils");
       return api.tags.list<TagRow>({
         page: trashPage,
         limit: trashPageSize,

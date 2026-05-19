@@ -1,322 +1,497 @@
-# Posts Implementation Documentation
+# Posts Implementation - Task List
 
-## Overview
-This document provides detailed information about the Posts module implementation, including both the Backend Admin UI and the API service.
+> This document provides a detailed task list for implementing the Posts module. Follow these steps in order to ensure clean, consistent code.
 
 ---
 
 ## Backend Admin UI (Next.js)
 
-### Location
-`apps/backend/src/app/posts/`
+**Location**: `apps/backend/src/app/posts/`
 
-### File Structure
-```
-posts/
-├── page.tsx                          # Main list page with list/trash tabs
-├── new/
-│   └── page.tsx                      # Create new post page
-├── [id]/
-│   ├── page.tsx                      # View post detail page
-│   └── edit/
-│       └── page.tsx                  # Edit post page
-└── _component/                       # Shared components
-    ├── index.ts                      # Barrel exports
-    ├── types.ts                      # TypeScript types
-    ├── utils.ts                      # Utility functions
-    ├── summary-badges.tsx            # Summary badges component
-    ├── columns.tsx                   # Table column definitions
-    ├── _hooks/                       # Custom React hooks
-    │   ├── index.ts
-    │   ├── use-post-form.ts          # Form hook
-    │   ├── use-posts-actions.ts      # Action handlers
-    │   └── use-posts-filters.ts      # Filter handlers
-    ├── _query/                       # React Query hooks
-    │   ├── index.ts
-    │   ├── use-posts-queries.ts      # Query hooks
-    │   ├── use-posts-mutations.ts    # Mutation hooks
-    │   └── use-taxonomy-queries.ts   # Taxonomy query hooks
-    ├── _table/                       # Table components
-    │   ├── index.ts
-    │   ├── posts-table.tsx           # Main posts table
-    │   └── posts-trash-table.tsx     # Trash table
-    ├── _form/                        # Form components
-    │   ├── index.ts
-    │   └── post-form-shell.tsx       # Form shell component
-    └── _alert-dialog/                # Alert dialogs
-        ├── index.ts
-        └── posts-confirm-dialog.tsx  # Confirmation dialog
-```
+### Phase 1: Setup File Structure
 
-### Key Components
+- [ ] Create directory structure:
+  ```
+  posts/
+  ├── page.tsx
+  ├── new/
+  │   └── page.tsx
+  ├── [id]/
+  │   ├── page.tsx
+  │   └── edit/
+  │       └── page.tsx
+  └── _component/
+      ├── index.ts
+      ├── types.ts
+      ├── utils.ts
+      ├── summary-badges.tsx
+      ├── columns.tsx
+      ├── _hooks/
+      │   ├── index.ts
+      │   ├── use-post-form.ts
+      │   ├── use-posts-actions.ts
+      │   └── use-posts-filters.ts
+      ├── _query/
+      │   ├── index.ts
+      │   ├── use-posts-queries.ts
+      │   ├── use-posts-mutations.ts
+      │   └── use-taxonomy-queries.ts
+      ├── _table/
+      │   ├── index.ts
+      │   ├── posts-table.tsx
+      │   └── posts-trash-table.tsx
+      ├── _form/
+      │   ├── index.ts
+      │   └── post-form-shell.tsx
+      └── _alert-dialog/
+          ├── index.ts
+          └── posts-confirm-dialog.tsx
+  ```
 
-#### Main Page (page.tsx)
-- **Features**: List and trash tabs, search, column filters, pagination, bulk actions
-- **State Management**: 
+### Phase 2: Define Types (`_component/types.ts`)
+
+- [ ] Export shared types from `@workspace/api-client`:
+  - `Post`
+  - `CreatePostInput`
+  - `UpdatePostInput`
+
+- [ ] Define local UI types:
+  ```typescript
+  export type TaxonomyOption = {
+    id: string;
+    name: string;
+  };
+
+  export type PostListRow = {
+    id: string;
+    title: string;
+    slug: string;
+    excerpt: string | null;
+    image: string | null;
+    published: boolean;
+    publishedAt: string | null;
+    createdAt: string;
+    updatedAt: string;
+    deletedAt: string | null;
+    author: {
+      id: string;
+      name: string | null;
+      email: string;
+    };
+    categories: TaxonomyOption[];
+    tags: TaxonomyOption[];
+  };
+
+  export type PostConfirmAction =
+    | { kind: "delete"; row: PostListRow }
+    | { kind: "restore"; row: PostListRow }
+    | { kind: "purge"; row: PostListRow };
+  ```
+
+### Phase 3: Create Utility Functions (`_component/utils.ts`)
+
+- [ ] Implement `slugify(text)`: Convert text to URL-friendly slug
+- [ ] Implement `getSeoStatus(title, slug, excerpt)`: Calculate SEO status
+- [ ] Implement `buildCategoryOptionTree(rows)`: Build hierarchical category tree
+- [ ] Implement `buildPostsFilterQuery(filters)`: Convert column filters to API query
+- [ ] Implement `formatDateTime(date)`: Format date/time for display
+- [ ] Implement `normalizeContentForEditor(content)`: Prepare content for editor
+
+### Phase 4: Create Form Hook (`_component/_hooks/use-post-form.ts`)
+
+- [ ] Define schema with zod:
+  ```typescript
+  export const postFormSchema = z.object({
+    title: z.string().min(1, "Tiêu đề không được để trống"),
+    slug: z.string(),
+    excerpt: z.string(),
+    image: z.string(),
+    content: z.record(z.any()),
+    published: z.boolean(),
+    publishedAt: z.string(),
+    categoryIds: z.array(z.string()),
+    tagIds: z.array(z.string()),
+  });
+  ```
+
+- [ ] Define default values: Empty editor state with one paragraph
+- [ ] Export `usePostForm()` hook using `useForm` with zodResolver
+- [ ] Export `buildPostPayload()` helper
+
+### Phase 5: Create Query Hooks (`_component/_query/use-posts-queries.ts`)
+
+- [ ] Implement `usePostsQuery(params)`:
+  - Fetch posts with pagination, search, filters
+  - Use `useQuery` from React Query
+  - Cache key: `["admin", "posts"]`
+
+- [ ] Implement `useTrashQuery(params)`:
+  - Fetch trashed posts
+  - Cache key: `["admin", "posts", "trash"]`
+
+- [ ] Implement `usePostDetailQuery(api, id)`:
+  - Fetch single post by ID
+  - Cache key: `["admin", "posts", id]`
+
+- [ ] Implement `useCategoriesQuery()`:
+  - Fetch categories for dropdown
+  - Cache key: `["admin", "categories"]`
+
+- [ ] Implement `useTagsQuery()`:
+  - Fetch tags for dropdown
+  - Cache key: `["admin", "tags"]`
+
+### Phase 6: Create Mutation Hooks (`_component/_query/use-posts-mutations.ts`)
+
+- [ ] Implement `useDeleteMutation()`:
+  - Soft delete with cache invalidation
+  - Show toast on success/error
+
+- [ ] Implement `useRestoreMutation()`:
+  - Restore from trash
+  - Invalidate cache
+
+- [ ] Implement `usePurgeMutation()`:
+  - Hard delete from trash
+  - Invalidate cache
+
+- [ ] Implement `useBulkMutation()`:
+  - Bulk operations (delete, restore, hard-delete)
+  - Handle multiple IDs
+
+### Phase 7: Create Table Columns (`_component/columns.tsx`)
+
+- [ ] Define `PostColumnsProps` interface with `onEdit`, `onDelete` callbacks
+- [ ] Implement `getPostsColumns(props)`:
+  - Column: Title
+  - Column: Slug
+  - Column: Author
+  - Column: Categories
+  - Column: Tags
+  - Column: Published status
+  - Column: Actions (View, Edit, Delete/Restore)
+- [ ] Use Lucide icons for action buttons
+- [ ] Use Badge for status indicators
+- [ ] Add meta properties for filtering
+
+### Phase 8: Create Table Components (`_component/_table/`)
+
+- [ ] Create `posts-table.tsx`:
+  - Wrap `AdminDataTable` component
+  - Configure data, columns, pagination
+  - Add filters, row selection, bulk actions
+  - Add refresh and clear filter buttons
+
+- [ ] Create `posts-trash-table.tsx`:
+  - Similar to posts-table but for trash
+  - Show restore and purge actions
+
+- [ ] Export both from `index.ts`
+
+### Phase 9: Create Form Shell (`_component/_form/post-form-shell.tsx`)
+
+- [ ] Define `PostFormShellProps` interface:
+  ```typescript
+  export interface PostFormShellProps {
+    form: UseFormReturn<PostFormValues>;
+    onSubmit: (values: PostFormValues) => Promise<void>;
+    submitting: boolean;
+    editingId: string | null;
+    onBack: () => void;
+    onReset: () => void;
+  }
+  ```
+
+- [ ] Implement form layout with Card components
+- [ ] Use `Controller` from react-hook-form for controlled inputs
+- [ ] Include fields: title, slug, excerpt, image, content (editor), published, publishedAt, categories, tags
+- [ ] Add character count badges
+- [ ] Add validation error messages
+- [ ] Add navigation buttons (Back, Reset, Save)
+
+### Phase 10: Create Confirm Dialog (`_component/_alert-dialog/posts-confirm-dialog.tsx`)
+
+- [ ] Define props interface with `confirmAction`, `deleteMutation`, etc.
+- [ ] Use `AdminConfirmActionDialog` shared component
+- [ ] Handle delete, restore, purge actions
+- [ ] Show appropriate title, description, icon based on action type
+
+### Phase 11: Create Main Page (`page.tsx`)
+
+- [ ] Import all necessary components and hooks
+- [ ] Set up state:
   - Main tab (list/trash)
   - Pagination (page, pageSize)
   - Global filter (search)
   - Column filters
   - Row selection
-- **Data Fetching**:
-  - `usePostsQuery` - Fetch posts list
-  - `useTrashQuery` - Fetch trashed posts
-  - `useCategoriesQuery` - Fetch categories for filters
-  - `useTagsQuery` - Fetch tags for filters
-- **Mutations**:
-  - `useDeleteMutation` - Soft delete posts
-  - `useRestoreMutation` - Restore trashed posts
-  - `usePurgeMutation` - Hard delete posts
-  - `useBulkMutation` - Bulk operations
+  - Confirm action
 
-#### Form Hook (use-post-form.ts)
-- **Schema**: `postFormSchema` with validation
-  - `id`: string (optional)
-  - `title`: string (required)
-  - `slug`: string
-  - `excerpt`: string
-  - `image`: string
-  - `content`: Record<string, any> (editor state)
-  - `published`: boolean
-  - `publishedAt`: string
-  - `categoryIds`: string[]
-  - `tagIds`: string[]
-- **Default Values**: Empty editor state with one paragraph
+- [ ] Use query hooks:
+  - `usePostsQuery` for list
+  - `useTrashQuery` for trash
+  - `useCategoriesQuery` for category filters
+  - `useTagsQuery` for tag filters
 
-#### Query Hooks (use-posts-queries.ts)
-- **usePostsQuery**: Fetch posts with pagination, search, and filters
-- **useTrashQuery**: Fetch trashed posts
-- **usePostDetailQuery**: Fetch single post by ID
-- **useCategoriesQuery**: Fetch categories for dropdown
-- **useTagsQuery**: Fetch tags for dropdown
+- [ ] Use mutations for delete, restore, purge
 
-#### Mutation Hooks (use-posts-mutations.ts)
-- **useDeleteMutation**: Soft delete with cache invalidation
-- **useRestoreMutation**: Restore from trash
-- **usePurgeMutation**: Permanent delete
-- **useBulkMutation**: Bulk operations (delete, restore, hard-delete)
+- [ ] Render page with:
+  - Page header with title and description
+  - Tabs (List, Trash)
+  - PostsTable or PostsTrashTable based on tab
+  - PostsConfirmDialog
 
-### Types (types.ts)
-```typescript
-export type TaxonomyOption = {
-  id: string;
-  name: string;
-};
+- [ ] Add permission checks with `AdminPageGuard`
 
-export type PostListRow = {
-  id: string;
-  title: string;
-  slug: string;
-  excerpt: string | null;
-  image: string | null;
-  published: boolean;
-  publishedAt: string | null;
-  createdAt: string;
-  updatedAt: string;
-  deletedAt: string | null;
-  author: {
-    id: string;
-    name: string | null;
-    email: string;
-  };
-  categories: TaxonomyOption[];
-  tags: TaxonomyOption[];
-};
+### Phase 12: Create New Page (`new/page.tsx`)
 
-export type PostConfirmAction =
-  | { kind: "delete"; row: PostListRow }
-  | { kind: "restore"; row: PostListRow }
-  | { kind: "purge"; row: PostListRow };
-```
+- [ ] Use `PostFormShell` component
+- [ ] Use `usePostForm` hook
+- [ ] Implement create mutation with `useMutation`
+- [ ] On success: invalidate cache, show toast, navigate to list
+- [ ] On error: show error toast
+- [ ] Add permission guard
 
-### Utilities (utils.ts)
-- **slugify**: Convert text to URL-friendly slug
-- **getSeoStatus**: Calculate SEO status based on title, slug, excerpt
-- **buildCategoryOptionTree**: Build hierarchical category tree
-- **buildPostsFilterQuery**: Convert column filters to API query
-- **formatDateTime**: Format date/time for display
-- **normalizeContentForEditor**: Prepare content for editor
+### Phase 13: Create Edit Page (`[id]/edit/page.tsx`)
 
-### Permissions
-- Required roles: `super_admin`, `admin`, `manager`
-- Permission codes: `posts.read`, `posts.write`, `posts.delete`
+- [ ] Fetch post detail with `usePostDetailQuery`
+- [ ] Populate form with existing data
+- [ ] Use `PostFormShell` component
+- [ ] Implement update mutation
+- [ ] Handle loading and error states
+- [ ] Add permission guard
+
+### Phase 14: Create Detail Page (`[id]/page.tsx`)
+
+- [ ] Fetch post detail
+- [ ] Display information in 2-column layout
+- [ ] Show post content preview
+- [ ] Add navigation buttons (Back, Edit)
+- [ ] Handle loading and error states
+- [ ] Add permission guard
+
+### Phase 15: Update Exports (`_component/index.ts`)
+
+- [ ] Re-export shared types from `@workspace/api-client`
+- [ ] Export local types
+- [ ] Export utility functions
+- [ ] Export hooks
+- [ ] Export query hooks
+- [ ] Export mutation hooks
+- [ ] Export form components
+- [ ] Export alert dialog components
+- [ ] Export table components
+- [ ] Export column definitions
 
 ---
 
 ## API Service (NestJS)
 
-### Location
-`apps/api/src/posts/`
+**Location**: `apps/api/src/posts/`
 
-### File Structure
-```
-posts/
-├── posts.controller.ts                # HTTP endpoints
-├── posts.service.ts                   # Business logic
-├── posts.module.ts                    # Module definition
-```
+### Phase 16: Setup API File Structure
 
-### Controller Endpoints
-
-#### GET /admin/posts
-- **Description**: List posts with pagination and filters
-- **Headers**: `X-User-Id` (required)
-- **Query Params**:
-  - `page`: number (default: 1)
-  - `limit`: number (default: 10, max: 100)
-  - `search`: string (search in title, slug, excerpt)
-  - `status`: 'active' | 'deleted' | 'all' (default: 'active')
-  - `filter[key]`: string (column filters)
-- **Response**: `{ data: PostRowDto[], pagination: {...} }`
-
-#### GET /admin/posts/options
-- **Description**: Get options for dropdown filters
-- **Query Params**:
-  - `column`: string (default: 'title')
-  - `search`: string
-  - `limit`: number (default: 50, max: 100)
-- **Response**: `Array<{ label: string, value: string }>`
-
-#### GET /admin/posts/dates-with-posts
-- **Description**: Get dates that have published posts
-- **Response**: `{ dates: string[] }`
-
-#### GET /admin/posts/:id
-- **Description**: Get single post by ID
-- **Response**: `PostDetailDto`
-
-#### POST /admin/posts
-- **Description**: Create new post
-- **Body**:
-  ```typescript
-  {
-    title: string;
-    slug: string;
-    content?: unknown;
-    excerpt?: string | null;
-    image?: string | null;
-    published?: boolean;
-    publishedAt?: string | null;
-    eventStartAt?: string | null;
-    eventEndAt?: string | null;
-    categoryIds?: string[];
-    tagIds?: string[];
-  }
+- [ ] Create directory structure:
   ```
-- **Response**: `PostRowDto` (status 201)
-
-#### PUT /admin/posts/:id
-- **Description**: Update existing post
-- **Body**: Same as create (all fields optional except id)
-- **Response**: `PostRowDto`
-
-#### POST /admin/posts/bulk
-- **Description**: Bulk operations on posts
-- **Body**:
-  ```typescript
-  {
-    action: 'delete' | 'restore' | 'hard-delete' | 'set-categories' | 'clear-images';
-    ids: string[];
-    categoryIds?: string[]; // for set-categories action
-    mode?: 'add' | 'replace'; // for set-categories action
-  }
+  posts/
+  ├── posts.controller.ts
+  ├── posts.service.ts
+  └── posts.module.ts
   ```
-- **Response**: `{ affected: number, message: string }`
 
-#### DELETE /admin/posts/:id
-- **Description**: Soft delete post
-- **Response**: `{ message: string }`
+### Phase 17: Define Data Models
 
-#### DELETE /admin/posts/:id/hard-delete
-- **Description**: Permanently delete post
-- **Response**: `{ message: string }`
+- [ ] Define DTOs:
+  - `PostRowDto`
+  - `PostDetailDto`
+  - `RelatedPostDto`
 
-#### POST /admin/posts/:id/restore
-- **Description**: Restore trashed post
-- **Response**: `{ message: string }`
+- [ ] Include fields: id, title, slug, excerpt, image, published, publishedAt, eventStartAt, eventEndAt, createdAt, updatedAt, deletedAt, author, categories, tags
 
-### Service Methods
+### Phase 18: Create Service (`posts.service.ts`)
 
-#### PostsService
-- **list(params)**: List posts with pagination and filters
-- **getOptions(column, search, limit)**: Get dropdown options
-- **getById(id)**: Get single post
-- **getDatesWithPosts()**: Get dates with published posts
-- **create(authorId, data)**: Create new post
-- **update(id, data)**: Update post
-- **softDelete(id)**: Soft delete
-- **restore(id)**: Restore from trash
-- **hardDelete(id)**: Permanent delete
-- **bulkSetCategories(ids, categoryIds, mode)**: Bulk set categories
-- **bulkClearImages(ids)**: Bulk clear images
-- **bulk(action, ids)**: Bulk operations
+- [ ] Implement `list(params)`:
+  - Build where clause with search and filters
+  - Apply pagination
+  - Handle soft-delete filtering
+  - Resolve relation filters (categories, tags)
 
-### Key Features
+- [ ] Implement `getOptions(column, search, limit)`:
+  - Fetch distinct values for dropdown filters
+  - Apply search and limit
 
-#### Category Tree Support
-- Automatically includes descendant categories when filtering by parent
-- Uses `collectCategoryDescendantIds()` to traverse category tree
-- Safety limit: 50 levels, 10,000 nodes
+- [ ] Implement `getDatesWithPosts()`:
+  - Get dates that have published posts
+  - Return array of date strings
 
-#### Two-Step Query
-- First query: Get IDs with pagination and ordering
-- Second query: Fetch full data by IDs
-- Preserves sort order from paginated query
-- Avoids MySQL "Out of sort memory" errors
+- [ ] Implement `getById(id)`:
+  - Fetch single post with relations
+  - Include author, categories, tags
+  - Return PostDetailDto
 
-#### Relation Filters
-- Resolves relation filters (categories, tags) from names to IDs
-- Supports soft-delete aware filtering
-- Uses `resolveRelationFilters()` helper
+- [ ] Implement `create(authorId, data)`:
+  - Validate data
+  - Validate category and tag IDs
+  - Create post record
+  - Log activity
+  - Return created post
 
-#### Validation
-- Validates category IDs exist and are not deleted
-- Validates tag IDs exist and are not deleted
-- Validates author ID exists
-- Validates date formats
+- [ ] Implement `update(id, data)`:
+  - Validate data
+  - Update post record
+  - Log activity
+  - Return updated post
 
-### Data Models
+- [ ] Implement `softDelete(id)`:
+  - Set deletedAt timestamp
+  - Log activity
 
-#### PostRowDto
-```typescript
-{
-  id: string;
-  title: string;
-  slug: string;
-  excerpt: string | null;
-  image: string | null;
-  published: boolean;
-  publishedAt: string | null;
-  eventStartAt: string | null;
-  eventEndAt: string | null;
-  createdAt: string;
-  updatedAt: string;
-  deletedAt: string | null;
-  author: { id: string; name: string | null; email: string };
-  categories: Array<{ id: string; name: string }>;
-  tags: Array<{ id: string; name: string }>;
-}
-```
+- [ ] Implement `restore(id)`:
+  - Clear deletedAt timestamp
+  - Log activity
 
-#### PostDetailDto
-Extends PostRowDto with `content: unknown`
+- [ ] Implement `hardDelete(id)`:
+  - Permanently delete record
+  - Log activity
 
-### Performance Optimizations
-- Pagination with configurable limits
-- Two-step query for complex joins
-- Native bulk operations
-- Index-based ordering
-- Efficient category tree traversal
+- [ ] Implement `bulkSetCategories(ids, categoryIds, mode)`:
+  - Bulk assign categories to posts
+  - Support 'add' or 'replace' mode
+  - Use native queries for performance
+
+- [ ] Implement `bulkClearImages(ids)`:
+  - Bulk clear image field
+  - Use native queries
+
+- [ ] Implement `bulk(action, ids)`:
+  - Handle delete, restore, hard-delete actions
+  - Use native queries for performance
+  - Return affected count
+
+### Phase 19: Create Controller (`posts.controller.ts`)
+
+- [ ] Set up controller with `@Controller('admin/posts')`
+- [ ] Add authentication guard (check `X-User-Id` header)
+
+- [ ] Implement endpoints:
+  - `GET /` - List posts
+  - `GET /options` - Get dropdown options
+  - `GET /dates-with-posts` - Get dates with published posts
+  - `GET /:id` - Get single post
+  - `POST /` - Create post
+  - `PUT /:id` - Update post
+  - `POST /bulk` - Bulk operations
+  - `DELETE /:id` - Soft delete
+  - `DELETE /:id/hard-delete` - Hard delete
+  - `POST /:id/restore` - Restore
+
+- [ ] Add request validation with DTOs
+- [ ] Add error handling
+- [ ] Add logging
+
+### Phase 20: Create Module (`posts.module.ts`)
+
+- [ ] Import PostService and PostController
+- [ ] Register in providers and controllers
+- [ ] Import required modules (Prisma, Notifications, etc.)
+
+### Phase 21: Performance Optimizations
+
+- [ ] Add database indexes on frequently queried fields
+- [ ] Use two-step query for complex joins:
+  - First query: Get IDs with pagination and ordering
+  - Second query: Fetch full data by IDs
+- [ ] Use native bulk operations
+- [ ] Optimize category tree traversal
+- [ ] Use pagination with configurable limits
+
+### Phase 22: Error Handling & Logging
+
+- [ ] Add try-catch blocks in all service methods
+- [ ] Log errors with stack traces
+- [ ] Return appropriate HTTP status codes:
+  - 401 for missing auth
+  - 400 for validation errors
+  - 404 for not found
+  - 500 for server errors
+- [ ] Log all API calls in controller
+- [ ] Log activity via NotificationsService
+- [ ] Maintain audit trail for CRUD operations
+
+---
+
+## Testing Checklist
+
+### Backend Admin UI
+
+- [ ] Test list page loads correctly
+- [ ] Test search functionality
+- [ ] Test column filters
+- [ ] Test pagination
+- [ ] Test row selection
+- [ ] Test bulk actions
+- [ ] Test create new post
+- [ ] Test edit post
+- [ ] Test publish/unpublish
+- [ ] Test delete (soft delete)
+- [ ] Test restore from trash
+- [ ] Test hard delete from trash
+- [ ] Test category assignment
+- [ ] Test tag assignment
+- [ ] Test permission checks
+- [ ] Test toast notifications
+
+### API Service
+
+- [ ] Test GET /admin/posts
+- [ ] Test GET /admin/posts/options
+- [ ] Test GET /admin/posts/dates-with-posts
+- [ ] Test GET /admin/posts/:id
+- [ ] Test POST /admin/posts
+- [ ] Test PUT /admin/posts/:id
+- [ ] Test POST /admin/posts/bulk
+- [ ] Test DELETE /admin/posts/:id
+- [ ] Test DELETE /admin/posts/:id/hard-delete
+- [ ] Test POST /admin/posts/:id/restore
+- [ ] Test authentication (missing X-User-Id)
+- [ ] Test validation errors
+- [ ] Test not found errors
+- [ ] Test bulk operations
+- [ ] Test category tree filtering
+
+---
+
+## Clean Code Guidelines
+
+### File Organization
+- Keep related files in subdirectories (`_hooks`, `_query`, `_table`, `_form`, `_alert-dialog`)
+- Use barrel exports (`index.ts`) for clean imports
+- Separate concerns: types, utils, hooks, components
+
+### Code Style
+- Use TypeScript strict mode
+- Use functional components with hooks
+- Use react-hook-form for form management
+- Use React Query for data fetching
+- Use zod for validation
+- Use Lucide icons for consistency
+- Use UI components from `@ui/components`
+
+### Performance
+- Use React.memo for expensive components
+- Use useMemo for computed values
+- Use useCallback for event handlers
+- Implement proper caching keys
+- Use pagination for large datasets
+- Use two-step query for complex joins
 
 ### Error Handling
-- Missing X-User-Id header → 401
-- Invalid date formats → 400
-- Missing required fields → 400
-- Not found → 404
-- Server errors → 500 with detailed logging
+- Always handle loading and error states
+- Show user-friendly error messages
+- Log errors for debugging
+- Use toast notifications for user feedback
 
-### Logging
-- Controller logs each API call
-- Service logs errors with stack traces
-- Activity logging via NotificationsService
-- Audit trail for all CRUD operations
+### Permissions
+- Use AdminPageGuard for route protection
+- Check permissions before showing actions
+- Show read-only warnings when appropriate

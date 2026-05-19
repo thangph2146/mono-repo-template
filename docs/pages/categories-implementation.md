@@ -1,335 +1,463 @@
-# Categories Implementation Documentation
+# Categories Implementation - Task List
 
-## Overview
-This document provides detailed information about the Categories module implementation, including both the Backend Admin UI and the API service.
+> This document provides a detailed task list for implementing the Categories module. Follow these steps in order to ensure clean, consistent code.
 
 ---
 
 ## Backend Admin UI (Next.js)
 
-### Location
-`apps/backend/src/app/categories/`
+**Location**: `apps/backend/src/app/categories/`
 
-### File Structure
-```
-categories/
-├── page.tsx                          # Main list page with list/trash tabs
-├── new/
-│   └── page.tsx                      # Create new category page
-├── [id]/
-│   ├── page.tsx                      # View category detail page
-│   └── edit/
-│       └── page.tsx                  # Edit category page
-└── _component/                       # Shared components
-    ├── index.ts                      # Barrel exports
-    ├── types.ts                      # TypeScript types
-    ├── utils.ts                      # Utility functions
-    ├── columns.tsx                   # Table column definitions
-    ├── _hooks/                       # Custom React hooks
-    │   ├── index.ts
-    │   ├── use-category-form.ts      # Form hook
-    │   ├── use-categories-actions.ts # Action handlers
-    │   └── use-categories-filters.ts # Filter handlers
-    ├── _query/                       # React Query hooks
-    │   ├── index.ts
-    │   └── use-categories-queries.ts # Query hooks
-    ├── _table/                       # Table components
-    │   ├── index.ts
-    │   ├── categories-table.tsx      # Main categories table
-    │   └── categories-trash-table.tsx # Trash table
-    ├── _form/                        # Form components
-    │   ├── index.ts
-    │   └── category-form-shell.tsx   # Form shell component
-    └── _alert-dialog/                # Alert dialogs
-        ├── index.ts
-        └── categories-confirm-dialog.tsx # Confirmation dialog
-```
+### Phase 1: Setup File Structure
 
-### Key Components
+- [ ] Create directory structure:
+  ```
+  categories/
+  ├── page.tsx
+  ├── new/
+  │   └── page.tsx
+  ├── [id]/
+  │   ├── page.tsx
+  │   └── edit/
+  │       └── page.tsx
+  └── _component/
+      ├── index.ts
+      ├── types.ts
+      ├── utils.ts
+      ├── columns.tsx
+      ├── _hooks/
+      │   ├── index.ts
+      │   ├── use-category-form.ts
+      │   ├── use-categories-actions.ts
+      │   └── use-categories-filters.ts
+      ├── _query/
+      │   ├── index.ts
+      │   └── use-categories-queries.ts
+      ├── _table/
+      │   ├── index.ts
+      │   ├── categories-table.tsx
+      │   └── categories-trash-table.tsx
+      ├── _form/
+      │   ├── index.ts
+      │   └── category-form-shell.tsx
+      └── _alert-dialog/
+          ├── index.ts
+          └── categories-confirm-dialog.tsx
+  ```
 
-#### Main Page (page.tsx)
-- **Features**: List and trash tabs, search, column filters, tree view, bulk actions
-- **State Management**: 
+### Phase 2: Define Types (`_component/types.ts`)
+
+- [ ] Export shared types from `@workspace/api-client`:
+  - `Category` (from shared package)
+  - `CreateCategoryInput`
+  - `UpdateCategoryInput`
+
+- [ ] Define local UI types:
+  ```typescript
+  export interface CategoryRow {
+    id: string;
+    name: string;
+    slug: string;
+    parentId: string | null;
+    parentName: string | null;
+    description: string | null;
+    createdAt: string;
+    updatedAt: string;
+    deletedAt: string | null;
+    icon: string | null;
+    sortOrder: number;
+    _count: { children: number };
+    postCount: number;
+    subRows?: CategoryRow[];
+  }
+
+  export interface CategoryConfirmAction {
+    kind: "delete" | "restore" | "purge";
+    row: CategoryRow;
+  }
+
+  export interface FormState {
+    id?: string;
+    name: string;
+    slug: string;
+    description: string;
+    icon: string;
+    sortOrder: number;
+    parentId: string;
+  }
+  ```
+
+### Phase 3: Create Utility Functions (`_component/utils.ts`)
+
+- [ ] Implement `slugify(text)`: Convert text to URL-friendly slug
+- [ ] Implement `buildCategoryOptionTree(rows)`: Build hierarchical tree for dropdowns
+- [ ] Implement `buildCategoriesFilterQuery(filters)`: Convert column filters to API query
+- [ ] Implement `formatDateTime(date)`: Format date/time for display
+- [ ] Implement `buildCategoryPayload(values)`: Prepare form data for API submission
+
+### Phase 4: Create Form Hook (`_component/_hooks/use-category-form.ts`)
+
+- [ ] Define schema with zod:
+  ```typescript
+  export const categoryFormSchema = z.object({
+    name: z.string().min(1, "Tên danh mục không được để trống"),
+    slug: z.string(),
+    description: z.string(),
+    icon: z.string(),
+    sortOrder: z.coerce.number(),
+    parentId: z.string(),
+  });
+  ```
+
+- [ ] Define default values: `EMPTY_VALUES` object
+- [ ] Export `useCategoryForm()` hook using `useForm` with zodResolver
+- [ ] Export `buildCategoryPayload()` helper
+
+### Phase 5: Create Query Hooks (`_component/_query/use-categories-queries.ts`)
+
+- [ ] Implement `useCategoriesQuery(params)`:
+  - Fetch categories with pagination, search, filters
+  - Use `useQuery` from React Query
+  - Cache key: `["admin", "categories"]`
+
+- [ ] Implement `useTrashQuery(params)`:
+  - Fetch trashed categories
+  - Cache key: `["admin", "categories", "trash"]`
+
+- [ ] Implement `useCategoryDetailQuery(api, id)`:
+  - Fetch single category with children and posts
+  - Cache key: `["admin", "categories", id]`
+
+- [ ] Implement `useCategoriesOptionsQuery(column, search, limit)`:
+  - Fetch category tree for dropdowns
+  - Cache key: `["admin", "categories", "options"]`
+
+### Phase 6: Create Table Columns (`_component/columns.tsx`)
+
+- [ ] Define `CategoryColumnsProps` interface with `onEdit`, `onDelete` callbacks
+- [ ] Implement `getCategoryColumns(props)`:
+  - Column: Name (with tree indentation)
+  - Column: Slug
+  - Column: Post count
+  - Column: Parent category
+  - Column: Actions (View, Edit, Delete/Restore)
+- [ ] Use Lucide icons for action buttons
+- [ ] Use Badge for status indicators
+- [ ] Add meta properties for filtering
+
+### Phase 7: Create Table Components (`_component/_table/`)
+
+- [ ] Create `categories-table.tsx`:
+  - Wrap `AdminDataTable` component
+  - Configure data, columns, pagination
+  - Add filters, row selection, bulk actions
+  - Add refresh and clear filter buttons
+
+- [ ] Create `categories-trash-table.tsx`:
+  - Similar to categories-table but for trash
+  - Show restore and purge actions
+
+- [ ] Export both from `index.ts`
+
+### Phase 8: Create Form Shell (`_component/_form/category-form-shell.tsx`)
+
+- [ ] Define `CategoryFormShellProps` interface:
+  ```typescript
+  export interface CategoryFormShellProps {
+    form: UseFormReturn<CategoryFormValues>;
+    onSubmit: (values: CategoryFormValues) => Promise<void>;
+    submitting: boolean;
+    editingId: string | null;
+    onBack: () => void;
+    onReset: () => void;
+  }
+  ```
+
+- [ ] Implement form layout with Card components
+- [ ] Use `Controller` from react-hook-form for controlled inputs
+- [ ] Include fields: name, slug, description, icon, sortOrder, parentId
+- [ ] Add character count badges
+- [ ] Add validation error messages
+- [ ] Add navigation buttons (Back, Reset, Save)
+
+### Phase 9: Create Confirm Dialog (`_component/_alert-dialog/categories-confirm-dialog.tsx`)
+
+- [ ] Define props interface with `confirmAction`, `deleteMutation`, etc.
+- [ ] Use `AdminConfirmActionDialog` shared component
+- [ ] Handle delete, restore, purge actions
+- [ ] Show appropriate title, description, icon based on action type
+
+### Phase 10: Create Main Page (`page.tsx`)
+
+- [ ] Import all necessary components and hooks
+- [ ] Set up state:
   - Main tab (list/trash)
   - Global filter (search)
   - Column filters
   - Row selection
-- **Data Fetching**:
-  - `useCategoriesQuery` - Fetch categories list
-  - `useTrashQuery` - Fetch trashed categories
-  - `useCategoriesOptionsQuery` - Fetch category tree for dropdown
-- **Mutations**:
-  - `useMutation` - Delete, restore, purge
-  - `useMutation` - Bulk operations
-- **Permission Check**: `canWriteCategories` based on `PERMISSION_CODES.CATEGORIES_WRITE`
+  - Confirm action
 
-#### Tree Building
-- **buildCategoryTree(rows)**: Builds hierarchical tree structure
-  - Maps categories by ID
-  - Links children to parents
-  - Sorts by name (Vietnamese locale)
+- [ ] Use query hooks:
+  - `useCategoriesQuery` for list
+  - `useTrashQuery` for trash
+  - `useCategoriesOptionsQuery` for parent dropdown
+
+- [ ] Use mutations for delete, restore, purge
+
+- [ ] Implement `buildCategoryTree()`:
+  - Map categories by ID
+  - Link children to parents
+  - Sort by name (Vietnamese locale)
   - Recursive sorting for nested children
 
-#### Form Hook (use-category-form.ts)
-- **Schema**: `categoryFormSchema` with validation
-  - `id`: string (optional)
-  - `name`: string (required)
-  - `slug`: string (required)
-  - `description`: string
-  - `icon`: string
-  - `sortOrder`: number
-  - `parentId`: string
-- **Default Values**: Empty form state
+- [ ] Render page with:
+  - Page header with title and description
+  - Tabs (List, Trash)
+  - CategoriesTable or CategoriesTrashTable based on tab
+  - CategoriesConfirmDialog
 
-#### Query Hooks (use-categories-queries.ts)
-- **useCategoriesQuery**: Fetch categories with search and filters
-- **useTrashQuery**: Fetch trashed categories
-- **useCategoryDetailQuery**: Fetch single category by ID with children and posts
-- **useCategoriesOptionsQuery**: Fetch category tree for dropdown
+- [ ] Add permission checks with `AdminPageGuard`
 
-### Types (types.ts)
-```typescript
-export interface CategoryRow {
-  id: string;
-  name: string;
-  slug: string;
-  parentId: string | null;
-  parentName: string | null;
-  description: string | null;
-  createdAt: string;
-  updatedAt: string;
-  deletedAt: string | null;
-  icon: string | null;
-  sortOrder: number;
-  _count: { children: number };
-  postCount: number;
-  subRows?: CategoryRow[];
-}
+### Phase 11: Create New Page (`new/page.tsx`)
 
-export interface CategoryConfirmAction {
-  kind: "delete" | "restore" | "purge";
-  row: CategoryRow;
-}
+- [ ] Use `CategoryFormShell` component
+- [ ] Use `useCategoryForm` hook
+- [ ] Implement create mutation with `useMutation`
+- [ ] On success: invalidate cache, show toast, navigate to list
+- [ ] On error: show error toast
+- [ ] Add permission guard
 
-export interface FormState {
-  id?: string;
-  name: string;
-  slug: string;
-  description: string;
-  icon: string;
-  sortOrder: number;
-  parentId: string;
-}
-```
+### Phase 12: Create Edit Page (`[id]/edit/page.tsx`)
 
-### Utilities (utils.ts)
-- **slugify**: Convert text to URL-friendly slug
-- **buildCategoryOptionTree**: Build hierarchical category tree for dropdowns
-- **buildCategoriesFilterQuery**: Convert column filters to API query
-- **formatDateTime**: Format date/time for display
-- **buildCategoryPayload**: Prepare form data for API submission
+- [ ] Fetch category detail with `useCategoryDetailQuery`
+- [ ] Populate form with existing data
+- [ ] Use `CategoryFormShell` component
+- [ ] Implement update mutation
+- [ ] Handle loading and error states
+- [ ] Add permission guard
 
-### Permissions
-- Required roles: `super_admin`, `admin`, `manager`
-- Permission codes: `categories.read`, `categories.write`
-- UI shows read-only warning if user lacks `categories.write` permission
+### Phase 13: Create Detail Page (`[id]/page.tsx`)
+
+- [ ] Fetch category detail with children and posts
+- [ ] Display information in 2-column layout:
+  - Left (col-span-2): Category info, children, related posts
+  - Right (col-span-1): Time info, hierarchy info
+- [ ] Add navigation buttons (Back, Edit)
+- [ ] Handle loading and error states
+- [ ] Add permission guard
+
+### Phase 14: Update Exports (`_component/index.ts`)
+
+- [ ] Re-export shared types from `@workspace/api-client`
+- [ ] Export local types
+- [ ] Export utility functions
+- [ ] Export hooks
+- [ ] Export query hooks
+- [ ] Export form components
+- [ ] Export alert dialog components
+- [ ] Export table components
+- [ ] Export column definitions
 
 ---
 
 ## API Service (NestJS)
 
-### Location
-`apps/api/src/categories/`
+**Location**: `apps/api/src/categories/`
 
-### File Structure
-```
-categories/
-├── categories.controller.ts           # HTTP endpoints
-├── categories.service.ts              # Business logic
-└── categories.module.ts               # Module definition
-```
+### Phase 15: Setup API File Structure
 
-### Controller Endpoints
-
-#### GET /admin/categories
-- **Description**: List categories with pagination and filters
-- **Headers**: `X-User-Id` (required)
-- **Query Params**:
-  - `page`: number (default: 1)
-  - `limit`: number (default: 10, max: 1000)
-  - `search`: string (search in name, slug, description)
-  - `status`: 'active' | 'deleted' | 'all' (default: 'active')
-  - `filter[key]`: string (column filters)
-- **Response**: `{ data: CategoryRowDto[], pagination: {...} }`
-
-#### GET /admin/categories/options
-- **Description**: Get options for dropdown filters
-- **Query Params**:
-  - `column`: string (default: 'name')
-  - `search`: string
-  - `limit`: number (default: 50, max: 100)
-- **Response**: `Array<{ label: string, value: string }>`
-
-#### GET /admin/categories/:id
-- **Description**: Get single category by ID with children and posts
-- **Response**: `CategoryDetailDto`
-
-#### POST /admin/categories
-- **Description**: Create new category
-- **Body**:
-  ```typescript
-  {
-    name: string;
-    slug: string;
-    description?: string | null;
-    parentId?: string | null;
-  }
+- [ ] Create directory structure:
   ```
-- **Response**: `CategoryRowDto` (status 201)
-
-#### PUT /admin/categories/:id
-- **Description**: Update existing category
-- **Body**: Same as create (all fields optional except id)
-- **Response**: `CategoryRowDto`
-
-#### POST /admin/categories/bulk
-- **Description**: Bulk operations on categories
-- **Body**:
-  ```typescript
-  {
-    action: 'delete' | 'restore' | 'hard-delete' | 'set-parent';
-    ids: string[];
-    parentId?: string | null; // for set-parent action
-  }
+  categories/
+  ├── categories.controller.ts
+  ├── categories.service.ts
+  └── categories.module.ts
   ```
-- **Response**: `{ affected: number, message: string }`
 
-#### DELETE /admin/categories/:id
-- **Description**: Soft delete category
-- **Response**: `{ message: string }`
+### Phase 16: Define Data Models
 
-#### DELETE /admin/categories/:id/hard-delete
-- **Description**: Permanently delete category
-- **Response**: `{ message: string }`
+- [ ] Define DTOs:
+  - `CategoryRowDto`
+  - `CategoryDetailDto`
+  - `ChildCategoryDto`
+  - `RelatedPostDto`
 
-#### POST /admin/categories/:id/restore
-- **Description**: Restore trashed category
-- **Response**: `{ message: string }`
+- [ ] Include fields: id, name, slug, parentId, parentName, description, createdAt, updatedAt, deletedAt, icon, sortOrder, _count, postCount, children, posts
 
-### Service Methods
+### Phase 17: Create Service (`categories.service.ts`)
 
-#### CategoriesService
-- **list(params)**: List categories with pagination and filters
-- **getOptions(column, search, limit)**: Get dropdown options
-- **getById(id)**: Get single category with children and posts
-- **create(data)**: Create new category
-- **update(id, data)**: Update category
-- **softDelete(id)**: Soft delete
-- **restore(id)**: Restore from trash
-- **hardDelete(id)**: Permanent delete
-- **bulk(action, ids, parentId)**: Bulk operations
+- [ ] Implement `list(params)`:
+  - Build where clause with search and filters
+  - Apply pagination
+  - Handle soft-delete filtering
+  - Calculate post counts (parallel execution)
 
-### Key Features
+- [ ] Implement `getOptions(column, search, limit)`:
+  - Fetch distinct values for dropdown filters
+  - Apply search and limit
 
-#### Category Tree Traversal
-- **collectCategoryDescendantIds(rootId)**: Recursively collect all descendant IDs
-  - BFS traversal with safety limits
-  - Safety: 50 levels max, 10,000 nodes max
-  - Used for filtering posts by category tree
-  - Used for validating parent changes (prevent cycles)
+- [ ] Implement `getById(id)`:
+  - Fetch single category with relations
+  - Include children and posts
+  - Return CategoryDetailDto
 
-#### Post Count Calculation
-- **countPostsByCategoryTree(categoryId)**: Count posts in category and all descendants
-  - Includes posts from all child categories
+- [ ] Implement `create(data)`:
+  - Validate data
+  - Create category record
+  - Log activity
+  - Return created category
+
+- [ ] Implement `update(id, data)`:
+  - Validate data
+  - Update category record
+  - Log activity
+  - Return updated category
+
+- [ ] Implement `softDelete(id)`:
+  - Set deletedAt timestamp
+  - Log activity
+
+- [ ] Implement `restore(id)`:
+  - Clear deletedAt timestamp
+  - Log activity
+
+- [ ] Implement `hardDelete(id)`:
+  - Permanently delete record
+  - Log activity
+
+- [ ] Implement `bulk(action, ids, parentId)`:
+  - Handle delete, restore, hard-delete, set-parent actions
+  - Validate parent changes (prevent cycles)
+  - Use native queries for performance
+  - Return affected count
+
+- [ ] Implement `collectCategoryDescendantIds(rootId)`:
+  - BFS traversal with safety limits (50 levels, 10,000 nodes)
+  - Return all descendant IDs
+  - Used for filtering and validation
+
+- [ ] Implement `countPostsByCategoryTree(categoryId)`:
+  - Count posts in category and all descendants
   - Used for display in list and detail views
 
-#### Tree Post Count Optimization
-- For active status: Resolves tree post count for each row
-- For deleted/trash status: Returns 0 for post count
-- Parallel execution for performance
+### Phase 18: Create Controller (`categories.controller.ts`)
 
-#### Parent Change Validation
-- Prevents setting parent to self
-- Prevents creating cycles in the tree
-- Validates parent exists and is not deleted
-- Uses descendant collection to detect cycles
+- [ ] Set up controller with `@Controller('admin/categories')`
+- [ ] Add authentication guard (check `X-User-Id` header)
 
-#### Bulk Set Parent
-- Validates no cycles will be created
-- Validates parent exists
-- Updates multiple categories at once
-- Returns count of affected categories
+- [ ] Implement endpoints:
+  - `GET /` - List categories
+  - `GET /options` - Get dropdown options
+  - `GET /:id` - Get single category
+  - `POST /` - Create category
+  - `PUT /:id` - Update category
+  - `POST /bulk` - Bulk operations
+  - `DELETE /:id` - Soft delete
+  - `DELETE /:id/hard-delete` - Hard delete
+  - `POST /:id/restore` - Restore
 
-### Data Models
+- [ ] Add request validation with DTOs
+- [ ] Add error handling
+- [ ] Add logging
 
-#### CategoryRowDto
-```typescript
-{
-  id: string;
-  name: string;
-  slug: string;
-  parentId: string | null;
-  parentName: string | null;
-  description: string | null;
-  createdAt: string;
-  updatedAt: string;
-  deletedAt: string | null;
-  _count?: { children: number };
-  postCount?: number;
-  children?: ChildCategoryDto[];
-  posts?: RelatedPostDto[];
-}
-```
+### Phase 19: Create Module (`categories.module.ts`)
 
-#### ChildCategoryDto
-```typescript
-{
-  id: string;
-  name: string;
-  slug: string;
-  _count: { children: number };
-  postCount: number;
-}
-```
+- [ ] Import CategoryService and CategoryController
+- [ ] Register in providers and controllers
+- [ ] Import required modules (Prisma, Notifications, etc.)
 
-#### RelatedPostDto
-```typescript
-{
-  id: string;
-  title: string;
-  slug: string;
-  published: boolean;
-  publishedAt: string | null;
-  createdAt: string;
-}
-```
+### Phase 20: Performance Optimizations
 
-#### CategoryDetailDto
-Extends CategoryRowDto with full children and posts arrays
+- [ ] Add database indexes on frequently queried fields
+- [ ] Use pagination with high limit (1000) for tree views
+- [ ] Implement parallel post count calculation
+- [ ] Use native bulk operations
+- [ ] Optimize tree traversal with safety limits
 
-### Performance Optimizations
-- Pagination with high limit (1000) for tree views
-- Parallel post count calculation
-- Native bulk operations
-- Efficient tree traversal with safety limits
-- Index-based ordering
+### Phase 21: Error Handling & Logging
+
+- [ ] Add try-catch blocks in all service methods
+- [ ] Log errors with stack traces
+- [ ] Return appropriate HTTP status codes:
+  - 401 for missing auth
+  - 400 for validation errors
+  - 404 for not found
+  - 500 for server errors
+- [ ] Log all API calls in controller
+- [ ] Log activity via NotificationsService
+- [ ] Maintain audit trail for CRUD operations
+
+---
+
+## Testing Checklist
+
+### Backend Admin UI
+
+- [ ] Test list page loads correctly
+- [ ] Test search functionality
+- [ ] Test column filters
+- [ ] Test tree view display
+- [ ] Test pagination
+- [ ] Test row selection
+- [ ] Test bulk actions
+- [ ] Test create new category
+- [ ] Test edit category
+- [ ] Test delete (soft delete)
+- [ ] Test restore from trash
+- [ ] Test hard delete from trash
+- [ ] Test parent-child relationships
+- [ ] Test permission checks
+- [ ] Test toast notifications
+
+### API Service
+
+- [ ] Test GET /admin/categories
+- [ ] Test GET /admin/categories/options
+- [ ] Test GET /admin/categories/:id
+- [ ] Test POST /admin/categories
+- [ ] Test PUT /admin/categories/:id
+- [ ] Test POST /admin/categories/bulk
+- [ ] Test DELETE /admin/categories/:id
+- [ ] Test DELETE /admin/categories/:id/hard-delete
+- [ ] Test POST /admin/categories/:id/restore
+- [ ] Test authentication (missing X-User-Id)
+- [ ] Test validation errors
+- [ ] Test not found errors
+- [ ] Test parent cycle prevention
+- [ ] Test bulk operations
+
+---
+
+## Clean Code Guidelines
+
+### File Organization
+- Keep related files in subdirectories (`_hooks`, `_query`, `_table`, `_form`, `_alert-dialog`)
+- Use barrel exports (`index.ts`) for clean imports
+- Separate concerns: types, utils, hooks, components
+
+### Code Style
+- Use TypeScript strict mode
+- Use functional components with hooks
+- Use react-hook-form for form management
+- Use React Query for data fetching
+- Use zod for validation
+- Use Lucide icons for consistency
+- Use UI components from `@ui/components`
+
+### Performance
+- Use React.memo for expensive components
+- Use useMemo for computed values
+- Use useCallback for event handlers
+- Implement proper caching keys
+- Use pagination for large datasets
 
 ### Error Handling
-- Missing X-User-Id header → 401
-- Invalid parent (cycle) → 400
-- Parent not found → 400
-- Not found → 404
-- Server errors → 500 with detailed logging
+- Always handle loading and error states
+- Show user-friendly error messages
+- Log errors for debugging
+- Use toast notifications for user feedback
 
-### Logging
-- Controller logs each API call
-- Service logs errors with stack traces
-- Activity logging via NotificationsService
-- Audit trail for all CRUD operations
-
-### Tree Structure Notes
-- Categories support unlimited nesting (with safety limits)
-- Tree is built client-side for display
-- Server returns flat list with parent references
-- Post counts include all descendants
-- Sort order: Vietnamese locale by name
+### Permissions
+- Use AdminPageGuard for route protection
+- Check permissions before showing actions
+- Show read-only warnings when appropriate
