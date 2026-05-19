@@ -66,7 +66,7 @@ export default function RootLayout({
           <TextSizeProvider>
             <QueryProvider>
               <AuthProvider>
-                <AdminShell>{children}</AdminShell>
+                <AdminShell isSidebar={true}>{children}</AdminShell>
               </AuthProvider>
               <Toaster position="top-right" richColors />
             </QueryProvider>

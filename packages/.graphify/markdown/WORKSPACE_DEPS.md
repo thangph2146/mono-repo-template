@@ -1,13 +1,13 @@
 # Phụ thuộc workspace (`workspace:*`)
 
-> **Sinh tự động:** `2026-05-19T07:50:47.398Z` — quét `package.json` trong `packages/*` và `apps/*` (chỉ liên kết nội bộ monorepo).
+> **Sinh tự động:** `2026-05-19T09:31:09.611Z` — quét `package.json` trong `packages/*` và `apps/*` (chỉ liên kết nội bộ monorepo).
 
 ## `packages/*`
 
 | Package (from) | Phụ thuộc workspace | spec | Thư mục |
 |------------------|---------------------|------|---------|
-| `@thangph2146/lexical-editor` | `@workspace/eslint-config` | `workspace:*` | `packages/editor/` |
-| `@thangph2146/lexical-editor` | `@workspace/typescript-config` | `workspace:*` | `packages/editor/` |
+| `@lexical-editor` | `@workspace/eslint-config` | `workspace:*` | `packages/editor/` |
+| `@lexical-editor` | `@workspace/typescript-config` | `workspace:*` | `packages/editor/` |
 | `@ui` | `@workspace/eslint-config` | `workspace:*` | `packages/ui/` |
 | `@ui` | `@workspace/typescript-config` | `workspace:*` | `packages/ui/` |
 | `@workspace/api-client` | `@workspace/eslint-config` | `workspace:*` | `packages/api-client/` |

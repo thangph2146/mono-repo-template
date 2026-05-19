@@ -2,8 +2,8 @@
 
 > Tự động sinh từ `../snapshot/context.json` — **đọc file này trước**; tránh mở toàn bộ JSON snapshot (nhúng source đầy đủ).
 
-- **projectRoot:** `D:/HUB/working/2026/hub-parrent-template/apps/frontend`
-- **context.generatedAt:** 2026-05-14T07:52:06.359Z
+- **projectRoot:** `C:/HUB/source/hub-parent-template/apps/frontend`
+- **context.generatedAt:** 2026-05-19T08:42:32.652Z
 
 ## Mục lục artefact Graphify
 
@@ -35,8 +35,8 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 - **Thống kê graph:** [`GRAPH_STATS.md`](GRAPH_STATS.md) — quy mô node/link, top file in/out-degree (điểm nóng import).
 
 ## Thống kê
-- **totalFiles:** 81
-- **clientComponents:** 23
+- **totalFiles:** 79
+- **clientComponents:** 21
 
 ## Trang (pages) (9)
 - `src/app/(public)/bai-viet/page.tsx`
@@ -49,15 +49,17 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 - `src/app/(public)/ve-chung-toi/page.tsx`
 - `src/app/graph/page.tsx`
 
-## Layout (2)
+## Layout (3)
 - `src/app/(public)/layout.tsx`
 - `src/app/graph/layout.tsx`
+- `src/app/layout.tsx`
 
 ## API routes (1)
 - `src/app/api/graphify/route.ts`
 
 ## Góc hệ thống (@frontend) — đường dẫn gợi ý
 
+- **Root layout:** `src/app/layout.tsx`
 - **Route handlers dưới `src/app/api/`:** 1 file (danh sách `apiRoutes` ở trên nếu có).
 
 ## Module map (không có nội dung file)
@@ -77,13 +79,13 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 | `src/app/(public)/page.tsx` | page | no | metadata, PublicHomePage | src/features/pages/home-page, src/lib/seo.ts |
 | `src/app/(public)/register/page.tsx` | page | no | RegisterPage | src/features/auth/admin-bridge.ts |
 | `src/app/(public)/ve-chung-toi/page.tsx` | page | no | metadata, AboutPage | src/features/pages/about-page, src/lib/seo.ts |
-| `src/app/api/graphify/route.ts` | api-route | no |  | src/lib/graphify-context.ts |
-| `src/app/graph/layout.tsx` | layout | no | metadata, GraphLayout | src/app/graph/page.tsx |
+| `src/app/api/graphify/route.ts` | api-route | no |  |  |
+| `src/app/graph/layout.tsx` | layout | no | GraphLayout | src/app/graph/page.tsx |
 | `src/app/graph/loading.tsx` | loading | no | GraphLoading | src/components/shared/route-loading.tsx |
-| `src/app/graph/page.tsx` | page | yes | GraphPage | src/hooks/use-graphify.ts, src/lib/graphify-context.ts, src/components/graphify/force-graph-3d.tsx |
+| `src/app/graph/page.tsx` | page | yes | GraphPage |  |
+| `src/app/layout.tsx` | layout | no | metadata, RootLayout |  |
 | `src/app/robots.ts` | ts | no | robots | src/lib/seo.ts |
 | `src/app/sitemap.ts` | ts | no | sitemap | src/lib/seo.ts |
-| `src/components/graphify/force-graph-3d.tsx` | tsx | yes | GraphifyForceGraph3D | src/lib/graphify-context.ts |
 | `src/components/icons/logo.tsx` | tsx | no | Logo |  |
 | `src/components/shared/footer.tsx` | tsx | no | Footer | src/components/icons/logo.tsx |
 | `src/components/shared/header.tsx` | tsx | yes | Header | src/features/auth/admin-bridge.ts, src/components/icons/logo.tsx |
@@ -126,7 +128,6 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 | `src/features/pages/home-page/sub-sections/scroll-indicator.tsx` | tsx | yes | ScrollIndicatorProps, ScrollIndicator | src/lib/scroll.ts |
 | `src/hooks/use-client-ready.ts` | ts | yes | useClientReady |  |
 | `src/hooks/use-debounced-value.ts` | ts | yes | useDebouncedValue |  |
-| `src/hooks/use-graphify.ts` | ts | yes | UseGraphifyReturn, useGraphify | src/lib/graphify-context.ts |
 | `src/hooks/use-mobile.ts` | ts | no | useIsMobile |  |
 | `src/hooks/use-session.ts` | ts | yes | MockSession, useSession |  |
 | `src/hooks/useTodos.ts` | ts | no | TodoFilter, TodoStats, useTodos | src/types/todo.ts, src/lib/utils.ts, src/lib/storage.ts |
@@ -135,7 +136,6 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 | `src/lib/category-icons.ts` | ts | no | CATEGORY_ICON_OPTIONS, resolveCategoryIcon |  |
 | `src/lib/dev-route-log.ts` | ts | no |  |  |
 | `src/lib/format.ts` | ts | no | formatVND, formatDate, formatDateShort |  |
-| `src/lib/graphify-context.ts` | ts | no | GraphNode, GraphLink, GraphData, FileEntry, ContextData, GraphifyPayload, nodeColorByCommunity, emojiForType, resolveSourceFile, exportsOfFile, importedBy, importsOf, getLinkedNodes, communityBreakdow |  |
 | `src/lib/public-posts.ts` | ts | no | PublicPostSummary, PublicPostDetail, PublicCategoryItem, formatPostDate |  |
 | `src/lib/scroll.ts` | ts | yes | getHeaderHeight, scrollToYWithHeaderOffset |  |
 | `src/lib/seo.ts` | ts | no | SITE_NAME, SITE_TITLE, SITE_DESCRIPTION, SITE_URL, OG_IMAGE_URL, absoluteUrl, buildSeoMetadata |  |

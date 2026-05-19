@@ -1,14 +1,14 @@
 # Thống kê graph — backend (Graphify)
 
-> **Sinh tự động:** `2026-05-19T07:50:47.372Z` từ `../snapshot/graph.json` — giúp AI nắm **quy mô** và **điểm nóng import** mà không mở full graph.
+> **Sinh tự động:** `2026-05-19T09:31:09.598Z` từ `../snapshot/graph.json` — giúp AI nắm **quy mô** và **điểm nóng import** mà không mở full graph.
 
 ## Nodes theo `type`
 
 | type | Số |
 |------|-----|
-| `ts` | 104 |
+| `ts` | 102 |
 | `directory` | 87 |
-| `tsx` | 51 |
+| `tsx` | 50 |
 | `page` | 32 |
 | `api-route` | 1 |
 | `layout` | 1 |
@@ -18,9 +18,9 @@
 
 | relation | Số |
 |----------|-----|
-| `imports` | 386 |
-| `contains` | 275 |
-| `assets` | 2 |
+| `imports` | 380 |
+| `contains` | 272 |
+| `assets` | 1 |
 | `renders` | 1 |
 
 ## Top file theo số cạnh `imports` đi ra (out-degree)
@@ -70,7 +70,7 @@ File được nhiều nguồn import tới (tiện ích dùng chung, entity, typ
 | `src/app/contact-requests/_component/types.ts` | 7 |
 | `src/lib/auth-session.ts` | 7 |
 | `src/app/guides/_component/utils.ts` | 5 |
-| `src/lib/graphify-context.ts` | 4 |
+| `src/lib/export-csv.ts` | 4 |
 
 ## Làm mới
 

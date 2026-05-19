@@ -86,7 +86,7 @@ export function PageSection({
 }) {
   return (
     <section
-      className={cn("mx-auto w-full", containerMaxWidthClass(max), className)}
+      className={cn("mx-auto w-full p-4 sm:p-6 md:p-12 lg:p-16", containerMaxWidthClass(max), className)}
     >
       {children}
     </section>

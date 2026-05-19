@@ -3,7 +3,7 @@
 > Tự động sinh từ `../snapshot/context.json` — **đọc file này trước**; tránh mở toàn bộ JSON snapshot (nhúng source đầy đủ).
 
 - **projectRoot:** `C:/HUB/source/hub-parent-template/apps/api`
-- **context.generatedAt:** 2026-05-14T02:12:15.288Z
+- **context.generatedAt:** 2026-05-19T08:42:48.929Z
 
 ## Mục lục artefact Graphify
 
@@ -35,7 +35,7 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 - **Phụ thuộc chéo giữa domain API:** [`API_DOMAIN_IMPORTS.md`](API_DOMAIN_IMPORTS.md) — domain `src/<tên>` nào import domain nào (cạnh `imports` trong graph).
 
 ## Thống kê
-- **totalFiles:** 125
+- **totalFiles:** 131
 - **clientComponents:** 0
 
 ## Góc hệ thống (@api) — đường dẫn gợi ý
@@ -51,7 +51,7 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 
 > **DB:** entity `src/entities/`, migration `src/migrations/` — xem thêm bảng *Module map* và `docs/hub-parent/MICROSERVICE_SYSTEM_MAP.md` (MikroORM).
 
-## Nest — module (25)
+## Nest — module (26)
 - `src/accounts/accounts.module.ts`
 - `src/admission-results/admission-results.module.ts`
 - `src/app.module.ts`
@@ -65,6 +65,7 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 - `src/mikro-orm/mikro-orm.module.ts`
 - `src/notifications/notifications.module.ts`
 - `src/page-contents/page-contents.module.ts`
+- `src/parent-students/parent-students.module.ts`
 - `src/posts/posts.module.ts`
 - `src/proxy-image/proxy-image.module.ts`
 - `src/public/public.module.ts`
@@ -78,7 +79,7 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 - `src/uploads/uploads.module.ts`
 - `src/users/users.module.ts`
 
-## Nest — controller (24)
+## Nest — controller (25)
 - `src/accounts/accounts.controller.ts`
 - `src/admission-results/admission-results.controller.ts`
 - `src/auth/auth-admin.controller.ts`
@@ -91,6 +92,7 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 - `src/messages/messages.controller.ts`
 - `src/notifications/notifications.controller.ts`
 - `src/page-contents/page-contents.controller.ts`
+- `src/parent-students/parent-students.controller.ts`
 - `src/posts/posts.controller.ts`
 - `src/proxy-image/proxy-image.controller.ts`
 - `src/public/public.controller.ts`
@@ -104,7 +106,7 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 - `src/uploads/uploads.controller.ts`
 - `src/users/users.controller.ts`
 
-## Entities (23)
+## Entities (24)
 - `src/entities/account.entity.ts`
 - `src/entities/admission-result.entity.ts`
 - `src/entities/base.entity.ts`
@@ -117,6 +119,7 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 - `src/entities/message.entity.ts`
 - `src/entities/notification.entity.ts`
 - `src/entities/page-content.entity.ts`
+- `src/entities/parent-student.entity.ts`
 - `src/entities/post-category.entity.ts`
 - `src/entities/post-tag.entity.ts`
 - `src/entities/post.entity.ts`
@@ -129,12 +132,13 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 - `src/entities/user.entity.ts`
 - `src/entities/verification-token.entity.ts`
 
-## Migrations (5)
+## Migrations (6)
 - `src/migrations/Migration20260503140000.ts`
 - `src/migrations/Migration20260503150000.ts`
 - `src/migrations/Migration20260503160000.ts`
 - `src/migrations/Migration20260503170000.ts`
 - `src/migrations/Migration20260503180000.ts`
+- `src/migrations/Migration20260514100000.ts`
 
 ## Module map (không có nội dung file)
 
@@ -153,7 +157,7 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 | `src/auth/auth.service.ts` | ts | no | LoginDto, GoogleProfileDto, AuthUserPayload, AuthService | src/config/constants.ts, src/entities/user.entity.ts, src/entities/role.entity.ts, src/entities/user-role.entity.ts |
 | `src/categories/categories.controller.ts` | ts | no | CategoriesController | src/categories/categories.service.ts, src/notifications/notifications.service.ts, src/entities/notification.entity.ts, src/common/api-response.ts, src/config/constants.ts, src/config/permissions.ts |
 | `src/categories/categories.module.ts` | ts | no | CategoriesModule | src/notifications/notifications.module.ts, src/categories/categories.service.ts, src/categories/categories.controller.ts |
-| `src/categories/categories.service.ts` | ts | no | CategoryRowDto, ListCategoriesParams, ListCategoriesResult, CategoriesService | src/common/pagination.ts, src/entities/category.entity.ts, src/entities/post-category.entity.ts |
+| `src/categories/categories.service.ts` | ts | no | CategoryRowDto, ChildCategoryDto, RelatedPostDto, ListCategoriesParams, ListCategoriesResult, CategoriesService | src/common/pagination.ts, src/entities/category.entity.ts, src/entities/post-category.entity.ts |
 | `src/comments/comments.controller.ts` | ts | no | CommentsController | src/comments/comments.service.ts, src/notifications/notifications.service.ts, src/entities/notification.entity.ts, src/common/api-response.ts, src/config/constants.ts, src/config/permissions.ts |
 | `src/comments/comments.module.ts` | ts | no | CommentsModule | src/notifications/notifications.module.ts, src/comments/comments.service.ts, src/comments/comments.controller.ts |
 | `src/comments/comments.service.ts` | ts | no | CommentRowDto, ListCommentsParams, ListCommentsResult, CommentsService | src/common/pagination.ts, src/entities/comment.entity.ts |
@@ -187,6 +191,7 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 | `src/entities/message.entity.ts` | ts | no | MessageType, Message | src/entities/base.entity.ts, src/entities/group.entity.ts, src/entities/message-read.entity.ts, src/entities/user.entity.ts |
 | `src/entities/notification.entity.ts` | ts | no | NotificationKind, Notification | src/entities/base.entity.ts, src/entities/user.entity.ts |
 | `src/entities/page-content.entity.ts` | ts | no | PageContent | src/entities/base.entity.ts |
+| `src/entities/parent-student.entity.ts` | ts | no | ParentStudentStatus, ParentStudent | src/entities/base.entity.ts, src/entities/user.entity.ts |
 | `src/entities/post-category.entity.ts` | ts | no | PostCategory | src/entities/post.entity.ts, src/entities/category.entity.ts |
 | `src/entities/post-tag.entity.ts` | ts | no | PostTag | src/entities/post.entity.ts, src/entities/tag.entity.ts |
 | `src/entities/post.entity.ts` | ts | no | Post | src/entities/base.entity.ts, src/entities/comment.entity.ts, src/entities/post-category.entity.ts, src/entities/post-tag.entity.ts, src/entities/user.entity.ts |
@@ -210,6 +215,7 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 | `src/migrations/Migration20260503160000.ts` | ts | no | Migration20260503160000 |  |
 | `src/migrations/Migration20260503170000.ts` | ts | no | Migration20260503170000 |  |
 | `src/migrations/Migration20260503180000.ts` | ts | no | Migration20260503180000 |  |
+| `src/migrations/Migration20260514100000.ts` | ts | no | Migration20260514100000 |  |
 | `src/mikro-orm/mikro-orm.module.ts` | ts | no | createMikroConfig, DatabaseModule | src/mikro-orm/orm-entities.ts |
 | `src/mikro-orm/orm-entities.ts` | ts | no | ormEntities | src/entities/account.entity.ts, src/entities/admission-result.entity.ts, src/entities/category.entity.ts, src/entities/comment.entity.ts, src/entities/contact-request.entity.ts, src/entities/group.ent |
 | `src/notifications/notifications.controller.ts` | ts | no | NotificationsController | src/notifications/notifications.service.ts, src/common/api-response.ts, src/config/constants.ts |
@@ -218,6 +224,9 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 | `src/page-contents/page-contents.controller.ts` | ts | no | PageContentsController | src/page-contents/page-contents.service.ts, src/notifications/notifications.service.ts, src/entities/notification.entity.ts, src/auth/auth.service.ts, src/common/api-response.ts, src/config/constants. |
 | `src/page-contents/page-contents.module.ts` | ts | no | PageContentsModule | src/page-contents/page-contents.service.ts, src/page-contents/page-contents.controller.ts, src/notifications/notifications.module.ts, src/auth/auth.module.ts |
 | `src/page-contents/page-contents.service.ts` | ts | no | PageContentCreateInput, PageContentUpdateInput, PageContentsService | src/entities/page-content.entity.ts |
+| `src/parent-students/parent-students.controller.ts` | ts | no | ParentStudentsPublicController, ParentStudentsAdminController | src/parent-students/parent-students.service.ts, src/common/api-response.ts, src/config/constants.ts |
+| `src/parent-students/parent-students.module.ts` | ts | no | ParentStudentsModule | src/parent-students/parent-students.service.ts, src/parent-students/parent-students.controller.ts |
+| `src/parent-students/parent-students.service.ts` | ts | no | ParentStudentRowDto, ParentStudentsService | src/entities/parent-student.entity.ts, src/common/pagination.ts |
 | `src/posts/posts.controller.ts` | ts | no | PostsController | src/posts/posts.service.ts, src/notifications/notifications.service.ts, src/entities/notification.entity.ts, src/common/api-response.ts, src/config/constants.ts, src/config/permissions.ts |
 | `src/posts/posts.module.ts` | ts | no | PostsModule | src/notifications/notifications.module.ts, src/posts/posts.service.ts, src/posts/posts.controller.ts |
 | `src/posts/posts.service.ts` | ts | no | PostRowDto, PostDetailDto, POSTS_FILTER_CATEGORIES_NONE, ListPostsParams, ListPostsResult, PostsService | src/common/resolve-relation-filters.ts, src/common/pagination.ts, src/common/get-options.ts, src/common/date-utils.ts, src/entities/post.entity.ts, src/entities/post-category.entity.ts, src/entities/p |
@@ -234,6 +243,7 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 | `src/roles/roles.service.ts` | ts | no | RoleRowDto, ListRolesParams, ListRolesResult, RolesService | src/common/pagination.ts, src/common/get-options.ts, src/entities/role.entity.ts |
 | `src/scripts/mark-migrations-executed.ts` | ts | no |  | src/mikro-orm/mikro-orm.module.ts |
 | `src/seed-full-export.ts` | ts | no |  | src/mikro-orm/orm-entities.ts, src/entities/account.entity.ts, src/entities/admission-result.entity.ts, src/entities/category.entity.ts, src/entities/comment.entity.ts, src/entities/contact-request.en |
+| `src/seed-guides.ts` | ts | no |  | src/entities/page-content.entity.ts |
 | `src/seed-superadmin.ts` | ts | no |  | src/entities/user.entity.ts, src/entities/role.entity.ts, src/entities/user-role.entity.ts, src/entities/page-content.entity.ts, src/seeds/superadmin-bootstrap.runner.ts |
 | `src/seeders/DatabaseSeeder.ts` | ts | no | DatabaseSeeder | src/seeds/superadmin-bootstrap.runner.ts |
 | `src/seeds/superadmin-bootstrap.data.ts` | ts | no | SUPERADMIN_ROLES_DATA, SUPERADMIN_USERS_DATA, SUPERADMIN_USER_ROLES_DATA |  |
@@ -256,7 +266,7 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 | `src/system/system.module.ts` | ts | no | SystemModule | src/system/system.controller.ts, src/system/system.service.ts, src/auth/auth.module.ts |
 | `src/tags/tags.controller.ts` | ts | no | TagsController | src/tags/tags.service.ts, src/notifications/notifications.service.ts, src/entities/notification.entity.ts, src/common/api-response.ts, src/config/constants.ts, src/config/permissions.ts |
 | `src/tags/tags.module.ts` | ts | no | TagsModule | src/notifications/notifications.module.ts, src/tags/tags.controller.ts, src/tags/tags.service.ts |
-| `src/tags/tags.service.ts` | ts | no | TagRowDto, ListTagsParams, ListTagsResult, TagsService | src/entities/tag.entity.ts, src/common/pagination.ts, src/common/get-options.ts |
+| `src/tags/tags.service.ts` | ts | no | RelatedPostDto, TagDetailDto, TagRowDto, ListTagsParams, ListTagsResult, TagsService | src/entities/tag.entity.ts, src/entities/post-tag.entity.ts, src/common/pagination.ts, src/common/get-options.ts |
 | `src/uploads/public-uploads.controller.ts` | ts | no | PublicUploadsController | src/uploads/uploads.service.ts, src/config/constants.ts |
 | `src/uploads/uploads.controller.ts` | ts | no | UploadsController | src/uploads/uploads.service.ts, src/common/api-response.ts, src/config/app.config.ts, src/config/constants.ts |
 | `src/uploads/uploads.module.ts` | ts | no | UploadsModule | src/uploads/uploads.service.ts, src/uploads/uploads.controller.ts, src/uploads/public-uploads.controller.ts |

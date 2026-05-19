@@ -3,7 +3,7 @@
 > Tự động sinh từ `../snapshot/context.json` — **đọc file này trước**; tránh mở toàn bộ JSON snapshot (nhúng source đầy đủ).
 
 - **projectRoot:** `C:/HUB/source/hub-parent-template/apps/backend`
-- **context.generatedAt:** 2026-05-19T07:42:47.632Z
+- **context.generatedAt:** 2026-05-19T08:42:18.621Z
 
 ## Mục lục artefact Graphify
 
@@ -34,8 +34,8 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 - **Thống kê graph:** [`GRAPH_STATS.md`](GRAPH_STATS.md) — quy mô node/link, top file in/out-degree (điểm nóng import).
 
 ## Thống kê
-- **totalFiles:** 192
-- **clientComponents:** 80
+- **totalFiles:** 189
+- **clientComponents:** 78
 
 ## Trang (pages) (32)
 - `src/app/categories/new/page.tsx`
@@ -89,7 +89,7 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 | `components.json` | config | — | — | — |
 | `next.config.ts` | config | — | — | — |
 | `package.json` | config | — | — | — |
-| `src/app/api/graphify/route.ts` | api-route | no |  | src/lib/graphify-context.ts |
+| `src/app/api/graphify/route.ts` | api-route | no |  |  |
 | `src/app/categories/[id]/edit/page.tsx` | page | yes | EditCategoryPage | src/components/admin-page-guard.tsx, src/lib/api.ts, src/app/categories/_component |
 | `src/app/categories/[id]/page.tsx` | page | yes | CategoryDetailPage | src/components/admin-page-guard.tsx, src/lib/api.ts, src/app/categories/_component |
 | `src/app/categories/_component/_alert-dialog/categories-confirm-dialog.tsx` | tsx | yes | CategoriesConfirmDialogProps, CategoriesConfirmDialog | src/components/admin-confirm-action-dialog.tsx, src/app/categories/_component/types.ts |
@@ -128,7 +128,7 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 | `src/app/contact-requests/_component/utils.ts` | ts | no | formatPhoneNumber, buildFilterQuery |  |
 | `src/app/contact-requests/page.tsx` | page | yes | ContactRequestsPage | src/components/admin-page-guard.tsx, src/hooks/queries.ts, src/hooks/use-debounced-value.ts, src/app/contact-requests/_component, src/app/contact-requests/_component/types.ts, src/app/contact-requests |
 | `src/app/data/page.tsx` | page | yes | DataBackupPage | src/lib/auth-session.ts, src/components/admin-page-guard.tsx |
-| `src/app/graph/page.tsx` | page | yes | GraphPage | src/hooks/use-graphify.ts, src/lib/graphify-context.ts, src/components/graphify/force-graph-3d.tsx |
+| `src/app/graph/page.tsx` | page | yes | GraphPage |  |
 | `src/app/guides/[id]/edit/page.tsx` | page | yes | EditGuidePage | src/components/admin-page-guard.tsx, src/lib/api.ts, src/app/guides/_component |
 | `src/app/guides/[id]/page.tsx` | page | yes | GuideDetailPage | src/components/admin-page-guard.tsx, src/lib/api.ts, src/app/guides/_component |
 | `src/app/guides/_component/_alert-dialog/guides-confirm-dialog.tsx` | tsx | yes | GuidesConfirmDialogProps, GuidesConfirmDialog | src/components/admin-confirm-action-dialog.tsx, src/app/guides/_component/types.ts |
@@ -243,7 +243,6 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 | `src/components/admin-table-pagination-footer.tsx` | tsx | yes | ADMIN_TABLE_PAGE_SIZE_OPTIONS, AdminTablePaginationFooterProps, AdminTablePaginationFooter |  |
 | `src/components/api-scope-notice.tsx` | tsx | yes | ApiScopeNotice |  |
 | `src/components/dashboard-charts.tsx` | tsx | yes | MonthlyLineChart, MonthlyBarChart, CategoryDoughnutChart, TopPostsChart | src/types/dashboard.ts |
-| `src/components/graphify/force-graph-3d.tsx` | tsx | yes | GraphifyForceGraph3D | src/lib/graphify-context.ts |
 | `src/components/scroll-to-top.tsx` | tsx | yes | ScrollToTop |  |
 | `src/components/sidebar.tsx` | tsx | yes | getVisibleMenuItems, SidebarNavLinks, MobileSidebarPanel, Sidebar | src/providers/auth-provider.tsx, src/lib/api.ts |
 | `src/features/auth/admin-bridge.ts` | ts | no | getAdminBaseUrl, buildAdminBridgeLoginUrl, getAdminLoginUrl |  |
@@ -256,7 +255,6 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 | `src/hooks/queries.ts` | ts | yes | queryKeys, UsersListData, RbacCatalog, ContactRequestsData, MyStudentsData, ParentStudentsData, useStaffProfile, useUpdateStaffProfile, useChangeStaffPassword, useRbacCatalog, useStaffUserList, useTra | src/lib/api.ts |
 | `src/hooks/use-admin-table-state.ts` | ts | yes | AdminTableTab, UseAdminTableStateOptions, UseAdminTableStateReturn, useAdminTableState | src/hooks/use-debounced-value.ts |
 | `src/hooks/use-debounced-value.ts` | ts | yes | useDebouncedValue |  |
-| `src/hooks/use-graphify.ts` | ts | yes | UseGraphifyReturn, useGraphify | src/lib/graphify-context.ts |
 | `src/hooks/use-table-filters.ts` | ts | no | useColumnFiltersChange, useClearListFilters, useClearTrashFilters |  |
 | `src/lib/admin-ui.ts` | ts | no | ADMIN_INFO_CARD_CLASS, ADMIN_LOGIN_PANEL_CLASS |  |
 | `src/lib/api.ts` | ts | no | api, ApiError | src/lib/auth-session.ts |
@@ -269,7 +267,6 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 | `src/lib/export-csv.ts` | ts | no | CsvDelimiter, CsvEncoding, CsvExportOptions, escapeDelimitedField, escapeCsvField, rowsToCsvContent, csvToBlobParts, csvToUtf8BlobParts, downloadCsvFile |  |
 | `src/lib/export-xlsx.ts` | ts | no | csvBaseToXlsxFilename |  |
 | `src/lib/format.ts` | ts | no | formatVND, formatDate |  |
-| `src/lib/graphify-context.ts` | ts | no | GraphNode, GraphLink, GraphData, FileEntry, ContextData, GraphifyPayload, nodeColorByCommunity, emojiForType, resolveSourceFile, exportsOfFile, importedBy, importsOf, getLinkedNodes, communityBreakdow |  |
 | `src/lib/index.ts` | ts | no | buildAdminFilterQuery, COMMON_FILTER_MAPPINGS, buildCsvFromColumns, downloadCsvFile, csvBaseToXlsxFilename, downloadXlsxFile, formatVND, formatDate, resolveCategoryIcon, CATEGORY_ICON_OPTIONS | src/lib/build-admin-filter-query.ts, src/lib/build-table-csv.ts, src/lib/export-csv.ts, src/lib/export-xlsx.ts, src/lib/format.ts, src/lib/category-icons.ts |
 | `src/lib/permission-labels.ts` | ts | no | PERMISSION_LABEL_VI, permissionLabelVi, permissionGroupKey, permissionGroupLabelVi |  |
 | `src/lib/product-price.ts` | ts | no | unitSellingAndListPrice |  |

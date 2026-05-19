@@ -1,36 +1,26 @@
-# Graphify — `@frontend` (Hub storefront)
+# Graphify — `apps/frontend`
 
-Thư mục **`apps/frontend/.graphify/`** chứa artefact Graphify cho storefront Next (HUB công khai).
+Thư mục `.graphify/` giữ **snapshot** (`snapshot/`) và **Markdown cho AI** (`markdown/`).
 
-- **`markdown/`** — mọi `.md` sinh bởi `pnpm graphify:ai-summary` (đúng scope app).
-- **`snapshot/`** — `context.json` + `graph.json` từ `update.cjs` (JSON nặng, tránh mở bừa).
+## File trong thư mục này
 
-## File Markdown sinh (`pnpm graphify:ai-summary`)
+| File / Thư mục | Mục đích |
+|----------------|----------|
+| `snapshot/graph.json` | Đồ thị node/link (sinh bởi `node scripts/graphify-update.cjs apps/frontend`) |
+| `snapshot/context.json` | Snapshot nội dung file (<30KB) để AI hiểu hệ thống |
+| `markdown/SUMMARY_FOR_AI.md` | Tóm tắt module map, routes, stats (sinh bởi `pnpm graphify:ai-summary`) |
+| `markdown/FOLDER_TREE.md` | Cây thư mục `src/` dạng ASCII |
+| `markdown/GRAPH_STATS.md` | Thống kê graph: node/link count, top in/out-degree |
+| `README.md` | Mô tả layout thư mục (file này) |
 
-| File | Mục đích |
-|------|----------|
-| `markdown/SUMMARY_FOR_AI.md` | Routes, module map, import/export (từ `../snapshot/context.json`). |
-| `markdown/FOLDER_TREE.md` | Cây thư mục `src/` từ `../snapshot/graph.json`. |
-| `markdown/GRAPH_STATS.md` | Quy mô graph, top in/out-degree. |
-
-## Thứ tự đọc cho AI (ưu tiên)
-
-1. **`markdown/SUMMARY_FOR_AI.md`** — định vị nhanh; không nhúng full source.
-2. **`markdown/FOLDER_TREE.md`**, **`markdown/GRAPH_STATS.md`** — cấu trúc + điểm nóng import.
-3. **[Chỉ mục monorepo + chỉ dẫn theo chủ đề](../../../.graphify/markdown/SUMMARY_FOR_AI.md)** — khi cần liên kết sang `packages/` hoặc app khác.
-4. **`snapshot/context.json`** — chỉ khi cần trích đoạn (file lớn).
-5. **`snapshot/graph.json`**, **`GRAPH_REPORT.md`**, **`cache/`** — visualization / cache; `cache/` không dùng làm nguồn hiểu business.
-
-## Làm mới dữ liệu
+## Làm mới
 
 ```bash
-# từ thư mục app (hoặc dùng đường dẫn đầy đủ từ root monorepo)
-node .graphify/update.cjs
+node scripts/graphify-update.cjs apps/frontend
 pnpm graphify:ai-summary
 ```
 
-## Monorepo
+## Liên kết
 
-- **Chỉ mục gốc:** `../../../.graphify/markdown/SUMMARY_FOR_AI.md`
-- **Packages:** `../../../packages/.graphify/` (`README.md`, `markdown/SUMMARY_FOR_AI.md`, `markdown/WORKSPACE_DEPS.md`)
-- **API Nest:** `apps/api/.graphify/`
+- [SUMMARY monorepo](../../../.graphify/markdown/SUMMARY_FOR_AI.md)
+- [packages SUMMARY](../../../packages/.graphify/markdown/SUMMARY_FOR_AI.md)

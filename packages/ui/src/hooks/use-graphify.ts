@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import type { GraphifyPayload, GraphNode, GraphData, ContextData } from "../lib/graphify-context";
+import type { GraphifyPayload, GraphNode } from "../lib/graphify-context";
 import { getLinkedNodes, communityBreakdown, topHubs, routeFiles } from "../lib/graphify-context";
 
 export interface UseGraphifyReturn {
@@ -36,7 +36,7 @@ export function useGraphify(apiPath = "/api/graphify", maxDegree = 1): UseGraphi
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [apiPath]);
 
   const linkedNodes = selectedNode && data
     ? getLinkedNodes(selectedNode.id, data.graph, maxDegree)

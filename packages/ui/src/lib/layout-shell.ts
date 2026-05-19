@@ -95,7 +95,7 @@ export const ADMIN_AUTH_INFO_CARD_CLASS =
 
 /** `<main>` trong AdminShell — cuộn + nền + padding nội dung. */
 export const ADMIN_MAIN_SCROLL_CLASS =
-  "flex min-h-0 flex-1 flex-col overflow-y-auto bg-muted/20 p-4 sm:p-6";
+  "flex min-h-0 flex-1 flex-col overflow-y-auto bg-muted/20";
 
 /** Vỏ `<PageContent />` trong admin: `<main>` đã có padding — bỏ padding storefront. */
 export const ADMIN_PAGE_CONTENT_CLASS =

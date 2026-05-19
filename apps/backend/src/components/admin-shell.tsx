@@ -101,7 +101,7 @@ function AuthLoadingScreen({ message }: { message: string }) {
   );
 }
 
-export function AdminShell({ children }: { children: ReactNode }) {
+export function AdminShell({ children, classMain, isSidebar }: { children: ReactNode, classMain?: string, isSidebar?: boolean }) {
   const pathname = usePathname();
   const router = useRouter();
   const clientReady = useClientReady();
@@ -214,7 +214,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
           </SheetContent>
         </Sheet>
 
-        <Sidebar collapsed={sidebarCollapsed} />
+        {isSidebar && <Sidebar collapsed={sidebarCollapsed} />}
 
         <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
           <header data-admin-header="true" className="sticky top-0 z-10 flex min-h-16 shrink-0 items-center justify-between border-b border-border/70 bg-background/85 px-3 shadow-[0_1px_0_0_hsl(var(--border)/0.4)] backdrop-blur-xl supports-[backdrop-filter]:bg-background/75 sm:min-h-[4.5rem] sm:px-5 lg:px-6">
@@ -374,12 +374,16 @@ export function AdminShell({ children }: { children: ReactNode }) {
               </DropdownMenu>
             </div>
           </header>
-          <main className={ADMIN_MAIN_SCROLL_CLASS}>
-            <Page as="div">
-              <PageContent className={ADMIN_PAGE_CONTENT_CLASS}>
-                {children}
-              </PageContent>
-            </Page>
+          <main className={cn(ADMIN_MAIN_SCROLL_CLASS, classMain)}>
+            {pathname === "/admin/graph" ? (
+              children
+            ) : (
+              <Page as="div">
+                <PageContent className={ADMIN_PAGE_CONTENT_CLASS}>
+                  {children}
+                </PageContent>
+              </Page>
+            )}
           </main>
         </div>
       </div>

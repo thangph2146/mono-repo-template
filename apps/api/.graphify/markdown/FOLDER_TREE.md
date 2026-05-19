@@ -1,6 +1,6 @@
 # Cây thư mục — api (Graphify)
 
-> **Sinh tự động:** `2026-05-19T07:50:47.386Z` từ `snapshot/graph.json` (node `directory` / `route-group` dưới `src/`).
+> **Sinh tự động:** `2026-05-19T09:31:09.606Z` từ `snapshot/graph.json` (node `directory` / `route-group` dưới `src/`).
 
 ```text
 src/
@@ -21,6 +21,7 @@ src/
 ├── mikro-orm/
 ├── notifications/
 ├── page-contents/
+├── parent-students/
 ├── posts/
 ├── proxy-image/
 ├── public/

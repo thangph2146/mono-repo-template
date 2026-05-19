@@ -258,6 +258,16 @@
       "client": true
     },
     {
+      "id": "file_src_app_layout_tsx",
+      "label": "layout.tsx",
+      "path": "src/app/layout.tsx",
+      "color": "#ff6b35",
+      "size": 20,
+      "community": "src/app",
+      "type": "layout",
+      "client": false
+    },
+    {
       "id": "file_src_app_robots_ts",
       "label": "robots.ts",
       "path": "src/app/robots.ts",
@@ -294,16 +304,6 @@
       "size": 22,
       "community": "src/components",
       "type": "directory"
-    },
-    {
-      "id": "file_src_components_graphify_force_graph_3d_tsx",
-      "label": "force-graph-3d.tsx",
-      "path": "src/components/graphify/force-graph-3d.tsx",
-      "color": "#00ddff",
-      "size": 10,
-      "community": "src/components/graphify",
-      "type": "tsx",
-      "client": true
     },
     {
       "id": "dir_src_components_icons",
@@ -816,16 +816,6 @@
       "client": true
     },
     {
-      "id": "file_src_hooks_use_graphify_ts",
-      "label": "use-graphify.ts",
-      "path": "src/hooks/use-graphify.ts",
-      "color": "#00ddff",
-      "size": 10,
-      "community": "src/hooks",
-      "type": "ts",
-      "client": true
-    },
-    {
       "id": "file_src_hooks_use_mobile_ts",
       "label": "use-mobile.ts",
       "path": "src/hooks/use-mobile.ts",
@@ -908,16 +898,6 @@
       "id": "file_src_lib_format_ts",
       "label": "format.ts",
       "path": "src/lib/format.ts",
-      "color": "#00ff41",
-      "size": 10,
-      "community": "src/lib",
-      "type": "ts",
-      "client": false
-    },
-    {
-      "id": "file_src_lib_graphify_context_ts",
-      "label": "graphify-context.ts",
-      "path": "src/lib/graphify-context.ts",
       "color": "#00ff41",
       "size": 10,
       "community": "src/lib",
@@ -1165,6 +1145,11 @@
     },
     {
       "source": "dir_src_app",
+      "target": "file_src_app_layout_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app",
       "target": "file_src_app_robots_ts",
       "relation": "contains"
     },
@@ -1181,11 +1166,6 @@
     {
       "source": "dir_src_components",
       "target": "dir_src_components_graphify",
-      "relation": "contains"
-    },
-    {
-      "source": "dir_src_components_graphify",
-      "target": "file_src_components_graphify_force_graph_3d_tsx",
       "relation": "contains"
     },
     {
@@ -1450,11 +1430,6 @@
     },
     {
       "source": "dir_src_hooks",
-      "target": "file_src_hooks_use_graphify_ts",
-      "relation": "contains"
-    },
-    {
-      "source": "dir_src_hooks",
       "target": "file_src_hooks_use_mobile_ts",
       "relation": "contains"
     },
@@ -1496,11 +1471,6 @@
     {
       "source": "dir_src_lib",
       "target": "file_src_lib_format_ts",
-      "relation": "contains"
-    },
-    {
-      "source": "dir_src_lib",
-      "target": "file_src_lib_graphify_context_ts",
       "relation": "contains"
     },
     {
@@ -1684,34 +1654,9 @@
       "relation": "imports"
     },
     {
-      "source": "file_src_app_api_graphify_route_ts",
-      "target": "file_src_lib_graphify_context_ts",
-      "relation": "imports"
-    },
-    {
       "source": "file_src_app_graph_loading_tsx",
       "target": "file_src_components_shared_route_loading_tsx",
       "relation": "imports"
-    },
-    {
-      "source": "file_src_app_graph_page_tsx",
-      "target": "file_src_hooks_use_graphify_ts",
-      "relation": "imports"
-    },
-    {
-      "source": "file_src_app_graph_page_tsx",
-      "target": "file_src_lib_graphify_context_ts",
-      "relation": "imports"
-    },
-    {
-      "source": "file_src_app_graph_page_tsx",
-      "target": "file_src_components_graphify_force_graph_3d_tsx",
-      "relation": "imports"
-    },
-    {
-      "source": "file_src_app_graph_page_tsx",
-      "target": "dir_public",
-      "relation": "assets"
     },
     {
       "source": "file_src_app_robots_ts",
@@ -1721,11 +1666,6 @@
     {
       "source": "file_src_app_sitemap_ts",
       "target": "file_src_lib_seo_ts",
-      "relation": "imports"
-    },
-    {
-      "source": "file_src_components_graphify_force_graph_3d_tsx",
-      "target": "file_src_lib_graphify_context_ts",
       "relation": "imports"
     },
     {
@@ -2046,11 +1986,6 @@
     {
       "source": "file_src_features_pages_home_page_sub_sections_scroll_indicator_tsx",
       "target": "file_src_lib_scroll_ts",
-      "relation": "imports"
-    },
-    {
-      "source": "file_src_hooks_use_graphify_ts",
-      "target": "file_src_lib_graphify_context_ts",
       "relation": "imports"
     },
     {

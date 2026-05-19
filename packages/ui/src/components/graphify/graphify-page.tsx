@@ -13,6 +13,7 @@ import { nodeColorByCommunity } from "../../lib/graphify-context";
 import type { GraphNode } from "../../lib/graphify-context";
 import { Heading, Text } from "../typography";
 import { GraphifyForceGraph3D } from "./force-graph-3d";
+import { cn } from "../../lib/utils";
 import {
   Network,
   ArrowLeft,
@@ -138,12 +139,34 @@ export interface GraphifyPageProps {
   homeHref?: string;
   homeLabel?: string;
   apiPath?: string;
+  /**
+   * When `true`, the graph view fills the parent container's height
+   * (used in admin shell where Page/PageContent wrappers are skipped).
+   * When `false` (default), it uses `min-h-screen` for standalone pages.
+   */
+  sticky?: boolean;
+  /** Class overrides for fine-tuning layout per app context. */
+  classes?: {
+    /** Root container (default: `flex h-full w-full flex-col` or `min-h-screen flex w-full flex-col`) */
+    root?: string;
+    /** Header bar */
+    header?: string;
+    /** Left sidebar container */
+    sidebar?: string;
+    /** ScrollArea inside sidebar */
+    scrollArea?: string;
+    /** Graph area container */
+    graphArea?: string;
+    /** Hints overlay at bottom-right */
+    hints?: string;
+  };
 }
 
 export function GraphifyPage({
   homeHref = "/",
   homeLabel = "Home",
   apiPath = "/api/graphify",
+  classes = {},
 }: GraphifyPageProps) {
   const {
     data,
@@ -222,12 +245,12 @@ export function GraphifyPage({
 
   if (loading && !data) {
     return (
-      <div className="min-h-screen bg-background flex flex-col">
-        <header className="sticky top-0 z-10 border-b border-border/50 bg-background/80 backdrop-blur px-4 py-3 flex items-center gap-3 shrink-0">
+      <div className={classes.root ?? "flex h-full w-full flex-col"}>
+        <header className={cn("sticky top-0 z-10 border-b border-border/50 bg-background/80 backdrop-blur px-4 py-3 flex items-center gap-3 shrink-0", classes.header)}>
           <Skeleton className="h-4 w-20" />
           <Skeleton className="h-4 w-32" />
         </header>
-        <div className="flex-1 flex">
+        <div className="flex flex-1 min-h-0">
           <Skeleton className="w-72 h-full" />
           <Skeleton className="flex-1 h-full" />
         </div>
@@ -237,23 +260,30 @@ export function GraphifyPage({
 
   if (error || !data) {
     return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center text-foreground gap-4">
-        <AlertTriangle className="size-10 text-destructive" />
-        <Heading as="h1" size="title">
-          Failed to load graph data
-        </Heading>
-        <Text variant="muted">{error}</Text>
-        <Button onClick={refresh} variant="outline">
-          <RefreshCw className="mr-2 size-4" /> Retry
-        </Button>
+      <div className={classes.root ?? "flex h-full flex-col"}>
+        <div className="flex-1 flex items-center justify-center text-foreground gap-4">
+          <AlertTriangle className="size-10 text-destructive" />
+          <Heading as="h1" size="title">
+            Failed to load graph data
+          </Heading>
+          <Text variant="muted">{error}</Text>
+          <Button onClick={refresh} variant="outline">
+            <RefreshCw className="mr-2 size-4" /> Retry
+          </Button>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className={classes.root ?? "flex h-full w-full flex-col"}>
       {/* ── HEADER ── */}
-      <header className="sticky top-0 z-10 border-b border-border/50 bg-background/80 backdrop-blur px-4 py-3 flex items-center gap-3 shrink-0">
+      <header className={cn("sticky top-0 z-10 border-b border-border/50 bg-background/80 backdrop-blur px-4 py-3 flex items-center gap-3 shrink-0", classes.header)}>
+        <a href={homeHref} className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors">
+          <ArrowLeft className="size-4" />
+          <span className="text-body-sm font-medium">{homeLabel}</span>
+        </a>
+        <Separator orientation="vertical" className="h-4" />
         <Network className="size-4 text-primary" />
         <Text variant="body" className="font-semibold text-foreground">
           Graphify 3D Architecture
@@ -309,9 +339,9 @@ export function GraphifyPage({
         </div>
       </header>
 
-      <div className="flex flex-1 h-[calc(100vh-57px)]">
+      <div className="flex flex-1 min-h-0">
         {/* ── LEFT SIDEBAR ── */}
-        <div className="w-72 xl:w-80 shrink-0 border-r border-border/50 bg-card flex flex-col">
+        <div className={cn("w-72 xl:w-80 shrink-0 border-r border-border/50 bg-card flex flex-col", classes.sidebar)}>
           {selectedNode && (
             <div className="px-3 pt-2 flex items-center gap-2">
               <span className="text-caption px-2 py-1 rounded-md border bg-amber-500/15 text-amber-300 border-amber-500/30">
@@ -347,7 +377,7 @@ export function GraphifyPage({
             </div>
           </div>
 
-          <ScrollArea className="flex-1">
+          <ScrollArea className={cn("flex-1 max-h-[calc(100vh-12rem)]", classes.scrollArea)}>
             <div className="p-3">
               <FolderNode
                 folder={folderTree}
@@ -361,7 +391,7 @@ export function GraphifyPage({
         </div>
 
         {/* ── GRAPH AREA ── */}
-        <div className="flex-1 min-w-0 relative sticky top-[57px] h-[calc(100vh-57px)]">
+        <div className={cn("flex-1 min-w-0 relative", classes.graphArea)}>
           <GraphifyForceGraph3D
             graph={data.graph}
             selectedNode={selectedNode}
@@ -370,7 +400,7 @@ export function GraphifyPage({
             linkedNodes={linkedNodes}
           />
 
-          <div className="absolute bottom-3 right-3 bg-background/80 backdrop-blur rounded-lg border border-border/30 px-3 py-2">
+          <div className={cn("absolute bottom-3 right-3 bg-background/80 backdrop-blur rounded-lg border border-border/30 px-3 py-2", classes.hints)}>
             <div className="flex items-center gap-3 text-caption text-muted-foreground">
               <span className="flex items-center gap-1">
                 <GripHorizontal className="size-3" /> Drag to rotate

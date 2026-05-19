@@ -118,7 +118,7 @@ export function GraphifyForceGraph3D({
   );
 
   return (
-    <div className="w-full h-full bg-zinc-950 rounded-lg overflow-hidden relative">
+    <div className="w-full h-full bg-zinc-950 overflow-hidden relative">
       <ForceGraph3D
         ref={fgRef}
         graphData={fgData}
