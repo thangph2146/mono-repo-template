@@ -1,4 +1,4 @@
-import { ShieldHalf, CheckCircle2, Lock, UserCircle, KeyRound, X, Save, Loader2, UserPlus } from "lucide-react";
+import { ShieldHalf, CheckCircle2, Lock, UserCircle, X, Save, Loader2, UserPlus } from "lucide-react";
 import { Button } from "@ui/components/button";
 import { Input } from "@ui/components/input";
 import { FieldError } from "@ui/components/field";

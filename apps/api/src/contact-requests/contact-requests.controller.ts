@@ -164,6 +164,7 @@ export class ContactRequestsController {
     @Query('limit') limit?: string,
     @Query('search') search?: string,
     @Query('status') status?: string,
+    @Query('trash') trash?: string,
     @Query() query?: Record<string, string>,
   ) {
     this.logger.log(`list page=${page ?? 1} limit=${limit ?? 10}`);
@@ -180,11 +181,17 @@ export class ContactRequestsController {
       }
     }
 
+    // Map trash parameter to status
+    let listStatus = this.parseListStatus(status);
+    if (trash === 'true' || trash === '1') {
+      listStatus = 'deleted';
+    }
+
     const result = await this.contactRequestsService.list({
       page: Math.max(1, parseInt(String(page), 10) || 1),
       limit: Math.min(100, Math.max(1, parseInt(String(limit), 10) || 10)),
       search: search?.trim(),
-      status: this.parseListStatus(status),
+      status: listStatus,
       filters: Object.keys(filters).length ? filters : undefined,
     });
 

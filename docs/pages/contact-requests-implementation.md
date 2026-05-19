@@ -10,27 +10,47 @@
 
 ### Phase 1: Setup File Structure
 
-- [ ] Create directory structure:
+- [ ] Create directory structure following standard pattern:
   ```
   contact-requests/
-  ├── page.tsx
+  ├── page.tsx                    # Main list page (active items)
+  ├── new/
+  │   └── page.tsx                # Create page
+  ├── [id]/
+  │   ├── page.tsx                # Detail page
+  │   └── edit/
+  │       └── page.tsx            # Edit page
   └── _component/
-      ├── index.ts
-      ├── types.ts
-      ├── columns.tsx
-      ├── _query/
+      ├── index.ts                # Export all components
+      ├── types.ts                # TypeScript types
+      ├── utils.ts                # Utility functions
+      ├── columns.tsx             # Table column definitions
+      ├── _hooks/                 # Custom React hooks
+      │   ├── index.ts
+      │   └── use-contact-form.ts
+      ├── _query/                 # React Query hooks
       │   ├── index.ts
       │   └── use-contact-queries.ts
-      └── _alert-dialog/
+      ├── _table/                 # Table components
+      │   ├── index.ts
+      │   └── contact-table.tsx
+      ├── _form/                  # Form shell components
+      │   ├── index.ts
+      │   └── contact-form-shell.tsx
+      └── _alert-dialog/          # Confirmation dialogs
           ├── index.ts
-          └── contact-detail-dialog.tsx
+          └── contact-confirm-dialog.tsx
   ```
 
 ### Phase 2: Define Types (`_component/types.ts`)
 
 - [ ] Export shared types from `@workspace/api-client`:
   ```typescript
-  export type { ContactRequest, UpdateContactRequestInput } from "@workspace/api-client";
+  export type {
+    ContactRequest,
+    CreateContactRequestInput,
+    UpdateContactRequestInput
+  } from "@workspace/api-client";
   ```
 
 - [ ] Define local constants:
@@ -50,80 +70,128 @@
   };
   ```
 
-### Phase 3: Create Query Hooks (`_component/_query/use-contact-queries.ts`)
+### Phase 3: Create Utility Functions (`_component/utils.ts`)
+
+- [ ] Implement utility functions for data transformation:
+  ```typescript
+  export function formatPhoneNumber(phone: string): string {
+    // Format phone number for display
+  }
+
+  export function buildFilterQuery(search?: string, status?: string): Record<string, any> {
+    // Build filter query object for API calls
+  }
+  ```
+
+### Phase 4: Create Form Hook (`_component/_hooks/use-contact-form.ts`)
+
+- [ ] Define schema with zod:
+  ```typescript
+  export const contactFormSchema = z.object({
+    name: z.string().min(1, "Tên không được để trống"),
+    email: z.string().email("Email không hợp lệ"),
+    phone: z.string().min(1, "Số điện thoại không được để trống"),
+    subject: z.string().min(1, "Tiêu đề không được để trống"),
+    message: z.string().min(1, "Nội dung không được để trống"),
+  });
+  ```
+- [ ] Export `useContactForm(options)` hook using react-hook-form:
+  - Use `useForm` with zodResolver
+  - Provide `form` object (UseFormReturn)
+  - Provide `resetForm()`, `populateForm()`, `getPayload()`
+  - Support both create and edit modes
+
+### Phase 5: Create Query Hooks (`_component/_query/use-contact-queries.ts`)
 
 - [ ] Import from `@/hooks/queries` for shared hooks:
   - `useContactRequests` - list with pagination and filters
   - `useContactRequestDetail` - get single contact request
 - [ ] Implement mutations using `api.contactRequests` from `@workspace/api-client`:
-  - `updateStatusMutation` - update status and notes using `api.contactRequests.update()`
-  - `archiveMutation` - archive request using `api.contactRequests.archive()`
-  - `deleteMutation` - delete request using `api.contactRequests.remove()`
+  - `createMutation` - create request using `api.contactRequests.create()`
+  - `updateMutation` - update request using `api.contactRequests.update()`
+  - `deleteMutation` - soft delete using `api.contactRequests.remove()`
+  - `restoreMutation` - restore using `api.contactRequests.restore()`
+  - `purgeMutation` - permanent delete using `api.contactRequests.purge()`
 - [ ] Use React Query mutations with proper cache invalidation
 - [ ] Show toast notifications on success/error
 
-### Phase 4: Create Table Columns (`_component/columns.tsx`)
+### Phase 6: Create Table Columns (`_component/columns.tsx`)
 
 - [ ] Define column definitions with proper types
 - [ ] Use status badges with appropriate colors based on CONTACT_REQUEST_STATUS_LABELS
-- [ ] Add action buttons (view, archive, delete) using Lucide icons (Eye, Archive, Trash2)
+- [ ] Add action buttons (view, edit, delete, restore, purge) using Lucide icons (Eye, Pencil, Trash2, RotateCcw, AlertTriangle)
 - [ ] Format dates and phone numbers properly
+- [ ] Add meta properties for filtering
 
-### Phase 5: Implement Main List Page (`page.tsx`)
+### Phase 7: Create Table Components (`_component/_table/contact-table.tsx`)
 
-- [ ] Import query hooks and table columns from `_component`
-- [ ] Import `useContactRequests` from `@/hooks/queries` for data fetching
-- [ ] Add search input for filtering by name, email, subject
-- [ ] Add status filter dropdown using CONTACT_REQUEST_STATUSES
-- [ ] Use `AdminDataTable` component
-- [ ] Handle pagination with page and pageSize state
+- [ ] Create wrapper component around `AdminDataTable`
+- [ ] Configure data, columns, pagination
+- [ ] Add filters (search, status)
+- [ ] Add tabs for Active/Trash items
+- [ ] Handle row selection and bulk actions
+- [ ] Handle module-specific table logic
+
+### Phase 8: Create Form Shell (`_component/_form/contact-form-shell.tsx`)
+
+- [ ] Define props interface with form state and callbacks
+- [ ] Implement form layout with Dialog components
+- [ ] Use FormFieldCol/FormFieldRow for form layout consistency
+- [ ] Handle form submission with mutations
+- [ ] Support both create and edit modes
+
+### Phase 9: Create Confirm Dialog (`_component/_alert-dialog/contact-confirm-dialog.tsx`)
+
+- [ ] Define props interface with action type, target, callbacks
+- [ ] Use `AdminConfirmActionDialog` shared component
+- [ ] Handle delete, restore, purge actions with appropriate icons and messages
+
+### Phase 10: Implement Main List Page (`page.tsx`)
+
+- [ ] Import query hooks and table components from `_component`
+- [ ] Import shared hooks from `@/hooks/queries`
+- [ ] Use table component from `_component/_table/contact-table.tsx`
+- [ ] Add filters (search, status)
+- [ ] Add tabs for Active/Trash items using state
 - [ ] Wrap with `AdminPageGuard` for permission check (super_admin, admin roles)
-- [ ] Use correct route paths (e.g., `/staff` not `/admin/staff`)
+- [ ] Use correct route paths (e.g., `/contact-requests` not `/admin/contact-requests`)
+- [ ] Add "Add New" button linking to `/contact-requests/new`
+- [ ] Handle pagination with page and pageSize state
 
-### Phase 6: Implement Detail Dialog (`_component/_alert-dialog/contact-detail-dialog.tsx`)
+### Phase 11: Implement Create Page (`new/page.tsx`)
 
-- [ ] Create dialog using Dialog components from `@ui/components`
-- [ ] Define props interface with `contact`, `open`, `onClose`
-- [ ] Use React Hook Form with Controller for controlled components:
-  ```typescript
-  import { useForm, Controller } from "react-hook-form";
-  import { FormFieldCol } from "@ui/components/typing";
-  import { Select, Textarea } from "@ui/components";
-  import type { ContactRequest } from "./types";
+- [ ] Import form hook and form shell from `_component`
+- [ ] Use `contact-form-shell` component for create mode
+- [ ] Set form mode to "create"
+- [ ] Handle form submission with createMutation
+- [ ] Redirect to list page on success
+- [ ] Wrap with `AdminPageGuard` for permission check
+- [ ] Add breadcrumb navigation
 
-  const form = useForm({
-    defaultValues: {
-      status: contact?.status ?? "new",
-      notes: contact?.notes ?? "",
-    },
-  });
-  ```
-- [ ] Add status update dropdown using Select component with Controller:
-  ```typescript
-  <Controller
-    name="status"
-    control={form.control}
-    render={({ field }) => (
-      <FormFieldCol label="Trạng thái">
-        <Select onValueChange={field.onChange} value={field.value}>
-          <SelectTrigger>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="new">Mới</SelectItem>
-            <SelectItem value="in-progress">Đang xử lý</SelectItem>
-            <SelectItem value="resolved">Đã giải quyết</SelectItem>
-          </SelectContent>
-        </Select>
-      </FormFieldCol>
-    )}
-  />
-  ```
-- [ ] Add notes textarea using Textarea component with Controller
-- [ ] Handle submit with mutation using `api.contactRequests.update()`
-- [ ] Show loading states with Loader2 icon
-- [ ] Use FormFieldCol for form layout consistency
-- [ ] Use FieldError from `@ui/components/field` for error display
+### Phase 12: Implement Detail Page (`[id]/page.tsx`)
+
+- [ ] Import `useContactRequestDetail` from `@/hooks/queries`
+- [ ] Fetch contact request data by ID
+- [ ] Display all contact request information (name, email, phone, subject, message, status, notes, created_at)
+- [ ] Add status update form using form shell (read-only for basic fields, editable for status and notes)
+- [ ] Add "Edit" button linking to `/contact-requests/[id]/edit`
+- [ ] Add "Delete" button with confirmation dialog
+- [ ] Handle loading and error states
+- [ ] Wrap with `AdminPageGuard` for permission check
+- [ ] Add breadcrumb navigation
+
+### Phase 13: Implement Edit Page (`[id]/edit/page.tsx`)
+
+- [ ] Import `useContactRequestDetail` from `@/hooks/queries`
+- [ ] Fetch contact request data by ID
+- [ ] Import form hook and form shell from `_component`
+- [ ] Use `contact-form-shell` component for edit mode
+- [ ] Populate form with existing data
+- [ ] Set form mode to "edit"
+- [ ] Handle form submission with updateMutation
+- [ ] Redirect to detail page on success
+- [ ] Wrap with `AdminPageGuard` for permission check
+- [ ] Add breadcrumb navigation
 
 ## Clean Code Guidelines
 
@@ -137,14 +205,45 @@
 
 ## Testing Checklist
 
+### List Page
 - [ ] List page loads correctly with pagination
-- [ ] Search filters work as expected
+- [ ] Active/Trash tabs switch correctly
+- [ ] Search filters work as expected (name, email, subject)
 - [ ] Status filter works correctly
-- [ ] Detail dialog opens and displays correct information
-- [ ] Status updates save successfully
-- [ ] Notes save successfully
-- [ ] Archive action works
-- [ ] Delete action works with confirmation
+- [ ] "Add New" button navigates to create page
+- [ ] Delete action soft deletes item (moves to trash)
+- [ ] Restore action restores item from trash
+- [ ] Purge action permanently deletes item from trash
+- [ ] Bulk actions work correctly
+
+### Create Page
+- [ ] Create page loads correctly
+- [ ] Form validation works for all required fields
+- [ ] Submit creates new contact request
+- [ ] Success toast displays
+- [ ] Redirects to list page on success
+- [ ] Breadcrumb navigation works
+
+### Detail Page
+- [ ] Detail page loads correctly with ID
+- [ ] All information displays correctly
+- [ ] Status update works
+- [ ] Notes update works
+- [ ] "Edit" button navigates to edit page
+- [ ] "Delete" button shows confirmation dialog
+- [ ] Breadcrumb navigation works
+
+### Edit Page
+- [ ] Edit page loads correctly with ID
+- [ ] Form populates with existing data
+- [ ] Form validation works
+- [ ] Submit updates contact request
+- [ ] Success toast displays
+- [ ] Redirects to detail page on success
+- [ ] Breadcrumb navigation works
+
+### General
 - [ ] Permission checks prevent unauthorized access
 - [ ] Loading states display correctly
 - [ ] Error messages display correctly
+- [ ] Route paths are correct (no /admin prefix)

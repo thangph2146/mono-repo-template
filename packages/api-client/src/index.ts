@@ -1,5 +1,5 @@
 export * from './types';
-export type { ContactRequest, UpdateContactRequestInput } from './resources/contact-requests';
+export type { ContactRequest, CreateContactRequestInput, UpdateContactRequestInput } from './resources/contact-requests';
 export type { ParentStudent, AddStudentInput } from './resources/my-students';
 export type { ParentStudent as ParentStudentAdmin, UpdateParentStudentInput } from './resources/parent-students';
 export { effectiveLineUnitPrice } from './unit-pricing';

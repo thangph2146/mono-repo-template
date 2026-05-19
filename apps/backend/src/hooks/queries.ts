@@ -15,11 +15,8 @@ import {
   type UpdateProfileInput,
   type User,
   type ContactRequest,
-  type UpdateContactRequestInput,
   type ParentStudent,
-  type AddStudentInput,
   type ParentStudentAdmin,
-  type UpdateParentStudentInput,
 } from "@/lib/api";
 
 export const queryKeys = {
@@ -27,9 +24,9 @@ export const queryKeys = {
   staffUserList: () => ["users", "staff-list"] as const,
   usersTrashed: () => ["users", "trashed"] as const,
   rbacCatalog: () => ["rbac", "catalog"] as const,
-  contactRequests: (params?: any) => ["contact-requests", params] as const,
+  contactRequests: (params?: { page?: number; limit?: number; status?: string; search?: string }) => ["contact-requests", params] as const,
   myStudents: () => ["my-students"] as const,
-  parentStudents: (params?: any) => ["parent-students", params] as const,
+  parentStudents: (params?: { page?: number; limit?: number; status?: string; search?: string }) => ["parent-students", params] as const,
 };
 
 export type UsersListData = { items: User[]; total: number };

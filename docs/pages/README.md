@@ -42,7 +42,7 @@
 
 ### File Structure Template
 
-All new admin pages should follow this structure:
+All new admin pages should follow this structure (based on existing modules like staff, categories, posts, tags, guides):
 
 ```
 module-name/
@@ -56,24 +56,30 @@ module-name/
 └── _component/
     ├── index.ts                # Export all components
     ├── types.ts                # TypeScript types (export from @workspace/api-client)
-    ├── utils.ts                # Utility functions (optional)
+    ├── utils.ts                # Utility functions (slugify, format, etc.)
     ├── columns.tsx             # Table column definitions
-    ├── _hooks/                 # Custom React hooks (optional)
+    ├── _hooks/                 # Custom React hooks (form hooks, action hooks)
     │   ├── index.ts
     │   └── use-module-form.ts # Form hook with zodResolver
     ├── _query/                 # React Query hooks
     │   ├── index.ts
     │   └── use-module-queries.ts
-    ├── _table/                 # Table components (optional)
+    ├── _table/                 # Table components (wrappers around AdminDataTable)
     │   ├── index.ts
     │   └── module-table.tsx
-    ├── _form/                  # Form components (optional)
+    ├── _form/                  # Form shell components (Dialog-based forms)
     │   ├── index.ts
     │   └── module-form-shell.tsx
-    └── _alert-dialog/          # Dialog components (optional)
+    └── _alert-dialog/          # Confirmation dialogs
         ├── index.ts
-        └── module-dialog.tsx
+        └── module-confirm-dialog.tsx
 ```
+
+**Key differences from simplified pattern:**
+- **_table/**: Wrapper components around AdminDataTable for module-specific table logic
+- **_form/**: Form shell components for create/edit (not just Dialog, but form shells)
+- **_hooks/**: Custom hooks for form state and actions (beyond just query hooks)
+- **utils.ts**: Utility functions for data transformation, formatting, etc.
 
 ### Step-by-Step Implementation
 
@@ -89,7 +95,26 @@ module-name/
 - Define local UI types if needed (for table rows, form state, etc.)
 - Define constants (status labels, colors, etc.)
 
-#### Phase 3: Create Query Hooks (`_component/_query/use-module-queries.ts`)
+#### Phase 3: Create Utility Functions (`_component/utils.ts`)
+- Implement utility functions for data transformation
+- Examples: `slugify()`, `formatDateTime()`, `buildFilterQuery()`, `buildPayload()`
+- These functions keep the main page clean and reusable
+
+#### Phase 4: Create Form Hook (`_component/_hooks/use-module-form.ts`)
+- Define schema with zod:
+  ```typescript
+  export const moduleFormSchema = z.object({
+    name: z.string().min(1, "Tên không được để trống"),
+    // ... other fields
+  });
+  ```
+- Export `useModuleForm(options)` hook using react-hook-form:
+  - Use `useForm` with zodResolver
+  - Provide `form` object (UseFormReturn)
+  - Provide `resetForm()`, `populateForm()`, `getPayload()`
+  - Support both create and edit modes
+
+#### Phase 5: Create Query Hooks (`_component/_query/use-module-queries.ts`)
 - Import from `@/hooks/queries` for shared hooks when available
 - Implement mutations using `api.moduleName` from `@workspace/api-client`:
   ```typescript
@@ -113,58 +138,37 @@ module-name/
   });
   ```
 
-#### Phase 4: Create Table Columns (`_component/columns.tsx`)
+#### Phase 6: Create Table Columns (`_component/columns.tsx`)
 - Define column definitions with proper types
 - Use Badge for status indicators
 - Add action buttons using Lucide icons
 - Add meta properties for filtering
 
-#### Phase 5: Implement Main List Page (`page.tsx`)
-- Import query hooks and table columns from `_component`
+#### Phase 7: Create Table Components (`_component/_table/`)
+- Create wrapper components around `AdminDataTable`
+- Configure data, columns, pagination
+- Add filters, row selection, bulk actions
+- Handle module-specific table logic
+
+#### Phase 8: Create Form Shell (`_component/_form/module-form-shell.tsx`)
+- Define props interface with form state and callbacks
+- Implement form layout with Dialog components
+- Use FormFieldCol/FormFieldRow for form layout consistency
+- Handle form submission with mutations
+- Support both create and edit modes
+
+#### Phase 9: Create Confirm Dialog (`_component/_alert-dialog/module-confirm-dialog.tsx`)
+- Define props interface with action type, target, callbacks
+- Use `AdminConfirmActionDialog` shared component
+- Handle delete, restore, purge actions with appropriate icons and messages
+
+#### Phase 10: Implement Main List Page (`page.tsx`)
+- Import query hooks and table components from `_component`
 - Import shared hooks from `@/hooks/queries`
-- Use `AdminDataTable` component
+- Use table components from `_component/_table/`
 - Add filters, search, pagination
 - Wrap with `AdminPageGuard` for permission check
 - Use correct route paths (e.g., `/staff` not `/admin/staff`)
-
-#### Phase 6: Implement Form (if needed)
-- Use React Hook Form with zodResolver:
-  ```typescript
-  import { useForm, Controller } from "react-hook-form";
-  import { zodResolver } from "@hookform/resolvers/zod";
-  import { z } from "zod";
-  import { FormFieldCol } from "@ui/components/typing";
-  import { Input, Textarea } from "@ui/components";
-  import { FieldError } from "@ui/components/field";
-
-  const schema = z.object({
-    name: z.string().min(1, "Tên không được để trống"),
-    description: z.string().optional(),
-  });
-
-  type FormData = z.infer<typeof schema>;
-
-  const form = useForm<FormData>({
-    resolver: zodResolver(schema),
-    defaultValues: { name: "", description: "" },
-  });
-  ```
-- Use FormFieldCol for form layout:
-  ```typescript
-  <Controller
-    name="name"
-    control={form.control}
-    render={({ field, fieldState }) => (
-      <FormFieldCol label="Tên" required>
-        <Input
-          {...field}
-          className={fieldState.error ? "border-destructive" : ""}
-        />
-        {fieldState.error && <FieldError>{fieldState.error.message}</FieldError>}
-      </FormFieldCol>
-    )}
-  />
-  ```
 
 ### API Usage Guidelines
 
