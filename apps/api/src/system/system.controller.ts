@@ -311,4 +311,31 @@ export class SystemController {
       return res.status(statusCode).json(body);
     }
   }
+
+  @Get('database-schema')
+  async getDatabaseSchema(
+    @Res() res: Response,
+    @Headers() headers: Record<string, string | undefined>,
+  ) {
+    try {
+      if (!(await this.canAccessSystemMaintenance(headers))) {
+        const { statusCode, body } = createErrorResponse(
+          'Unauthorized: Super Admin or settings manage permission required',
+          { status: 403 },
+        );
+        return res.status(statusCode).json(body);
+      }
+
+      const data = this.systemService.getDatabaseSchema();
+      const { statusCode, body } = createSuccessResponse(data);
+      return res.status(statusCode).json(body);
+    } catch (error) {
+      this.logApiError('GET /api/admin/system/database-schema', error);
+      const { statusCode, body } = createErrorResponse(
+        error instanceof Error ? error.message : 'Internal Server Error',
+        { status: 500 },
+      );
+      return res.status(statusCode).json(body);
+    }
+  }
 }

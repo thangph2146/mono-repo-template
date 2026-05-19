@@ -3,7 +3,7 @@
 > Tự động sinh từ `../snapshot/context.json` — **đọc file này trước**; tránh mở toàn bộ JSON snapshot (nhúng source đầy đủ).
 
 - **projectRoot:** `C:/HUB/source/hub-parent-template/apps/backend`
-- **context.generatedAt:** 2026-05-19T08:42:18.621Z
+- **context.generatedAt:** 2026-05-19T16:08:23.295Z
 
 ## Mục lục artefact Graphify
 
@@ -34,10 +34,10 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 - **Thống kê graph:** [`GRAPH_STATS.md`](GRAPH_STATS.md) — quy mô node/link, top file in/out-degree (điểm nóng import).
 
 ## Thống kê
-- **totalFiles:** 189
-- **clientComponents:** 78
+- **totalFiles:** 190
+- **clientComponents:** 79
 
-## Trang (pages) (32)
+## Trang (pages) (33)
 - `src/app/categories/new/page.tsx`
 - `src/app/categories/page.tsx`
 - `src/app/categories/[id]/edit/page.tsx`
@@ -46,6 +46,7 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 - `src/app/contact-requests/[id]/edit/page.tsx`
 - `src/app/contact-requests/[id]/page.tsx`
 - `src/app/data/page.tsx`
+- `src/app/database-schema/page.tsx`
 - `src/app/graph/page.tsx`
 - `src/app/guides/new/page.tsx`
 - `src/app/guides/page.tsx`
@@ -106,7 +107,7 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 | `src/app/categories/_component/columns.tsx` | tsx | yes | getCategoryColumns, getTrashColumns | src/app/categories/_component/types.ts |
 | `src/app/categories/_component/index.ts` | ts | no | getCategoryColumns, getTrashColumns, slugify, buildCategoryOptionTree, unwrapEnvelope, normalizePaged, buildCategoriesFilterQuery, formatDateTime, useColumnFiltersChange, useClearListFilters, useClear | src/app/categories/_component/columns.tsx, src/app/categories/_component/utils.ts, src/app/categories/_component/_hooks, src/app/categories/_component/_table, src/app/categories/_component/_alert-dial |
 | `src/app/categories/_component/types.ts` | ts | no | CategoryRow, CategoryTreeOption, CategoryConfirmAction, FormState, CategoryDetail |  |
-| `src/app/categories/_component/utils.ts` | ts | no | buildCategoriesFilterQuery, slugify, formatDateTime, buildCategoryOptionTree, unwrapEnvelope, normalizePaged |  |
+| `src/app/categories/_component/utils.ts` | ts | no | buildCategoriesFilterQuery, slugify, formatDateTime, buildCategoryOptionTree, unwrapEnvelope, normalizePaged | src/lib |
 | `src/app/categories/new/page.tsx` | page | yes | NewCategoryPage | src/components/admin-page-guard.tsx, src/lib/api.ts, src/app/categories/_component |
 | `src/app/categories/page.tsx` | page | yes | CategoriesPage | src/hooks/use-debounced-value.ts, src/providers/auth-provider.tsx, src/components/admin-page-guard.tsx, src/lib/api.ts, src/app/categories/_component, src/app/categories/_component/types.ts |
 | `src/app/contact-requests/[id]/edit/page.tsx` | page | yes | EditContactRequestPage | src/app/contact-requests/_component/_hooks/use-contact-form.ts, src/app/contact-requests/_component/_form/contact-form-shell.tsx, src/hooks/queries.ts, src/app/contact-requests/_component/_query/use-c |
@@ -126,8 +127,9 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 | `src/app/contact-requests/_component/index.ts` | ts | no |  | src/app/contact-requests/_component/types.ts, src/app/contact-requests/_component/utils.ts, src/app/contact-requests/_component/columns.tsx, src/app/contact-requests/_component/_hooks, src/app/contact |
 | `src/app/contact-requests/_component/types.ts` | ts | no | CONTACT_REQUEST_STATUSES, CONTACT_REQUEST_STATUS_LABELS |  |
 | `src/app/contact-requests/_component/utils.ts` | ts | no | formatPhoneNumber, buildFilterQuery |  |
-| `src/app/contact-requests/page.tsx` | page | yes | ContactRequestsPage | src/components/admin-page-guard.tsx, src/hooks/queries.ts, src/hooks/use-debounced-value.ts, src/app/contact-requests/_component, src/app/contact-requests/_component/types.ts, src/app/contact-requests |
+| `src/app/contact-requests/page.tsx` | page | yes | ContactRequestsPage | src/components/admin-page-guard.tsx, src/hooks/queries.ts, src/lib/build-admin-filter-query.ts, src/hooks/use-debounced-value.ts, src/app/contact-requests/_component, src/app/contact-requests/_compone |
 | `src/app/data/page.tsx` | page | yes | DataBackupPage | src/lib/auth-session.ts, src/components/admin-page-guard.tsx |
+| `src/app/database-schema/page.tsx` | page | yes | DatabaseSchemaPage | src/components/admin-page-guard.tsx |
 | `src/app/graph/page.tsx` | page | yes | GraphPage |  |
 | `src/app/guides/[id]/edit/page.tsx` | page | yes | EditGuidePage | src/components/admin-page-guard.tsx, src/lib/api.ts, src/app/guides/_component |
 | `src/app/guides/[id]/page.tsx` | page | yes | GuideDetailPage | src/components/admin-page-guard.tsx, src/lib/api.ts, src/app/guides/_component |
@@ -163,7 +165,7 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 | `src/app/parent-students/_component/columns.tsx` | tsx | yes | ParentStudentsColumnsProps, getParentStudentsColumns | src/app/parent-students/_component/types.ts |
 | `src/app/parent-students/_component/index.ts` | ts | no |  | src/app/parent-students/_component/types.ts, src/app/parent-students/_component/columns.tsx, src/app/parent-students/_component/_query, src/app/parent-students/_component/_table |
 | `src/app/parent-students/_component/types.ts` | ts | no | PARENT_STUDENT_STATUSES, PARENT_STUDENT_STATUS_LABELS, PARENT_STUDENT_STATUS_COLORS |  |
-| `src/app/parent-students/page.tsx` | page | yes | AdminParentStudentsPage | src/components/admin-confirm-action-dialog.tsx, src/components/admin-page-guard.tsx, src/lib/api.ts, src/app/parent-students/_component/_table, src/app/parent-students/_component/_query, src/app/paren |
+| `src/app/parent-students/page.tsx` | page | yes | AdminParentStudentsPage | src/components/admin-confirm-action-dialog.tsx, src/components/admin-page-guard.tsx, src/lib, src/lib/api.ts, src/hooks/use-debounced-value.ts, src/app/parent-students/_component/_table, src/app/paren |
 | `src/app/posts/[id]/edit/page.tsx` | page | yes | EditPostPage | src/components/admin-page-guard.tsx, src/lib/api.ts, src/app/posts/_component, src/app/posts/_component/_query |
 | `src/app/posts/[id]/page.tsx` | page | yes | PostDetailPage | src/components/admin-page-guard.tsx, src/lib/api.ts, src/app/posts/_component, src/app/posts/_component/_query |
 | `src/app/posts/_component/_alert-dialog/index.ts` | ts | no | PostsConfirmDialog | src/app/posts/_component/_alert-dialog/posts-confirm-dialog.tsx |
@@ -185,7 +187,7 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 | `src/app/posts/_component/index.ts` | ts | no | createParagraphNode, createSerializedEditorState, slugify, getSeoStatus, buildCategoryOptionTree, unwrapEnvelope, normalizePaged, buildPostsFilterQuery, isSerializedEditorState, fromLocalInputValue, t | src/app/posts/_component/types.ts, src/app/posts/_component/utils.ts, src/app/posts/_component/summary-badges.tsx, src/app/posts/_component/columns.tsx, src/app/posts/_component/_hooks, src/app/posts/ |
 | `src/app/posts/_component/summary-badges.tsx` | tsx | no | SummaryBadges | src/app/posts/_component/types.ts |
 | `src/app/posts/_component/types.ts` | ts | no | TaxonomyOption, CategoryTreeOption, PostListRow, PostConfirmAction, PostDetail, FormState, EditorTextNodeShape, EditorParagraphNodeShape, EditorStateShape |  |
-| `src/app/posts/_component/utils.ts` | ts | no | createParagraphNode, createSerializedEditorState, getSeoStatus, buildPostsFilterQuery, isSerializedEditorState, fromLocalInputValue, toLocalInputValue, normalizeContentForEditor, slugify, formatDateTi | src/app/posts/_component/types.ts |
+| `src/app/posts/_component/utils.ts` | ts | no | createParagraphNode, createSerializedEditorState, getSeoStatus, buildPostsFilterQuery, isSerializedEditorState, fromLocalInputValue, toLocalInputValue, normalizeContentForEditor, slugify, formatDateTi | src/lib, src/app/posts/_component/types.ts |
 | `src/app/posts/new/page.tsx` | page | yes | NewPostPage | src/components/admin-page-guard.tsx, src/lib/api.ts, src/app/posts/_component, src/app/posts/_component/_query |
 | `src/app/posts/page.tsx` | page | yes | PostsPage | src/components/admin-page-guard.tsx, src/lib/api.ts, src/app/posts/_component/_table, src/app/posts/_component/_alert-dialog, src/app/posts/_component/_hooks, src/app/posts/_component/_query, src/hook |
 | `src/app/profile/page.tsx` | page | yes | AdminProfilePage | src/providers/auth-provider.tsx, src/lib/permission-labels.ts, src/hooks/queries.ts, src/lib/api.ts, src/lib/auth-session.ts |
@@ -200,22 +202,22 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 | `src/app/staff/[id]/edit/page.tsx` | page | yes | EditStaffPage | src/app/staff/_component, src/app/staff/_component/_form, src/hooks/queries.ts, src/providers/auth-provider.tsx, src/components/admin-page-guard.tsx, src/lib/api.ts |
 | `src/app/staff/[id]/page.tsx` | page | yes | StaffDetailPage | src/hooks/queries.ts, src/providers/auth-provider.tsx, src/components/admin-page-guard.tsx, src/app/posts/_component/_query/use-posts-queries.ts, src/lib/api.ts |
 | `src/app/staff/_component/_alert-dialog/index.ts` | ts | no | StaffConfirmDialog, StaffBulkConfirmDialog | src/app/staff/_component/_alert-dialog/staff-confirm-dialog.tsx |
-| `src/app/staff/_component/_alert-dialog/staff-confirm-dialog.tsx` | tsx | no | StaffConfirmDialog, StaffBulkConfirmDialog | src/components/admin-confirm-action-dialog.tsx, src/lib/api.ts |
+| `src/app/staff/_component/_alert-dialog/staff-confirm-dialog.tsx` | tsx | no | StaffConfirmDialog, StaffBulkConfirmDialog | src/components/admin-confirm-action-dialog.tsx, src/app/staff/_component/types.ts |
 | `src/app/staff/_component/_form/index.ts` | ts | no | StaffFormShell | src/app/staff/_component/_form/staff-form-shell.tsx |
-| `src/app/staff/_component/_form/staff-form-shell.tsx` | tsx | no | StaffFormShell | src/app/staff/_component/_hooks/use-staff-form.ts |
+| `src/app/staff/_component/_form/staff-form-shell.tsx` | tsx | no | StaffFormShellProps, StaffFormShell | src/app/staff/_component/_hooks/use-staff-form.ts |
 | `src/app/staff/_component/_hooks/index.ts` | ts | no | useStaffForm, staffFormSchema | src/app/staff/_component/_hooks/use-staff-form.ts |
 | `src/app/staff/_component/_hooks/use-staff-form.ts` | ts | no | staffFormSchema, StaffFormValues, useStaffForm |  |
 | `src/app/staff/_component/_query/index.ts` | ts | no | useStaffMutations | src/app/staff/_component/_query/use-staff-queries.ts |
-| `src/app/staff/_component/_query/use-staff-queries.ts` | ts | no | UsersListData, UseStaffMutationsProps, useStaffMutations | src/hooks/queries.ts, src/lib/api.ts |
+| `src/app/staff/_component/_query/use-staff-queries.ts` | ts | no | UseStaffMutationsProps, useStaffMutations | src/lib/api.ts, src/hooks/queries.ts |
 | `src/app/staff/_component/_table/index.ts` | ts | no | StaffTable, StaffTrashTable | src/app/staff/_component/_table/staff-table.tsx, src/app/staff/_component/_table/staff-trash-table.tsx |
-| `src/app/staff/_component/_table/staff-table.tsx` | tsx | no | StaffTable | src/components/admin-data-table, src/components/admin-table-pagination-footer.tsx, src/app/staff/_component/columns.tsx, src/lib/api.ts |
-| `src/app/staff/_component/_table/staff-trash-table.tsx` | tsx | no | StaffTrashTable | src/components/admin-data-table, src/components/admin-table-pagination-footer.tsx, src/app/staff/_component/columns.tsx, src/lib/api.ts |
-| `src/app/staff/_component/columns.tsx` | tsx | no | StaffColumnsProps, getStaffColumns, getTrashColumns | src/lib/api.ts |
+| `src/app/staff/_component/_table/staff-table.tsx` | tsx | no | StaffTable | src/components/admin-data-table, src/components/admin-table-pagination-footer.tsx, src/app/staff/_component/columns.tsx, src/app/staff/_component/types.ts |
+| `src/app/staff/_component/_table/staff-trash-table.tsx` | tsx | no | StaffTrashTable | src/components/admin-data-table, src/components/admin-table-pagination-footer.tsx, src/app/staff/_component/columns.tsx, src/app/staff/_component/types.ts |
+| `src/app/staff/_component/columns.tsx` | tsx | no | StaffColumnsProps, getStaffColumns, getTrashColumns | src/app/staff/_component/types.ts |
 | `src/app/staff/_component/index.ts` | ts | no | buildUsersFilterQuery, getStaffColumns, getTrashColumns, useStaffForm, staffFormSchema, useStaffMutations, StaffTable, StaffTrashTable, StaffFormShell, StaffConfirmDialog, StaffBulkConfirmDialog | src/app/staff/_component/types.ts, src/app/staff/_component/utils.ts, src/app/staff/_component/columns.tsx, src/app/staff/_component/_hooks, src/app/staff/_component/_query, src/app/staff/_component/_ |
-| `src/app/staff/_component/types.ts` | ts | no | StaffRow, StaffConfirmAction | src/lib/api.ts |
-| `src/app/staff/_component/utils.ts` | ts | no | buildUsersFilterQuery |  |
+| `src/app/staff/_component/types.ts` | ts | no | StaffRow, StaffConfirmAction |  |
+| `src/app/staff/_component/utils.ts` | ts | no | buildUsersFilterQuery | src/lib |
 | `src/app/staff/new/page.tsx` | page | yes | NewStaffPage | src/app/staff/_component, src/app/staff/_component/_form, src/hooks/queries.ts, src/providers/auth-provider.tsx, src/components/admin-page-guard.tsx, src/lib/api.ts |
-| `src/app/staff/page.tsx` | page | yes | StaffPage | src/components/admin-page-guard.tsx, src/hooks/queries.ts, src/hooks/use-debounced-value.ts, src/lib/api.ts, src/app/staff/_component, src/providers/auth-provider.tsx |
+| `src/app/staff/page.tsx` | page | yes | StaffPage | src/components/admin-page-guard.tsx, src/hooks/queries.ts, src/hooks/use-debounced-value.ts, src/lib/api.ts, src/providers/auth-provider.tsx, src/app/staff/_component |
 | `src/app/tags/[id]/edit/page.tsx` | page | yes | EditTagPage | src/components/admin-page-guard.tsx, src/lib/api.ts, src/app/tags/_component |
 | `src/app/tags/[id]/page.tsx` | page | yes | TagDetailPage | src/components/admin-page-guard.tsx, src/lib/api.ts, src/app/tags/_component |
 | `src/app/tags/_component/_alert-dialog/index.ts` | ts | no | TagsConfirmDialog | src/app/tags/_component/_alert-dialog/tags-confirm-dialog.tsx |
@@ -231,7 +233,7 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 | `src/app/tags/_component/columns.tsx` | tsx | yes | getTagColumns, getTrashColumns | src/app/tags/_component/types.ts, src/app/tags/_component/utils.ts |
 | `src/app/tags/_component/index.ts` | ts | no | tagFormSchema, slugify, unwrapEnvelope, normalizePaged, formatDateTime, humanizeSlug, sortTagsByName, buildTagTree, buildTagsFilterQuery, toFilterQuery, getTagColumns, getTrashColumns, useTagDetailQue | src/app/tags/_component/types.ts, src/app/tags/_component/utils.ts, src/app/tags/_component/columns.tsx, src/app/tags/_component/_query, src/app/tags/_component/_hooks, src/app/tags/_component/_form,  |
 | `src/app/tags/_component/types.ts` | ts | no | TagRow, TagTreeRow, TagConfirmAction, tagFormSchema, TagFormValues, TagDetail |  |
-| `src/app/tags/_component/utils.ts` | ts | no | formatDateTime, humanizeSlug, sortTagsByName, buildTagTree, buildTagsFilterQuery, toFilterQuery, slugify, unwrapEnvelope, normalizePaged | src/app/tags/_component/types.ts, src/lib/api.ts |
+| `src/app/tags/_component/utils.ts` | ts | no | formatDateTime, humanizeSlug, sortTagsByName, buildTagTree, buildTagsFilterQuery, toFilterQuery, slugify, unwrapEnvelope, normalizePaged | src/lib, src/app/tags/_component/types.ts, src/lib/api.ts |
 | `src/app/tags/new/page.tsx` | page | yes | NewTagPage | src/components/admin-page-guard.tsx, src/lib/api.ts, src/app/tags/_component |
 | `src/app/tags/page.tsx` | page | yes | TagsPage | src/hooks/use-debounced-value.ts, src/providers/auth-provider.tsx, src/components/admin-page-guard.tsx, src/lib/api.ts, src/app/tags/_component |
 | `src/components/admin-confirm-action-dialog.tsx` | tsx | yes | AdminConfirmActionDialog |  |
@@ -260,14 +262,14 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 | `src/lib/api.ts` | ts | no | api, ApiError | src/lib/auth-session.ts |
 | `src/lib/auth-routes.ts` | ts | no | AUTH_LOGIN_PATH, AUTH_REGISTER_PATH, AUTH_PATHS, AuthPath, isAuthPath, getAdminAppHomeExternalPath, getAdminLoginExternalPath |  |
 | `src/lib/auth-session.ts` | ts | no | ADMIN_SESSION_KEY, ADMIN_SESSION_EVENT, readAdminSession, writeAdminSession, patchAdminSessionProfile, clearAdminSession, getAdminUserId, getAdminDevAuthLogContext |  |
-| `src/lib/build-admin-filter-query.ts` | ts | no | FilterMapping, buildAdminFilterQuery, COMMON_FILTER_MAPPINGS |  |
+| `src/lib/build-admin-filter-query.ts` | ts | no | FilterMapping, normalizeAdminFilterValue, normalizeAdminFilterValues, buildAdminFilterQuery, COMMON_FILTER_MAPPINGS |  |
 | `src/lib/build-table-csv.ts` | ts | no | buildCsvFromColumns |  |
 | `src/lib/category-icons.ts` | ts | no | CATEGORY_ICON_OPTIONS, resolveCategoryIcon |  |
 | `src/lib/dev-demo-accounts.ts` | ts | no | DevDemoAccount, DEV_DEMO_ACCOUNTS, isDevDemoLoginEnabled |  |
 | `src/lib/export-csv.ts` | ts | no | CsvDelimiter, CsvEncoding, CsvExportOptions, escapeDelimitedField, escapeCsvField, rowsToCsvContent, csvToBlobParts, csvToUtf8BlobParts, downloadCsvFile |  |
 | `src/lib/export-xlsx.ts` | ts | no | csvBaseToXlsxFilename |  |
 | `src/lib/format.ts` | ts | no | formatVND, formatDate |  |
-| `src/lib/index.ts` | ts | no | buildAdminFilterQuery, COMMON_FILTER_MAPPINGS, buildCsvFromColumns, downloadCsvFile, csvBaseToXlsxFilename, downloadXlsxFile, formatVND, formatDate, resolveCategoryIcon, CATEGORY_ICON_OPTIONS | src/lib/build-admin-filter-query.ts, src/lib/build-table-csv.ts, src/lib/export-csv.ts, src/lib/export-xlsx.ts, src/lib/format.ts, src/lib/category-icons.ts |
+| `src/lib/index.ts` | ts | no | buildAdminFilterQuery, COMMON_FILTER_MAPPINGS, normalizeAdminFilterValue, normalizeAdminFilterValues, buildCsvFromColumns, downloadCsvFile, csvBaseToXlsxFilename, downloadXlsxFile, formatVND, formatDa | src/lib/build-admin-filter-query.ts, src/lib/build-table-csv.ts, src/lib/export-csv.ts, src/lib/export-xlsx.ts, src/lib/format.ts, src/lib/category-icons.ts |
 | `src/lib/permission-labels.ts` | ts | no | PERMISSION_LABEL_VI, permissionLabelVi, permissionGroupKey, permissionGroupLabelVi |  |
 | `src/lib/product-price.ts` | ts | no | unitSellingAndListPrice |  |
 | `src/providers/auth-provider.tsx` | tsx | yes | StaffLoginResult, AuthProvider, useAuth, useClientReady | src/features/auth/auth-api.ts, src/lib/auth-session.ts, src/lib/auth-routes.ts |

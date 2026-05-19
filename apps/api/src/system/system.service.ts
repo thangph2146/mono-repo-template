@@ -895,6 +895,208 @@ export class SystemService {
     });
   }
 
+  getDatabaseSchema() {
+    const tables: Array<{
+      name: string;
+      domain: string;
+      description: string;
+      columns: Array<{
+        name: string;
+        type: string;
+        kind: 'pk' | 'fk' | 'field';
+        nullable?: boolean;
+        references?: string;
+      }>;
+    }> = [];
+    const relations: Array<{
+      fromTable: string;
+      fromColumn: string;
+      toTable: string;
+      toColumn: string;
+      cardinality: 'many-to-one' | 'one-to-one' | 'self';
+      deleteRule?: 'cascade' | 'set null' | 'restrict';
+    }> = [];
+
+    const domainMapping: Record<string, string> = {
+      User: 'Identity',
+      Role: 'Identity',
+      UserRole: 'Identity',
+      Account: 'Auth',
+      Session: 'Auth',
+      Student: 'Student',
+      ParentStudent: 'Student',
+      ContactRequest: 'Support',
+      Post: 'Content',
+      Category: 'Content',
+      Tag: 'Content',
+      PostCategory: 'Content',
+      PostTag: 'Content',
+      Comment: 'Content',
+      Group: 'Messaging',
+      GroupMember: 'Messaging',
+      Message: 'Messaging',
+      MessageRead: 'Messaging',
+      Notification: 'Messaging',
+      PageContent: 'System',
+      Setting: 'System',
+      AdmissionResult: 'System',
+      VerificationToken: 'Auth',
+    };
+
+    const descriptionMapping: Record<string, string> = {
+      User: 'Tai khoan nguoi dung, phu huynh va nhan su noi bo.',
+      Role: 'Vai tro va tap permission RBAC.',
+      UserRole: 'Bang pivot gan nhieu role cho mot user.',
+      Account: 'Tai khoan OAuth/provider lien ket voi user.',
+      Session: 'Phien dang nhap va refresh token.',
+      Student: 'Ho so hoc sinh noi bo lien ket tuy chon voi user.',
+      ParentStudent: 'Phu huynh gui yeu cau lien ket voi ma sinh vien.',
+      ContactRequest: 'Yeu cau lien he va xu ly tuyen sinh/ho tro.',
+      Post: 'Bai viet, thong bao, su kien va noi dung truyen thong.',
+      Category: 'Cay danh muc cha-con cho bai viet.',
+      Tag: 'The gan cho bai viet qua pivot post_tags.',
+      PostCategory: 'Pivot many-to-many giua posts va categories.',
+      PostTag: 'Pivot many-to-many giua posts va tags.',
+      Comment: 'Binh luan cua user tren post.',
+      Group: 'Nhom hoi thoai/thong bao.',
+      GroupMember: 'Thanh vien nhom vai tro trong nhom.',
+      Message: 'Tin nhan ca nhan, nhom va thread tra loi.',
+      MessageRead: 'Trang thai da doc theo user va message.',
+      Notification: 'Thong bao he thong theo user.',
+      PageContent: 'Noi dung trang tinh/CMS.',
+      Setting: 'Cau hinh key-value cua he thong.',
+      AdmissionResult: 'Ket qua tuyen sinh.',
+      VerificationToken: 'Token xac thuc email/password reset.',
+    };
+
+    for (const modelName of this.modelOrder) {
+      const entity = entityByModelName[modelName];
+      if (!entity) continue;
+
+      const entityName =
+        typeof entity === 'string'
+          ? entity
+          : typeof entity === 'function'
+            ? entity.name
+            : modelName;
+      const meta = this.em.getMetadata().find(entityName);
+      if (!meta) continue;
+
+      const tableName = meta.tableName || entityName;
+      const domain = domainMapping[entityName] || 'System';
+      const description = descriptionMapping[entityName] || '';
+
+      const columns: Array<{
+        name: string;
+        type: string;
+        kind: 'pk' | 'fk' | 'field';
+        nullable?: boolean;
+        references?: string;
+      }> = [];
+
+      for (const [propName, prop] of Object.entries(meta.properties)) {
+        const propKind = String((prop as { kind?: string }).kind || '');
+        const kind = prop.primary
+          ? 'pk'
+          : propKind.includes('1:1') || propKind.includes('m:1')
+            ? 'fk'
+            : 'field';
+        const type = prop.columnTypes?.[0] || String(prop.type || 'unknown');
+        const nullable = prop.nullable ?? false;
+        let references: string | undefined;
+
+        // For foreign keys, try to get the referenced entity
+        if (kind === 'fk') {
+          const targetMeta = (prop as { targetMeta?: { className?: string } })
+            .targetMeta;
+          if (targetMeta?.className) {
+            references = `${targetMeta.className}.id`;
+          }
+        }
+
+        columns.push({
+          name: prop.fieldNames?.[0] || propName,
+          type,
+          kind,
+          nullable,
+          references,
+        });
+      }
+
+      tables.push({
+        name: tableName,
+        domain,
+        description,
+        columns,
+      });
+    }
+
+    // Extract relationships from entity metadata
+    for (const modelName of this.modelOrder) {
+      const entity = entityByModelName[modelName];
+      if (!entity) continue;
+
+      const entityName =
+        typeof entity === 'string'
+          ? entity
+          : typeof entity === 'function'
+            ? entity.name
+            : modelName;
+      const meta = this.em.getMetadata().find(entityName);
+      if (!meta) continue;
+
+      const fromTable = meta.tableName || entityName;
+
+      for (const [propName, prop] of Object.entries(meta.properties)) {
+        const propKind = String((prop as { kind?: string }).kind || '');
+        // Check if this is a relationship property (1:1, m:1, 1:m, m:n)
+        const isRelation =
+          propKind.includes('1:1') ||
+          propKind.includes('m:1') ||
+          propKind.includes('1:m') ||
+          propKind.includes('m:n');
+        if (!isRelation) continue;
+
+        const targetMeta = (prop as { targetMeta?: { className?: string } })
+          .targetMeta;
+        if (!targetMeta?.className) continue;
+
+        const refMeta = this.em
+          .getMetadata()
+          .find(targetMeta.className as EntityName<any>);
+        if (!refMeta) continue;
+
+        const toTable = refMeta.tableName || targetMeta.className;
+        const fromColumn = prop.fieldNames?.[0] || propName;
+        const toColumn = 'id';
+
+        let cardinality: 'many-to-one' | 'one-to-one' | 'self' = 'many-to-one';
+        if (targetMeta.className === entityName) {
+          cardinality = 'self';
+        } else if (propKind === '1:1') {
+          cardinality = 'one-to-one';
+        }
+
+        const deleteRule = (prop as { deleteRule?: string }).deleteRule as
+          | 'cascade'
+          | 'set null'
+          | 'restrict'
+          | undefined;
+
+        relations.push({
+          fromTable,
+          fromColumn,
+          toTable,
+          toColumn,
+          cardinality,
+          deleteRule,
+        });
+      }
+    }
+
+    return { tables, relations };
+  }
+
   /** Giống `pnpm run seed:superadmin` — idempotent, dùng từ API bảo trì. */
   async runSuperadminBootstrapSeed(): Promise<SuperadminBootstrapResult> {
     return runSuperadminBootstrap(this.em.fork());

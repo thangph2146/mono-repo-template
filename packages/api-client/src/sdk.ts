@@ -8,6 +8,7 @@ import { UsersApi } from './resources/users';
 import { ContactRequestsApi } from './resources/contact-requests';
 import { MyStudentsApi } from './resources/my-students';
 import { ParentStudentsApi } from './resources/parent-students';
+import { SystemApi } from './resources/system';
 import type { HealthStatus } from './types';
 
 /**
@@ -34,6 +35,7 @@ export class StoreSyncSdk {
   readonly contactRequests: ContactRequestsApi;
   readonly myStudents: MyStudentsApi;
   readonly parentStudents: ParentStudentsApi;
+  readonly system: SystemApi;
 
   constructor(options: ApiClientOptions) {
     this.http = new ApiClient(options);
@@ -46,6 +48,7 @@ export class StoreSyncSdk {
     this.contactRequests = new ContactRequestsApi(this.http);
     this.myStudents = new MyStudentsApi(this.http);
     this.parentStudents = new ParentStudentsApi(this.http);
+    this.system = new SystemApi(this.http);
   }
 
   health(): Promise<HealthStatus> {
