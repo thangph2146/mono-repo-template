@@ -19,6 +19,7 @@ import {
   GraduationCap,
   UserCheck,
   BookOpen,
+  Network,
   type LucideIcon,
 } from "lucide-react";
 import { Button } from "@ui/components/button";
@@ -158,6 +159,13 @@ const menuTree: MenuTreeItem[] = [
         icon: UserCheck,
         permission: null,
         anyPermission: [PERMISSION_CODES.USERS_MANAGE],
+        adminOnly: true,
+      },
+      {
+        href: "/graph",
+        label: "Kiến trúc hệ thống",
+        icon: Network,
+        permission: null,
         adminOnly: true,
       },
     ],

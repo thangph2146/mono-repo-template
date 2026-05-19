@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import type { GraphifyPayload, GraphNode } from "@/lib/graphify-context";
-import { getLinkedNodes, communityBreakdown, topHubs, routeFiles } from "@/lib/graphify-context";
+import type { GraphifyPayload, GraphNode, GraphData, ContextData } from "../lib/graphify-context";
+import { getLinkedNodes, communityBreakdown, topHubs, routeFiles } from "../lib/graphify-context";
 
 export interface UseGraphifyReturn {
   data: GraphifyPayload | null;
@@ -17,7 +17,7 @@ export interface UseGraphifyReturn {
   refresh: () => Promise<void>;
 }
 
-export function useGraphify(maxDegree = 1): UseGraphifyReturn {
+export function useGraphify(apiPath = "/api/graphify", maxDegree = 1): UseGraphifyReturn {
   const [data, setData] = useState<GraphifyPayload | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -27,7 +27,7 @@ export function useGraphify(maxDegree = 1): UseGraphifyReturn {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/graphify");
+      const res = await fetch(apiPath);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const payload: GraphifyPayload = await res.json();
       setData(payload);

@@ -103,7 +103,6 @@ export function emojiForType(t?: string) {
 
 /* ---------- AI helpers ---------- */
 
-/** Return the file path that owns a graph node label */
 export function resolveSourceFile(node: GraphNode, context: ContextData) {
   return (
     context.files[node.source_file]?.type ??
@@ -111,22 +110,18 @@ export function resolveSourceFile(node: GraphNode, context: ContextData) {
   );
 }
 
-/** All exported symbols from a given file path */
 export function exportsOfFile(path: string, context: ContextData) {
   return context.files[path]?.exports ?? [];
 }
 
-/** All files that import this file */
 export function importedBy(path: string, context: ContextData) {
   return context.files[path]?.importedBy ?? [];
 }
 
-/** All files this file imports */
 export function importsOf(path: string, context: ContextData) {
   return context.files[path]?.imports ?? [];
 }
 
-/** Direct neighbours of a node (1° links) */
 export function getLinkedNodes(
   nodeId: string,
   graph: GraphData,
@@ -154,7 +149,6 @@ export function getLinkedNodes(
   return visited;
 }
 
-/** Flattened list of all communities with their member nodes */
 export function communityBreakdown(graph: GraphData) {
   const map = new Map<string | number, GraphNode[]>();
   for (const n of graph.nodes) {
@@ -165,14 +159,12 @@ export function communityBreakdown(graph: GraphData) {
   return [...map.entries()].sort((a, b) => b[1].length - a[1].length);
 }
 
-/** Which files are pages / layouts / apiRoutes (from context) */
 export function routeFiles(context: ContextData) {
   return Object.entries(context.files).filter(([, v]) =>
     ["page", "layout", "api"].includes(v.type)
   );
 }
 
-/** Generate a descriptive name for a community based on its members */
 export function communityName(nodes: GraphNode[]) {
   const types = new Map<string, number>();
   let hasPage = false, hasLayout = false, hasApi = false, hasHook = false, hasComponent = false;
@@ -198,10 +190,9 @@ export function communityName(nodes: GraphNode[]) {
   if (top === "code" && nodes.some((n) => n.source_file?.includes("config"))) return "Config";
   if (nodes.some((n) => n.source_file?.includes("lib/") || n.source_file?.includes("utils"))) return "Lib & Utils";
   if (nodes.some((n) => n.source_file?.includes("types"))) return "Types";
-  return top ? top[0].toUpperCase() + top.slice(1) + "s" : "Mixed";
+  return top ? top[0]?.toUpperCase() + top.slice(1) + "s" : "Mixed";
 }
 
-/** Files with the most dependents (most imported) */
 export function topHubs(context: ContextData, limit = 10) {
   return Object.entries(context.files)
     .map(([path, f]) => ({ path, count: (f.importedBy ?? []).length, exports: f.exports ?? [] }))

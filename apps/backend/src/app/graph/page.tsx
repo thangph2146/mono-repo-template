@@ -3,5 +3,5 @@
 import { GraphifyPage } from "@ui/components/graphify/graphify-page";
 
 export default function GraphPage() {
-  return <GraphifyPage homeHref="/" homeLabel="Home" />;
+  return <GraphifyPage homeHref="/" homeLabel="Home" apiPath="/admin/api/graphify" />;
 }

@@ -3,8 +3,8 @@
 import { useMemo, useCallback, useRef } from "react";
 import dynamic from "next/dynamic";
 import * as THREE from "three";
-import type { GraphData, GraphNode } from "@/lib/graphify-context";
-import { nodeColorByCommunity } from "@/lib/graphify-context";
+import type { GraphData, GraphNode } from "../../lib/graphify-context";
+import { nodeColorByCommunity } from "../../lib/graphify-context";
 
 const ForceGraph3D = dynamic(() => import("react-force-graph-3d"), { ssr: false });
 
@@ -54,7 +54,7 @@ function createLabelSprite(
   return sprite;
 }
 
-export default function GraphifyForceGraph3D({
+export function GraphifyForceGraph3D({
   graph,
   selectedNode,
   onNodeClick,
@@ -64,7 +64,7 @@ export default function GraphifyForceGraph3D({
 }: Props) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const fgRef = useRef<any>(null);
-  /* Degree map for sizing */
+
   const degreeMap = useMemo(() => {
     const d = new Map<string, number>();
     for (const l of graph.links) {
@@ -147,7 +147,6 @@ export default function GraphifyForceGraph3D({
           const node = n as GraphNode & { __degree: number; __isSelected: boolean; __isLinked: boolean; color: string; val: number };
           const group = new THREE.Group();
 
-          /* Sphere */
           const geo = new THREE.SphereGeometry(1, 16, 16);
           const mat = new THREE.MeshLambertMaterial({
             color: node.id === selectedNode?.id ? 0xffffff : linkedNodes?.has(node.id) ? 0xf59e0b : node.color,
@@ -158,7 +157,6 @@ export default function GraphifyForceGraph3D({
           mesh.scale.setScalar(node.val / 3);
           group.add(mesh);
 
-          /* Label for every node — bigger/brighter for selected/linked */
           const labelColor = node.__isSelected
             ? "#ffffff"
             : node.__isLinked
@@ -169,7 +167,6 @@ export default function GraphifyForceGraph3D({
           const sprite = createLabelSprite(node.label, labelColor, fontSize, opacity);
           group.add(sprite);
 
-          /* Selection glow ring */
           if (node.__isSelected) {
             const ringGeo = new THREE.RingGeometry(1.4, 1.6, 32);
             const ringMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.3, side: THREE.DoubleSide });
