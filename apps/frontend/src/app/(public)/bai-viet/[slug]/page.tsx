@@ -11,7 +11,7 @@ import {
 } from "@ui/lib/layout-shell"
 import { logDevRouteHit } from "@/lib/dev-route-log"
 import { formatPostDate, getPublicPostBySlug } from "@/lib/public-posts"
-import { PostContentRenderer } from "@/components/shared/post-content-renderer"
+import { PostContent } from "@/components/shared/post-content"
 import { PublicPostViewBadge } from "@/components/shared/public-post-view-badge"
 import { buildSeoMetadata, SITE_NAME } from "@/lib/seo"
 
@@ -82,7 +82,7 @@ export default async function PostDetailPage({ params }: Props) {
           <Heading as="h1" size="section">
             {post.title}
           </Heading>
-          <PostContentRenderer content={post.content} />
+          <PostContent content={post.content} />
         </Container>
       </PageContent>
     </Page>

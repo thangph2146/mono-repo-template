@@ -3,7 +3,6 @@ import { EntityManager } from '@mikro-orm/core';
 import { GroupsService } from './groups.service';
 import { Group } from '../entities/group.entity';
 import { GroupMember, GroupRole } from '../entities/group-member.entity';
-import { User } from '../entities/user.entity';
 
 describe('GroupsService', () => {
   let service: GroupsService;

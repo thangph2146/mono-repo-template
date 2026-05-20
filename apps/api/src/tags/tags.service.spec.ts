@@ -259,7 +259,10 @@ describe('TagsService', () => {
           .fn()
           .mockResolvedValue([{ id: 'tag-1', name: 'Tag 1', slug: 'tag-1' }]),
       };
-      jest.spyOn(em, 'getRepository').mockReturnValue(mockRepo as any);
+      jest
+        .spyOn(em, 'getRepository')
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        .mockReturnValue(mockRepo as any);
 
       const result = await service.getOptions('name', 'Tag', 10);
 

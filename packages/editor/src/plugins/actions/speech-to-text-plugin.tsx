@@ -59,6 +59,7 @@ function SpeechToTextPluginImpl() {
     CAN_USE_DOM &&
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ((window as any).SpeechRecognition ||
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (window as any).webkitSpeechRecognition)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const recognition = useRef<any | null>(null)

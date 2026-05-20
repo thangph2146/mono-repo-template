@@ -15,12 +15,14 @@
     margin-inline-start: 0 !important;
   }
 
-  // Ordered Lists — outside + gutter đủ rộng; ul thêm $editor-ul-marker-align-extra để khớp trục marker với ol (Chromium)
+  // Ordered Lists — outside + gutter đủ rộng; ol/ul thêm $editor-*-marker-align-extra để khớp trục marker (Chromium)
   .editor-ol {
     display: flow-root;
     list-style-position: outside !important;
     list-style-type: decimal !important;
-    padding-inline-start: $editor-list-padding-left !important;
+    padding-inline-start: calc(
+      #{$editor-list-padding-left} + #{$editor-ol-marker-align-extra}
+    ) !important;
     margin-top: $editor-list-margin-vertical !important;
     margin-bottom: $editor-list-margin-vertical !important;
 
@@ -283,6 +285,7 @@
   }
 
   // Độ sâu ul: chu kỳ disc / circle / square (gần hành vi UA mặc định)
+  // Depth-1 dùng padding ol (60px), depth-2+ dùng padding ul (40px)
   $ul-depth-styles: (
     1: disc,
     2: circle,
@@ -293,6 +296,10 @@
 
   @each $depth, $style in $ul-depth-styles {
     .editor-ul-depth-#{$depth}:not(.editor-checklist) {
+      padding-inline-start: calc(
+        #{$editor-list-padding-left} + #{if($depth == 1, $editor-ol-marker-align-extra, $editor-ul-marker-align-extra)}
+      ) !important;
+
       &[data-list-marker="-"] {
         list-style-type: none !important;
         > li:not(.editor-nested-listitem)::marker { content: "- " !important; }

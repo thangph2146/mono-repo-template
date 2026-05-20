@@ -73,11 +73,11 @@ export function PopoverTrigger({
   }
 
   if (asChild && React.isValidElement(children)) {
-    // eslint-disable-next-line react-hooks/refs
     return React.cloneElement(
       children as React.ReactElement<
         React.HTMLAttributes<HTMLElement> & { ref?: React.Ref<HTMLElement> }
       >,
+      // eslint-disable-next-line react-hooks/refs
       {
         ref: triggerRef,
         onClick: handleClick,

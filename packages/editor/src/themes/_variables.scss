@@ -49,10 +49,11 @@ $editor-quote-border-width: 4px !default;
 $editor-quote-font-size: var(--fs-body, 1.6rem) !default;
 
 // Lists — gutter outside marker (ol “1.” rộng hơn bullet ul); bước lồng đồng nhất theo rem
-$editor-list-indent-step: 2.25rem !default;
+$editor-list-indent-step: 0px !default;
 $editor-list-padding-left: $editor-list-indent-step !default;
 // Bù nhẹ ul so với ol (cùng padding thì bullet hay lệch trái hơn số trên Chromium sau indent)
-$editor-ul-marker-align-extra: 0.65em !default;
+$editor-ol-marker-align-extra: 60px !default;
+$editor-ul-marker-align-extra: 40px !default;
 $editor-list-item-margin-bottom: 4px !default;
 $editor-list-margin-vertical: 0.4rem !default;
 $editor-checklist-gap: 12px !default;

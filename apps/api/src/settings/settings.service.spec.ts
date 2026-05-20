@@ -48,7 +48,7 @@ describe('SettingsService', () => {
     it('should filter by group', async () => {
       (em.find as jest.Mock).mockResolvedValue([mockSetting]);
 
-      const result = await service.list({ group: 'general' });
+      await service.list({ group: 'general' });
 
       expect(em.find).toHaveBeenCalled();
     });

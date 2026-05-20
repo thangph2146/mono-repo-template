@@ -134,7 +134,7 @@ export function AdminShell({ children, classMain, isSidebar }: { children: React
     const forceToolbarSticky = () => {
       document.querySelectorAll<HTMLElement>(".editor-toolbar").forEach((el) => {
         el.style.setProperty("position", "sticky", "important");
-        el.style.setProperty("top", "-24px", "important");
+        el.style.setProperty("top", "0px", "important");
       });
     };
     forceToolbarSticky();

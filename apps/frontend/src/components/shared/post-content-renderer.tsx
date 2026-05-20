@@ -35,6 +35,10 @@ type SerializedNode = {
     };
   };
   showCaption?: boolean;
+  colWidths?: number[];
+  headerState?: number;
+  colSpan?: number;
+  rowSpan?: number;
 };
 
 const TEXT_FORMAT_BOLD = 1;
@@ -192,6 +196,9 @@ function isBlockLevelSerializedNode(node: SerializedNode): boolean {
     case "listitem":
     case "image":
     case "paragraph":
+    case "table":
+    case "tablerow":
+    case "tablecell":
       return true;
     default:
       return false;
@@ -381,6 +388,31 @@ function renderSerializedNodes(
               </figcaption>
             ) : null}
           </figure>
+        );
+      }
+      case "table": {
+        return (
+          <div key={key} className="my-4 w-full overflow-x-auto">
+            <table className="w-full border-collapse border border-border table-auto">
+              <tbody>{children}</tbody>
+            </table>
+          </div>
+        );
+      }
+      case "tablerow":
+        return <tr key={key}>{children}</tr>;
+      case "tablecell": {
+        const isHeader = (node.headerState ?? 0) >= 2;
+        const Tag = isHeader ? "th" : "td";
+        return (
+          <Tag
+            key={key}
+            colSpan={node.colSpan ?? 1}
+            rowSpan={node.rowSpan ?? 1}
+            className="border border-border px-3 py-2 text-left align-top"
+          >
+            {children}
+          </Tag>
         );
       }
       case "text":

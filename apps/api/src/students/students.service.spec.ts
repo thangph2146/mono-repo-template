@@ -329,7 +329,10 @@ describe('StudentsService', () => {
           },
         ]),
       };
-      jest.spyOn(em, 'getRepository').mockReturnValue(mockRepo as any);
+      jest
+        .spyOn(em, 'getRepository')
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        .mockReturnValue(mockRepo as any);
 
       const result = await service.getOptions('studentCode', 'STU', 10);
 

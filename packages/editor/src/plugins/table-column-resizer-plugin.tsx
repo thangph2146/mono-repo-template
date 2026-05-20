@@ -436,10 +436,12 @@ export function TableColumnResizerPlugin({
         }
       } else {
         setCursor("col-resize")
-        // @ts-expect-error hoverState might be null initially
+        // @ts-ignore TypeScript narrowing bug with HoverState | null
         if (
-          !hoverState ||
+          hoverState === null ||
+          // @ts-ignore
           hoverState.cellKey !== nextHoverState.cellKey ||
+          // @ts-ignore
           hoverState.edge !== nextHoverState.edge
         ) {
           setHoverState(nextHoverState)

@@ -1,7 +1,7 @@
 import { ConfigService } from '@nestjs/config';
 import { Global, Module } from '@nestjs/common';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
-import { defineConfig, EntityCaseNamingStrategy, Options, IDatabaseDriver, Connection } from '@mikro-orm/core';
+import { EntityCaseNamingStrategy, Options } from '@mikro-orm/core';
 import { SqliteDriver } from '@mikro-orm/sqlite';
 import { PostgreSqlDriver } from '@mikro-orm/postgresql';
 import { MySqlDriver } from '@mikro-orm/mysql';
@@ -58,7 +58,10 @@ export function createMikroConfig(configService: ConfigService): Options<any> {
       ...baseConfig,
       driver: Driver,
       clientUrl: url,
-      ...(type !== 'postgres' && { charset: 'utf8mb4', collation: 'utf8mb4_unicode_ci' }),
+      ...(type !== 'postgres' && {
+        charset: 'utf8mb4',
+        collation: 'utf8mb4_unicode_ci',
+      }),
     };
   }
 
@@ -70,7 +73,10 @@ export function createMikroConfig(configService: ConfigService): Options<any> {
     user: configService.get<string>('DB_USERNAME') || 'root',
     password: configService.get<string>('DB_PASSWORD') || '',
     dbName: configService.get<string>('DB_DATABASE') || 'tuyen_sinh',
-    ...(type !== 'postgres' && { charset: 'utf8mb4', collation: 'utf8mb4_unicode_ci' }),
+    ...(type !== 'postgres' && {
+      charset: 'utf8mb4',
+      collation: 'utf8mb4_unicode_ci',
+    }),
   };
 }
 

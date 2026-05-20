@@ -258,3 +258,18 @@
     transform: scale(1) translateY(0);
   }
 }
+
+@keyframes editor-table-controls {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes editor-cursor-blink {
+  to {
+    visibility: hidden;
+  }
+}

@@ -2,15 +2,87 @@
 @use "../mixins" as *;
 
 .lexical-editor-root {
-  // Table Styles
+  // Table Scrollable Wrapper (Lexical official)
+  .editor-table-scrollable-wrapper {
+    overflow-x: auto;
+    margin: 0 0 5px 0;
+
+    > .editor-table {
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+
+    &.editor-table-frozen-row {
+      overflow-x: clip;
+
+      tr:nth-of-type(1) > td {
+        overflow: clip;
+        background-color: var(--background, #ffffff);
+        position: sticky;
+        z-index: 2;
+        top: 44px;
+
+        &:after {
+          content: '';
+          position: absolute;
+          left: 0;
+          bottom: 0;
+          width: 100%;
+          border-bottom: 1px solid var(--border, #bbb);
+        }
+      }
+
+      tr:nth-of-type(1) > th {
+        overflow: clip;
+        background-color: $editor-table-header-bg;
+        position: sticky;
+        z-index: 2;
+        top: 44px;
+
+        &:after {
+          content: '';
+          position: absolute;
+          left: 0;
+          bottom: 0;
+          width: 100%;
+          border-bottom: 1px solid var(--border, #bbb);
+        }
+      }
+    }
+  }
+
+  // Table Scroll Indicators (Lexical official)
+  .editor-table-scroll-right {
+    box-shadow: inset -10px 0 10px rgba(0, 0, 0, 0.15);
+  }
+  .editor-table-scroll-left {
+    box-shadow: inset 10px 0 10px rgba(0, 0, 0, 0.15);
+  }
+  .editor-table-scroll-middle {
+    box-shadow:
+      inset 10px 0 10px rgba(0, 0, 0, 0.15),
+      inset -10px 0 10px rgba(0, 0, 0, 0.15);
+  }
+
+  // Table Alignment (Lexical official)
+  .editor-table-alignment-center {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .editor-table-alignment-right {
+    margin-left: auto;
+  }
+
+  // Table (Lexical official base)
   .editor-table {
     border-collapse: collapse;
     border-spacing: 0;
-    width: 100%;
-    margin: $editor-table-margin-vertical 0;
-    border-radius: $editor-border-radius;
-    border: $editor-border-width solid $editor-border-color;
-    margin-bottom: 20px;
+    overflow-y: scroll;
+    overflow-x: scroll;
+    table-layout: fixed;
+    width: fit-content;
+    margin-top: 25px;
+    margin-bottom: 30px;
     
     .editor-table-cell {
       min-width: 0;
@@ -129,7 +201,118 @@
       height: $editor-table-sorted-indicator-height;
       background-color: $editor-muted-color;
     }
-    
+
+    // Frozen Column (Lexical official)
+    .editor-table-frozen-column tr > td:first-child {
+      background-color: var(--background, #ffffff);
+      position: sticky;
+      z-index: 2;
+      left: 0;
+
+      &::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        right: 0;
+        height: 100%;
+        border-right: 1px solid var(--border, #bbb);
+      }
+    }
+
+    .editor-table-frozen-column tr > th:first-child {
+      background-color: $editor-table-header-bg;
+      position: sticky;
+      z-index: 2;
+      left: 0;
+
+      &::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        right: 0;
+        height: 100%;
+        border-right: 1px solid var(--border, #bbb);
+      }
+    }
+
+    // Row Striping (Lexical official)
+    .editor-table-row-striping tr:nth-child(even) {
+      background-color: var(--muted, #f2f5fb);
+    }
+
+    .editor-table-frozen-column .editor-table.editor-table-row-striping tr:nth-child(even) > td:first-child {
+      background-color: var(--muted, #f2f5fb);
+    }
+
+    // Table Selection (Lexical official)
+    &.editor-table-selected {
+      outline: 2px solid rgb(60, 132, 244);
+    }
+
+    .editor-table-selection *::selection {
+      background-color: transparent;
+    }
+
+    // Add Columns Button (Lexical official)
+    .editor-table-add-columns {
+      position: absolute;
+      background-color: #eee;
+      height: 100%;
+      animation: editor-table-controls 0.2s ease;
+      border: 0;
+      cursor: pointer;
+
+      &:after {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='%23666' stroke-width='2' d='M12 5v14M5 12h14'/%3E%3C/svg%3E");
+        background-size: contain;
+        background-position: center;
+        background-repeat: no-repeat;
+        display: block;
+        content: ' ';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0.4;
+      }
+
+      &:hover {
+        background-color: #c9dbf0;
+      }
+    }
+
+    // Add Rows Button (Lexical official)
+    .editor-table-add-rows {
+      position: absolute;
+      width: calc(100% - 25px);
+      background-color: #eee;
+      animation: editor-table-controls 0.2s ease;
+      border: 0;
+      cursor: pointer;
+
+      &:after {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='%23666' stroke-width='2' d='M12 5v14M5 12h14'/%3E%3C/svg%3E");
+        background-size: contain;
+        background-position: center;
+        background-repeat: no-repeat;
+        display: block;
+        content: ' ';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0.4;
+      }
+
+      &:hover {
+        background-color: #c9dbf0;
+      }
+    }
+
     .editor-table-row-striping {
       margin: 0;
       border-top: $editor-border-width solid $editor-border-color;
@@ -183,15 +366,23 @@
   pointer-events: none;
 }
 
-// Readonly/review content can include old inline <col width="..."> from resize.
-// Reset them so table width stays bounded by its parent container.
+// Readonly/review: let columns auto-size to content instead of fixed pixel widths.
+// Prevents empty space when container is wider than sum of colWidths.
+// Must override inline style="width: Xpx" set by Lexical TableCellNode.updateDOM.
 .lexical-editor-root .editor-content-editable--readonly,
 .lexical-editor-root .editor-content-editable--review {
+  .editor-table {
+    max-width: 100%;
+  }
   .editor-table colgroup col,
   .editor-table col {
-    width: auto;
+    width: auto !important;
     min-width: 0;
-    max-width: none;
+  }
+  .editor-table-cell {
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
   }
 }
 

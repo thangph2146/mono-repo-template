@@ -27,7 +27,8 @@ describe('PostsService', () => {
     author: { id: 'user-1', name: 'Author', email: 'author@test.com' },
     categories: [],
     tags: [],
-  } as Post;
+    comments: [],
+  } as unknown as Post;
 
   const mockCategory = {
     id: 'cat-1',
@@ -55,7 +56,7 @@ describe('PostsService', () => {
       nativeUpdate: jest.fn(),
       remove: jest.fn(),
       getRepository: jest.fn(),
-      transactional: jest.fn(async (cb) => {
+      transactional: jest.fn().mockImplementation((cb) => {
         const mockTx = {
           findOne: em.findOne,
           find: em.find,
@@ -64,7 +65,7 @@ describe('PostsService', () => {
           nativeDelete: em.nativeDelete,
           getReference: em.getReference,
         };
-        return cb(mockTx);
+        return cb(mockTx as unknown as EntityManager);
       }),
     };
 
@@ -489,7 +490,10 @@ describe('PostsService', () => {
             { id: 'post-1', title: 'Test Post', slug: 'test-post' },
           ]),
       };
-      jest.spyOn(em, 'getRepository').mockReturnValue(mockRepo as any);
+      jest
+        .spyOn(em, 'getRepository')
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        .mockReturnValue(mockRepo as any);
 
       const result = await service.getOptions('title', 'test', 10);
 

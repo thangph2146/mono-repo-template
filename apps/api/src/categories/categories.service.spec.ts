@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { EntityManager } from '@mikro-orm/core';
 import { CategoriesService } from './categories.service';
 import { Category } from '../entities/category.entity';
-import { PostCategory } from '../entities/post-category.entity';
 
 describe('CategoriesService', () => {
   let service: CategoriesService;
@@ -19,7 +18,8 @@ describe('CategoriesService', () => {
     createdAt: new Date('2024-01-01'),
     updatedAt: new Date('2024-01-01'),
     deletedAt: null,
-  } as Category;
+    posts: [],
+  } as unknown as Category;
 
   beforeEach(async () => {
     em = {

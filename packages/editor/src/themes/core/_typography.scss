@@ -10,6 +10,7 @@
     color: var(--gray-900, #212529);
     margin-top: $editor-paragraph-margin-vertical;
     margin-bottom: $editor-paragraph-margin-vertical;
+    padding-inline-start: $editor-list-padding-left;
     
     &:first-child { margin-top: 0; margin-bottom: 0; }
   }

@@ -22,8 +22,22 @@ describe('UsersService', () => {
     createdAt: new Date('2024-01-01'),
     updatedAt: new Date('2024-01-01'),
     deletedAt: null,
+    password: 'hashed-password',
+    accounts: [],
+    sessions: [],
+    comments: [],
+    posts: [],
+    students: [],
     userRoles: [],
-  } as User;
+    notifications: [],
+    messagesSent: [],
+    messagesReceived: [],
+    contactRequestsSubmitted: [],
+    contactRequestsAssigned: [],
+    groupsCreated: [],
+    groupMemberships: [],
+    messageReads: [],
+  } as unknown as User;
 
   const mockRole = {
     id: 'role-1',
@@ -362,7 +376,10 @@ describe('UsersService', () => {
             { id: 'user-1', email: 'test@example.com', name: 'Test User' },
           ]),
       };
-      jest.spyOn(em, 'getRepository').mockReturnValue(mockRepo as any);
+      jest
+        .spyOn(em, 'getRepository')
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        .mockReturnValue(mockRepo as any);
 
       const result = await service.getOptions('email', 'test', 10);
 
