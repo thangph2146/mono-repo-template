@@ -66,9 +66,9 @@ const getFieldContentWidth = (element: HTMLElement | null) => {
   if (!element) {
     return null
   }
-  const fieldContent = element.closest(FIELD_CONTENT_SELECTOR) as
-    | HTMLElement
-    | null
+  const fieldContent = element.closest(
+    FIELD_CONTENT_SELECTOR
+  ) as HTMLElement | null
   if (fieldContent) {
     const width = getInnerWidth(fieldContent)
     if (width > 0) {
@@ -93,10 +93,7 @@ export const getContainerWidth = (
   editorRoot: HTMLElement | null,
   hardLimit?: number
 ) => {
-  const fieldContentWidth = clampWidth(
-    getFieldContentWidth(element),
-    hardLimit
-  )
+  const fieldContentWidth = clampWidth(getFieldContentWidth(element), hardLimit)
   if (fieldContentWidth) {
     return fieldContentWidth
   }

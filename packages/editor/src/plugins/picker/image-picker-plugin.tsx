@@ -6,7 +6,11 @@ import { IconSize } from "../../ui/typography"
 
 export function ImagePickerPlugin() {
   return new ComponentPickerOption("Image", {
-    icon: <IconSize size="sm"><ImageIcon /></IconSize>,
+    icon: (
+      <IconSize size="sm">
+        <ImageIcon />
+      </IconSize>
+    ),
     keywords: ["image", "photo", "picture", "file"],
     onSelect: (_, editor, showModal) =>
       showModal("Insert Image", (onClose) => (

@@ -29,20 +29,14 @@ export function DraggableBlockPlugin({
       menuRef={menuRef as React.RefObject<HTMLDivElement>}
       targetLineRef={targetLineRef as React.RefObject<HTMLDivElement>}
       menuComponent={
-        <div
-          ref={menuRef}
-          className="editor-draggable-menu"
-        >
+        <div ref={menuRef} className="editor-draggable-menu">
           <IconSize size="sm" className="editor-opacity-30">
             <GripVerticalIcon />
           </IconSize>
         </div>
       }
       targetLineComponent={
-        <div
-          ref={targetLineRef}
-          className="editor-draggable-line"
-        />
+        <div ref={targetLineRef} className="editor-draggable-line" />
       }
       isOnMenu={isOnMenu}
     />

@@ -6,7 +6,11 @@ import { IconSize } from "../../ui/typography"
 
 export function ColumnsLayoutPickerPlugin() {
   return new ComponentPickerOption("Columns Layout", {
-    icon: <IconSize size="sm"><Columns3Icon /></IconSize>,
+    icon: (
+      <IconSize size="sm">
+        <Columns3Icon />
+      </IconSize>
+    ),
     keywords: ["columns", "layout", "grid"],
     onSelect: (_, editor, showModal) =>
       showModal("Insert Columns Layout", (onClose) => (

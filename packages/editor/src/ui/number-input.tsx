@@ -6,7 +6,10 @@ import { cn } from "../lib/utils"
 import { Button } from "./button"
 import { Input } from "./input"
 
-export interface NumberInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'value'> {
+export interface NumberInputProps extends Omit<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  "onChange" | "value"
+> {
   value: number
   onValueChange: (value: number) => void
   min?: number
@@ -16,7 +19,19 @@ export interface NumberInputProps extends Omit<React.InputHTMLAttributes<HTMLInp
 }
 
 export const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
-  ({ value, onValueChange, min = 0, max = 100, step = 1, unit = "px", className, ...props }, ref) => {
+  (
+    {
+      value,
+      onValueChange,
+      min = 0,
+      max = 100,
+      step = 1,
+      unit = "px",
+      className,
+      ...props
+    },
+    ref
+  ) => {
     const timerRef = React.useRef<NodeJS.Timeout | null>(null)
     const intervalRef = React.useRef<NodeJS.Timeout | null>(null)
     const valueRef = React.useRef(value)
@@ -26,9 +41,12 @@ export const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
       valueRef.current = value
     }, [value])
 
-    const updateValue = React.useCallback((delta: number) => {
-      onValueChange(Math.min(Math.max(valueRef.current + delta, min), max))
-    }, [onValueChange, min, max])
+    const updateValue = React.useCallback(
+      (delta: number) => {
+        onValueChange(Math.min(Math.max(valueRef.current + delta, min), max))
+      },
+      [onValueChange, min, max]
+    )
 
     const startLongPress = (delta: number) => {
       updateValue(delta)

@@ -62,7 +62,11 @@ export const YoutubeEmbedConfig: CustomEmbedConfig = {
   exampleUrl: "https://www.youtube.com/watch?v=jNQXAC9IVRw",
 
   // Icon for display.
-  icon: <IconSize size="sm"><YoutubeIcon /></IconSize>,
+  icon: (
+    <IconSize size="sm">
+      <YoutubeIcon />
+    </IconSize>
+  ),
 
   insertNode: (editor: LexicalEditor, result: EmbedMatchResult) => {
     editor.dispatchCommand(INSERT_YOUTUBE_COMMAND, result.id)
@@ -97,7 +101,11 @@ export const TwitterEmbedConfig: CustomEmbedConfig = {
   exampleUrl: "https://twitter.com/jack/status/20",
 
   // Icon for display.
-  icon: <IconSize size="sm"><TwitterIcon /></IconSize>,
+  icon: (
+    <IconSize size="sm">
+      <TwitterIcon />
+    </IconSize>
+  ),
 
   // Create the Lexical embed node from the url data.
   insertNode: (editor: LexicalEditor, result: EmbedMatchResult) => {
@@ -212,11 +220,11 @@ export function AutoEmbedDialog({
 }): JSX.Element {
   const [editorFromContext] = useLexicalComposerContext()
   const activeEditor = editor ?? editorFromContext
-  
+
   return (
-    <AutoEmbedDialogContent 
-      embedConfig={embedConfig} 
-      onClose={onClose} 
+    <AutoEmbedDialogContent
+      embedConfig={embedConfig}
+      onClose={onClose}
       editor={activeEditor}
     />
   )
@@ -233,9 +241,9 @@ export function AutoEmbedDialogStandalone({
   editor: LexicalEditor
 }): JSX.Element {
   return (
-    <AutoEmbedDialogContent 
-      embedConfig={embedConfig} 
-      onClose={onClose} 
+    <AutoEmbedDialogContent
+      embedConfig={embedConfig}
+      onClose={onClose}
       editor={editor}
     />
   )

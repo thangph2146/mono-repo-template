@@ -6,7 +6,11 @@ import { IconSize } from "../../ui/typography"
 
 export function DividerPickerPlugin() {
   return new ComponentPickerOption("Divider", {
-    icon: <IconSize size="sm"><MinusIcon /></IconSize>,
+    icon: (
+      <IconSize size="sm">
+        <MinusIcon />
+      </IconSize>
+    ),
     keywords: ["horizontal rule", "divider", "hr"],
     onSelect: (_, editor) =>
       editor.dispatchCommand(INSERT_HORIZONTAL_RULE_COMMAND, undefined),

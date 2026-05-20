@@ -17,7 +17,8 @@ export function $applyNumberListMarkerFromAnchor(
   if (!anchorNode) return
   const nearestListNode = $findMatchingParent(
     anchorNode,
-    (node): node is ListNode => $isListNode(node) && node.getListType() === "number"
+    (node): node is ListNode =>
+      $isListNode(node) && node.getListType() === "number"
   )
   if (!nearestListNode) return
   let listNode: ListNode = nearestListNode
@@ -55,7 +56,8 @@ export function $applyBulletListMarkerFromAnchor(
   if (!anchorNode) return
   const nearestListNode = $findMatchingParent(
     anchorNode,
-    (node): node is ListNode => $isListNode(node) && node.getListType() === "bullet"
+    (node): node is ListNode =>
+      $isListNode(node) && node.getListType() === "bullet"
   )
   if (!nearestListNode) return
   let listNode: ListNode = nearestListNode
@@ -92,7 +94,11 @@ export function $syncNumberListMarkerToSiblingLists(
   const parent = targetListNode.getParent()
   if (!parent) return
   for (const sibling of parent.getChildren()) {
-    if ($isListNode(sibling) && sibling.getListType() === "number" && sibling !== targetListNode) {
+    if (
+      $isListNode(sibling) &&
+      sibling.getListType() === "number" &&
+      sibling !== targetListNode
+    ) {
       if ($isListWithColorNode(sibling)) {
         sibling.setMarkerType(markerType)
       } else {

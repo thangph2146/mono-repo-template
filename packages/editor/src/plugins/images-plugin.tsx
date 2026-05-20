@@ -41,12 +41,7 @@ import { Button } from "../ui/button"
 import { DialogFooter } from "../ui/dialog"
 import { Input } from "../ui/input"
 import { Label } from "../ui/label"
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "../ui/tabs"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs"
 import { logger } from "../lib/logger"
 import { TypographySpanSmallMuted } from "../ui/typography"
 
@@ -73,7 +68,9 @@ export function InsertImageUriDialogBody({
   const [src, setSrc] = useState(initialSrc)
   const [altText, setAltText] = useState(initialAltText)
   const normalizedSrc = src.trim()
-  const canPreview = /^https?:\/\//i.test(normalizedSrc) || normalizedSrc.startsWith("/api/uploads")
+  const canPreview =
+    /^https?:\/\//i.test(normalizedSrc) ||
+    normalizedSrc.startsWith("/api/uploads")
 
   const isDisabled = src === ""
 
@@ -117,7 +114,9 @@ export function InsertImageUriDialogBody({
           disabled={isDisabled}
           onClick={() => {
             logger.debug("[InsertImageDialog] Confirm image by URL", {
-              srcType: normalizedSrc.startsWith("/api/uploads") ? "uploads" : "url",
+              srcType: normalizedSrc.startsWith("/api/uploads")
+                ? "uploads"
+                : "url",
               hasAltText: Boolean(altText.trim()),
             })
             onClick({ altText, src })
@@ -142,7 +141,9 @@ export function InsertImageUploadedDialogBody({
   initialAltText?: string
   confirmLabel?: string
 }) {
-  const [src, setSrc] = useState(initialSrc.startsWith("data:") ? initialSrc : "")
+  const [src, setSrc] = useState(
+    initialSrc.startsWith("data:") ? initialSrc : ""
+  )
   const [altText, setAltText] = useState(initialAltText)
   const [uploadError, setUploadError] = useState("")
 
@@ -379,7 +380,7 @@ function $onDragStart(event: DragEvent): boolean {
         showCaption: node.__showCaption,
         src: node.__src,
         width: node.__width,
-        },
+      },
       type: "image",
     })
   )

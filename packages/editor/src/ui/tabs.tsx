@@ -20,7 +20,9 @@ export function Tabs({
   children: React.ReactNode
   className?: string
 }) {
-  const [uncontrolledValue, setUncontrolledValue] = React.useState(defaultValue || "")
+  const [uncontrolledValue, setUncontrolledValue] = React.useState(
+    defaultValue || ""
+  )
   const value = controlledValue ?? uncontrolledValue
   const setValue = onValueChange ?? setUncontrolledValue
 
@@ -33,31 +35,31 @@ export function Tabs({
   )
 }
 
-export function TabsList({ className, children, ...props }: React.HTMLAttributes<HTMLDivElement>) {
+export function TabsList({
+  className,
+  children,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) {
   return (
-    <div
-      className={cn(
-        "editor-tabs-list",
-        className
-      )}
-      {...props}
-    >
+    <div className={cn("editor-tabs-list", className)} {...props}>
       {children}
     </div>
   )
 }
 
-export function TabsTrigger({ value, className, children, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement> & { value: string }) {
+export function TabsTrigger({
+  value,
+  className,
+  children,
+  ...props
+}: React.ButtonHTMLAttributes<HTMLButtonElement> & { value: string }) {
   const context = React.useContext(TabsContext)
   const isSelected = context?.value === value
 
   return (
     <button
       type="button"
-      className={cn(
-        "editor-tabs-trigger",
-        className
-      )}
+      className={cn("editor-tabs-trigger", className)}
       data-state={isSelected ? "active" : "inactive"}
       onClick={() => context?.onValueChange(value)}
       {...props}
@@ -67,20 +69,19 @@ export function TabsTrigger({ value, className, children, ...props }: React.Butt
   )
 }
 
-export function TabsContent({ value, className, children, ...props }: React.HTMLAttributes<HTMLDivElement> & { value: string }) {
+export function TabsContent({
+  value,
+  className,
+  children,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement> & { value: string }) {
   const context = React.useContext(TabsContext)
   const isSelected = context?.value === value
 
   if (!isSelected) return null
 
   return (
-    <div
-      className={cn(
-        "editor-tabs-content",
-        className
-      )}
-      {...props}
-    >
+    <div className={cn("editor-tabs-content", className)} {...props}>
       {children}
     </div>
   )

@@ -14,7 +14,9 @@ import {
 } from "lexical"
 
 /** Bảng đang chứa selection (ô / nhiều ô / range trong ô). */
-export function $getCurrentTableNode(selection: BaseSelection | null): TableNode | null {
+export function $getCurrentTableNode(
+  selection: BaseSelection | null
+): TableNode | null {
   if (!selection) return null
 
   if ($isTableSelection(selection)) {
@@ -64,16 +66,18 @@ export function $isTableCellMerged(cell: TableCellNode): boolean {
   const colSpan =
     typeof (cell as { getColSpan?: () => number }).getColSpan === "function"
       ? (cell as { getColSpan: () => number }).getColSpan()
-      : (cell as { __colSpan?: number }).__colSpan ?? 1
+      : ((cell as { __colSpan?: number }).__colSpan ?? 1)
   const rowSpan =
     typeof (cell as { getRowSpan?: () => number }).getRowSpan === "function"
       ? (cell as { getRowSpan: () => number }).getRowSpan()
-      : (cell as { __rowSpan?: number }).__rowSpan ?? 1
+      : ((cell as { __rowSpan?: number }).__rowSpan ?? 1)
   return colSpan > 1 || rowSpan > 1
 }
 
 /** Có thể gộp khi chọn table selection với ≥ 2 ô khác nhau. */
-export function $canMergeTableSelection(selection: BaseSelection | null): boolean {
+export function $canMergeTableSelection(
+  selection: BaseSelection | null
+): boolean {
   if (!selection || !$isTableSelection(selection)) return false
   const seen = new Set<string>()
   for (const n of selection.getNodes()) {
@@ -86,10 +90,15 @@ export function $canMergeTableSelection(selection: BaseSelection | null): boolea
 }
 
 /** Selection đang nằm trong ô đã gộp (range hoặc table selection). */
-export function $canUnmergeAtSelection(selection: BaseSelection | null): boolean {
+export function $canUnmergeAtSelection(
+  selection: BaseSelection | null
+): boolean {
   if (!selection) return false
   if ($isRangeSelection(selection)) {
-    const cell = $findMatchingParent(selection.anchor.getNode(), $isTableCellNode)
+    const cell = $findMatchingParent(
+      selection.anchor.getNode(),
+      $isTableCellNode
+    )
     return $isTableCellNode(cell) && $isTableCellMerged(cell)
   }
   if ($isTableSelection(selection)) {
@@ -110,14 +119,18 @@ export function $getTableRowCount(table: TableNode): number {
 }
 
 /** Chỉ cho phép xóa dòng khi bảng còn > 1 hàng. */
-export function $canDeleteTableRowAtSelection(selection: BaseSelection | null): boolean {
+export function $canDeleteTableRowAtSelection(
+  selection: BaseSelection | null
+): boolean {
   const table = $getCurrentTableNode(selection)
   if (!table) return false
   return $getTableRowCount(table) > 1
 }
 
 /** Chỉ cho phép xóa cột khi bảng còn > 1 cột. */
-export function $canDeleteTableColumnAtSelection(selection: BaseSelection | null): boolean {
+export function $canDeleteTableColumnAtSelection(
+  selection: BaseSelection | null
+): boolean {
   const table = $getCurrentTableNode(selection)
   if (!table) return false
   return table.getColumnCount() > 1

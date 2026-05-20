@@ -47,7 +47,9 @@ export function useDebounce<T extends (...args: never[]) => void>(
   maxWait?: number
 ) {
   const funcRef = useRef<T>(fn)
-  const debouncedRef = useRef<((...args: Parameters<T>) => void) & { cancel: () => void } | null>(null)
+  const debouncedRef = useRef<
+    (((...args: Parameters<T>) => void) & { cancel: () => void }) | null
+  >(null)
 
   useEffect(() => {
     funcRef.current = fn

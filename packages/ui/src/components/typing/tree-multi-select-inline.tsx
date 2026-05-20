@@ -1,21 +1,21 @@
-"use client";
+"use client"
 
-import { Check, ChevronDown, Folder } from "lucide-react";
-import { Badge } from "../badge";
-import { Checkbox } from "../checkbox";
+import { Check, ChevronDown, Folder } from "lucide-react"
+import { Badge } from "../badge"
+import { Checkbox } from "../checkbox"
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "../collapsible";
-import { cn } from "../../lib/utils";
-import type { TreeOption } from "../pickers";
+} from "../collapsible"
+import { cn } from "../../lib/utils"
+import type { TreeOption } from "../pickers"
 
 export interface TreeMultiSelectInlineProps {
-  value: unknown;
-  onChange: (value: unknown) => void;
-  options: TreeOption[];
-  className?: string;
+  value: unknown
+  onChange: (value: unknown) => void
+  options: TreeOption[]
+  className?: string
 }
 
 function TreeMultiSelectInlineItem({
@@ -27,16 +27,16 @@ function TreeMultiSelectInlineItem({
   onSelect,
   subOptions,
 }: {
-  label: string;
-  value: string;
-  depth: number;
-  isParent: boolean;
-  selected: string[];
-  onSelect: (value: string) => void;
-  subOptions?: TreeOption[];
+  label: string
+  value: string
+  depth: number
+  isParent: boolean
+  selected: string[]
+  onSelect: (value: string) => void
+  subOptions?: TreeOption[]
 }) {
-  const isSelected = selected.includes(value);
-  const hasChildren = (subOptions?.length ?? 0) > 0;
+  const isSelected = selected.includes(value)
+  const hasChildren = (subOptions?.length ?? 0) > 0
 
   return (
     <Collapsible className="group space-y-2">
@@ -88,7 +88,7 @@ function TreeMultiSelectInlineItem({
         </CollapsibleContent>
       )}
     </Collapsible>
-  );
+  )
 }
 
 export function TreeMultiSelectInline({
@@ -97,23 +97,25 @@ export function TreeMultiSelectInline({
   options,
   className,
 }: TreeMultiSelectInlineProps) {
-  const selected = Array.isArray(value) ? (value as string[]) : [];
+  const selected = Array.isArray(value) ? (value as string[]) : []
 
   const handleSelect = (val: string) => {
     if (!val) {
-      onChange(undefined);
-      return;
+      onChange(undefined)
+      return
     }
     const nextSelected = selected.includes(val)
       ? selected.filter((s) => s !== val)
-      : [...selected, val];
-    onChange(nextSelected.length ? nextSelected : undefined);
-  };
+      : [...selected, val]
+    onChange(nextSelected.length ? nextSelected : undefined)
+  }
 
   return (
     <div className={cn("space-y-2", className)}>
       {options.length === 0 ? (
-        <p className="text-sm text-muted-foreground px-2 py-1">Không có tùy chọn</p>
+        <p className="px-2 py-1 text-sm text-muted-foreground">
+          Không có tùy chọn
+        </p>
       ) : (
         <div className="max-h-80 space-y-0.5 overflow-y-auto">
           {options.map((node) => (
@@ -131,5 +133,5 @@ export function TreeMultiSelectInline({
         </div>
       )}
     </div>
-  );
+  )
 }

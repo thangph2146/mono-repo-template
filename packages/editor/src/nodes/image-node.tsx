@@ -74,7 +74,7 @@ function $convertImageElement(domNode: Node): null | DOMConversionOutput {
     return null
   }
   const { alt: altText, width, height } = img
-  
+
   // Prefer original src from attributes if present, to avoid copying lazy loading placeholder
   let src = img.getAttribute("data-src") || img.src
 
@@ -82,7 +82,13 @@ function $convertImageElement(domNode: Node): null | DOMConversionOutput {
   // from parent anchor tag (common in our frontend gallery/image wrappers)
   if (src.includes("loading3.gif") || src.includes("loading")) {
     const anchor = img.closest("a")
-    if (anchor && anchor.href && anchor.href.trim().match(/\.(jpeg|jpg|gif|png|webp|svg|heic|heif)(\?.*)?$/i)) {
+    if (
+      anchor &&
+      anchor.href &&
+      anchor.href
+        .trim()
+        .match(/\.(jpeg|jpg|gif|png|webp|svg|heic|heif)(\?.*)?$/i)
+    ) {
       src = anchor.href.trim()
     } else if (img.srcset) {
       // Fallback to srcset if it's a Next.js image without a wrapper
@@ -145,8 +151,16 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
   }
 
   static importJSON(serializedNode: SerializedImageNode): ImageNode {
-    const { altText, height, width, maxWidth, caption, src, showCaption, fullWidth } =
-      serializedNode
+    const {
+      altText,
+      height,
+      width,
+      maxWidth,
+      caption,
+      src,
+      showCaption,
+      fullWidth,
+    } = serializedNode
     const hasExplicitWidth = typeof width === "number" && width > 0
     const resolvedFullWidth =
       typeof fullWidth === "boolean" ? fullWidth : !hasExplicitWidth

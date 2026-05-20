@@ -23,10 +23,22 @@ export function HeadingPickerPlugin({ n }: { n: 1 | 2 | 3 }) {
 function HeadingIcons({ n }: { n: number }) {
   switch (n) {
     case 1:
-      return <IconSize size="sm"><Heading1Icon /></IconSize>
+      return (
+        <IconSize size="sm">
+          <Heading1Icon />
+        </IconSize>
+      )
     case 2:
-      return <IconSize size="sm"><Heading2Icon /></IconSize>
+      return (
+        <IconSize size="sm">
+          <Heading2Icon />
+        </IconSize>
+      )
     case 3:
-      return <IconSize size="sm"><Heading3Icon /></IconSize>
+      return (
+        <IconSize size="sm">
+          <Heading3Icon />
+        </IconSize>
+      )
   }
 }

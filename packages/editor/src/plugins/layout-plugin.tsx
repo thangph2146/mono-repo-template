@@ -114,12 +114,18 @@ export function InsertLayoutDialog({
   submitLabel?: string
   onSubmit?: (values: LayoutDialogValues) => void
 }): JSX.Element {
-  const [layout, setLayout] = useState(initialValues?.template ?? (LAYOUTS[0]?.value || "1fr"))
+  const [layout, setLayout] = useState(
+    initialValues?.template ?? (LAYOUTS[0]?.value || "1fr")
+  )
   const [backgroundColor, setBackgroundColor] = useState(
     initialValues?.itemBackgroundColor ?? "#ffffff"
   )
-  const [paddingXPx, setPaddingXPx] = useState(initialValues?.itemPaddingXPx ?? 12)
-  const [paddingYPx, setPaddingYPx] = useState(initialValues?.itemPaddingYPx ?? 12)
+  const [paddingXPx, setPaddingXPx] = useState(
+    initialValues?.itemPaddingXPx ?? 12
+  )
+  const [paddingYPx, setPaddingYPx] = useState(
+    initialValues?.itemPaddingYPx ?? 12
+  )
   const [borderRadiusPx, setBorderRadiusPx] = useState(
     initialValues?.itemBorderRadiusPx ?? 8
   )
@@ -216,10 +222,7 @@ export function InsertLayoutDialog({
             onValueChange={onBackgroundColorChange}
           >
             <ColorPickerTrigger asChild>
-              <Button
-                variant="outline"
-                className="editor-layout-color-trigger"
-              >
+              <Button variant="outline" className="editor-layout-color-trigger">
                 <span
                   className="editor-layout-color-preview"
                   style={{ backgroundColor }}
@@ -287,7 +290,9 @@ export const UPDATE_LAYOUT_COMMAND: LexicalCommand<{
 
 export const OPEN_UPDATE_LAYOUT_MODAL_COMMAND: LexicalCommand<{
   layoutItemKey: NodeKey
-}> = createCommand<{ layoutItemKey: NodeKey }>("OPEN_UPDATE_LAYOUT_MODAL_COMMAND")
+}> = createCommand<{ layoutItemKey: NodeKey }>(
+  "OPEN_UPDATE_LAYOUT_MODAL_COMMAND"
+)
 
 export function LayoutPlugin(): JSX.Element | null {
   const [editor] = useLexicalComposerContext()
@@ -311,7 +316,11 @@ export function LayoutPlugin(): JSX.Element | null {
           $isLayoutContainerNode
         )
 
-        if ($isLayoutContainerNode(container) && container !== undefined && container !== null) {
+        if (
+          $isLayoutContainerNode(container) &&
+          container !== undefined &&
+          container !== null
+        ) {
           const parent = container.getParent<ElementNode>()
           if (parent === null) {
             return false
@@ -323,10 +332,7 @@ export function LayoutPlugin(): JSX.Element | null {
             ? container.getFirstDescendant<LexicalNode>()?.getKey()
             : container.getLastDescendant<LexicalNode>()?.getKey()
 
-          if (
-            child === container &&
-            selection.anchor.key === descendant
-          ) {
+          if (child === container && selection.anchor.key === descendant) {
             if (before) {
               container.insertBefore($createParagraphNode())
             } else {
@@ -339,18 +345,27 @@ export function LayoutPlugin(): JSX.Element | null {
       return false
     }
 
-    const extractStyleValue = (style: string, property: string): string | undefined => {
+    const extractStyleValue = (
+      style: string,
+      property: string
+    ): string | undefined => {
       const match = style.match(new RegExp(`${property}\\s*:\\s*([^;]+)`, "i"))
       return match?.[1]?.trim()
     }
 
-    const extractNumericStyle = (style: string, property: string): number[] | undefined => {
+    const extractNumericStyle = (
+      style: string,
+      property: string
+    ): number[] | undefined => {
       const value = extractStyleValue(style, property)
       if (!value) {
         return undefined
       }
       // Remove !important and split by whitespace
-      const values = value.replace(/!important/gi, "").trim().split(/\s+/)
+      const values = value
+        .replace(/!important/gi, "")
+        .trim()
+        .split(/\s+/)
       const parsedValues = values
         .map((v) => {
           const match = v.match(/^(\d+)px/i)
@@ -386,10 +401,15 @@ export function LayoutPlugin(): JSX.Element | null {
       return itemStyles.join("; ")
     }
 
-    const syncLayoutItemDomStyle = (itemKey: NodeKey, values: LayoutDialogValues) => {
+    const syncLayoutItemDomStyle = (
+      itemKey: NodeKey,
+      values: LayoutDialogValues
+    ) => {
       const element = editor.getElementByKey(itemKey)
       if (!(element instanceof HTMLElement)) {
-        logger.warn("[Layout] Cannot resolve DOM element by item key", { itemKey })
+        logger.warn("[Layout] Cannot resolve DOM element by item key", {
+          itemKey,
+        })
         return
       }
 
@@ -416,11 +436,15 @@ export function LayoutPlugin(): JSX.Element | null {
       template: string
     ) => {
       const itemsCount = getItemsCountFromTemplate(template)
-      const prevItemsCount = getItemsCountFromTemplate(container.getTemplateColumns())
+      const prevItemsCount = getItemsCountFromTemplate(
+        container.getTemplateColumns()
+      )
 
       if (itemsCount > prevItemsCount) {
         for (let i = prevItemsCount; i < itemsCount; i++) {
-          container.append($createLayoutItemNode().append($createParagraphNode()))
+          container.append(
+            $createLayoutItemNode().append($createParagraphNode())
+          )
         }
       } else if (itemsCount < prevItemsCount) {
         for (let i = prevItemsCount - 1; i >= itemsCount; i--) {
@@ -516,7 +540,9 @@ export function LayoutPlugin(): JSX.Element | null {
               }
 
               // Always apply clicked item as source-of-truth (handles stale/mismatched container).
-              const layoutItem = $getNodeByKey<LexicalNode>(payload.layoutItemKey)
+              const layoutItem = $getNodeByKey<LexicalNode>(
+                payload.layoutItemKey
+              )
               if ($isLayoutItemNode(layoutItem)) {
                 layoutItem.setStyle(nextStyle)
                 logger.info("[Layout] Applied style to clicked layout item", {
@@ -531,10 +557,13 @@ export function LayoutPlugin(): JSX.Element | null {
                 })
                 return
               }
-              logger.error("[Layout] Failed to resolve container and layout item keys", {
-                containerKey: payload.containerKey,
-                layoutItemKey: payload.layoutItemKey,
-              })
+              logger.error(
+                "[Layout] Failed to resolve container and layout item keys",
+                {
+                  containerKey: payload.containerKey,
+                  layoutItemKey: payload.layoutItemKey,
+                }
+              )
             })
           }}
         />
@@ -587,7 +616,8 @@ export function LayoutPlugin(): JSX.Element | null {
         (payload) => {
           logger.info("[Layout] INSERT_LAYOUT_COMMAND received", { payload })
           editor.update(() => {
-            const template = typeof payload === "string" ? payload : payload.template
+            const template =
+              typeof payload === "string" ? payload : payload.template
             const itemBackgroundColor =
               typeof payload === "string"
                 ? undefined
@@ -630,9 +660,7 @@ export function LayoutPlugin(): JSX.Element | null {
               if (itemStyle) {
                 item.setStyle(itemStyle)
               }
-              container.append(
-                item.append($createParagraphNode())
-              )
+              container.append(item.append($createParagraphNode()))
             }
 
             $insertNodeToNearestRoot(container)

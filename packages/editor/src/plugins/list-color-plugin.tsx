@@ -15,9 +15,7 @@ import {
   ColorPickerPresets,
 } from "../editor-ui/color-picker"
 import { useEditorModal } from "../editor-hooks/use-modal"
-import {
-  $isListWithColorNode,
-} from "../nodes/list-with-color-node"
+import { $isListWithColorNode } from "../nodes/list-with-color-node"
 import { createListWithColorNodeFromRegistry } from "../editor-x/nodes"
 import { $isListNode } from "@lexical/list"
 import { Button } from "../ui/button"
@@ -46,7 +44,9 @@ export function patchListColorsInSerializedState(
       if (type === "list" && key && listColorStore.has(key)) {
         ;(node as Record<string, unknown>).listColor = listColorStore.get(key)
       }
-      const childList = node.children as Array<Record<string, unknown>> | undefined
+      const childList = node.children as
+        | Array<Record<string, unknown>>
+        | undefined
       if (Array.isArray(childList)) walk(childList)
     }
   }
@@ -76,7 +76,12 @@ export function ListColorPlugin(): JSX.Element | null {
         if ($isListNode(node)) {
           const listType = node.getListType()
           const start = node.getStart()
-          const newList = createListWithColorNodeFromRegistry(editor, listType, start, node)
+          const newList = createListWithColorNodeFromRegistry(
+            editor,
+            listType,
+            start,
+            node
+          )
           newList.setListColor(color)
           const children = node.getChildren()
           for (const c of children) newList.append(c)
@@ -97,8 +102,7 @@ export function ListColorPlugin(): JSX.Element | null {
           const fromStore = listColorStore.get(listKey)
           const fromVar = listEl.style.getPropertyValue("--list-marker-color")
           const fromAttr = listEl.getAttribute("data-list-color")
-          const initialColor =
-            fromStore || fromVar || fromAttr || "#000000"
+          const initialColor = fromStore || fromVar || fromAttr || "#000000"
 
           function ListColorModalContent({ onClose }: { onClose: () => void }) {
             const [color, setColor] = React.useState(initialColor)
@@ -108,7 +112,7 @@ export function ListColorPlugin(): JSX.Element | null {
                   <div className="editor-text-xs-muted">
                     Chọn màu cho bullet hoặc số thứ tự của list.
                   </div>
-                  
+
                   <ColorPicker
                     inline
                     value={color}
@@ -121,8 +125,8 @@ export function ListColorPlugin(): JSX.Element | null {
                       <ColorPickerArea className="editor-h-40 editor-w-full editor-rounded-md" />
                       <Flex direction="column" gap={3} className="editor-mt-3">
                         <Flex direction="column" gap={2}>
-                           <ColorPickerHueSlider className="editor-w-full" />
-                           <ColorPickerInput className="editor-w-full" />
+                          <ColorPickerHueSlider className="editor-w-full" />
+                          <ColorPickerInput className="editor-w-full" />
                         </Flex>
                         <ColorPickerPresets />
                       </Flex>
@@ -130,7 +134,12 @@ export function ListColorPlugin(): JSX.Element | null {
                   </ColorPicker>
 
                   <DialogFooter className="editor-px-0">
-                    <Button variant="outline" size="sm" onClick={onClose} className="editor-w-full">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={onClose}
+                      className="editor-w-full"
+                    >
                       Hoàn tất
                     </Button>
                   </DialogFooter>

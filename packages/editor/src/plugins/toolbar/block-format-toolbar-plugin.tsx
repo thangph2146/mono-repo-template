@@ -3,11 +3,7 @@
 import { $isListNode, ListNode } from "@lexical/list"
 import { $isHeadingNode } from "@lexical/rich-text"
 import { $findMatchingParent, $getNearestNodeOfType } from "@lexical/utils"
-import {
-  $isRangeSelection,
-  $isRootOrShadowRoot,
-  BaseSelection,
-} from "lexical"
+import { $isRangeSelection, $isRootOrShadowRoot, BaseSelection } from "lexical"
 import { useCallback } from "react"
 
 import {
@@ -59,7 +55,7 @@ export function BlockFormatDropDown({
 
       try {
         const anchorNode = selection.anchor.getNode()
-        
+
         // Find the top-level element or the nearest parent that is a root/shadow root
         let element =
           anchorNode.getKey() === "root"
@@ -141,7 +137,9 @@ export function BlockFormatDropDown({
         <div className="editor-toolbar-select-icon">
           {currentBlockMeta?.icon}
         </div>
-        <span className="editor-truncate editor-block-format-label">{currentBlockMeta?.label}</span>
+        <span className="editor-truncate editor-block-format-label">
+          {currentBlockMeta?.label}
+        </span>
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>{children}</SelectGroup>

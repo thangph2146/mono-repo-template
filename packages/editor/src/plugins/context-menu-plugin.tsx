@@ -40,7 +40,9 @@ export function ContextMenuPlugin(): JSX.Element {
       overlayNode.style.zIndex = "1320"
     }
 
-    const portalNode = node.closest("[data-floating-ui-portal]") as HTMLElement | null
+    const portalNode = node.closest(
+      "[data-floating-ui-portal]"
+    ) as HTMLElement | null
     if (portalNode) {
       portalNode.style.zIndex = "1320"
     }
@@ -66,7 +68,11 @@ export function ContextMenuPlugin(): JSX.Element {
           return !!layoutItem
         },
         disabled: false,
-        icon: <IconSize size="sm"><Settings2 /></IconSize>,
+        icon: (
+          <IconSize size="sm">
+            <Settings2 />
+          </IconSize>
+        ),
       }),
       new NodeContextMenuSeparator({
         $showOn: (node) => {
@@ -80,7 +86,11 @@ export function ContextMenuPlugin(): JSX.Element {
         },
         $showOn: (node) => $isLinkNode(node.getParent()),
         disabled: false,
-        icon: <IconSize size="sm"><Link2Off /></IconSize>,
+        icon: (
+          <IconSize size="sm">
+            <Link2Off />
+          </IconSize>
+        ),
       }),
       new NodeContextMenuSeparator({
         $showOn: (node) => $isLinkNode(node.getParent()),
@@ -90,14 +100,22 @@ export function ContextMenuPlugin(): JSX.Element {
           editor.dispatchCommand(CUT_COMMAND, null)
         },
         disabled: false,
-        icon: <IconSize size="sm"><Scissors /></IconSize>,
+        icon: (
+          <IconSize size="sm">
+            <Scissors />
+          </IconSize>
+        ),
       }),
       new NodeContextMenuOption(`Copy`, {
         $onSelect: () => {
           editor.dispatchCommand(COPY_COMMAND, null)
         },
         disabled: false,
-        icon: <IconSize size="sm"><Copy /></IconSize>,
+        icon: (
+          <IconSize size="sm">
+            <Copy />
+          </IconSize>
+        ),
       }),
       new NodeContextMenuOption(`Paste`, {
         $onSelect: () => {
@@ -130,7 +148,11 @@ export function ContextMenuPlugin(): JSX.Element {
           })
         },
         disabled: false,
-        icon: <IconSize size="sm"><Clipboard /></IconSize>,
+        icon: (
+          <IconSize size="sm">
+            <Clipboard />
+          </IconSize>
+        ),
       }),
       new NodeContextMenuOption(`Paste as Plain Text`, {
         $onSelect: () => {
@@ -156,7 +178,11 @@ export function ContextMenuPlugin(): JSX.Element {
           })
         },
         disabled: false,
-        icon: <IconSize size="sm"><ClipboardType /></IconSize>,
+        icon: (
+          <IconSize size="sm">
+            <ClipboardType />
+          </IconSize>
+        ),
       }),
       new NodeContextMenuSeparator(),
       new NodeContextMenuOption(`Delete Node`, {
@@ -177,14 +203,20 @@ export function ContextMenuPlugin(): JSX.Element {
           }
         },
         disabled: false,
-        icon: <IconSize size="sm"><Trash2 /></IconSize>,
+        icon: (
+          <IconSize size="sm">
+            <Trash2 />
+          </IconSize>
+        ),
       }),
     ]
   }, [editor])
 
   return (
     <NodeContextMenuPlugin
-      ref={(node) => syncContextMenuLayer(node as unknown as HTMLElement | null)}
+      ref={(node) =>
+        syncContextMenuLayer(node as unknown as HTMLElement | null)
+      }
       className="editor-context-menu"
       itemClassName="editor-context-menu-item"
       separatorClassName="editor-context-menu-separator"

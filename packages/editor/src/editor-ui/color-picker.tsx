@@ -9,11 +9,7 @@ import { cn } from "../lib/utils"
 import { logger } from "../lib/logger"
 import { Button } from "../ui/button"
 import { Input } from "../ui/input"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "../ui/popover"
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
 import {
   Select,
   SelectContent,
@@ -93,11 +89,10 @@ function useComposedRefs<T>(...refs: PossibleRef<T>[]): React.RefCallback<T> {
 
 type InputValue = string[] | string
 
-interface VisuallyHiddenInputProps<T = InputValue>
-  extends Omit<
-    React.InputHTMLAttributes<HTMLInputElement>,
-    "value" | "checked" | "onReset"
-  > {
+interface VisuallyHiddenInputProps<T = InputValue> extends Omit<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  "value" | "checked" | "onReset"
+> {
   value?: T
   checked?: boolean
   control: HTMLElement | null
@@ -808,7 +803,8 @@ function useColorPickerContext(consumerName: string) {
 }
 
 interface ColorPickerRootProps
-  extends Omit<React.ComponentProps<"div">, "onValueChange">,
+  extends
+    Omit<React.ComponentProps<"div">, "onValueChange">,
     Pick<
       React.ComponentProps<typeof Popover>,
       "defaultOpen" | "open" | "onOpenChange" | "modal"
@@ -828,7 +824,9 @@ interface ColorPickerRootProps
   required?: boolean
 }
 
-const ColorPickerRoot = React.memo(function ColorPickerRoot(props: ColorPickerRootProps) {
+const ColorPickerRoot = React.memo(function ColorPickerRoot(
+  props: ColorPickerRootProps
+) {
   const {
     value: valueProp,
     defaultValue = "#000000",
@@ -943,7 +941,7 @@ function ColorPickerRootImpl(props: ColorPickerRootImplProps) {
   React.useEffect(() => {
     if (valueProp !== undefined) {
       const color = parseColorString(valueProp)
-      
+
       // Only update if it's a valid color string (not "inherit" or others)
       if (color) {
         const hsv = rgbToHsv(color)
@@ -1046,7 +1044,9 @@ function ColorPickerTrigger(props: ColorPickerTriggerProps) {
 }
 
 // Type alias instead of empty interface to avoid lint error
-type ColorPickerContentProps = React.ComponentProps<typeof PopoverContent> & { asChild?: boolean }
+type ColorPickerContentProps = React.ComponentProps<typeof PopoverContent> & {
+  asChild?: boolean
+}
 
 function ColorPickerContent(props: ColorPickerContentProps) {
   const { asChild, className, children, ...popoverContentProps } = props
@@ -1190,7 +1190,9 @@ function ColorPickerArea(props: ColorPickerAreaProps) {
 }
 
 // Type alias instead of empty interface to avoid lint error
-type ColorPickerHueSliderProps = React.ComponentProps<typeof SliderPrimitive.Root>
+type ColorPickerHueSliderProps = React.ComponentProps<
+  typeof SliderPrimitive.Root
+>
 
 function ColorPickerHueSlider(props: ColorPickerHueSliderProps) {
   const { className, ...sliderProps } = props
@@ -1219,10 +1221,7 @@ function ColorPickerHueSlider(props: ColorPickerHueSliderProps) {
       {...sliderProps}
       max={360}
       step={1}
-      className={cn(
-        "editor-slider-root",
-        className
-      )}
+      className={cn("editor-slider-root", className)}
       value={[hsv?.h ?? 0]}
       onValueChange={onValueChange}
       disabled={context.disabled}
@@ -1236,7 +1235,9 @@ function ColorPickerHueSlider(props: ColorPickerHueSliderProps) {
 }
 
 // Type alias instead of empty interface to avoid lint error
-type ColorPickerAlphaSliderProps = React.ComponentProps<typeof SliderPrimitive.Root>
+type ColorPickerAlphaSliderProps = React.ComponentProps<
+  typeof SliderPrimitive.Root
+>
 
 function ColorPickerAlphaSlider(props: ColorPickerAlphaSliderProps) {
   const { className, ...sliderProps } = props
@@ -1266,10 +1267,7 @@ function ColorPickerAlphaSlider(props: ColorPickerAlphaSliderProps) {
       max={100}
       step={1}
       disabled={context.disabled}
-      className={cn(
-        "editor-slider-root",
-        className
-      )}
+      className={cn("editor-slider-root", className)}
       value={[Math.round((color?.a ?? 1) * 100)]}
       onValueChange={onValueChange}
     >
@@ -1402,7 +1400,11 @@ function ColorPickerEyeDropper(props: ColorPickerEyeDropperProps) {
 }
 
 interface ColorPickerFormatSelectProps
-  extends Omit<React.ComponentProps<typeof Select>, "value" | "onValueChange" | "children">,
+  extends
+    Omit<
+      React.ComponentProps<typeof Select>,
+      "value" | "onValueChange" | "children"
+    >,
     Pick<React.ComponentProps<typeof SelectTrigger>, "size" | "className"> {
   value?: ColorFormat
 }
@@ -1449,11 +1451,10 @@ function ColorPickerFormatSelect(props: ColorPickerFormatSelectProps) {
   )
 }
 
-interface ColorPickerInputProps
-  extends Omit<
-    React.ComponentProps<typeof Input>,
-    "value" | "onChange" | "color"
-  > {
+interface ColorPickerInputProps extends Omit<
+  React.ComponentProps<typeof Input>,
+  "value" | "onChange" | "color"
+> {
   withoutAlpha?: boolean
 }
 
@@ -1519,8 +1520,7 @@ function ColorPickerInput(props: ColorPickerInputProps) {
   }
 }
 
-interface InputGroupItemProps
-  extends React.ComponentProps<typeof Input> {
+interface InputGroupItemProps extends React.ComponentProps<typeof Input> {
   position?: "first" | "middle" | "last" | "isolated"
 }
 
@@ -1946,7 +1946,7 @@ function ColorPickerPresets(props: ColorPickerPresetsProps) {
 
   const onPresetClick = React.useCallback(
     (hex: string, alpha?: number) => {
-      const nextAlpha = alpha ?? (color?.a ?? 1)
+      const nextAlpha = alpha ?? color?.a ?? 1
       const newColor = hexToRgb(hex, nextAlpha)
       store.setColor(newColor)
       store.setHsv(rgbToHsv(newColor))
@@ -1969,7 +1969,10 @@ function ColorPickerPresets(props: ColorPickerPresetsProps) {
           variant="outline"
           size="sm"
           onClick={() =>
-            onPresetClick(preset.value, "alpha" in preset ? preset.alpha : undefined)
+            onPresetClick(
+              preset.value,
+              "alpha" in preset ? preset.alpha : undefined
+            )
           }
           disabled={context.disabled}
           className="editor-color-preset-item"
@@ -1980,7 +1983,9 @@ function ColorPickerPresets(props: ColorPickerPresetsProps) {
             className="editor-color-preset-item__preview"
             style={{ backgroundColor: preset.value }}
           />
-          <span className="editor-color-preset-item__label">{preset.value}</span>
+          <span className="editor-color-preset-item__label">
+            {preset.value}
+          </span>
         </Button>
       ))}
     </PresetsPrimitive>

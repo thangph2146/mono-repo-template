@@ -26,10 +26,11 @@ import { EmojiPickerPlugin } from "../plugins/emoji-picker-plugin"
 import { FloatingLinkEditorPlugin } from "../plugins/floating-link-editor-plugin"
 import { FloatingTextFormatToolbarPlugin } from "../plugins/floating-text-format-plugin"
 import { ImagesPlugin } from "../plugins/images-plugin"
+import { LIST_TOOLBAR_BULLET_MARKER_ITEMS } from "../config/editor-list-config"
 import {
-  LIST_TOOLBAR_BULLET_MARKER_ITEMS,
-} from "../config/editor-list-config"
-import { ListFormatDropDown, ListLevelDropDown } from "../plugins/list/list-format-toolbar-dropdown"
+  ListFormatDropDown,
+  ListLevelDropDown,
+} from "../plugins/list/list-format-toolbar-dropdown"
 import { LinkPlugin } from "../plugins/link-plugin"
 import { EditorListPlugins } from "../plugins/list/editor-list-plugins"
 import { MentionsPlugin } from "../plugins/mentions-plugin"
@@ -50,9 +51,7 @@ import {
 } from "../plugins/picker/table-picker-plugin"
 import { TabFocusPlugin } from "../plugins/tab-focus-plugin"
 import { TableColumnResizerPlugin } from "../plugins/table-column-resizer-plugin"
-import {
-  InsertTableCommandPlugin,
-} from "../plugins/table-plugin"
+import { InsertTableCommandPlugin } from "../plugins/table-plugin"
 import { BlockFormatDropDown } from "../plugins/toolbar/block-format-toolbar-plugin"
 import { FormatBulletedList } from "../plugins/toolbar/block-format/format-bulleted-list"
 import { FormatCheckList } from "../plugins/toolbar/block-format/format-check-list"
@@ -108,16 +107,16 @@ export function Plugins({
   return (
     <div className="editor-relative-full">
       {!readOnly && (
-        <ToolbarPlugin
-          className="editor-toolbar"
-          stickyTop={stickyTop}
-        >
+        <ToolbarPlugin className="editor-toolbar" stickyTop={stickyTop}>
           {({ blockType }) => (
             <>
               <div className="editor-toolbar-group">
                 <HistoryToolbarPlugin />
               </div>
-              <Separator orientation="vertical" className="editor-toolbar-separator" />
+              <Separator
+                orientation="vertical"
+                className="editor-toolbar-separator"
+              />
               {blockType !== "code" && (
                 <>
                   <div className="editor-toolbar-group">
@@ -129,7 +128,10 @@ export function Plugins({
                       <InsertEmbeds />
                     </BlockInsertPlugin>
                   </div>
-                  <Separator orientation="vertical" className="editor-toolbar-separator" />
+                  <Separator
+                    orientation="vertical"
+                    className="editor-toolbar-separator"
+                  />
                   <div className="editor-toolbar-group">
                     <BlockFormatDropDown>
                       <FormatParagraph />
@@ -152,7 +154,10 @@ export function Plugins({
                     <ListLevelDropDown />
                     <NodeOptionsToolbarPlugin />
                   </div>
-                  <Separator orientation="vertical" className="editor-toolbar-separator" />
+                  <Separator
+                    orientation="vertical"
+                    className="editor-toolbar-separator"
+                  />
                 </>
               )}
               {blockType === "code" ? (
@@ -165,27 +170,42 @@ export function Plugins({
                     <FontFamilyToolbarPlugin />
                     <FontSizeToolbarPlugin />
                   </div>
-                  <Separator orientation="vertical" className="editor-toolbar-separator" />
+                  <Separator
+                    orientation="vertical"
+                    className="editor-toolbar-separator"
+                  />
                   <div className="editor-toolbar-group">
                     <FontFormatToolbarPlugin />
                   </div>
-                  <Separator orientation="vertical" className="editor-toolbar-separator" />
+                  <Separator
+                    orientation="vertical"
+                    className="editor-toolbar-separator"
+                  />
                   <div className="editor-toolbar-group">
                     <SubSuperToolbarPlugin />
                     <LinkToolbarPlugin setIsLinkEditMode={setIsLinkEditMode} />
                   </div>
-                  <Separator orientation="vertical" className="editor-toolbar-separator" />
+                  <Separator
+                    orientation="vertical"
+                    className="editor-toolbar-separator"
+                  />
                   <div className="editor-toolbar-group">
                     <ClearFormattingToolbarPlugin />
                     <TableActionsToolbarPlugin />
                     <TableWidthToolbarPlugin />
                   </div>
-                  <Separator orientation="vertical" className="editor-toolbar-separator" />
+                  <Separator
+                    orientation="vertical"
+                    className="editor-toolbar-separator"
+                  />
                   <div className="editor-toolbar-group">
                     <FontColorToolbarPlugin />
                     <FontBackgroundToolbarPlugin />
                   </div>
-                  <Separator orientation="vertical" className="editor-toolbar-separator" />
+                  <Separator
+                    orientation="vertical"
+                    className="editor-toolbar-separator"
+                  />
                   <div className="editor-toolbar-group">
                     <ElementFormatToolbarPlugin />
                   </div>
@@ -215,7 +235,11 @@ export function Plugins({
             </div>
           }
           ErrorBoundary={LexicalErrorBoundary}
-          placeholder={readOnly ? null : <div className="editor-placeholder">{placeholder}</div>}
+          placeholder={
+            readOnly ? null : (
+              <div className="editor-placeholder">{placeholder}</div>
+            )
+          }
         />
 
         <ClickableLinkPlugin />
@@ -230,7 +254,9 @@ export function Plugins({
               hasTabHandler
             />
             <InsertTableCommandPlugin />
-            <TableColumnResizerPlugin anchorElem={floatingAnchorElem ?? document.body} />
+            <TableColumnResizerPlugin
+              anchorElem={floatingAnchorElem ?? document.body}
+            />
             <EditorListPlugins />
             <TabIndentationPlugin />
             <HistoryPlugin />

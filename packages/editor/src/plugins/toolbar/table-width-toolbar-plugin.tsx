@@ -37,8 +37,12 @@ function TableWidthDialog({
   const [mode, setMode] = useState<TableWidthConfig["mode"]>(initial.mode)
   const [percent, setPercent] = useState(initial.percent)
   const [pxWidth, setPxWidth] = useState(initial.px)
-  const safePercent = Number.isFinite(percent) ? Math.max(50, Math.min(100, percent)) : 100
-  const safePxWidth = Number.isFinite(pxWidth) ? Math.max(240, Math.min(3000, pxWidth)) : 960
+  const safePercent = Number.isFinite(percent)
+    ? Math.max(50, Math.min(100, percent))
+    : 100
+  const safePxWidth = Number.isFinite(pxWidth)
+    ? Math.max(240, Math.min(3000, pxWidth))
+    : 960
 
   const submit = () => {
     if (mode === "percent") {
@@ -72,7 +76,7 @@ function TableWidthDialog({
                 className={cn(
                   "transition-all",
                   mode === item.key &&
-                    "bg-primary text-primary-foreground border-primary shadow-sm hover:bg-primary/90"
+                    "border-primary bg-primary text-primary-foreground shadow-sm hover:bg-primary/90"
                 )}
                 onClick={() => setMode(item.key as TableWidthConfig["mode"])}
               >
@@ -87,7 +91,9 @@ function TableWidthDialog({
             <>
               <Flex align="center" justify="between">
                 <Label htmlFor="table-width-percent">Độ rộng bảng (%)</Label>
-                <span className="editor-text-sm editor-font-medium">{safePercent}%</span>
+                <span className="editor-text-sm editor-font-medium">
+                  {safePercent}%
+                </span>
               </Flex>
               <Slider
                 aria-label="Table width percentage"
@@ -113,7 +119,9 @@ function TableWidthDialog({
             <>
               <Flex align="center" justify="between">
                 <Label htmlFor="table-width-px">Độ rộng bảng (px)</Label>
-                <span className="editor-text-sm editor-font-medium">{safePxWidth}px</span>
+                <span className="editor-text-sm editor-font-medium">
+                  {safePxWidth}px
+                </span>
               </Flex>
               <Input
                 id="table-width-px"
@@ -131,7 +139,12 @@ function TableWidthDialog({
         {mode === "percent" && (
           <Flex gap={2} wrap="wrap">
             {[100, 95, 90, 85, 80, 75, 70, 60, 50].map((value) => (
-              <Button key={value} type="button" variant="outline" onClick={() => setPercent(value)}>
+              <Button
+                key={value}
+                type="button"
+                variant="outline"
+                onClick={() => setPercent(value)}
+              >
                 {value}%
               </Button>
             ))}
@@ -151,7 +164,7 @@ function TableWidthDialog({
           </Button>
           <Button
             type="button"
-            className="bg-primary text-primary-foreground border-primary shadow-sm hover:bg-primary/90 focus-visible:ring-2 focus-visible:ring-primary/50"
+            className="border-primary bg-primary text-primary-foreground shadow-sm hover:bg-primary/90 focus-visible:ring-2 focus-visible:ring-primary/50"
             onClick={submit}
           >
             Áp dụng và cân bằng cột
@@ -165,7 +178,11 @@ function TableWidthDialog({
 export function TableWidthToolbarPlugin() {
   const { activeEditor, showModal } = useToolbarContext()
   const getCurrentDialogInitial = (): TableWidthDialogInitial => {
-    let result: TableWidthDialogInitial = { mode: "percent", percent: 100, px: 960 }
+    let result: TableWidthDialogInitial = {
+      mode: "percent",
+      percent: 100,
+      px: 960,
+    }
 
     activeEditor.getEditorState().read(() => {
       const selection = $getSelection()
@@ -175,9 +192,15 @@ export function TableWidthToolbarPlugin() {
       const tableElement = activeEditor.getElementByKey(tableNode.getKey())
       if (!(tableElement instanceof HTMLTableElement)) return
 
-      const storedMode = tableElement.dataset.tableWidthMode as TableWidthDialogInitial["mode"] | undefined
-      const storedPercent = Number.parseFloat(tableElement.dataset.tableWidthPercent || "")
-      const storedPx = Number.parseFloat(tableElement.dataset.tableWidthPx || "")
+      const storedMode = tableElement.dataset.tableWidthMode as
+        | TableWidthDialogInitial["mode"]
+        | undefined
+      const storedPercent = Number.parseFloat(
+        tableElement.dataset.tableWidthPercent || ""
+      )
+      const storedPx = Number.parseFloat(
+        tableElement.dataset.tableWidthPx || ""
+      )
 
       if (
         storedMode === "percent" ||
@@ -202,7 +225,11 @@ export function TableWidthToolbarPlugin() {
       if (rawWidth.endsWith("%")) {
         const value = Number.parseFloat(rawWidth)
         if (Number.isFinite(value)) {
-          result = { mode: "percent", percent: Math.max(50, Math.min(100, Math.round(value))), px: result.px }
+          result = {
+            mode: "percent",
+            percent: Math.max(50, Math.min(100, Math.round(value))),
+            px: result.px,
+          }
         }
         return
       }
@@ -210,7 +237,11 @@ export function TableWidthToolbarPlugin() {
       if (rawWidth.endsWith("px")) {
         const value = Number.parseFloat(rawWidth)
         if (Number.isFinite(value)) {
-          result = { mode: "px", percent: result.percent, px: Math.max(240, Math.min(3000, Math.round(value))) }
+          result = {
+            mode: "px",
+            percent: result.percent,
+            px: Math.max(240, Math.min(3000, Math.round(value))),
+          }
         }
         return
       }
@@ -258,7 +289,10 @@ export function TableWidthToolbarPlugin() {
 
       let targetWidth = containerWidth
       if (config.mode === "percent") {
-        targetWidth = Math.max(120, (containerWidth * Math.max(50, Math.min(100, config.percent))) / 100)
+        targetWidth = Math.max(
+          120,
+          (containerWidth * Math.max(50, Math.min(100, config.percent))) / 100
+        )
       } else if (config.mode === "px") {
         targetWidth = Math.max(120, Math.min(containerWidth, config.px))
       }
@@ -280,14 +314,21 @@ export function TableWidthToolbarPlugin() {
       }
       tableElement.style.setProperty("max-width", "100%", "important")
 
-      if (typeof (tableNode as unknown as { setColWidths?: (widths: number[]) => void }).setColWidths === "function") {
-        ;(tableNode as unknown as { setColWidths: (widths: number[]) => void }).setColWidths(nextColWidths)
+      if (
+        typeof (
+          tableNode as unknown as { setColWidths?: (widths: number[]) => void }
+        ).setColWidths === "function"
+      ) {
+        ;(
+          tableNode as unknown as { setColWidths: (widths: number[]) => void }
+        ).setColWidths(nextColWidths)
       } else {
-        ;(tableNode as unknown as { __colWidths?: number[] }).__colWidths = nextColWidths
-        ;(tableNode as unknown as { __widths?: number[] }).__widths = nextColWidths
+        ;(tableNode as unknown as { __colWidths?: number[] }).__colWidths =
+          nextColWidths
+        ;(tableNode as unknown as { __widths?: number[] }).__widths =
+          nextColWidths
         tableNode.markDirty()
       }
-
     })
   }
 
@@ -316,7 +357,7 @@ export function TableWidthToolbarPlugin() {
       className={cn(
         "editor-toolbar-item transition-all",
         isDialogOpen
-          ? "bg-primary text-primary-foreground border-primary shadow-sm hover:bg-primary/90"
+          ? "border-primary bg-primary text-primary-foreground shadow-sm hover:bg-primary/90"
           : "editor-btn--ghost hover:bg-muted/80"
       )}
     >
@@ -324,4 +365,3 @@ export function TableWidthToolbarPlugin() {
     </Button>
   )
 }
-

@@ -14,11 +14,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "../../ui/dialog"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "../../ui/tooltip"
+import { Tooltip, TooltipContent, TooltipTrigger } from "../../ui/tooltip"
 import { ScrollArea, ScrollBar } from "../../ui/scroll-area"
 import { IconSize } from "../../ui/typography"
 

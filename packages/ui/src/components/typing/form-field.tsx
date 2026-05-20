@@ -1,17 +1,17 @@
-"use client";
+"use client"
 
-import type { ReactNode } from "react";
-import { Label } from "../label";
-import { cn } from "../../lib/utils";
+import type { ReactNode } from "react"
+import { Label } from "../label"
+import { cn } from "../../lib/utils"
 
 export interface FormFieldColProps {
-  label: string | ReactNode;
-  children: ReactNode;
-  description?: string;
-  required?: boolean;
-  className?: string;
-  labelClassName?: string;
-  contentClassName?: string;
+  label: string | ReactNode
+  children: ReactNode
+  description?: string
+  required?: boolean
+  className?: string
+  labelClassName?: string
+  contentClassName?: string
 }
 
 export function FormFieldCol({
@@ -28,7 +28,7 @@ export function FormFieldCol({
       <div className="flex items-center gap-2">
         <Label className={cn("text-sm font-medium", labelClassName)}>
           {label}
-          {required && <span className="text-destructive ml-1">*</span>}
+          {required && <span className="ml-1 text-destructive">*</span>}
         </Label>
       </div>
       <div className={cn(contentClassName)}>{children}</div>
@@ -36,18 +36,18 @@ export function FormFieldCol({
         <p className="text-xs text-muted-foreground">{description}</p>
       )}
     </div>
-  );
+  )
 }
 
 export interface FormFieldRowProps {
-  label: string | ReactNode;
-  children: ReactNode;
-  description?: string;
-  required?: boolean;
-  className?: string;
-  labelClassName?: string;
-  labelWidth?: string;
-  contentClassName?: string;
+  label: string | ReactNode
+  children: ReactNode
+  description?: string
+  required?: boolean
+  className?: string
+  labelClassName?: string
+  labelWidth?: string
+  contentClassName?: string
 }
 
 export function FormFieldRow({
@@ -61,7 +61,12 @@ export function FormFieldRow({
   contentClassName,
 }: FormFieldRowProps) {
   return (
-    <div className={cn("flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-4", className)}>
+    <div
+      className={cn(
+        "flex flex-col gap-2 sm:flex-row sm:items-start sm:gap-4",
+        className
+      )}
+    >
       <div
         className={cn(
           "flex-shrink-0 sm:pt-1.5",
@@ -71,13 +76,13 @@ export function FormFieldRow({
       >
         <Label className={cn("text-sm font-medium", labelClassName)}>
           {label}
-          {required && <span className="text-destructive ml-1">*</span>}
+          {required && <span className="ml-1 text-destructive">*</span>}
         </Label>
         {description && (
-          <p className="text-xs text-muted-foreground mt-0.5">{description}</p>
+          <p className="mt-0.5 text-xs text-muted-foreground">{description}</p>
         )}
       </div>
-      <div className={cn("flex-1 min-w-0", contentClassName)}>{children}</div>
+      <div className={cn("min-w-0 flex-1", contentClassName)}>{children}</div>
     </div>
-  );
+  )
 }

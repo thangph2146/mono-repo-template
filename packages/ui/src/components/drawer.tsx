@@ -14,7 +14,13 @@ function Drawer({
 function DrawerTrigger({
   ...props
 }: React.ComponentProps<typeof DrawerPrimitive.Trigger>) {
-  return <DrawerPrimitive.Trigger data-slot="drawer-trigger" suppressHydrationWarning {...props} />
+  return (
+    <DrawerPrimitive.Trigger
+      data-slot="drawer-trigger"
+      suppressHydrationWarning
+      {...props}
+    />
+  )
 }
 
 function DrawerPortal({
@@ -26,7 +32,13 @@ function DrawerPortal({
 function DrawerClose({
   ...props
 }: React.ComponentProps<typeof DrawerPrimitive.Close>) {
-  return <DrawerPrimitive.Close data-slot="drawer-close" suppressHydrationWarning {...props} />
+  return (
+    <DrawerPrimitive.Close
+      data-slot="drawer-close"
+      suppressHydrationWarning
+      {...props}
+    />
+  )
 }
 
 function DrawerOverlay({

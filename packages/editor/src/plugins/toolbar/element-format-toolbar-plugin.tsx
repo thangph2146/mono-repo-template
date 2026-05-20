@@ -43,22 +43,38 @@ const ELEMENT_FORMAT_OPTIONS: {
   }
 } = {
   left: {
-    icon: <IconSize size="sm"><AlignLeftIcon /></IconSize>,
+    icon: (
+      <IconSize size="sm">
+        <AlignLeftIcon />
+      </IconSize>
+    ),
     iconRTL: "left-align",
     name: "Left Align",
   },
   center: {
-    icon: <IconSize size="sm"><AlignCenterIcon /></IconSize>,
+    icon: (
+      <IconSize size="sm">
+        <AlignCenterIcon />
+      </IconSize>
+    ),
     iconRTL: "center-align",
     name: "Center Align",
   },
   right: {
-    icon: <IconSize size="sm"><AlignRightIcon /></IconSize>,
+    icon: (
+      <IconSize size="sm">
+        <AlignRightIcon />
+      </IconSize>
+    ),
     iconRTL: "right-align",
     name: "Right Align",
   },
   justify: {
-    icon: <IconSize size="sm"><AlignJustifyIcon /></IconSize>,
+    icon: (
+      <IconSize size="sm">
+        <AlignJustifyIcon />
+      </IconSize>
+    ),
     iconRTL: "justify-align",
     name: "Justify Align",
   },
@@ -90,7 +106,10 @@ export function ElementFormatToolbarPlugin({
   const stripTextAlignFromInlineStyle = (style: string): string => {
     if (!style.trim()) return ""
     let s = style.replace(/text-align\s*:\s*[^;]+;?/gi, "")
-    s = s.replace(/\s*;\s*;/g, ";").replace(/^;+|;+$/g, "").trim()
+    s = s
+      .replace(/\s*;\s*;/g, ";")
+      .replace(/^;+|;+$/g, "")
+      .trim()
     return s
   }
 
@@ -103,7 +122,9 @@ export function ElementFormatToolbarPlugin({
     const out: TableCellNode[] = []
 
     const tryAddFromNode = (node: LexicalNode) => {
-      const cell = $isTableCellNode(node) ? node : $findMatchingParent(node, $isTableCellNode)
+      const cell = $isTableCellNode(node)
+        ? node
+        : $findMatchingParent(node, $isTableCellNode)
       if (!cell || !$isTableCellNode(cell)) return
       let walk: LexicalNode | null = cell
       while (walk !== null) {
@@ -162,8 +183,9 @@ export function ElementFormatToolbarPlugin({
 
   const $updateToolbar = (selection: BaseSelection) => {
     if ($isRangeSelection(selection)) {
-      const layoutItem = $findMatchingParent(selection.anchor.getNode(), (node) =>
-        $isLayoutItemNode(node)
+      const layoutItem = $findMatchingParent(
+        selection.anchor.getNode(),
+        (node) => $isLayoutItemNode(node)
       )
       activeLayoutItemKeyRef.current = $isLayoutItemNode(layoutItem)
         ? layoutItem.getKey()
@@ -215,8 +237,9 @@ export function ElementFormatToolbarPlugin({
           activeEditor.dispatchCommand(INDENT_CONTENT_COMMAND, undefined)
           return
         }
-        const layoutItem = $findMatchingParent(selection.anchor.getNode(), (node) =>
-          $isLayoutItemNode(node)
+        const layoutItem = $findMatchingParent(
+          selection.anchor.getNode(),
+          (node) => $isLayoutItemNode(node)
         )
         if ($isLayoutItemNode(layoutItem)) {
           const currentPadding = extractPadding(layoutItem.getStyle()) ?? 0
@@ -244,8 +267,9 @@ export function ElementFormatToolbarPlugin({
           activeEditor.dispatchCommand(OUTDENT_CONTENT_COMMAND, undefined)
           return
         }
-        const layoutItem = $findMatchingParent(selection.anchor.getNode(), (node) =>
-          $isLayoutItemNode(node)
+        const layoutItem = $findMatchingParent(
+          selection.anchor.getNode(),
+          (node) => $isLayoutItemNode(node)
         )
         if ($isLayoutItemNode(layoutItem)) {
           const currentPadding = extractPadding(layoutItem.getStyle()) ?? 0
@@ -302,7 +326,12 @@ export function ElementFormatToolbarPlugin({
         </Button>
       ))}
 
-      {separator && <Separator orientation="vertical" className="editor-toolbar-separator" />}
+      {separator && (
+        <Separator
+          orientation="vertical"
+          className="editor-toolbar-separator"
+        />
+      )}
 
       {/* Indentation toggles */}
       <Button

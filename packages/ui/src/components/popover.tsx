@@ -9,7 +9,11 @@ function Popover({ ...props }: PopoverPrimitive.Root.Props) {
   return <PopoverPrimitive.Root data-slot="popover" {...props} />
 }
 
-function PopoverTrigger({ children, className, ...props }: PopoverPrimitive.Trigger.Props) {
+function PopoverTrigger({
+  children,
+  className,
+  ...props
+}: PopoverPrimitive.Trigger.Props) {
   return (
     <PopoverPrimitive.Trigger
       data-slot="popover-trigger"
@@ -17,17 +21,24 @@ function PopoverTrigger({ children, className, ...props }: PopoverPrimitive.Trig
       {...props}
       render={(renderProps) => {
         if (React.isValidElement(children)) {
-          const childProps = children.props as React.HTMLAttributes<HTMLElement> & { className?: string }
+          const childProps =
+            children.props as React.HTMLAttributes<HTMLElement> & {
+              className?: string
+            }
           return React.cloneElement(children, {
             ...(renderProps as React.HTMLAttributes<HTMLElement>),
-            className: cn("cursor-pointer w-full", childProps.className, className),
+            className: cn(
+              "w-full cursor-pointer",
+              childProps.className,
+              className
+            ),
           } as React.HTMLAttributes<HTMLElement>)
         }
         return (
           <button
             type="button"
             {...(renderProps as React.ButtonHTMLAttributes<HTMLButtonElement>)}
-            className={cn("cursor-pointer w-full", className)}
+            className={cn("w-full cursor-pointer", className)}
           >
             {children}
           </button>

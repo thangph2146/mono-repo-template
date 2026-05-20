@@ -75,7 +75,11 @@ export function FontSizeToolbarPlugin() {
   }
 
   const handleInputBlur = () => {
-    if (fontSize === "" || (typeof fontSize === "number" && (fontSize < MIN_FONT_SIZE || fontSize > MAX_FONT_SIZE))) {
+    if (
+      fontSize === "" ||
+      (typeof fontSize === "number" &&
+        (fontSize < MIN_FONT_SIZE || fontSize > MAX_FONT_SIZE))
+    ) {
       setFontSize(DEFAULT_FONT_SIZE)
       updateFontSize(DEFAULT_FONT_SIZE)
     } else {
@@ -102,12 +106,18 @@ export function FontSizeToolbarPlugin() {
       stopTimer()
 
       // Initial click
-      const currentSize = typeof fontSizeRef.current === "number" ? fontSizeRef.current : DEFAULT_FONT_SIZE
+      const currentSize =
+        typeof fontSizeRef.current === "number"
+          ? fontSizeRef.current
+          : DEFAULT_FONT_SIZE
       updateFontSize(currentSize + (increment ? 1 : -1))
 
       timerRef.current = setTimeout(() => {
         intervalRef.current = setInterval(() => {
-          const currentSizeLoop = typeof fontSizeRef.current === "number" ? fontSizeRef.current : DEFAULT_FONT_SIZE
+          const currentSizeLoop =
+            typeof fontSizeRef.current === "number"
+              ? fontSizeRef.current
+              : DEFAULT_FONT_SIZE
           if (increment && currentSizeLoop < MAX_FONT_SIZE) {
             updateFontSize(currentSizeLoop + 1)
           } else if (!increment && currentSizeLoop > MIN_FONT_SIZE) {

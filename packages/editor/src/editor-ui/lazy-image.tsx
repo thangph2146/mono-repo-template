@@ -2,12 +2,12 @@ import * as React from "react"
 import { JSX, useState, useRef, useEffect } from "react"
 import Image from "next/image"
 import { cn } from "../lib/utils"
-import { 
-  DimensionValue, 
-  imageCache, 
-  DEFAULT_WIDTH, 
-  DEFAULT_HEIGHT, 
-  DEFAULT_DIMENSIONS 
+import {
+  DimensionValue,
+  imageCache,
+  DEFAULT_WIDTH,
+  DEFAULT_HEIGHT,
+  DEFAULT_DIMENSIONS,
 } from "./hooks/use-responsive-image-dimensions"
 
 interface LazyImageProps {
@@ -47,23 +47,32 @@ export function LazyImage({
     }
     return undefined
   }
-  
+
   const widthAttr = getNumericValue(width)
   const heightAttr = getNumericValue(height)
-  
+
   const cachedDims = imageCache.get(src)
-  const [actualDimensions, setActualDimensions] = useState<{ width?: number; height?: number; ratio?: number }>(
-    cachedDims || DEFAULT_DIMENSIONS
-  )
-  
+  const [actualDimensions, setActualDimensions] = useState<{
+    width?: number
+    height?: number
+    ratio?: number
+  }>(cachedDims || DEFAULT_DIMENSIONS)
+
   const wrapperRef = useRef<HTMLDivElement>(null)
-  
+
   useEffect(() => {
     if (wrapperRef.current) {
-      const imgElement = wrapperRef.current.querySelector("img") as HTMLImageElement | null
+      const imgElement = wrapperRef.current.querySelector(
+        "img"
+      ) as HTMLImageElement | null
       if (imgElement) {
         imageRef.current = imgElement
-        if ((width === "inherit" || height === "inherit") && imgElement.complete && imgElement.naturalWidth && imgElement.naturalHeight) {
+        if (
+          (width === "inherit" || height === "inherit") &&
+          imgElement.complete &&
+          imgElement.naturalWidth &&
+          imgElement.naturalHeight
+        ) {
           const ratio = imgElement.naturalWidth / imgElement.naturalHeight
           setActualDimensions({
             width: imgElement.naturalWidth,
@@ -79,10 +88,11 @@ export function LazyImage({
       }
     }
   }, [width, height, imageRef, src])
-  
+
   const getSizes = (): string => {
     if (typeof widthAttr === "number" && widthAttr > 0) {
-      if (widthAttr <= 640) return "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+      if (widthAttr <= 640)
+        return "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
       return "(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
     }
     return "(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
@@ -92,7 +102,10 @@ export function LazyImage({
   const renderHeight = heightAttr || actualDimensions.height || DEFAULT_HEIGHT
 
   return (
-    <div ref={wrapperRef} className={cn("editor-lazy-image-wrapper", className)}>
+    <div
+      ref={wrapperRef}
+      className={cn("editor-lazy-image-wrapper", className)}
+    >
       <Image
         src={src}
         alt={altText}

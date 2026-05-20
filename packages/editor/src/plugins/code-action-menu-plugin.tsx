@@ -15,7 +15,11 @@ import {
   getLanguageFriendlyName,
 } from "@lexical/code"
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"
-import { $getNearestNodeFromDOMNode, $getNodeByKey, isHTMLElement } from "lexical"
+import {
+  $getNearestNodeFromDOMNode,
+  $getNodeByKey,
+  isHTMLElement,
+} from "lexical"
 import { createPortal } from "react-dom"
 
 import { useDebounce } from "../editor-hooks/use-debounce"
@@ -210,12 +214,9 @@ function getMouseInfo(event: MouseEvent): {
   const target = event.target
 
   if (isHTMLElement(target)) {
-    const codeDOMNode = target.closest<HTMLElement>(
-      "code.editor-code"
-    )
+    const codeDOMNode = target.closest<HTMLElement>("code.editor-code")
     const isOutside = !(
-      codeDOMNode ||
-      target.closest<HTMLElement>("div.editor-code-action-menu")
+      codeDOMNode || target.closest<HTMLElement>("div.editor-code-action-menu")
     )
 
     return { codeDOMNode, isOutside }

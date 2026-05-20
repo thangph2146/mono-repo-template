@@ -1,11 +1,11 @@
 "use client"
 import { useState, useEffect, useRef, useCallback } from "react"
-import { 
-  LexicalEditor, 
-  NodeKey, 
-  BaseSelection, 
-  $getSelection, 
-  $isNodeSelection, 
+import {
+  LexicalEditor,
+  NodeKey,
+  BaseSelection,
+  $getSelection,
+  $isNodeSelection,
   $setSelection,
   SELECTION_CHANGE_COMMAND,
   CLICK_COMMAND,
@@ -22,7 +22,8 @@ import { useLexicalNodeSelection } from "@lexical/react/useLexicalNodeSelection"
 import { mergeRegister } from "@lexical/utils"
 import { $isImageNode } from "../../nodes/image-node"
 
-export const RIGHT_CLICK_IMAGE_COMMAND: LexicalCommand<MouseEvent> = createCommand("RIGHT_CLICK_IMAGE_COMMAND")
+export const RIGHT_CLICK_IMAGE_COMMAND: LexicalCommand<MouseEvent> =
+  createCommand("RIGHT_CLICK_IMAGE_COMMAND")
 
 interface UseImageNodeInteractionsProps {
   buttonRef: React.MutableRefObject<HTMLButtonElement | null>
@@ -48,7 +49,8 @@ export function useImageNodeInteractions({
   showCaption,
 }: UseImageNodeInteractionsProps) {
   const [selection, setSelection] = useState<BaseSelection | null>(null)
-  const [isSelected, setSelected, clearSelection] = useLexicalNodeSelection(nodeKey)
+  const [isSelected, setSelected, clearSelection] =
+    useLexicalNodeSelection(nodeKey)
   const activeEditorRef = useRef<LexicalEditor | null>(null)
 
   const $onDelete = useCallback(

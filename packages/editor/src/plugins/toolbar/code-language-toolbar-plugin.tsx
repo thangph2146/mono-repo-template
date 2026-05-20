@@ -108,10 +108,7 @@ export function CodeLanguageToolbarPlugin() {
       </SelectTrigger>
       <SelectContent>
         {CODE_LANGUAGE_OPTIONS.map(([value, label]) => (
-          <SelectItem
-            key={value}
-            value={value}
-          >
+          <SelectItem key={value} value={value}>
             {label}
           </SelectItem>
         ))}

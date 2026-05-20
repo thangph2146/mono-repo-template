@@ -1,15 +1,15 @@
-"use client";
+"use client"
 
-import { cn } from "../lib/utils";
+import { cn } from "../lib/utils"
 
-type FlexDirection = "row" | "col";
-type FlexAlign = "start" | "center" | "end" | "between" | "around" | "evenly";
-type FlexJustify = "start" | "center" | "end" | "between" | "around" | "evenly";
+type FlexDirection = "row" | "col"
+type FlexAlign = "start" | "center" | "end" | "between" | "around" | "evenly"
+type FlexJustify = "start" | "center" | "end" | "between" | "around" | "evenly"
 
 const directionMap: Record<FlexDirection, string> = {
   row: "flex-row",
   col: "flex-col",
-};
+}
 
 const alignMap: Record<FlexAlign, string> = {
   start: "items-start",
@@ -18,7 +18,7 @@ const alignMap: Record<FlexAlign, string> = {
   between: "items-stretch",
   around: "items-stretch",
   evenly: "items-stretch",
-};
+}
 
 const justifyMap: Record<FlexJustify, string> = {
   start: "justify-start",
@@ -27,17 +27,17 @@ const justifyMap: Record<FlexJustify, string> = {
   between: "justify-between",
   around: "justify-around",
   evenly: "justify-evenly",
-};
+}
 
 export interface FlexProps extends React.HTMLAttributes<HTMLElement> {
-  as?: React.ElementType;
-  direction?: FlexDirection;
-  align?: FlexAlign;
-  justify?: FlexJustify;
-  wrap?: boolean;
-  fullWidth?: boolean;
-  shrink?: boolean;
-  gap?: number;
+  as?: React.ElementType
+  direction?: FlexDirection
+  align?: FlexAlign
+  justify?: FlexJustify
+  wrap?: boolean
+  fullWidth?: boolean
+  shrink?: boolean
+  gap?: number
 }
 
 export function Flex({
@@ -53,7 +53,7 @@ export function Flex({
   children,
   ...props
 }: FlexProps) {
-  const gapStyle = gap != null ? { gap: `${gap * 0.25}rem` } : undefined;
+  const gapStyle = gap != null ? { gap: `${gap * 0.25}rem` } : undefined
 
   return (
     <Tag
@@ -72,5 +72,5 @@ export function Flex({
     >
       {children}
     </Tag>
-  );
+  )
 }

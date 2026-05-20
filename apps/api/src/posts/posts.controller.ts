@@ -4,6 +4,15 @@
  * Header: X-User-Id (bắt buộc).
  */
 import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBody,
+  ApiQuery,
+  ApiParam,
+  ApiHeader,
+} from '@nestjs/swagger';
+import {
   Controller,
   Get,
   Post,
@@ -62,6 +71,7 @@ function normalizeRelationIds(value: unknown): string[] | undefined {
   return undefined;
 }
 
+@ApiTags('Posts')
 @Controller(ADMIN_ROUTES.POSTS)
 export class PostsController {
   private readonly logger = new Logger(PostsController.name);
@@ -167,6 +177,18 @@ export class PostsController {
   }
 
   @Get()
+  @ApiOperation({ summary: 'List posts with pagination' })
+  @ApiHeader({ name: 'X-User-Id', required: true })
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  @ApiQuery({ name: 'search', required: false, type: String })
+  @ApiQuery({
+    name: 'status',
+    required: false,
+    enum: ['active', 'deleted', 'all'],
+  })
+  @ApiResponse({ status: 200, description: 'Posts retrieved successfully' })
+  @ApiResponse({ status: 401, description: 'Missing X-User-Id header' })
   async list(
     @Res() res: Response,
     @Headers() headers: Record<string, string | string[] | undefined>,
@@ -231,6 +253,12 @@ export class PostsController {
   }
 
   @Get('options')
+  @ApiOperation({ summary: 'Get post options for dropdowns' })
+  @ApiHeader({ name: 'X-User-Id', required: true })
+  @ApiQuery({ name: 'column', required: false, type: String })
+  @ApiQuery({ name: 'search', required: false, type: String })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  @ApiResponse({ status: 200, description: 'Options retrieved successfully' })
   async options(
     @Res() res: Response,
     @Headers() headers: Record<string, string | string[] | undefined>,
@@ -254,6 +282,9 @@ export class PostsController {
   }
 
   @Get('dates-with-posts')
+  @ApiOperation({ summary: 'Get dates with posts' })
+  @ApiHeader({ name: 'X-User-Id', required: true })
+  @ApiResponse({ status: 200, description: 'Dates retrieved successfully' })
   async getDatesWithPosts(
     @Res() res: Response,
     @Headers() headers: Record<string, string | string[] | undefined>,
@@ -285,6 +316,11 @@ export class PostsController {
   }
 
   @Get(':id')
+  @ApiOperation({ summary: 'Get post by ID' })
+  @ApiHeader({ name: 'X-User-Id', required: true })
+  @ApiParam({ name: 'id', type: String })
+  @ApiResponse({ status: 200, description: 'Post found' })
+  @ApiResponse({ status: 404, description: 'Post not found' })
   async getById(
     @Res() res: Response,
     @Headers() headers: Record<string, string | string[] | undefined>,
@@ -310,6 +346,10 @@ export class PostsController {
   }
 
   @Post()
+  @ApiOperation({ summary: 'Create new post' })
+  @ApiHeader({ name: 'X-User-Id', required: true })
+  @ApiResponse({ status: 201, description: 'Post created successfully' })
+  @ApiResponse({ status: 400, description: 'Invalid input' })
   async create(
     @Res() res: Response,
     @Headers() headers: Record<string, string | string[] | undefined>,
@@ -373,6 +413,11 @@ export class PostsController {
   }
 
   @Put(':id')
+  @ApiOperation({ summary: 'Update post by ID' })
+  @ApiHeader({ name: 'X-User-Id', required: true })
+  @ApiParam({ name: 'id', type: String })
+  @ApiResponse({ status: 200, description: 'Post updated successfully' })
+  @ApiResponse({ status: 404, description: 'Post not found' })
   async update(
     @Res() res: Response,
     @Headers() headers: Record<string, string | string[] | undefined>,
@@ -466,6 +511,10 @@ export class PostsController {
   }
 
   @Post('bulk')
+  @ApiOperation({ summary: 'Bulk action on posts' })
+  @ApiHeader({ name: 'X-User-Id', required: true })
+  @ApiResponse({ status: 200, description: 'Bulk action completed' })
+  @ApiResponse({ status: 400, description: 'Invalid action' })
   async bulk(
     @Res() res: Response,
     @Headers() headers: Record<string, string | string[] | undefined>,
@@ -593,6 +642,11 @@ export class PostsController {
   }
 
   @Delete(':id/hard-delete')
+  @ApiOperation({ summary: 'Hard delete post permanently' })
+  @ApiHeader({ name: 'X-User-Id', required: true })
+  @ApiParam({ name: 'id', type: String })
+  @ApiResponse({ status: 200, description: 'Post deleted permanently' })
+  @ApiResponse({ status: 404, description: 'Post not found' })
   async hardDelete(
     @Res() res: Response,
     @Headers() headers: Record<string, string | undefined>,
@@ -631,6 +685,14 @@ export class PostsController {
   }
 
   @Delete(':id')
+  @ApiOperation({ summary: 'Soft delete post' })
+  @ApiHeader({ name: 'X-User-Id', required: true })
+  @ApiParam({ name: 'id', type: String })
+  @ApiResponse({ status: 200, description: 'Post deleted' })
+  @ApiResponse({
+    status: 404,
+    description: 'Post not found or already deleted',
+  })
   async softDelete(
     @Res() res: Response,
     @Headers() headers: Record<string, string | string[] | undefined>,
@@ -669,6 +731,11 @@ export class PostsController {
   }
 
   @Post(':id/restore')
+  @ApiOperation({ summary: 'Restore soft-deleted post' })
+  @ApiHeader({ name: 'X-User-Id', required: true })
+  @ApiParam({ name: 'id', type: String })
+  @ApiResponse({ status: 200, description: 'Post restored' })
+  @ApiResponse({ status: 404, description: 'Post not found or not deleted' })
   async restore(
     @Res() res: Response,
     @Headers() headers: Record<string, string | undefined>,

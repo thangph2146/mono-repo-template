@@ -8,7 +8,8 @@ const ADMIN_HEADER_SELECTOR = 'header[data-admin-header="true"]'
  * Hook để đo chiều cao của header động trong editor
  */
 export function useHeaderHeight() {
-  const { ref: headerRef, height: headerHeightValue } = useElementSize<HTMLElement>()
+  const { ref: headerRef, height: headerHeightValue } =
+    useElementSize<HTMLElement>()
   const [headerHeight, setHeaderHeight] = useState(0)
 
   const findAndSetHeader = useCallback(() => {
@@ -17,9 +18,10 @@ export function useHeaderHeight() {
     }
 
     // Ưu tiên tìm header với data-admin-header="true" hoặc data-public-header="true"
-    let header = document.querySelector<HTMLElement>(ADMIN_HEADER_SELECTOR) || 
-                 document.querySelector<HTMLElement>(PUBLIC_HEADER_SELECTOR)
-    
+    let header =
+      document.querySelector<HTMLElement>(ADMIN_HEADER_SELECTOR) ||
+      document.querySelector<HTMLElement>(PUBLIC_HEADER_SELECTOR)
+
     // Fallback: đo header bằng cách tìm element header đầu tiên
     if (!header) {
       header = document.querySelector<HTMLElement>("header")
@@ -78,9 +80,10 @@ export function useHeaderHeight() {
     } else {
       // Nếu chưa có height, thử đo lại bằng getBoundingClientRect
       if (typeof document !== "undefined") {
-        const header = document.querySelector<HTMLElement>(ADMIN_HEADER_SELECTOR) ||
-                      document.querySelector<HTMLElement>(PUBLIC_HEADER_SELECTOR) || 
-                      document.querySelector<HTMLElement>("header")
+        const header =
+          document.querySelector<HTMLElement>(ADMIN_HEADER_SELECTOR) ||
+          document.querySelector<HTMLElement>(PUBLIC_HEADER_SELECTOR) ||
+          document.querySelector<HTMLElement>("header")
         if (header) {
           const rect = header.getBoundingClientRect()
           if (rect.height > 0) {

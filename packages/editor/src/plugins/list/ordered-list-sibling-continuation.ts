@@ -34,15 +34,14 @@ export function $countDirectOrderedListItems(list: ListNode): number {
  *
  * Gọi trong `editor.update`.
  */
-export function $reconcileOrderedListStartsInParent(parent: ElementNode): boolean {
+export function $reconcileOrderedListStartsInParent(
+  parent: ElementNode
+): boolean {
   let changed = false
   let nextStart = 1
   for (const child of parent.getChildren()) {
     if (LIST_CONTINUE_NUMBERING_ACROSS_INTERRUPTS) {
-      if (
-        LIST_ORDERED_NUMBERING_RESET_AT_HEADING &&
-        $isHeadingNode(child)
-      ) {
+      if (LIST_ORDERED_NUMBERING_RESET_AT_HEADING && $isHeadingNode(child)) {
         nextStart = 1
         continue
       }
@@ -74,7 +73,9 @@ export function $reconcileOrderedListStartsInParent(parent: ElementNode): boolea
 }
 
 /** Duyệt cây, mỗi element có ít nhất một `ol` con trực tiếp thì reconcile một lần. */
-export function $reconcileAllOrderedListSiblingGroups(root: LexicalNode = $getRoot()): void {
+export function $reconcileAllOrderedListSiblingGroups(
+  root: LexicalNode = $getRoot()
+): void {
   if (!$isElementNode(root)) return
   const stack: ElementNode[] = [root]
   while (stack.length > 0) {

@@ -198,7 +198,9 @@ export function TableActionsToolbarPlugin() {
           <SelectLabel>Xóa</SelectLabel>
           <SelectItem
             value="__del-row"
-            className={!canDeleteRow ? "editor-select-item--disabled" : undefined}
+            className={
+              !canDeleteRow ? "editor-select-item--disabled" : undefined
+            }
             onPointerUp={() => {
               if (!canDeleteRow) return
               activeEditor.update(() => $deleteTableRowAtSelection())
@@ -213,7 +215,9 @@ export function TableActionsToolbarPlugin() {
           </SelectItem>
           <SelectItem
             value="__del-col"
-            className={!canDeleteColumn ? "editor-select-item--disabled" : undefined}
+            className={
+              !canDeleteColumn ? "editor-select-item--disabled" : undefined
+            }
             onPointerUp={() => {
               if (!canDeleteColumn) return
               activeEditor.update(() => $deleteTableColumnAtSelection())

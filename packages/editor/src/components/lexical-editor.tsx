@@ -16,7 +16,9 @@ export interface LexicalEditorProps {
   stickyTop?: number
 }
 
-function isValidSerializedEditorState(value: unknown): value is SerializedEditorState {
+function isValidSerializedEditorState(
+  value: unknown
+): value is SerializedEditorState {
   return (
     value !== null &&
     typeof value === "object" &&
@@ -38,7 +40,9 @@ export function LexicalEditor({
   stickyTop,
 }: LexicalEditorProps) {
   // Parse initial value as SerializedEditorState
-  const [editorState, setEditorState] = useState<SerializedEditorState | undefined>(() => {
+  const [editorState, setEditorState] = useState<
+    SerializedEditorState | undefined
+  >(() => {
     if (value && typeof value === "object" && value !== null) {
       if (isValidSerializedEditorState(value)) {
         return value
@@ -72,13 +76,13 @@ export function LexicalEditor({
   useEffect(() => {
     // Skip if value hasn't changed by reference
     if (value === lastValueRef.current && !isSyncingRef.current) return
-    
+
     lastValueRef.current = value
 
     const syncState = (newState: SerializedEditorState | undefined) => {
       const currentStateStr = JSON.stringify(editorStateRef.current)
       const newStateStr = JSON.stringify(newState)
-      
+
       if (currentStateStr !== newStateStr) {
         isSyncingRef.current = true
         setEditorState(newState)
@@ -115,18 +119,18 @@ export function LexicalEditor({
 
   const handleSerializedChange = (newState: SerializedEditorState) => {
     if (readOnly) return
-    
+
     // Avoid triggering update if state hasn't effectively changed (optional optimization)
     // But Lexical's onChange usually implies a change.
-    
+
     // Update local state to avoid re-syncing from props immediately if parent re-renders
     // isSyncingRef.current = true
     setEditorState(newState)
-    
+
     if (onChange) {
       onChange(newState)
     }
-    
+
     // setTimeout(() => {
     //   isSyncingRef.current = false
     // }, 0)

@@ -7,7 +7,11 @@ import { IconSize } from "../../ui/typography"
 
 export function TablePickerPlugin() {
   return new ComponentPickerOption("Table", {
-    icon: <IconSize size="sm"><TableIcon /></IconSize>,
+    icon: (
+      <IconSize size="sm">
+        <TableIcon />
+      </IconSize>
+    ),
     keywords: ["table", "grid", "spreadsheet", "rows", "columns"],
     onSelect: (_, editor, showModal) =>
       showModal("Insert Table", (onClose) => (
@@ -46,7 +50,10 @@ export function DynamicTablePickerPlugin({
             ),
             keywords: ["table"],
             onSelect: (_, editor) =>
-              editor.dispatchCommand(INSERT_TABLE_COMMAND, { columns: columns || "1", rows }),
+              editor.dispatchCommand(INSERT_TABLE_COMMAND, {
+                columns: columns || "1",
+                rows,
+              }),
           })
       )
     )

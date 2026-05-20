@@ -6,7 +6,13 @@ import {
   useRef,
   useState,
 } from "react"
-import { ChevronLeft, ChevronRight, RotateCcw, ZoomIn, ZoomOut } from "lucide-react"
+import {
+  ChevronLeft,
+  ChevronRight,
+  RotateCcw,
+  ZoomIn,
+  ZoomOut,
+} from "lucide-react"
 import { Dialog, DialogContent } from "../ui/dialog"
 import { cn } from "../lib/utils"
 
@@ -70,11 +76,15 @@ export function ImageLightboxDialog({
   }, [canNavigate, images.length, onIndexChange, safeIndex])
 
   const zoomOut = useCallback(() => {
-    setZoomScale((prev) => Math.max(MIN_ZOOM, Number((prev - ZOOM_STEP).toFixed(2))))
+    setZoomScale((prev) =>
+      Math.max(MIN_ZOOM, Number((prev - ZOOM_STEP).toFixed(2)))
+    )
   }, [])
 
   const zoomIn = useCallback(() => {
-    setZoomScale((prev) => Math.min(MAX_ZOOM, Number((prev + ZOOM_STEP).toFixed(2))))
+    setZoomScale((prev) =>
+      Math.min(MAX_ZOOM, Number((prev + ZOOM_STEP).toFixed(2)))
+    )
   }, [])
 
   const resetZoom = useCallback(() => {
@@ -193,7 +203,9 @@ export function ImageLightboxDialog({
               >
                 <ZoomOut />
               </button>
-              <span className="editor-lightbox__zoom-value">{Math.round(zoomScale * 100)}%</span>
+              <span className="editor-lightbox__zoom-value">
+                {Math.round(zoomScale * 100)}%
+              </span>
               <button
                 type="button"
                 className="editor-lightbox__zoom-button"
@@ -215,7 +227,11 @@ export function ImageLightboxDialog({
             </div>
             <button
               type="button"
-              className={cn("editor-lightbox__nav", "prev", !canNavigate && "is-disabled")}
+              className={cn(
+                "editor-lightbox__nav",
+                "prev",
+                !canNavigate && "is-disabled"
+              )}
               onClick={goPrev}
               disabled={!canNavigate}
               aria-label="Ảnh trước"
@@ -227,7 +243,7 @@ export function ImageLightboxDialog({
               className={cn(
                 "editor-lightbox__image",
                 zoomScale > 1 && "is-zoomable",
-                isDraggingImage && "is-dragging",
+                isDraggingImage && "is-dragging"
               )}
               onPointerDown={handleImagePointerDown}
               onPointerMove={handleImagePointerMove}
@@ -239,14 +255,20 @@ export function ImageLightboxDialog({
                 alt={current.altText || "image"}
                 title={current.altText || "image"}
                 className="editor-lightbox__image-content"
-                style={{ transform: `translate(${offset.x}px, ${offset.y}px) scale(${zoomScale})` }}
+                style={{
+                  transform: `translate(${offset.x}px, ${offset.y}px) scale(${zoomScale})`,
+                }}
                 draggable={false}
               />
             </div>
 
             <button
               type="button"
-              className={cn("editor-lightbox__nav", "next", !canNavigate && "is-disabled")}
+              className={cn(
+                "editor-lightbox__nav",
+                "next",
+                !canNavigate && "is-disabled"
+              )}
               onClick={goNext}
               disabled={!canNavigate}
               aria-label="Ảnh tiếp theo"
@@ -260,7 +282,11 @@ export function ImageLightboxDialog({
               <span className="editor-lightbox__counter">
                 {safeIndex + 1} / {images.length}
               </span>
-              {current.altText ? <span className="editor-lightbox__caption">{current.altText}</span> : null}
+              {current.altText ? (
+                <span className="editor-lightbox__caption">
+                  {current.altText}
+                </span>
+              ) : null}
             </div>
 
             {images.length > 1 ? (
@@ -269,12 +295,19 @@ export function ImageLightboxDialog({
                   <button
                     key={img.key}
                     type="button"
-                    className={cn("editor-lightbox__thumb", idx === safeIndex && "is-active")}
+                    className={cn(
+                      "editor-lightbox__thumb",
+                      idx === safeIndex && "is-active"
+                    )}
                     onClick={() => onIndexChange(idx)}
                     aria-label={`Chọn ảnh ${idx + 1}`}
                     role="listitem"
                   >
-                    <img src={img.src} alt={img.altText || "image"} className="editor-lightbox__thumb-image" />
+                    <img
+                      src={img.src}
+                      alt={img.altText || "image"}
+                      className="editor-lightbox__thumb-image"
+                    />
                   </button>
                 ))}
               </div>
@@ -285,4 +318,3 @@ export function ImageLightboxDialog({
     </Dialog>
   )
 }
-

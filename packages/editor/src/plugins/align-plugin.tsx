@@ -63,7 +63,10 @@ function $collectTableCellsFromNodes(nodes: LexicalNode[]) {
 function stripTextAlignFromInlineStyle(style: string): string {
   if (!style.trim()) return ""
   let s = style.replace(/text-align\s*:\s*[^;]+;?/gi, "")
-  s = s.replace(/\s*;\s*;/g, ";").replace(/^;+|;+$/g, "").trim()
+  s = s
+    .replace(/\s*;\s*;/g, ";")
+    .replace(/^;+|;+$/g, "")
+    .trim()
   return s
 }
 
@@ -147,35 +150,49 @@ export function AlignPlugin(): null {
               const parent = block.getParentOrThrow()
               block = parent
             }
-            
+
             // Continue navigating up if it's still inline (just in case)
-            while (block !== null && (!$isElementNode(block) || block.isInline())) {
-               block = block.getParent()
+            while (
+              block !== null &&
+              (!$isElementNode(block) || block.isInline())
+            ) {
+              block = block.getParent()
             }
 
-            if (block && $isElementNode(block) && !processedBlocks.has(block.getKey())) {
+            if (
+              block &&
+              $isElementNode(block) &&
+              !processedBlocks.has(block.getKey())
+            ) {
               processedBlocks.add(block.getKey())
               block.setFormat(formatType)
             }
           })
         } else if ($isNodeSelection(selection)) {
-           const nodes = selection.getNodes()
-           const processedBlocks = new Set<string>()
-           
-           nodes.forEach((node) => {
-             // For NodeSelection (e.g. ImageNode), find the parent block
-             let block = node.getParent()
-             while (block !== null && (!$isElementNode(block) || block.isInline())) {
-                block = block.getParent()
-             }
+          const nodes = selection.getNodes()
+          const processedBlocks = new Set<string>()
 
-             if (block && $isElementNode(block) && !processedBlocks.has(block.getKey())) {
-                processedBlocks.add(block.getKey())
-                block.setFormat(formatType)
-             }
-           })
+          nodes.forEach((node) => {
+            // For NodeSelection (e.g. ImageNode), find the parent block
+            let block = node.getParent()
+            while (
+              block !== null &&
+              (!$isElementNode(block) || block.isInline())
+            ) {
+              block = block.getParent()
+            }
+
+            if (
+              block &&
+              $isElementNode(block) &&
+              !processedBlocks.has(block.getKey())
+            ) {
+              processedBlocks.add(block.getKey())
+              block.setFormat(formatType)
+            }
+          })
         }
-        
+
         return true
       },
       COMMAND_PRIORITY_EDITOR

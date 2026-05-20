@@ -4,6 +4,15 @@
  * Header: X-User-Id (bắt buộc). Không trả password.
  */
 import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBody,
+  ApiQuery,
+  ApiParam,
+  ApiHeader,
+} from '@nestjs/swagger';
+import {
   Controller,
   Get,
   Post,
@@ -29,8 +38,38 @@ import {
 import { APP_HEADERS, ADMIN_ROUTES } from '../config/constants';
 import { RESOURCES, ACTIONS } from '../config/permissions';
 
+export class CreateUserDto {
+  email: string;
+  name: string;
+  password: string;
+  bio: string;
+  avatar: string;
+  phone: string;
+  address: string;
+  isActive: boolean;
+  roleIds: string[];
+}
+
+export class UpdateUserDto {
+  email: string;
+  name: string;
+  password: string;
+  bio: string;
+  avatar: string;
+  phone: string;
+  address: string;
+  isActive: boolean;
+  roleIds: string[];
+}
+
+export class BulkActionDto {
+  action: 'delete' | 'restore' | 'hard-delete' | 'active' | 'unactive';
+  ids: string[];
+}
+
 type BulkAction = 'delete' | 'restore' | 'hard-delete' | 'active' | 'unactive';
 
+@ApiTags('Users')
 @Controller(ADMIN_ROUTES.USERS)
 export class UsersController {
   private readonly logger = new Logger(UsersController.name);
@@ -112,6 +151,18 @@ export class UsersController {
   }
 
   @Get()
+  @ApiOperation({ summary: 'List users with pagination' })
+  @ApiHeader({ name: 'X-User-Id', required: true })
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  @ApiQuery({ name: 'search', required: false, type: String })
+  @ApiQuery({
+    name: 'status',
+    required: false,
+    enum: ['active', 'deleted', 'all'],
+  })
+  @ApiResponse({ status: 200, description: 'Users retrieved successfully' })
+  @ApiResponse({ status: 401, description: 'Missing X-User-Id header' })
   async list(
     @Res() res: Response,
     @Headers() headers: Record<string, string | undefined>,
@@ -160,6 +211,12 @@ export class UsersController {
   }
 
   @Get('options')
+  @ApiOperation({ summary: 'Get user options for dropdowns' })
+  @ApiHeader({ name: 'X-User-Id', required: true })
+  @ApiQuery({ name: 'column', required: false, type: String })
+  @ApiQuery({ name: 'search', required: false, type: String })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  @ApiResponse({ status: 200, description: 'Options retrieved successfully' })
   async options(
     @Res() res: Response,
     @Headers() headers: Record<string, string | undefined>,
@@ -183,6 +240,11 @@ export class UsersController {
   }
 
   @Get(':id')
+  @ApiOperation({ summary: 'Get user by ID' })
+  @ApiHeader({ name: 'X-User-Id', required: true })
+  @ApiParam({ name: 'id', type: String })
+  @ApiResponse({ status: 200, description: 'User found' })
+  @ApiResponse({ status: 404, description: 'User not found' })
   async getById(
     @Res() res: Response,
     @Headers() headers: Record<string, string | undefined>,
@@ -208,6 +270,11 @@ export class UsersController {
   }
 
   @Post()
+  @ApiOperation({ summary: 'Create new user' })
+  @ApiHeader({ name: 'X-User-Id', required: true })
+  @ApiBody({ type: CreateUserDto })
+  @ApiResponse({ status: 201, description: 'User created successfully' })
+  @ApiResponse({ status: 400, description: 'Invalid input' })
   async create(
     @Res() res: Response,
     @Headers() headers: Record<string, string | undefined>,
@@ -274,6 +341,12 @@ export class UsersController {
   }
 
   @Put(':id')
+  @ApiOperation({ summary: 'Update user by ID' })
+  @ApiHeader({ name: 'X-User-Id', required: true })
+  @ApiParam({ name: 'id', type: String })
+  @ApiBody({ type: UpdateUserDto })
+  @ApiResponse({ status: 200, description: 'User updated successfully' })
+  @ApiResponse({ status: 404, description: 'User not found' })
   async update(
     @Res() res: Response,
     @Headers() headers: Record<string, string | undefined>,
@@ -335,6 +408,11 @@ export class UsersController {
   }
 
   @Post('bulk')
+  @ApiOperation({ summary: 'Bulk action on users' })
+  @ApiHeader({ name: 'X-User-Id', required: true })
+  @ApiBody({ type: BulkActionDto })
+  @ApiResponse({ status: 200, description: 'Bulk action completed' })
+  @ApiResponse({ status: 400, description: 'Invalid action' })
   async bulk(
     @Res() res: Response,
     @Headers() headers: Record<string, string | undefined>,
@@ -410,6 +488,11 @@ export class UsersController {
   }
 
   @Delete(':id/hard-delete')
+  @ApiOperation({ summary: 'Hard delete user permanently' })
+  @ApiHeader({ name: 'X-User-Id', required: true })
+  @ApiParam({ name: 'id', type: String })
+  @ApiResponse({ status: 200, description: 'User deleted permanently' })
+  @ApiResponse({ status: 404, description: 'User not found' })
   async hardDelete(
     @Res() res: Response,
     @Headers() headers: Record<string, string | undefined>,
@@ -448,6 +531,14 @@ export class UsersController {
   }
 
   @Delete(':id')
+  @ApiOperation({ summary: 'Soft delete user' })
+  @ApiHeader({ name: 'X-User-Id', required: true })
+  @ApiParam({ name: 'id', type: String })
+  @ApiResponse({ status: 200, description: 'User deleted' })
+  @ApiResponse({
+    status: 404,
+    description: 'User not found or already deleted',
+  })
   async softDelete(
     @Res() res: Response,
     @Headers() headers: Record<string, string | undefined>,
@@ -486,6 +577,11 @@ export class UsersController {
   }
 
   @Post(':id/restore')
+  @ApiOperation({ summary: 'Restore soft-deleted user' })
+  @ApiHeader({ name: 'X-User-Id', required: true })
+  @ApiParam({ name: 'id', type: String })
+  @ApiResponse({ status: 200, description: 'User restored' })
+  @ApiResponse({ status: 404, description: 'User not found or not deleted' })
   async restore(
     @Res() res: Response,
     @Headers() headers: Record<string, string | undefined>,

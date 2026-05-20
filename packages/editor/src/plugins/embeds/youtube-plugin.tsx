@@ -19,7 +19,13 @@ import {
 
 export type InsertYouTubePayload =
   | string
-  | { id: string; width?: number; height?: number; maxWidth?: number; fullWidth?: boolean }
+  | {
+      id: string
+      width?: number
+      height?: number
+      maxWidth?: number
+      fullWidth?: boolean
+    }
 
 export const INSERT_YOUTUBE_COMMAND: LexicalCommand<InsertYouTubePayload> =
   createCommand("INSERT_YOUTUBE_COMMAND")
@@ -36,8 +42,7 @@ export function YouTubePlugin(): JSX.Element | null {
       INSERT_YOUTUBE_COMMAND,
       (payload) => {
         const rootElement = editor.getRootElement()
-        const fallbackWidth =
-          rootElement?.getBoundingClientRect().width ?? 640
+        const fallbackWidth = rootElement?.getBoundingClientRect().width ?? 640
         const resolvedMaxWidth =
           fallbackWidth > 0 ? Math.round(fallbackWidth) : 640
         const clampToEditorWidth = (value?: number) => {

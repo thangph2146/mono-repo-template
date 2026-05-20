@@ -4,6 +4,15 @@
  * Header: X-User-Id (bắt buộc).
  */
 import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBody,
+  ApiQuery,
+  ApiParam,
+  ApiHeader,
+} from '@nestjs/swagger';
+import {
   Controller,
   Get,
   Post,
@@ -30,6 +39,7 @@ import { RESOURCES, ACTIONS } from '../config/permissions';
 type TagListStatus = 'active' | 'deleted' | 'all';
 type TagBulkAction = 'delete' | 'restore' | 'hard-delete';
 
+@ApiTags('Tags')
 @Controller(ADMIN_ROUTES.TAGS)
 export class TagsController {
   private readonly logger = new Logger(TagsController.name);
@@ -94,6 +104,18 @@ export class TagsController {
   }
 
   @Get()
+  @ApiOperation({ summary: 'List tags with pagination' })
+  @ApiHeader({ name: 'X-User-Id', required: true })
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  @ApiQuery({ name: 'search', required: false, type: String })
+  @ApiQuery({
+    name: 'status',
+    required: false,
+    enum: ['active', 'deleted', 'all'],
+  })
+  @ApiResponse({ status: 200, description: 'Tags retrieved successfully' })
+  @ApiResponse({ status: 401, description: 'Missing X-User-Id header' })
   async list(
     @Res() res: Response,
     @Headers() headers: Record<string, string | undefined>,
@@ -130,6 +152,12 @@ export class TagsController {
   }
 
   @Get('options')
+  @ApiOperation({ summary: 'Get tag options for dropdowns' })
+  @ApiHeader({ name: 'X-User-Id', required: true })
+  @ApiQuery({ name: 'column', required: false, type: String })
+  @ApiQuery({ name: 'search', required: false, type: String })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  @ApiResponse({ status: 200, description: 'Options retrieved successfully' })
   async options(
     @Res() res: Response,
     @Headers() headers: Record<string, string | undefined>,
@@ -151,6 +179,11 @@ export class TagsController {
   }
 
   @Get(':id')
+  @ApiOperation({ summary: 'Get tag by ID' })
+  @ApiHeader({ name: 'X-User-Id', required: true })
+  @ApiParam({ name: 'id', type: String })
+  @ApiResponse({ status: 200, description: 'Tag found' })
+  @ApiResponse({ status: 404, description: 'Tag not found' })
   async getById(
     @Res() res: Response,
     @Headers() headers: Record<string, string | undefined>,
@@ -172,6 +205,11 @@ export class TagsController {
   }
 
   @Post()
+  @ApiOperation({ summary: 'Create new tag' })
+  @ApiHeader({ name: 'X-User-Id', required: true })
+  @ApiBody({ description: 'Tag data', required: true })
+  @ApiResponse({ status: 201, description: 'Tag created successfully' })
+  @ApiResponse({ status: 400, description: 'Invalid input' })
   async create(
     @Res() res: Response,
     @Headers() headers: Record<string, string | undefined>,
@@ -212,6 +250,12 @@ export class TagsController {
   }
 
   @Put(':id')
+  @ApiOperation({ summary: 'Update tag by ID' })
+  @ApiHeader({ name: 'X-User-Id', required: true })
+  @ApiParam({ name: 'id', type: String })
+  @ApiBody({ description: 'Updated tag data' })
+  @ApiResponse({ status: 200, description: 'Tag updated successfully' })
+  @ApiResponse({ status: 404, description: 'Tag not found' })
   async update(
     @Res() res: Response,
     @Headers() headers: Record<string, string | undefined>,
@@ -251,6 +295,11 @@ export class TagsController {
   }
 
   @Post('bulk')
+  @ApiOperation({ summary: 'Bulk action on tags' })
+  @ApiHeader({ name: 'X-User-Id', required: true })
+  @ApiBody({ description: 'Bulk action with ids' })
+  @ApiResponse({ status: 200, description: 'Bulk action completed' })
+  @ApiResponse({ status: 400, description: 'Invalid action' })
   async bulk(
     @Res() res: Response,
     @Headers() headers: Record<string, string | undefined>,
@@ -310,6 +359,11 @@ export class TagsController {
   }
 
   @Delete(':id/hard-delete')
+  @ApiOperation({ summary: 'Hard delete tag permanently' })
+  @ApiHeader({ name: 'X-User-Id', required: true })
+  @ApiParam({ name: 'id', type: String })
+  @ApiResponse({ status: 200, description: 'Tag deleted permanently' })
+  @ApiResponse({ status: 404, description: 'Tag not found' })
   async hardDelete(
     @Res() res: Response,
     @Headers() headers: Record<string, string | undefined>,
@@ -346,6 +400,11 @@ export class TagsController {
   }
 
   @Delete(':id')
+  @ApiOperation({ summary: 'Soft delete tag' })
+  @ApiHeader({ name: 'X-User-Id', required: true })
+  @ApiParam({ name: 'id', type: String })
+  @ApiResponse({ status: 200, description: 'Tag deleted' })
+  @ApiResponse({ status: 404, description: 'Tag not found or already deleted' })
   async softDelete(
     @Res() res: Response,
     @Headers() headers: Record<string, string | undefined>,
@@ -383,6 +442,11 @@ export class TagsController {
   }
 
   @Post(':id/restore')
+  @ApiOperation({ summary: 'Restore soft-deleted tag' })
+  @ApiHeader({ name: 'X-User-Id', required: true })
+  @ApiParam({ name: 'id', type: String })
+  @ApiResponse({ status: 200, description: 'Tag restored' })
+  @ApiResponse({ status: 404, description: 'Tag not found or not deleted' })
   async restore(
     @Res() res: Response,
     @Headers() headers: Record<string, string | undefined>,

@@ -4,12 +4,7 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import { $isListItemNode, $isListNode } from "@lexical/list"
 import { $findMatchingParent } from "@lexical/utils"
 import { useEffect } from "react"
-import {
-  $getNodeByKey,
-  $getRoot,
-  $isElementNode,
-  type NodeKey,
-} from "lexical"
+import { $getNodeByKey, $getRoot, $isElementNode, type NodeKey } from "lexical"
 
 import { LIST_CONTINUE_NUMBERING_ACROSS_SIBLING_OLS } from "../../config/editor-list-config"
 import {
@@ -20,7 +15,9 @@ import {
 const RECONCILE_TAG = "editor-ordered-list-sibling-reconcile"
 
 /** Từ bất kỳ node dirty nào, tìm element parent chứa các `ol` number cùng cấp cần reconcile. */
-function $parentElementKeyForOrderedListContext(nodeKey: NodeKey): NodeKey | null {
+function $parentElementKeyForOrderedListContext(
+  nodeKey: NodeKey
+): NodeKey | null {
   const n = $getNodeByKey(nodeKey)
   if (!n) return null
   if ($isListNode(n) && n.getListType() === "number") {

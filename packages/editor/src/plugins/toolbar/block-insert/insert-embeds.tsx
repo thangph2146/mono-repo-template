@@ -1,7 +1,10 @@
 "use client"
 
 import { useToolbarContext } from "../../../context/toolbar-context"
-import { AutoEmbedDialogStandalone, EmbedConfigs } from "../../../plugins/embeds/auto-embed-plugin"
+import {
+  AutoEmbedDialogStandalone,
+  EmbedConfigs,
+} from "../../../plugins/embeds/auto-embed-plugin"
 import { SelectItem } from "../../../ui/select"
 import { Flex } from "../../../ui/flex"
 
@@ -13,9 +16,9 @@ export function InsertEmbeds() {
       value={embedConfig.type}
       onPointerUp={() => {
         showModal(`Embed ${embedConfig.contentName}`, (onClose) => (
-          <AutoEmbedDialogStandalone 
-            embedConfig={embedConfig} 
-            onClose={onClose} 
+          <AutoEmbedDialogStandalone
+            embedConfig={embedConfig}
+            onClose={onClose}
             editor={activeEditor}
           />
         ))

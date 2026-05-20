@@ -15,11 +15,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "../../ui/dialog"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "../../ui/tooltip"
+import { Tooltip, TooltipContent, TooltipTrigger } from "../../ui/tooltip"
 import { IconSize } from "../../ui/typography"
 
 export function ClearEditorActionPlugin() {

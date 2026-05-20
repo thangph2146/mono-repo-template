@@ -75,10 +75,19 @@ function $splitNumberToBullet(
   maxIndexInOriginal: number,
   markerType: string | undefined
 ): void {
-  const listColor = $isListWithColorNode(parentList) ? parentList.getListColor() : undefined
-  const numberMarker = $isListWithColorNode(parentList) ? parentList.getMarkerType() : undefined
+  const listColor = $isListWithColorNode(parentList)
+    ? parentList.getListColor()
+    : undefined
+  const numberMarker = $isListWithColorNode(parentList)
+    ? parentList.getMarkerType()
+    : undefined
 
-  const newBullet = createListWithColorNodeFromRegistry(editor, "bullet", 1, parentList)
+  const newBullet = createListWithColorNodeFromRegistry(
+    editor,
+    "bullet",
+    1,
+    parentList
+  )
   if (listColor) newBullet.setListColor(listColor)
   if (markerType !== undefined) newBullet.setMarkerType(markerType)
 
@@ -119,10 +128,19 @@ function $splitBulletToNumber(
   middle: ListItemNode[],
   after: ListItemNode[]
 ): void {
-  const listColor = $isListWithColorNode(parentList) ? parentList.getListColor() : undefined
-  const bulletMarker = $isListWithColorNode(parentList) ? parentList.getMarkerType() : undefined
+  const listColor = $isListWithColorNode(parentList)
+    ? parentList.getListColor()
+    : undefined
+  const bulletMarker = $isListWithColorNode(parentList)
+    ? parentList.getMarkerType()
+    : undefined
 
-  const newNumber = createListWithColorNodeFromRegistry(editor, "number", 1, parentList)
+  const newNumber = createListWithColorNodeFromRegistry(
+    editor,
+    "number",
+    1,
+    parentList
+  )
   if (listColor) newNumber.setListColor(listColor)
   newNumber.setMarkerType(undefined)
 
@@ -131,7 +149,12 @@ function $splitBulletToNumber(
   }
 
   if (before.length > 0 && after.length > 0) {
-    const newAfterUl = createListWithColorNodeFromRegistry(editor, "bullet", 1, parentList)
+    const newAfterUl = createListWithColorNodeFromRegistry(
+      editor,
+      "bullet",
+      1,
+      parentList
+    )
     if (listColor) newAfterUl.setListColor(listColor)
     if (bulletMarker !== undefined) newAfterUl.setMarkerType(bulletMarker)
     for (const li of after) {

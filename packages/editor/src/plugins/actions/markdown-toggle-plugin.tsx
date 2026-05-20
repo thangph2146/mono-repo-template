@@ -13,11 +13,7 @@ import { FileTextIcon } from "lucide-react"
 
 import { Button } from "../../ui/button"
 import { IconSize } from "../../ui/typography"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "../../ui/tooltip"
+import { Tooltip, TooltipContent, TooltipTrigger } from "../../ui/tooltip"
 
 export function MarkdownTogglePlugin({
   shouldPreserveNewLinesInMarkdown,

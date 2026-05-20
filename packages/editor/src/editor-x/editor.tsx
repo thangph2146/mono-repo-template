@@ -50,12 +50,17 @@ export function Editor({
   placeholder?: string
   stickyTop?: number
 }) {
-  const { ref: editorRef, width: editorWidth } = useElementSize<HTMLDivElement>()
+  const { ref: editorRef, width: editorWidth } =
+    useElementSize<HTMLDivElement>()
   const editorMaxWidth = editorWidth || undefined
 
   const [config, setConfig] = useState<{
     nodes: InitialConfigType["nodes"]
-    Plugins: React.ComponentType<{ readOnly?: boolean; placeholder?: string; stickyTop?: number }>
+    Plugins: React.ComponentType<{
+      readOnly?: boolean
+      placeholder?: string
+      stickyTop?: number
+    }>
   } | null>(null)
 
   useEffect(() => {
@@ -81,12 +86,7 @@ export function Editor({
 
   if (!config || !editorConfig) {
     return (
-      <div
-        className={cn(
-          "editor-loading-container"
-        )}
-        id="editor-x"
-      >
+      <div className={cn("editor-loading-container")} id="editor-x">
         <div className="editor-loading-text">Đang tải editor...</div>
       </div>
     )
@@ -115,7 +115,11 @@ export function Editor({
           }}
         >
           <TooltipProvider>
-            <Plugins readOnly={readOnly} placeholder={placeholder} stickyTop={stickyTop} />
+            <Plugins
+              readOnly={readOnly}
+              placeholder={placeholder}
+              stickyTop={stickyTop}
+            />
 
             {!readOnly && (
               <OnChangePlugin

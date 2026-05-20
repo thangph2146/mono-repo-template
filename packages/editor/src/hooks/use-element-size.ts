@@ -18,7 +18,7 @@ export function useElementSize<T extends HTMLElement = HTMLDivElement>() {
   // Prevent too many renders with useCallback
   const handleSize = useCallback(() => {
     if (!node) return
-    
+
     setSize({
       width: node.offsetWidth || 0,
       height: node.offsetHeight || 0,
@@ -31,15 +31,15 @@ export function useElementSize<T extends HTMLElement = HTMLDivElement>() {
     }
 
     handleSize()
-    
+
     // Use ResizeObserver for better accuracy and performance
-    if (typeof ResizeObserver !== 'undefined') {
+    if (typeof ResizeObserver !== "undefined") {
       const observer = new ResizeObserver(() => {
         handleSize()
       })
-      
+
       observer.observe(node)
-      
+
       return () => {
         observer.disconnect()
       }

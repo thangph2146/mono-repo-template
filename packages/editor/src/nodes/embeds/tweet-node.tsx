@@ -63,7 +63,10 @@ function TweetComponent({
   const createTweet = useCallback(async () => {
     try {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      await (window as any).twttr.widgets.createTweet(tweetID, containerRef.current)
+      await (window as any).twttr.widgets.createTweet(
+        tweetID,
+        containerRef.current
+      )
 
       setIsTweetLoading(false)
       isTwitterScriptLoading = false
@@ -114,10 +117,7 @@ function TweetComponent({
       nodeKey={nodeKey}
     >
       {isTweetLoading ? loadingComponent : null}
-      <div
-        className="editor-tweet-container"
-        ref={containerRef}
-      />
+      <div className="editor-tweet-container" ref={containerRef} />
     </BlockWithAlignableContents>
   )
 }

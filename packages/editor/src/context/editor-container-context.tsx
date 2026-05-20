@@ -6,9 +6,8 @@ type EditorContainerContextValue = {
   maxWidth?: number
 }
 
-const EditorContainerContext = createContext<EditorContainerContextValue | null>(
-  null
-)
+const EditorContainerContext =
+  createContext<EditorContainerContextValue | null>(null)
 
 export function EditorContainerProvider({
   value,

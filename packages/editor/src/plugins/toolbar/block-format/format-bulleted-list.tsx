@@ -1,4 +1,7 @@
-import { INSERT_UNORDERED_LIST_COMMAND, REMOVE_LIST_COMMAND } from "@lexical/list"
+import {
+  INSERT_UNORDERED_LIST_COMMAND,
+  REMOVE_LIST_COMMAND,
+} from "@lexical/list"
 import { $getSelection, $isRangeSelection } from "lexical"
 
 import { useToolbarContext } from "../../../context/toolbar-context"
@@ -19,7 +22,8 @@ export function FormatBulletedList() {
 
   const formatBulletedList = () => {
     const isAnyBulletList =
-      blockType === "bullet" || (typeof blockType === "string" && blockType.startsWith("bullet-"))
+      blockType === "bullet" ||
+      (typeof blockType === "string" && blockType.startsWith("bullet-"))
 
     if (blockType === "bullet") {
       formatParagraph()
@@ -30,8 +34,16 @@ export function FormatBulletedList() {
       activeEditor.update(() => {
         const selection = $getSelection()
         if ($isRangeSelection(selection)) {
-          $applyBulletListMarkerFromAnchor(activeEditor, selection.anchor.getNode(), undefined)
-          $applyBulletListMarkerFromAnchor(activeEditor, selection.focus.getNode(), undefined)
+          $applyBulletListMarkerFromAnchor(
+            activeEditor,
+            selection.anchor.getNode(),
+            undefined
+          )
+          $applyBulletListMarkerFromAnchor(
+            activeEditor,
+            selection.focus.getNode(),
+            undefined
+          )
         }
       })
       return

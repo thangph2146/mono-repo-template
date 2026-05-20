@@ -1,6 +1,6 @@
-"use client";
-import { cn } from "../lib/utils";
-import { useRef, useEffect, useState } from "react";
+"use client"
+import { cn } from "../lib/utils"
+import { useRef, useEffect, useState } from "react"
 
 export function PointerHighlight({
   children,
@@ -8,58 +8,58 @@ export function PointerHighlight({
   pointerClassName,
   containerClassName,
 }: {
-  children: React.ReactNode;
-  rectangleClassName?: string;
-  pointerClassName?: string;
-  containerClassName?: string;
+  children: React.ReactNode
+  rectangleClassName?: string
+  pointerClassName?: string
+  containerClassName?: string
 }) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
-  const [isInView, setIsInView] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
+  const [isInView, setIsInView] = useState(false)
 
   useEffect(() => {
     if (containerRef.current) {
-      const { width, height } = containerRef.current.getBoundingClientRect();
-      setDimensions({ width, height });
+      const { width, height } = containerRef.current.getBoundingClientRect()
+      setDimensions({ width, height })
     }
 
     const resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
-        const { width, height } = entry.contentRect;
-        setDimensions({ width, height });
+        const { width, height } = entry.contentRect
+        setDimensions({ width, height })
       }
-    });
+    })
 
     const intersectionObserver = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            setIsInView(true);
+            setIsInView(true)
           }
-        });
+        })
       },
       { threshold: 0.1 }
-    );
+    )
 
-    const currentContainer = containerRef.current;
+    const currentContainer = containerRef.current
 
     if (currentContainer) {
-      resizeObserver.observe(currentContainer);
-      intersectionObserver.observe(currentContainer);
+      resizeObserver.observe(currentContainer)
+      intersectionObserver.observe(currentContainer)
     }
 
     return () => {
       if (currentContainer) {
-        resizeObserver.unobserve(currentContainer);
-        intersectionObserver.unobserve(currentContainer);
+        resizeObserver.unobserve(currentContainer)
+        intersectionObserver.unobserve(currentContainer)
       }
-    };
-  }, []);
+    }
+  }, [])
 
-  const rectangleWidth = dimensions.width + 24;
-  const rectangleHeight = dimensions.height + 16;
-  const pointerX = dimensions.width + 20;
-  const pointerY = dimensions.height + 12;
+  const rectangleWidth = dimensions.width + 24
+  const rectangleHeight = dimensions.height + 16
+  const pointerX = dimensions.width + 20
+  const pointerY = dimensions.height + 12
 
   return (
     <div
@@ -68,11 +68,13 @@ export function PointerHighlight({
     >
       {children}
       {dimensions.width > 0 && dimensions.height > 0 && (
-        <div className={cn(
-          "pointer-events-none absolute inset-0 z-0",
-          isInView ? "opacity-100 scale-100" : "opacity-0 scale-95",
-          "transition-all duration-500 ease-out origin-top-left"
-        )}>
+        <div
+          className={cn(
+            "pointer-events-none absolute inset-0 z-0",
+            isInView ? "scale-100 opacity-100" : "scale-95 opacity-0",
+            "origin-top-left transition-all duration-500 ease-out"
+          )}
+        >
           <div
             className={cn(
               "absolute border border-neutral-800 dark:border-neutral-200",
@@ -103,7 +105,7 @@ export function PointerHighlight({
         </div>
       )}
     </div>
-  );
+  )
 }
 
 const Pointer = ({ ...props }: React.SVGProps<SVGSVGElement>) => {
@@ -122,6 +124,5 @@ const Pointer = ({ ...props }: React.SVGProps<SVGSVGElement>) => {
     >
       <path d="M14.082 2.182a.5.5 0 0 1 .103.557L8.528 15.467a.5.5 0 0 1-.917-.007L5.57 10.694.803 8.652a.5.5 0 0 1-.006-.916l12.728-5.657a.5.5 0 0 1 .556.103z"></path>
     </svg>
-  );
-};
-
+  )
+}

@@ -1,6 +1,13 @@
 "use client"
 
-import { useEffect, useRef, useState, useMemo, useLayoutEffect, useCallback } from "react"
+import {
+  useEffect,
+  useRef,
+  useState,
+  useMemo,
+  useLayoutEffect,
+  useCallback,
+} from "react"
 import { createPortal } from "react-dom"
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"
 import { useLexicalEditable } from "@lexical/react/useLexicalEditable"
@@ -10,7 +17,11 @@ import {
   $isTableCellNode,
   TableNode,
 } from "@lexical/table"
-import { $getNearestNodeFromDOMNode, $getNodeByKey, type NodeKey } from "lexical"
+import {
+  $getNearestNodeFromDOMNode,
+  $getNodeByKey,
+  type NodeKey,
+} from "lexical"
 
 type ResizeEdge = "left" | "right"
 
@@ -33,7 +44,9 @@ const EDGE_HITBOX_PX = 8
 /** Độ rộng tối thiểu khi kéo cột (px) — nhỏ hơn để có thể thu hẹp cột như "TT" */
 const MIN_COLUMN_WIDTH_PX = 15
 
-function getCellTarget(target: EventTarget | null): HTMLTableCellElement | null {
+function getCellTarget(
+  target: EventTarget | null
+): HTMLTableCellElement | null {
   if (!target) return null
   let node = target as Node
   if (node.nodeType === Node.TEXT_NODE) {
@@ -86,187 +99,204 @@ export function TableColumnResizerPlugin({
   const [hoverState, setHoverState] = useState<HoverState | null>(null)
   const resizerRef = useRef<HTMLDivElement | null>(null)
 
-  const onPointerDownImpl = useCallback((
-    event: PointerEvent,
-    cell: HTMLTableCellElement,
-    edge: ResizeEdge
-  ) => {
-    if (event.button !== 0) return
-
-    event.preventDefault()
-
-    // Capture pointer to handle dragging outside the resizer handle
-    const target = event.target as HTMLElement
-    if (target) {
-      target.setPointerCapture(event.pointerId)
-    }
-
-    let nextDragState: DragState | null = null
-
-    editor.update(() => {
-      const tableCellNode = $getNearestNodeFromDOMNode(cell)
-      if (!$isTableCellNode(tableCellNode)) return
-
-      const tableNode = $getTableNodeFromLexicalNodeOrThrow(tableCellNode)
-      const tableElement = editor.getElementByKey(tableNode.getKey())
-      if (!tableElement) return
-
-      const tableMap = $computeTableMapSkipCellCheck(tableNode, null, null)[0]
-      const colCount = tableMap[0]?.length ?? 0
-      const columnIndexFromMap = $getColumnIndexFromTableMap(tableNode, tableCellNode)
-
-      if (columnIndexFromMap === null) return
-
-      const colSpan = tableCellNode.getColSpan()
-      const resizeColumnIndex =
-        edge === "left" ? columnIndexFromMap - 1 : columnIndexFromMap + colSpan - 1
-
-      if (resizeColumnIndex < 0 || resizeColumnIndex >= colCount - 1) return
-
-      let currentWidths = tableNode.getColWidths()
-
-      if (!currentWidths) {
-        // If no widths are stored in the node, measure the actual table
-        const columns = tableElement.querySelectorAll("col")
-        const widths: number[] = []
-        
-        if (columns.length === colCount) {
-          columns.forEach((col) => {
-            const styleWidth = (col as HTMLElement).style.width
-            if (styleWidth && styleWidth.endsWith("px")) {
-              widths.push(parseFloat(styleWidth))
-            } else {
-              const rect = col.getBoundingClientRect()
-              widths.push(rect.width || 0)
-            }
-          })
-        }
-
-        // If columns don't match or are missing, try to measure cells in the first row
-        if (widths.length !== colCount) {
-          const firstRow = tableElement.querySelector("tr")
-          if (firstRow) {
-            const cells = firstRow.querySelectorAll("th, td")
-            // This is only accurate if there are no colSpans in the first row
-            if (cells.length === colCount) {
-              cells.forEach((cell) => {
-                widths.push(cell.getBoundingClientRect().width)
-              })
-            }
-          }
-        }
-
-        // Fallback to average width if still missing
-        if (widths.length !== colCount) {
-          const tableRect = tableElement.getBoundingClientRect()
-          const avgWidth = tableRect.width / (colCount || 1)
-          for (let i = 0; i < colCount; i++) {
-            widths.push(avgWidth)
-          }
-        }
-        
-        currentWidths = widths
-      }
-
-      if (currentWidths[resizeColumnIndex] === undefined || currentWidths[resizeColumnIndex + 1] === undefined) {
-        return
-      }
-
-      nextDragState = {
-        columnIndex: resizeColumnIndex,
-        initialColWidths: currentWidths,
-        startX: event.clientX,
-        startWidth: currentWidths[resizeColumnIndex],
-        tableKey: tableNode.getKey(),
-      }
-    })
-
-    if (!nextDragState) return
-
-    dragRef.current = nextDragState
-
-    // Prevent text selection while dragging
-    const rootElement = editor.getRootElement()
-    if (rootElement) {
-      rootElement.style.userSelect = "none"
-      rootElement.style.cursor = "col-resize"
-    }
-
-    const onPointerMoveDocument = (event: PointerEvent) => {
-      const drag = dragRef.current
-      if (!drag) return
+  const onPointerDownImpl = useCallback(
+    (event: PointerEvent, cell: HTMLTableCellElement, edge: ResizeEdge) => {
+      if (event.button !== 0) return
 
       event.preventDefault()
-      const deltaX = event.clientX - drag.startX
-      const { tableKey, columnIndex, initialColWidths } = drag
 
-    editor.update(() => {
-      const tableNode = $getNodeByKey(tableKey)
-      if (!(tableNode instanceof TableNode)) return
-
-      const currentWidths = tableNode.getColWidths() || initialColWidths
-      const colCount = tableNode.getColumnCount()
-      const nextColumnIndex = columnIndex + 1
-      
-      if (nextColumnIndex >= colCount) return
-
-      const currentLeftWidth = initialColWidths[columnIndex]
-      const currentRightWidth = initialColWidths[nextColumnIndex]
-
-      if (currentLeftWidth === undefined || currentRightWidth === undefined) return
-
-      const maxShrinkLeft = currentLeftWidth - MIN_COLUMN_WIDTH_PX
-      const maxGrowLeft = currentRightWidth - MIN_COLUMN_WIDTH_PX
-
-      // Clamp deltaX to ensure neither column shrinks below MIN_COLUMN_WIDTH_PX
-      const constrainedDelta = Math.min(Math.max(deltaX, -maxShrinkLeft), maxGrowLeft)
-
-      const newLeftWidth = currentLeftWidth + constrainedDelta
-      const newRightWidth = currentRightWidth - constrainedDelta
-
-      // Create a clean copy of widths, filling with measured values if needed
-      const nextColWidths = Array.from({ length: colCount }, (_, i) => {
-        if (i === columnIndex) return newLeftWidth
-        if (i === nextColumnIndex) return newRightWidth
-        return currentWidths[i] ?? initialColWidths[i] ?? 0
-      })
-      
-      // Use the correct method to update widths if setColWidths is not standard
-      if (typeof (tableNode as unknown as Record<string, unknown>).setColWidths === "function") {
-        ;((tableNode as unknown as Record<string, unknown>).setColWidths as (widths: number[]) => void)(nextColWidths)
-      } else {
-        // Fallback for different Lexical versions if needed
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        ;(tableNode as any).__colWidths = nextColWidths
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        ;(tableNode as any).__widths = nextColWidths
-        tableNode.markDirty()
-      }
-    })
-    }
-
-    const onPointerUpDocument = (event: PointerEvent) => {
-      const drag = dragRef.current
-      if (!drag) return
-
+      // Capture pointer to handle dragging outside the resizer handle
       const target = event.target as HTMLElement
-      if (target && target.hasPointerCapture(event.pointerId)) {
-        target.releasePointerCapture(event.pointerId)
+      if (target) {
+        target.setPointerCapture(event.pointerId)
       }
 
-      dragRef.current = null
+      let nextDragState: DragState | null = null
+
+      editor.update(() => {
+        const tableCellNode = $getNearestNodeFromDOMNode(cell)
+        if (!$isTableCellNode(tableCellNode)) return
+
+        const tableNode = $getTableNodeFromLexicalNodeOrThrow(tableCellNode)
+        const tableElement = editor.getElementByKey(tableNode.getKey())
+        if (!tableElement) return
+
+        const tableMap = $computeTableMapSkipCellCheck(tableNode, null, null)[0]
+        const colCount = tableMap[0]?.length ?? 0
+        const columnIndexFromMap = $getColumnIndexFromTableMap(
+          tableNode,
+          tableCellNode
+        )
+
+        if (columnIndexFromMap === null) return
+
+        const colSpan = tableCellNode.getColSpan()
+        const resizeColumnIndex =
+          edge === "left"
+            ? columnIndexFromMap - 1
+            : columnIndexFromMap + colSpan - 1
+
+        if (resizeColumnIndex < 0 || resizeColumnIndex >= colCount - 1) return
+
+        let currentWidths = tableNode.getColWidths()
+
+        if (!currentWidths) {
+          // If no widths are stored in the node, measure the actual table
+          const columns = tableElement.querySelectorAll("col")
+          const widths: number[] = []
+
+          if (columns.length === colCount) {
+            columns.forEach((col) => {
+              const styleWidth = (col as HTMLElement).style.width
+              if (styleWidth && styleWidth.endsWith("px")) {
+                widths.push(parseFloat(styleWidth))
+              } else {
+                const rect = col.getBoundingClientRect()
+                widths.push(rect.width || 0)
+              }
+            })
+          }
+
+          // If columns don't match or are missing, try to measure cells in the first row
+          if (widths.length !== colCount) {
+            const firstRow = tableElement.querySelector("tr")
+            if (firstRow) {
+              const cells = firstRow.querySelectorAll("th, td")
+              // This is only accurate if there are no colSpans in the first row
+              if (cells.length === colCount) {
+                cells.forEach((cell) => {
+                  widths.push(cell.getBoundingClientRect().width)
+                })
+              }
+            }
+          }
+
+          // Fallback to average width if still missing
+          if (widths.length !== colCount) {
+            const tableRect = tableElement.getBoundingClientRect()
+            const avgWidth = tableRect.width / (colCount || 1)
+            for (let i = 0; i < colCount; i++) {
+              widths.push(avgWidth)
+            }
+          }
+
+          currentWidths = widths
+        }
+
+        if (
+          currentWidths[resizeColumnIndex] === undefined ||
+          currentWidths[resizeColumnIndex + 1] === undefined
+        ) {
+          return
+        }
+
+        nextDragState = {
+          columnIndex: resizeColumnIndex,
+          initialColWidths: currentWidths,
+          startX: event.clientX,
+          startWidth: currentWidths[resizeColumnIndex],
+          tableKey: tableNode.getKey(),
+        }
+      })
+
+      if (!nextDragState) return
+
+      dragRef.current = nextDragState
+
+      // Prevent text selection while dragging
       const rootElement = editor.getRootElement()
       if (rootElement) {
-        rootElement.style.userSelect = ""
-        rootElement.style.cursor = ""
+        rootElement.style.userSelect = "none"
+        rootElement.style.cursor = "col-resize"
       }
-      document.removeEventListener("pointermove", onPointerMoveDocument)
-      document.removeEventListener("pointerup", onPointerUpDocument)
-    }
 
-    document.addEventListener("pointermove", onPointerMoveDocument)
-    document.addEventListener("pointerup", onPointerUpDocument)
-  }, [editor])
+      const onPointerMoveDocument = (event: PointerEvent) => {
+        const drag = dragRef.current
+        if (!drag) return
+
+        event.preventDefault()
+        const deltaX = event.clientX - drag.startX
+        const { tableKey, columnIndex, initialColWidths } = drag
+
+        editor.update(() => {
+          const tableNode = $getNodeByKey(tableKey)
+          if (!(tableNode instanceof TableNode)) return
+
+          const currentWidths = tableNode.getColWidths() || initialColWidths
+          const colCount = tableNode.getColumnCount()
+          const nextColumnIndex = columnIndex + 1
+
+          if (nextColumnIndex >= colCount) return
+
+          const currentLeftWidth = initialColWidths[columnIndex]
+          const currentRightWidth = initialColWidths[nextColumnIndex]
+
+          if (currentLeftWidth === undefined || currentRightWidth === undefined)
+            return
+
+          const maxShrinkLeft = currentLeftWidth - MIN_COLUMN_WIDTH_PX
+          const maxGrowLeft = currentRightWidth - MIN_COLUMN_WIDTH_PX
+
+          // Clamp deltaX to ensure neither column shrinks below MIN_COLUMN_WIDTH_PX
+          const constrainedDelta = Math.min(
+            Math.max(deltaX, -maxShrinkLeft),
+            maxGrowLeft
+          )
+
+          const newLeftWidth = currentLeftWidth + constrainedDelta
+          const newRightWidth = currentRightWidth - constrainedDelta
+
+          // Create a clean copy of widths, filling with measured values if needed
+          const nextColWidths = Array.from({ length: colCount }, (_, i) => {
+            if (i === columnIndex) return newLeftWidth
+            if (i === nextColumnIndex) return newRightWidth
+            return currentWidths[i] ?? initialColWidths[i] ?? 0
+          })
+
+          // Use the correct method to update widths if setColWidths is not standard
+          if (
+            typeof (tableNode as unknown as Record<string, unknown>)
+              .setColWidths === "function"
+          ) {
+            ;(
+              (tableNode as unknown as Record<string, unknown>)
+                .setColWidths as (widths: number[]) => void
+            )(nextColWidths)
+          } else {
+            // Fallback for different Lexical versions if needed
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            ;(tableNode as any).__colWidths = nextColWidths
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            ;(tableNode as any).__widths = nextColWidths
+            tableNode.markDirty()
+          }
+        })
+      }
+
+      const onPointerUpDocument = (event: PointerEvent) => {
+        const drag = dragRef.current
+        if (!drag) return
+
+        const target = event.target as HTMLElement
+        if (target && target.hasPointerCapture(event.pointerId)) {
+          target.releasePointerCapture(event.pointerId)
+        }
+
+        dragRef.current = null
+        const rootElement = editor.getRootElement()
+        if (rootElement) {
+          rootElement.style.userSelect = ""
+          rootElement.style.cursor = ""
+        }
+        document.removeEventListener("pointermove", onPointerMoveDocument)
+        document.removeEventListener("pointerup", onPointerUpDocument)
+      }
+
+      document.addEventListener("pointermove", onPointerMoveDocument)
+      document.addEventListener("pointerup", onPointerUpDocument)
+    },
+    [editor]
+  )
 
   const updateResizerPosition = useCallback(() => {
     const state = hoverState as HoverState | null
@@ -280,7 +310,7 @@ export function TableColumnResizerPlugin({
     const anchorRect = anchorElem.getBoundingClientRect()
 
     const resizerElem = resizerRef.current
-    
+
     // Find the table element to make the resizer span the entire table height
     const tableElement = cell.closest("table")
     let top = cellRect.top - anchorRect.top
@@ -291,9 +321,10 @@ export function TableColumnResizerPlugin({
       top = tableRect.top - anchorRect.top
       height = tableRect.height
     }
-    
+
     // Position at the edge, centered (width is 16px, so center is edge - 8)
-    const left = (edge === "left" ? cellRect.left : cellRect.right) - anchorRect.left - 8
+    const left =
+      (edge === "left" ? cellRect.left : cellRect.right) - anchorRect.left - 8
 
     resizerElem.style.transform = `translate(${left}px, ${top}px)`
     resizerElem.style.height = `${height}px`
@@ -351,12 +382,16 @@ export function TableColumnResizerPlugin({
       if (event.buttons !== 0) return
 
       // If we are over the resizer, don't clear hover state
-      if (resizerRef.current && (event.target === resizerRef.current || resizerRef.current.contains(event.target as Node))) {
+      if (
+        resizerRef.current &&
+        (event.target === resizerRef.current ||
+          resizerRef.current.contains(event.target as Node))
+      ) {
         return
       }
 
       const cell = getCellTarget(event.target)
-      
+
       let nextHoverState: HoverState | null = null
 
       if (cell) {
@@ -367,16 +402,25 @@ export function TableColumnResizerPlugin({
             const cellKey = cellNode.getKey()
             const tableKey = tableNode.getKey()
 
-            const edge = getResizeEdge(event.clientX, cell.getBoundingClientRect())
+            const edge = getResizeEdge(
+              event.clientX,
+              cell.getBoundingClientRect()
+            )
             if (edge) {
               const colCount = tableNode.getColumnCount()
               const colSpan = cellNode.getColSpan()
-              const columnIndexFromMap = $getColumnIndexFromTableMap(tableNode, cellNode)
+              const columnIndexFromMap = $getColumnIndexFromTableMap(
+                tableNode,
+                cellNode
+              )
 
               if (
                 columnIndexFromMap !== null &&
-                !((edge === "left" && columnIndexFromMap === 0) ||
-                  (edge === "right" && columnIndexFromMap + colSpan === colCount))
+                !(
+                  (edge === "left" && columnIndexFromMap === 0) ||
+                  (edge === "right" &&
+                    columnIndexFromMap + colSpan === colCount)
+                )
               ) {
                 nextHoverState = { cellKey, tableKey, edge }
               }
@@ -393,7 +437,11 @@ export function TableColumnResizerPlugin({
       } else {
         setCursor("col-resize")
         // @ts-expect-error hoverState might be null initially
-        if (!hoverState || hoverState.cellKey !== nextHoverState.cellKey || hoverState.edge !== nextHoverState.edge) {
+        if (
+          !hoverState ||
+          hoverState.cellKey !== nextHoverState.cellKey ||
+          hoverState.edge !== nextHoverState.edge
+        ) {
           setHoverState(nextHoverState)
         }
       }
@@ -414,9 +462,9 @@ export function TableColumnResizerPlugin({
     const { cellKey, edge } = state
 
     return createPortal(
-      <div 
+      <div
         ref={resizerRef}
-        className="editor-table-cell-resizer" 
+        className="editor-table-cell-resizer"
         style={{
           position: "absolute",
           top: 0,
@@ -435,8 +483,8 @@ export function TableColumnResizerPlugin({
           }
         }}
       >
-        <div 
-          className="editor-table-cell-resize-ruler" 
+        <div
+          className="editor-table-cell-resize-ruler"
           style={{ pointerEvents: "none" }}
         />
       </div>,

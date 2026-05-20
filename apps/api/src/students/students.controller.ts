@@ -4,6 +4,15 @@
  * Header: X-User-Id (bắt buộc).
  */
 import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBody,
+  ApiQuery,
+  ApiParam,
+  ApiHeader,
+} from '@nestjs/swagger';
+import {
   Controller,
   Get,
   Post,
@@ -30,6 +39,7 @@ import { RESOURCES, ACTIONS } from '../config/permissions';
 type StudentListStatus = 'active' | 'deleted' | 'all';
 type StudentBulkAction = 'delete' | 'restore' | 'hard-delete';
 
+@ApiTags('Students')
 @Controller(ADMIN_ROUTES.STUDENTS)
 export class StudentsController {
   private readonly logger = new Logger(StudentsController.name);
@@ -94,6 +104,18 @@ export class StudentsController {
   }
 
   @Get()
+  @ApiOperation({ summary: 'List students with pagination' })
+  @ApiHeader({ name: 'X-User-Id', required: true })
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  @ApiQuery({ name: 'search', required: false, type: String })
+  @ApiQuery({
+    name: 'status',
+    required: false,
+    enum: ['active', 'deleted', 'all'],
+  })
+  @ApiResponse({ status: 200, description: 'Students retrieved successfully' })
+  @ApiResponse({ status: 401, description: 'Missing X-User-Id header' })
   async list(
     @Res() res: Response,
     @Headers() headers: Record<string, string | undefined>,
@@ -130,6 +152,12 @@ export class StudentsController {
   }
 
   @Get('options')
+  @ApiOperation({ summary: 'Get student options for dropdowns' })
+  @ApiHeader({ name: 'X-User-Id', required: true })
+  @ApiQuery({ name: 'column', required: false, type: String })
+  @ApiQuery({ name: 'search', required: false, type: String })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  @ApiResponse({ status: 200, description: 'Options retrieved successfully' })
   async options(
     @Res() res: Response,
     @Headers() headers: Record<string, string | undefined>,
@@ -151,6 +179,11 @@ export class StudentsController {
   }
 
   @Get(':id')
+  @ApiOperation({ summary: 'Get student by ID' })
+  @ApiHeader({ name: 'X-User-Id', required: true })
+  @ApiParam({ name: 'id', type: String })
+  @ApiResponse({ status: 200, description: 'Student found' })
+  @ApiResponse({ status: 404, description: 'Student not found' })
   async getById(
     @Res() res: Response,
     @Headers() headers: Record<string, string | undefined>,
@@ -173,6 +206,11 @@ export class StudentsController {
   }
 
   @Post()
+  @ApiOperation({ summary: 'Create new student' })
+  @ApiHeader({ name: 'X-User-Id', required: true })
+  @ApiBody({ description: 'Student data', required: true })
+  @ApiResponse({ status: 201, description: 'Student created successfully' })
+  @ApiResponse({ status: 400, description: 'Invalid input' })
   async create(
     @Res() res: Response,
     @Headers() headers: Record<string, string | undefined>,
@@ -223,6 +261,12 @@ export class StudentsController {
   }
 
   @Put(':id')
+  @ApiOperation({ summary: 'Update student by ID' })
+  @ApiHeader({ name: 'X-User-Id', required: true })
+  @ApiParam({ name: 'id', type: String })
+  @ApiBody({ description: 'Updated student data' })
+  @ApiResponse({ status: 200, description: 'Student updated successfully' })
+  @ApiResponse({ status: 404, description: 'Student not found' })
   async update(
     @Res() res: Response,
     @Headers() headers: Record<string, string | undefined>,
@@ -272,6 +316,14 @@ export class StudentsController {
   }
 
   @Delete(':id')
+  @ApiOperation({ summary: 'Soft delete student' })
+  @ApiHeader({ name: 'X-User-Id', required: true })
+  @ApiParam({ name: 'id', type: String })
+  @ApiResponse({ status: 200, description: 'Student deleted' })
+  @ApiResponse({
+    status: 404,
+    description: 'Student not found or already deleted',
+  })
   async softDelete(
     @Res() res: Response,
     @Headers() headers: Record<string, string | undefined>,
@@ -309,6 +361,11 @@ export class StudentsController {
   }
 
   @Post('bulk')
+  @ApiOperation({ summary: 'Bulk action on students' })
+  @ApiHeader({ name: 'X-User-Id', required: true })
+  @ApiBody({ description: 'Bulk action with ids' })
+  @ApiResponse({ status: 200, description: 'Bulk action completed' })
+  @ApiResponse({ status: 400, description: 'Invalid action' })
   async bulk(
     @Res() res: Response,
     @Headers() headers: Record<string, string | undefined>,
@@ -368,6 +425,11 @@ export class StudentsController {
   }
 
   @Post(':id/restore')
+  @ApiOperation({ summary: 'Restore soft-deleted student' })
+  @ApiHeader({ name: 'X-User-Id', required: true })
+  @ApiParam({ name: 'id', type: String })
+  @ApiResponse({ status: 200, description: 'Student restored' })
+  @ApiResponse({ status: 404, description: 'Student not found or not deleted' })
   async restore(
     @Res() res: Response,
     @Headers() headers: Record<string, string | undefined>,
@@ -405,6 +467,11 @@ export class StudentsController {
   }
 
   @Delete(':id/hard-delete')
+  @ApiOperation({ summary: 'Hard delete student permanently' })
+  @ApiHeader({ name: 'X-User-Id', required: true })
+  @ApiParam({ name: 'id', type: String })
+  @ApiResponse({ status: 200, description: 'Student deleted permanently' })
+  @ApiResponse({ status: 404, description: 'Student not found' })
   async hardDelete(
     @Res() res: Response,
     @Headers() headers: Record<string, string | undefined>,

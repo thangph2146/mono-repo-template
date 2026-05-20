@@ -23,11 +23,7 @@ import { MicIcon } from "lucide-react"
 import { useReport } from "../../editor-hooks/use-report"
 import { CAN_USE_DOM } from "../../shared/can-use-dom"
 import { Button } from "../../ui/button"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "../../ui/tooltip"
+import { Tooltip, TooltipContent, TooltipTrigger } from "../../ui/tooltip"
 import { IconSize } from "../../ui/typography"
 
 export const SPEECH_TO_TEXT_COMMAND: LexicalCommand<boolean> = createCommand(
@@ -62,7 +58,8 @@ function SpeechToTextPluginImpl() {
   const SpeechRecognition =
     CAN_USE_DOM &&
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ((window as any).SpeechRecognition || (window as any).webkitSpeechRecognition)
+    ((window as any).SpeechRecognition ||
+      (window as any).webkitSpeechRecognition)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const recognition = useRef<any | null>(null)
   const report = useReport()

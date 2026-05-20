@@ -5,11 +5,7 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import { DownloadIcon, UploadIcon } from "lucide-react"
 
 import { Button } from "../../ui/button"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "../../ui/tooltip"
+import { Tooltip, TooltipContent, TooltipTrigger } from "../../ui/tooltip"
 import { IconSize } from "../../ui/typography"
 
 export function ImportExportPlugin() {

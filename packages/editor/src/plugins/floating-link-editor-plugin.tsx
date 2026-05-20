@@ -15,7 +15,11 @@ import {
   TOGGLE_LINK_COMMAND,
 } from "@lexical/link"
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"
-import { $findMatchingParent, $wrapNodeInElement, mergeRegister } from "@lexical/utils"
+import {
+  $findMatchingParent,
+  $wrapNodeInElement,
+  mergeRegister,
+} from "@lexical/utils"
 import {
   $createTextNode,
   $getSelection,
@@ -43,7 +47,10 @@ import { Input } from "../ui/input"
 import { Flex } from "../ui/flex"
 import { TypographyPSmall } from "../ui/typography"
 import { $isImageNode } from "../nodes/image-node"
-import { $createDownloadLinkNode, $isDownloadLinkNode } from "../nodes/download-link-node"
+import {
+  $createDownloadLinkNode,
+  $isDownloadLinkNode,
+} from "../nodes/download-link-node"
 import { useEditorUploads } from "../context/uploads-context"
 
 function shouldTreatUrlAsDownload(url: string): boolean {
@@ -95,16 +102,15 @@ function openExternalUrlSafely(rawUrl: string): boolean {
   return true
 }
 
-
-
 function buildHrefFromJsDownloadArg(jsArg: string): string {
   // jsArg is the inner string from javascript:download("...").
   // It might be a relativePath like `files/2026/04/02/foo.pdf`, or an absolute URL.
-  const firstSegment = typeof window !== "undefined" ? window.location.pathname.split("/").filter(Boolean)[0] ?? "" : ""
+  const firstSegment =
+    typeof window !== "undefined"
+      ? (window.location.pathname.split("/").filter(Boolean)[0] ?? "")
+      : ""
   const serveBase =
-    firstSegment === "admin"
-      ? "/api/admin/uploads/serve"
-      : "/api/uploads/serve"
+    firstSegment === "admin" ? "/api/admin/uploads/serve" : "/api/uploads/serve"
 
   const arg = jsArg.trim()
   if (!arg) return "about:blank"
@@ -207,23 +213,23 @@ function FloatingLinkEditor({
     const hasValidNativeSelection =
       nativeSelection !== null &&
       rootElement !== null &&
-      (nativeSelection.anchorNode && rootElement.contains(nativeSelection.anchorNode))
+      nativeSelection.anchorNode &&
+      rootElement.contains(nativeSelection.anchorNode)
 
     // Show floating editor if:
     // 1. We have a link node (existing link) - show to view/edit
     // 2. We're in edit mode (creating new link) - show input to create link
-    const hasImageNode = $isNodeSelection(selection) && selectedNode && $isImageNode(selectedNode)
+    const hasImageNode =
+      $isNodeSelection(selection) && selectedNode && $isImageNode(selectedNode)
     const shouldShowEditor =
       (linkNode !== null || isLinkEditMode) &&
       hasValidSelection &&
       editor.isEditable() &&
-      (
-        // If in edit mode, always show (even if nativeSelection is not valid)
-        isLinkEditMode ||
+      // If in edit mode, always show (even if nativeSelection is not valid)
+      (isLinkEditMode ||
         hasValidNativeSelection ||
         ($isNodeSelection(selection) && selectedNode) ||
-        ($isRangeSelection(selection) && selection.getTextContent().length > 0)
-      )
+        ($isRangeSelection(selection) && selection.getTextContent().length > 0))
     void hasImageNode // reserved for future: hide editor when selection is image-only
 
     if (shouldShowEditor) {
@@ -239,7 +245,9 @@ function FloatingLinkEditor({
           // For image nodes wrapped in links, find the link element
           if ($isImageNode(selectedNode) && linkNode) {
             // Find the link element that wraps the image
-            const linkElement = nodeElement.closest("a") || nodeElement.parentElement?.closest("a")
+            const linkElement =
+              nodeElement.closest("a") ||
+              nodeElement.parentElement?.closest("a")
             if (linkElement) {
               domRect = linkElement.getBoundingClientRect()
             } else {
@@ -264,7 +272,9 @@ function FloatingLinkEditor({
           }
 
           if (focusElement) {
-            const linkElement = focusElement.closest("a") || focusElement.parentElement?.closest("a")
+            const linkElement =
+              focusElement.closest("a") ||
+              focusElement.parentElement?.closest("a")
             if (linkElement) {
               domRect = linkElement.getBoundingClientRect()
             }
@@ -272,9 +282,10 @@ function FloatingLinkEditor({
         }
         if (!domRect && nativeSelection.focusNode) {
           // Get parent element if focusNode is not an HTMLElement
-          const parentElement = nativeSelection.focusNode instanceof HTMLElement
-            ? nativeSelection.focusNode
-            : nativeSelection.focusNode.parentElement
+          const parentElement =
+            nativeSelection.focusNode instanceof HTMLElement
+              ? nativeSelection.focusNode
+              : nativeSelection.focusNode.parentElement
           if (parentElement) {
             domRect = parentElement.getBoundingClientRect()
           }
@@ -303,11 +314,18 @@ function FloatingLinkEditor({
             300,
             50
           )
-          setFloatingElemPositionForLinkEditor(fallbackRect, editorElem, anchorElem)
+          setFloatingElemPositionForLinkEditor(
+            fallbackRect,
+            editorElem,
+            anchorElem
+          )
         }
       }
       setLastSelection(selection)
-    } else if (!activeElement || !activeElement.classList.contains("editor-link-input")) {
+    } else if (
+      !activeElement ||
+      !activeElement.classList.contains("editor-link-input")
+    ) {
       if (rootElement !== null) {
         setFloatingElemPositionForLinkEditor(null, editorElem, anchorElem)
       }
@@ -404,10 +422,16 @@ function FloatingLinkEditor({
     }
   }
 
-  const handleLinkSubmission = (submittedUrl?: string, originalFileName?: string) => {
-    const rawUrl = typeof submittedUrl === "string" ? submittedUrl : editedLinkUrl
+  const handleLinkSubmission = (
+    submittedUrl?: string,
+    originalFileName?: string
+  ) => {
+    const rawUrl =
+      typeof submittedUrl === "string" ? submittedUrl : editedLinkUrl
     const url = sanitizeUrl(rawUrl)
-    const downloadFileName = originalFileName || (shouldTreatUrlAsDownload(url) ? inferDownloadFileName(url) : null)
+    const downloadFileName =
+      originalFileName ||
+      (shouldTreatUrlAsDownload(url) ? inferDownloadFileName(url) : null)
     // Block unsafe protocols (e.g. `javascript:`). `sanitizeUrl()` returns `about:blank` for unsupported schemes.
     if (url !== "about:blank" && validateUrl(url)) {
       editor.update(() => {
@@ -441,7 +465,8 @@ function FloatingLinkEditor({
             // If it's an image node
             if ($isImageNode(node)) {
               // Check if already wrapped in a link
-              const existingLinkNode = $findMatchingParent(node, $isLinkNode) ||
+              const existingLinkNode =
+                $findMatchingParent(node, $isLinkNode) ||
                 ($isLinkNode(node.getParent()) ? node.getParent() : null)
 
               if (existingLinkNode) {
@@ -468,32 +493,38 @@ function FloatingLinkEditor({
           if ($isAutoLinkNode(parent)) {
             const linkNode = downloadFileName
               ? $createDownloadLinkNode(parent.getURL(), downloadFileName, {
-                rel: parent.__rel,
-                target: parent.__target,
-                title: parent.__title,
-              })
+                  rel: parent.__rel,
+                  target: parent.__target,
+                  title: parent.__title,
+                })
               : $createLinkNode(parent.getURL(), {
-                rel: parent.__rel,
-                target: parent.__target,
-                title: parent.__title,
-              })
+                  rel: parent.__rel,
+                  target: parent.__target,
+                  title: parent.__title,
+                })
             parent.replace(linkNode, true)
           }
 
           if (downloadFileName) {
             const selectedNode = getSelectedNode(selection)
             // After TOGGLE_LINK_COMMAND, selection's node should be wrapped in a link node.
-            const linkNode = $findMatchingParent(selectedNode, $isLinkNode) || ($isLinkNode(selectedNode) ? selectedNode : null)
+            const linkNode =
+              $findMatchingParent(selectedNode, $isLinkNode) ||
+              ($isLinkNode(selectedNode) ? selectedNode : null)
             if (linkNode) {
               const currentText = linkNode.getTextContent()
               const targetText = originalFileName || downloadFileName
-              
-              const downloadLinkNode = $createDownloadLinkNode(url, downloadFileName, {
-                rel: linkNode.getRel(),
-                target: linkNode.getTarget(),
-                title: linkNode.getTitle(),
-              })
-              
+
+              const downloadLinkNode = $createDownloadLinkNode(
+                url,
+                downloadFileName,
+                {
+                  rel: linkNode.getRel(),
+                  target: linkNode.getTarget(),
+                  title: linkNode.getTitle(),
+                }
+              )
+
               if (currentText === url && targetText) {
                 // If the user didn't have any text selected, Lexical's TOGGLE_LINK inserted the raw URL.
                 // Replace that text with our targetFileName.
@@ -539,9 +570,14 @@ function FloatingLinkEditor({
         const formData = new FormData()
         formData.append("file", file)
 
-        const firstSegment = typeof window !== "undefined" ? window.location.pathname.split("/").filter(Boolean)[0] ?? "" : ""
-        const pathPart = firstSegment === "admin" ? "/admin/uploads" : "/uploads"
-        const endpoint = firstSegment === "admin" ? `/admin/api${pathPart}` : `/api${pathPart}`
+        const firstSegment =
+          typeof window !== "undefined"
+            ? (window.location.pathname.split("/").filter(Boolean)[0] ?? "")
+            : ""
+        const pathPart =
+          firstSegment === "admin" ? "/admin/uploads" : "/uploads"
+        const endpoint =
+          firstSegment === "admin" ? `/admin/api${pathPart}` : `/api${pathPart}`
 
         const userId = getCookieValue("app_user_id")
         const authToken = getCookieValue("auth-token")
@@ -588,10 +624,7 @@ function FloatingLinkEditor({
   }
 
   return (
-    <div
-      ref={editorRef}
-      className="editor-floating-link-editor"
-    >
+    <div ref={editorRef} className="editor-floating-link-editor">
       {isLinkEditMode || isLink ? (
         isLinkEditMode ? (
           <>
@@ -616,7 +649,9 @@ function FloatingLinkEditor({
                 onClick={handlePickLocalFile}
                 className="editor-shrink-0"
                 disabled={isUploadingFile}
-                title={isUploadingFile ? "Uploading..." : "Upload file từ thiết bị"}
+                title={
+                  isUploadingFile ? "Uploading..." : "Upload file từ thiết bị"
+                }
               >
                 {isUploadingFile ? (
                   <Loader2 className="editor-icon-sm animate-spin" />
@@ -655,7 +690,9 @@ function FloatingLinkEditor({
               let href = sanitizeUrl(linkUrl)
               const jsDownloadMatch =
                 typeof linkUrl === "string"
-                  ? linkUrl.match(/^javascript:download\(\s*(['"])(.*?)\1\s*\)\s*$/i)
+                  ? linkUrl.match(
+                      /^javascript:download\(\s*(['"])(.*?)\1\s*\)\s*$/i
+                    )
                   : null
 
               let downloadAttr: string | undefined
@@ -669,16 +706,16 @@ function FloatingLinkEditor({
                 downloadAttr = inferDownloadFileName(href)
               }
 
-              const isDownload = typeof downloadAttr === "string" && downloadAttr.length > 0
+              const isDownload =
+                typeof downloadAttr === "string" && downloadAttr.length > 0
               const isSafeHref = href !== "about:blank" && validateUrl(href)
-              const text =
-                jsDownloadMatch
-                  ? "Download"
-                  : shouldTreatUrlAsDownload(href)
-                    ? inferDownloadFileName(href)
-                    : href === "about:blank"
-                      ? "Invalid URL"
-                      : linkUrl
+              const text = jsDownloadMatch
+                ? "Download"
+                : shouldTreatUrlAsDownload(href)
+                  ? inferDownloadFileName(href)
+                  : href === "about:blank"
+                    ? "Invalid URL"
+                    : linkUrl
 
               return (
                 <a
@@ -696,7 +733,9 @@ function FloatingLinkEditor({
                     }
                   }}
                 >
-                  <TypographyPSmall className="editor-truncate">{text}</TypographyPSmall>
+                  <TypographyPSmall className="editor-truncate">
+                    {text}
+                  </TypographyPSmall>
                 </a>
               )
             })()}
@@ -723,8 +762,11 @@ function FloatingLinkEditor({
                       if (nodes.length > 0) {
                         const node = nodes[0]
                         if ($isImageNode(node)) {
-                          const linkNode = $findMatchingParent(node, $isLinkNode) ||
-                            ($isLinkNode(node.getParent()) ? node.getParent() : null)
+                          const linkNode =
+                            $findMatchingParent(node, $isLinkNode) ||
+                            ($isLinkNode(node.getParent())
+                              ? node.getParent()
+                              : null)
                           if (linkNode) {
                             // Remove link by unwrapping - insert children into parent and remove link
                             const parent = linkNode.getParent()
@@ -850,7 +892,8 @@ function useFloatingLinkEditorToolbar(
               if ($isImageNode(node)) {
                 if (url) {
                   // Create or update link
-                  const existingLinkNode = $findMatchingParent(node, $isLinkNode) ||
+                  const existingLinkNode =
+                    $findMatchingParent(node, $isLinkNode) ||
                     ($isLinkNode(node.getParent()) ? node.getParent() : null)
 
                   if (existingLinkNode) {
@@ -863,7 +906,8 @@ function useFloatingLinkEditorToolbar(
                   }
                 } else {
                   // Remove link
-                  const linkNode = $findMatchingParent(node, $isLinkNode) ||
+                  const linkNode =
+                    $findMatchingParent(node, $isLinkNode) ||
                     ($isLinkNode(node.getParent()) ? node.getParent() : null)
                   if (linkNode) {
                     // Remove link by unwrapping - insert children into parent and remove link
@@ -909,7 +953,8 @@ function useFloatingLinkEditorToolbar(
               if (nodes.length > 0) {
                 const node = nodes[0]
                 if ($isImageNode(node)) {
-                  const linkNode = $findMatchingParent(node, $isLinkNode) ||
+                  const linkNode =
+                    $findMatchingParent(node, $isLinkNode) ||
                     ($isLinkNode(node.getParent()) ? node.getParent() : null)
                   if (linkNode) {
                     // Delay to ensure DOM is updated

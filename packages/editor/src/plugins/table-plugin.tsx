@@ -17,10 +17,7 @@ import {
 } from "react"
 import * as React from "react"
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"
-import {
-  $createTableNodeWithDimensions,
-  TableNode,
-} from "@lexical/table"
+import { $createTableNodeWithDimensions, TableNode } from "@lexical/table"
 import {
   $insertNodes,
   $getSelection,
@@ -79,7 +76,11 @@ function insertTableIntoEditor(
   editor.update(
     () => {
       const root = $getRoot()
-      const tableNode = $createTableNodeWithDimensions(rows, cols, includeHeaders)
+      const tableNode = $createTableNodeWithDimensions(
+        rows,
+        cols,
+        includeHeaders
+      )
       try {
         const selection = $getSelection()
         let targetBlock: ReturnType<typeof root.getFirstChild> = null
@@ -155,7 +156,14 @@ export function InsertTableDialog({
   const isDisabled = useMemo(() => {
     const row = Number(rows)
     const column = Number(columns)
-    return !(row && row > 0 && row <= 500 && column && column > 0 && column <= 100)
+    return !(
+      row &&
+      row > 0 &&
+      row <= 500 &&
+      column &&
+      column > 0 &&
+      column <= 100
+    )
   }, [rows, columns])
 
   const onClick = () => {
@@ -206,37 +214,41 @@ export function InsertTableDialog({
         </Flex>
 
         <Flex
-            align="center"
-            gap={2}
-            className="editor-table-dialog__checkbox-group"
-          >
-            <input
-              id="include-headers"
-              type="checkbox"
-              checked={includeHeaders}
-              onChange={(e) => setIncludeHeaders(e.target.checked)}
-              className="editor-checkbox"
-            />
-            <Label htmlFor="include-headers" className="editor-label--normal">
-              Dòng đầu làm hàng tiêu đề
-            </Label>
-          </Flex>
-
-          <div className="editor-text-xs-muted">
-            Sau khi chèn, đặt con trỏ trong bảng rồi mở mục{" "}
-            <span className="editor-font-medium">Bảng</span> trên toolbar để gộp/tách ô, chèn hoặc xóa dòng/cột.
-          </div>
-
-          <DialogFooter data-test-id="table-modal-confirm-insert" className="editor-px-0 editor-mt-2">
-            <Button
-              disabled={isDisabled}
-              onClick={onClick}
-              className="editor-w-full"
-            >
-              Chèn bảng
-            </Button>
-          </DialogFooter>
+          align="center"
+          gap={2}
+          className="editor-table-dialog__checkbox-group"
+        >
+          <input
+            id="include-headers"
+            type="checkbox"
+            checked={includeHeaders}
+            onChange={(e) => setIncludeHeaders(e.target.checked)}
+            className="editor-checkbox"
+          />
+          <Label htmlFor="include-headers" className="editor-label--normal">
+            Dòng đầu làm hàng tiêu đề
+          </Label>
         </Flex>
+
+        <div className="editor-text-xs-muted">
+          Sau khi chèn, đặt con trỏ trong bảng rồi mở mục{" "}
+          <span className="editor-font-medium">Bảng</span> trên toolbar để
+          gộp/tách ô, chèn hoặc xóa dòng/cột.
+        </div>
+
+        <DialogFooter
+          data-test-id="table-modal-confirm-insert"
+          className="editor-px-0 editor-mt-2"
+        >
+          <Button
+            disabled={isDisabled}
+            onClick={onClick}
+            className="editor-w-full"
+          >
+            Chèn bảng
+          </Button>
+        </DialogFooter>
+      </Flex>
     </div>
   )
 }

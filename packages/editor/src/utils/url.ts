@@ -15,7 +15,8 @@ const hasExplicitProtocol = (url: string): boolean =>
 const isRelativeUrl = (url: string): boolean =>
   url.startsWith("/") || url.startsWith("#") || url.startsWith("?")
 
-const isIncompleteWebUrl = (url: string): boolean => INCOMPLETE_WEB_URLS.has(url)
+const isIncompleteWebUrl = (url: string): boolean =>
+  INCOMPLETE_WEB_URLS.has(url)
 
 export function sanitizeUrl(url: string): string {
   const value = url.trim()
@@ -65,7 +66,10 @@ export function validateUrl(url: string): boolean {
       if (!SUPPORTED_URL_PROTOCOLS.has(parsed.protocol)) {
         return false
       }
-      if ((parsed.protocol === "http:" || parsed.protocol === "https:") && !parsed.hostname) {
+      if (
+        (parsed.protocol === "http:" || parsed.protocol === "https:") &&
+        !parsed.hostname
+      ) {
         return false
       }
       return true
@@ -78,7 +82,10 @@ export function validateUrl(url: string): boolean {
   return urlRegExp.test(value)
 }
 
-export function normalizeUrlForOpen(rawUrl: string, baseUrl?: string): string | null {
+export function normalizeUrlForOpen(
+  rawUrl: string,
+  baseUrl?: string
+): string | null {
   const value = rawUrl.trim()
   if (!value || isIncompleteWebUrl(value)) {
     return null

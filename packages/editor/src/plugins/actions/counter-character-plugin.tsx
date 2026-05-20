@@ -72,7 +72,9 @@ export function CounterCharacterPlugin({
 
   return (
     <Flex gap={2} className="editor-whitespace-nowrap">
-      <TypographySpanSmallMuted>{stats.characters} characters</TypographySpanSmallMuted>
+      <TypographySpanSmallMuted>
+        {stats.characters} characters
+      </TypographySpanSmallMuted>
       <Separator orientation="vertical" className="editor-h-4" />
       <TypographySpanSmallMuted>{stats.words} words</TypographySpanSmallMuted>
     </Flex>
