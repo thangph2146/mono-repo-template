@@ -1,7 +1,16 @@
+/**
+ * Select UI Component Styles
+ * 
+ * Styles for select triggers, select items, and block format labels.
+ */
+
 @use "../variables" as *;
 @use "../mixins" as *;
 
-/* --- SELECT (Native styling wrapper) --- */
+// ==========================================
+// 1. SELECT TRIGGER
+// ==========================================
+
 .editor-select {
   @include flex-center;
   height: $editor-control-size-md;
@@ -23,7 +32,7 @@
     opacity: $editor-opacity-disabled;
   }
 
-  /* Sizes */
+  // Sizes
   &--size-default {
     height: $editor-control-size-md;
     padding: 0 $editor-gap-3;
@@ -62,12 +71,16 @@
   }
 }
 
-// Keep format select width stable regardless of stylesheet import order.
+// Keep format select width stable regardless of stylesheet import order
 .editor-select.editor-format-select-trigger {
   width: $editor-format-select-width;
   min-width: $editor-format-select-width;
   flex-shrink: 0;
 }
+
+// ==========================================
+// 2. SELECT ITEMS
+// ==========================================
 
 .editor-select-item {
   position: relative;
@@ -106,6 +119,10 @@
     justify-content: center;
   }
 }
+
+// ==========================================
+// 3. SELECT LABELS
+// ==========================================
 
 .editor-select-label {
   padding: $editor-select-item-padding-vertical $editor-gap-2 $editor-select-item-padding-vertical $editor-gap-5;

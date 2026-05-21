@@ -1,5 +1,15 @@
+/**
+ * Checkbox UI Component Styles
+ * 
+ * Styles for checkbox inputs.
+ */
+
 @use "../variables" as *;
 @use "../mixins" as *;
+
+// ==========================================
+// 1. BASE CHECKBOX
+// ==========================================
 
 .editor-checkbox {
   @include control-size($editor-icon-size-sm);

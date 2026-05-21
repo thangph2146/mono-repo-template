@@ -1,7 +1,16 @@
+/**
+ * Tabs UI Component Styles
+ * 
+ * Styles for tab triggers, tab lists, and tab content.
+ */
+
 @use "../variables" as *;
 @use "../mixins" as *;
 
-/* --- TABS --- */
+// ==========================================
+// 1. TAB TRIGGER
+// ==========================================
+
 .editor-tabs-trigger {
   @include flex-center-justify;
   white-space: nowrap;
@@ -30,6 +39,10 @@
   }
 }
 
+// ==========================================
+// 2. TAB LIST
+// ==========================================
+
 .editor-tabs-list {
   @include flex-center-justify;
   height: $editor-control-size-lg;
@@ -39,6 +52,10 @@
   color: var(--muted-foreground);
   width: 100%;
 }
+
+// ==========================================
+// 3. TAB CONTENT
+// ==========================================
 
 .editor-tabs-content {
   margin-top: $editor-gap-2;

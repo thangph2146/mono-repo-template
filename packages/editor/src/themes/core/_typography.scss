@@ -1,21 +1,34 @@
+/**
+ * Core Typography Styles (Lexical Standard)
+ * 
+ * Follows Lexical theming conventions:
+ * - All styles scoped under .lexical-editor-root
+ * - Class names match editor-theme.ts mappings
+ * - No !important - uses proper CSS specificity
+ */
+
 @use "../variables" as *;
 @use "../mixins" as *;
 
+// ==========================================
+// 1. PARAGRAPHS
+// ==========================================
+
 .lexical-editor-root {
-  // Paragraphs
   .editor-paragraph {
     font-family: var(--font-family-base, #{$editor-font-family});
     font-size: $editor-font-size-base;
     line-height: $editor-line-height-base;
     color: var(--gray-900, #212529);
-    margin-top: $editor-paragraph-margin-vertical;
-    margin-bottom: $editor-paragraph-margin-vertical;
+    margin: 0;
+    position: relative;
     padding-inline-start: $editor-list-padding-left;
-    
-    &:first-child { margin-top: 0; margin-bottom: 0; }
   }
 
-  // Headings
+  // ==========================================
+  // 2. HEADINGS
+  // ==========================================
+
   .editor-h1 {
     font-family: var(--font-family-heading, #{$editor-font-family});
     color: var(--gray-900, #212529);
@@ -26,6 +39,7 @@
     margin-top: calc(#{$editor-heading-margin-top} * 1.5);
     margin-bottom: calc(#{$editor-heading-margin-bottom} * 1.5);
   }
+
   .editor-h2 {
     font-family: var(--font-family-heading, #{$editor-font-family});
     color: var(--gray-900, #212529);
@@ -37,6 +51,7 @@
     border-bottom: $editor-border-width solid var(--border);
     padding-bottom: $editor-gap-1;
   }
+
   .editor-h3 {
     font-family: var(--font-family-heading, #{$editor-font-family});
     color: var(--gray-800, #343a40);
@@ -46,6 +61,7 @@
     margin-top: #{$editor-heading-margin-top};
     margin-bottom: #{$editor-heading-margin-bottom};
   }
+
   .editor-h4 {
     font-family: var(--font-family-heading, #{$editor-font-family});
     color: var(--gray-800, #343a40);
@@ -55,6 +71,7 @@
     margin-top: calc(#{$editor-heading-margin-top} * 0.75);
     margin-bottom: calc(#{$editor-heading-margin-bottom} * 0.75);
   }
+
   .editor-h5 {
     font-family: var(--font-family-heading, #{$editor-font-family});
     color: var(--gray-700, #495057);
@@ -64,6 +81,7 @@
     margin-top: calc(#{$editor-heading-margin-top} * 0.5);
     margin-bottom: calc(#{$editor-heading-margin-bottom} * 0.5);
   }
+
   .editor-h6 {
     font-family: var(--font-family-heading, #{$editor-font-family});
     color: var(--gray-700, #495057);
@@ -74,10 +92,14 @@
     margin-bottom: calc(#{$editor-heading-margin-bottom} * 0.5);
   }
 
-  // Quotes
+  // ==========================================
+  // 3. QUOTES
+  // ==========================================
+
   .editor-quote {
     margin: $editor-code-margin 0;
-    padding: $editor-quote-padding $editor-quote-padding $editor-quote-padding ($editor-quote-padding + $editor-gap-2);
+    padding: $editor-quote-padding $editor-quote-padding $editor-quote-padding
+      ($editor-quote-padding + $editor-gap-2);
     border-left: $editor-quote-border-width solid var(--border);
     font-size: $editor-quote-font-size;
     color: var(--muted-foreground);

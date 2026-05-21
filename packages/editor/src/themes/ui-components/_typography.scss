@@ -1,7 +1,16 @@
+/**
+ * Typography UI Component Styles
+ * 
+ * Utility classes for typography sizing and styling.
+ */
+
 @use "../variables" as *;
 @use "../mixins" as *;
 
-/* --- TYPOGRAPHY --- */
+// ==========================================
+// 1. PARAGRAPH TYPOGRAPHY
+// ==========================================
+
 .editor-typography-p {
   line-height: $editor-line-height-base;
 
@@ -15,6 +24,10 @@
   font-weight: $editor-font-weight-medium;
   line-height: 1;
 }
+
+// ==========================================
+// 2. INLINE TYPOGRAPHY
+// ==========================================
 
 .editor-typography-span-small-muted {
   @include text-sm;

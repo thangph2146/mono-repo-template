@@ -1,29 +1,55 @@
+/**
+ * Core Tables Styles (Lexical Standard)
+ * 
+ * Follows Lexical theming conventions:
+ * - Theme classes mapped in editor-theme.ts
+ * - All styles scoped under .lexical-editor-root (except resizer)
+ * - No !important - uses proper CSS specificity
+ */
+
 @use "../variables" as *;
 @use "../mixins" as *;
 
+// ==========================================
+// 1. TABLE WRAPPER & SCROLL
+// ==========================================
+
 .lexical-editor-root {
-  // Table Scrollable Wrapper (Lexical official)
+  // Lexical wraps tables in <div dir="auto" style="overflow-x:auto">
+  .editor-content-editable {
+    > div[dir][style*="overflow-x: auto"],
+    > div[dir][style*="overflow-x:auto"] {
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
+      overflow-x: auto;
+      overflow-y: hidden;
+    }
+  }
+
   .editor-table-scrollable-wrapper {
     overflow-x: auto;
-    margin: 0 0 5px 0;
+    margin: 0 0 $editor-gap-2 0;
 
     > .editor-table {
       margin-top: 0;
       margin-bottom: 0;
     }
 
+    // Frozen row variant
     &.editor-table-frozen-row {
       overflow-x: clip;
 
-      tr:nth-of-type(1) > td {
+      tr:first-child > td,
+      tr:first-child > th {
         overflow: clip;
-        background-color: var(--background, #ffffff);
         position: sticky;
         z-index: 2;
         top: 44px;
 
-        &:after {
-          content: '';
+        &::after {
+          content: "";
           position: absolute;
           left: 0;
           bottom: 0;
@@ -32,114 +58,215 @@
         }
       }
 
-      tr:nth-of-type(1) > th {
-        overflow: clip;
-        background-color: $editor-table-header-bg;
-        position: sticky;
-        z-index: 2;
-        top: 44px;
+      tr:first-child > td {
+        background-color: var(--background, #ffffff);
+      }
 
-        &:after {
-          content: '';
-          position: absolute;
-          left: 0;
-          bottom: 0;
-          width: 100%;
-          border-bottom: 1px solid var(--border, #bbb);
-        }
+      tr:first-child > th {
+        background-color: $editor-table-header-bg;
       }
     }
   }
 
-  // Table Scroll Indicators (Lexical official)
+  // Scroll shadow indicators
   .editor-table-scroll-right {
     box-shadow: inset -10px 0 10px rgba(0, 0, 0, 0.15);
   }
+
   .editor-table-scroll-left {
     box-shadow: inset 10px 0 10px rgba(0, 0, 0, 0.15);
   }
+
   .editor-table-scroll-middle {
     box-shadow:
       inset 10px 0 10px rgba(0, 0, 0, 0.15),
       inset -10px 0 10px rgba(0, 0, 0, 0.15);
   }
 
-  // Table Alignment (Lexical official)
+  // Table alignment wrappers
   .editor-table-alignment-center {
     margin-left: auto;
     margin-right: auto;
   }
+
   .editor-table-alignment-right {
     margin-left: auto;
   }
 
-  // Table (Lexical official base)
+  // ==========================================
+  // 2. BASE TABLE
+  // ==========================================
+
   .editor-table {
     border-collapse: collapse;
     border-spacing: 0;
-    overflow-y: scroll;
-    overflow-x: scroll;
+    overflow-x: auto;
+    overflow-y: auto;
     table-layout: fixed;
-    width: fit-content;
-    margin-top: 25px;
-    margin-bottom: 30px;
-    
+    width: max-content;
+    max-width: 100%;
+    min-width: 0;
+    margin-block: $editor-table-margin-vertical;
+
+    // ==========================================
+    // 2.1 TABLE WIDTH MODES (via data attributes)
+    // ==========================================
+
+    // Default: auto width
+    &[data-table-width-mode="auto"] {
+      width: auto;
+      max-width: 100%;
+    }
+
+    // Percentage width
+    &[data-table-width-mode="percent"] {
+      width: var(--table-width-percent, 100%);
+      max-width: 100%;
+    }
+
+    // Pixel width
+    &[data-table-width-mode="px"] {
+      width: var(--table-width-px, 960px);
+      max-width: 100%;
+    }
+
+    // Fit-content
+    &[data-table-width-mode="fit-content"] {
+      width: fit-content;
+      max-width: 100%;
+    }
+
+    // Max-content
+    &[data-table-width-mode="max-content"] {
+      width: max-content;
+      max-width: 100%;
+    }
+
+    // Min-content
+    &[data-table-width-mode="min-content"] {
+      width: min-content;
+      max-width: 100%;
+    }
+
+    // Hide rowspan/colspan placeholder rows
+    // Only hide rows where the only cell contains just a <br> (placeholder cells)
+    // Do NOT hide legitimate merged cells that have content
+    tr:has(> td:only-child > br:only-child) {
+      display: none;
+    }
+
+    // Fallback for browsers without :has()
+    // Only target placeholder cells (td with only a br inside), not merged cells with content
+    tr > td:only-child > br:only-child {
+      display: none;
+    }
+
+    // Placeholder cells - only apply zero styling if the cell contains ONLY a br
+    // This prevents breaking legitimate colspan/rowspan cells that have actual content
+    tr > td:only-child:has(> br:only-child) {
+      padding: 0;
+      border: none;
+      height: 0;
+      line-height: 0;
+      font-size: 0;
+
+      > br {
+        display: none;
+      }
+    }
+
+    // ==========================================
+    // 3. TABLE CELLS
+    // ==========================================
+
     .editor-table-cell {
       min-width: 0;
       border: $editor-border-width solid $editor-table-border-color;
       padding: $editor-table-cell-padding-y $editor-table-cell-padding-x;
       position: relative;
-      text-align: inherit;
       vertical-align: top;
       white-space: normal;
       overflow-wrap: anywhere;
       word-break: break-word;
+
+      * {
+        white-space: normal;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+        max-width: 100%;
+      }
+
+      .editor-truncate {
+        overflow: visible;
+        text-overflow: clip;
+        white-space: normal;
+        word-break: break-word;
+      }
     }
 
-    // Keep alignment classes effective on table cells.
+    // Cell text alignment
     .editor-table-cell.editor-text-align-left {
       text-align: left;
     }
-
     .editor-table-cell.editor-text-align-center {
       text-align: center;
     }
-
     .editor-table-cell.editor-text-align-right {
       text-align: right;
     }
-
     .editor-table-cell.editor-text-align-justify {
       text-align: justify;
     }
 
-    .editor-table-cell * {
+    // Header cells - explicit styles instead of @extend to avoid CSS order issues
+    .editor-table-cell-header {
+      min-width: 0;
+      border: $editor-border-width solid $editor-table-border-color;
+      padding: $editor-table-cell-padding-y $editor-table-cell-padding-x;
+      position: relative;
+      vertical-align: top;
       white-space: normal;
       overflow-wrap: anywhere;
       word-break: break-word;
-      max-width: 100%;
-    }
-
-    .editor-table-cell .editor-truncate {
-      overflow: visible;
-      text-overflow: clip;
-      white-space: normal;
-      word-break: break-word;
-    }
-
-    .editor-table-cell-header {
-      @extend .editor-table-cell;
       background-color: $editor-table-header-bg;
       font-weight: $editor-font-weight-semibold;
       color: $editor-text-color;
     }
 
-    // Không set background-color trên <td> khi selected: !important sẽ thắng cả inline Lexical.
-    // Dùng inset box-shadow + color-mix (hợp lệ với var(--primary, ...)), không dùng rgba(var(...), a).
-    $editor-table-cell-selected-mix-pct: max(
-      $editor-table-cell-selection-opacity - 0.1,
-      0
-    ) * 100%;
+    // Rowspan cells - merged across rows
+    .editor-table-cell[rowspan] {
+      vertical-align: middle;
+    }
+
+    // Colspan cells - merged across columns (must come after base/header cells)
+    // Primary: [colspan] attribute
+    .editor-table-cell[colspan] {
+      padding: $editor-table-cell-padding-y $editor-table-cell-padding-x;
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    // Header cells with colspan - ensure consistent padding
+    .editor-table-cell-header[colspan] {
+      padding: $editor-table-cell-padding-y $editor-table-cell-padding-x;
+    }
+
+    // Fallback: cells with inline width style that are likely merged
+    // Only target cells where width is significantly larger than a single column
+    // This avoids matching regular cells that have width set by column resizer
+    .editor-table-cell[style*="width"]:not([colspan]):not([rowspan]) {
+      // Only apply merged cell styles if the cell width suggests it spans multiple columns
+      // We use a more specific selector to avoid conflicts with normal resized cells
+    }
+
+    // Header cells with inline width style (non-merged)
+    .editor-table-cell-header[style*="width"]:not([colspan]):not([rowspan]) {
+      // Normal header cell with width - no special merged styling needed
+    }
+
+    // ==========================================
+    // 4. CELL SELECTION & EDITING STATES
+    // ==========================================
 
     .editor-table-cell-selected {
       outline: 2px solid $editor-primary-color;
@@ -147,269 +274,245 @@
       box-shadow: inset 0 0 0 9999px
         color-mix(
           in srgb,
-          $editor-primary-color $editor-table-cell-selected-mix-pct,
+          $editor-primary-color
+            calc(($editor-table-cell-selection-opacity - 0.1) * 100%),
           transparent
         );
     }
-    
-    .editor-table-cell-action-button-container {
-      display: block;
-      right: $editor-table-action-button-right;
-      top: $editor-table-action-button-top;
+
+    .editor-table-cell-primary-selected {
       position: absolute;
+      inset: calc(#{$editor-border-width} * -1);
+      width: calc(100% - #{$editor-outline-width});
+      height: calc(100% - #{$editor-outline-width});
+      border: $editor-outline-width solid $editor-primary-color;
+      z-index: $editor-z-index-layer-10;
+    }
+
+    .editor-table-cell-editing {
+      box-shadow: 0 0 $editor-shadow-blur-sm $editor-table-cell-editing-shadow;
+      border-radius: calc($editor-gap-1 / 2);
+    }
+
+    // ==========================================
+    // 5. CELL ACTION BUTTON
+    // ==========================================
+
+    .editor-table-cell-action-button-container {
+      position: absolute;
+      top: $editor-table-action-button-top;
+      right: $editor-table-action-button-right;
       z-index: $editor-z-index-layer-10;
       width: $editor-table-action-button-size;
       height: $editor-table-action-button-size;
     }
 
     .editor-table-cell-action-button {
-      background-color: $editor-muted-color;
       display: block;
+      width: 100%;
+      height: 100%;
       border: 0;
-      @include rounded-full;
-      @include control-size($editor-table-action-button-size);
+      background-color: $editor-muted-color;
       color: $editor-text-color;
       cursor: pointer;
+      border-radius: 9999px;
       transition: all $editor-transition-fast;
 
       @include editor-button-interactive;
     }
-    
-    .editor-table-cell-editing {
-      box-shadow: 0 0 $editor-shadow-blur-sm $editor-table-cell-editing-shadow;
-      border-radius: calc($editor-gap-1 / 2);
-    }
-    
-    .editor-table-cell-primary-selected {
-      border: $editor-outline-width solid $editor-primary-color;
-      display: block;
-      height: calc(100% - #{$editor-outline-width});
-      width: calc(100% - #{$editor-outline-width});
-      position: absolute;
-      left: -#{$editor-border-width};
-      top: -#{$editor-border-width};
-      z-index: $editor-z-index-layer-10;
-    }
-    
+
+    // ==========================================
+    // 6. SORTED COLUMN INDICATOR
+    // ==========================================
+
     .editor-table-cell-sorted-indicator {
-      display: block;
-      opacity: 0.5;
       position: absolute;
       bottom: 0;
       left: 0;
       width: 100%;
       height: $editor-table-sorted-indicator-height;
       background-color: $editor-muted-color;
+      opacity: 0.5;
     }
 
-    // Frozen Column (Lexical official)
-    .editor-table-frozen-column tr > td:first-child {
-      background-color: var(--background, #ffffff);
-      position: sticky;
-      z-index: 2;
-      left: 0;
+    // ==========================================
+    // 7. FROZEN COLUMN
+    // ==========================================
 
-      &::after {
-        content: '';
-        position: absolute;
+    .editor-table-frozen-column {
+      tr > td:first-child,
+      tr > th:first-child {
+        position: sticky;
+        z-index: 2;
         left: 0;
-        top: 0;
-        right: 0;
-        height: 100%;
-        border-right: 1px solid var(--border, #bbb);
+
+        &::after {
+          content: "";
+          position: absolute;
+          left: 0;
+          top: 0;
+          right: 0;
+          height: 100%;
+          border-right: 1px solid var(--border, #bbb);
+        }
+      }
+
+      tr > td:first-child {
+        background-color: var(--background, #ffffff);
+      }
+
+      tr > th:first-child {
+        background-color: $editor-table-header-bg;
+      }
+
+      &.editor-table-row-striping tr:nth-child(even) > td:first-child {
+        background-color: var(--muted, #f2f5fb);
       }
     }
 
-    .editor-table-frozen-column tr > th:first-child {
-      background-color: $editor-table-header-bg;
-      position: sticky;
-      z-index: 2;
-      left: 0;
+    // ==========================================
+    // 8. ROW STRIPING
+    // ==========================================
 
-      &::after {
-        content: '';
-        position: absolute;
-        left: 0;
-        top: 0;
-        right: 0;
-        height: 100%;
-        border-right: 1px solid var(--border, #bbb);
-      }
-    }
-
-    // Row Striping (Lexical official)
-    .editor-table-row-striping tr:nth-child(even) {
+    &.editor-table-row-striping tr:nth-child(even) {
       background-color: var(--muted, #f2f5fb);
     }
 
-    .editor-table-frozen-column .editor-table.editor-table-row-striping tr:nth-child(even) > td:first-child {
-      background-color: var(--muted, #f2f5fb);
-    }
+    // ==========================================
+    // 9. TABLE SELECTION
+    // ==========================================
 
-    // Table Selection (Lexical official)
     &.editor-table-selected {
-      outline: 2px solid rgb(60, 132, 244);
-    }
-
-    .editor-table-selection *::selection {
-      background-color: transparent;
-    }
-
-    // Add Columns Button (Lexical official)
-    .editor-table-add-columns {
-      position: absolute;
-      background-color: #eee;
-      height: 100%;
-      animation: editor-table-controls 0.2s ease;
-      border: 0;
-      cursor: pointer;
-
-      &:after {
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='%23666' stroke-width='2' d='M12 5v14M5 12h14'/%3E%3C/svg%3E");
-        background-size: contain;
-        background-position: center;
-        background-repeat: no-repeat;
-        display: block;
-        content: ' ';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        opacity: 0.4;
-      }
-
-      &:hover {
-        background-color: #c9dbf0;
-      }
-    }
-
-    // Add Rows Button (Lexical official)
-    .editor-table-add-rows {
-      position: absolute;
-      width: calc(100% - 25px);
-      background-color: #eee;
-      animation: editor-table-controls 0.2s ease;
-      border: 0;
-      cursor: pointer;
-
-      &:after {
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='%23666' stroke-width='2' d='M12 5v14M5 12h14'/%3E%3C/svg%3E");
-        background-size: contain;
-        background-position: center;
-        background-repeat: no-repeat;
-        display: block;
-        content: ' ';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        opacity: 0.4;
-      }
-
-      &:hover {
-        background-color: #c9dbf0;
-      }
-    }
-
-    .editor-table-row-striping {
-      margin: 0;
-      border-top: $editor-border-width solid $editor-border-color;
-      padding: 0;
-      
-      &:nth-child(even) {
-        background-color: $editor-muted-color;
-      }
-    }
-    
-    .editor-table-selected {
       outline: $editor-outline-width solid $editor-primary-color;
     }
-    
+
     .editor-table-selection {
       background-color: color-mix(
+        in srgb,
+        $editor-primary-color
+          calc($editor-table-cell-selection-opacity * 0.5 * 100%),
+        transparent
+      );
+
+      *::selection {
+        background-color: transparent;
+      }
+    }
+
+    // ==========================================
+    // 10. ADD COLUMNS / ROWS BUTTONS
+    // ==========================================
+
+    .editor-table-add-columns,
+    .editor-table-add-rows {
+      position: absolute;
+      border: 0;
+      cursor: pointer;
+      animation: editor-table-controls 0.2s ease;
+
+      &::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='%23666' stroke-width='2' d='M12 5v14M5 12h14'/%3E%3C/svg%3E");
+        background-size: contain;
+        background-position: center;
+        background-repeat: no-repeat;
+        opacity: 0.4;
+      }
+
+      &:hover {
+        background-color: color-mix(
           in srgb,
-          $editor-primary-color
-            #{$editor-table-cell-selection-opacity * 0.5 * 100%},
-          transparent
+          $editor-primary-color 15%,
+          var(--muted, #f1f3f5)
         );
+      }
+    }
+
+    .editor-table-add-columns {
+      height: 100%;
+      background-color: var(--muted, #eee);
+    }
+
+    .editor-table-add-rows {
+      width: calc(100% - 25px);
+      background-color: var(--muted, #eee);
+    }
+  }
+
+  // ==========================================
+  // 11. READONLY / REVIEW MODE
+  // ==========================================
+
+  .editor-content-editable--readonly,
+  .editor-content-editable--review {
+    > div[dir][style*="overflow-x: auto"],
+    > div[dir][style*="overflow-x:auto"] {
+      width: auto;
+      max-width: 100%;
+    }
+
+    .editor-table {
+      max-width: 100%;
+      width: auto;
+      table-layout: auto;
+    }
+
+    .editor-table colgroup col,
+    .editor-table col {
+      width: auto;
+      min-width: 0;
+      max-width: none;
+    }
+
+    .editor-table-cell {
+      width: auto;
+      min-width: 0;
+      max-width: none;
+    }
+
+    .editor-table colgroup col[style],
+    .editor-table col[style] {
+      width: auto;
+    }
+
+    .editor-table-cell[style] {
+      width: auto;
     }
   }
 }
 
-// Table Cell Resizer
+// ==========================================
+// 12. TABLE CELL RESIZER (outside .lexical-editor-root)
+// ==========================================
+
 .editor-table-cell-resizer {
   position: absolute;
+  top: 0;
+  width: $editor-table-resizer-width;
   height: 100%;
-  width: 16px;
   cursor: col-resize;
   z-index: $editor-z-index-floating;
-  top: 0;
   pointer-events: auto;
   user-select: none;
   background-color: transparent;
 
   &:hover {
-    background-color: color-mix(in srgb, $editor-primary-color 10%, transparent);
+    background-color: color-mix(
+      in srgb,
+      $editor-primary-color 10%,
+      transparent
+    );
   }
 }
 
 .editor-table-cell-resize-ruler {
-  display: block;
   position: absolute;
+  top: 0;
+  left: 8px;
   width: 1px;
   height: 100%;
   background-color: $editor-primary-color;
-  top: 0;
-  left: 8px;
   pointer-events: none;
-}
-
-// Readonly/review: let columns auto-size to content instead of fixed pixel widths.
-// Prevents empty space when container is wider than sum of colWidths.
-// Must override inline style="width: Xpx" set by Lexical TableCellNode.updateDOM.
-.lexical-editor-root .editor-content-editable--readonly,
-.lexical-editor-root .editor-content-editable--review {
-  .editor-table {
-    max-width: 100%;
-  }
-  .editor-table colgroup col,
-  .editor-table col {
-    width: auto !important;
-    min-width: 0;
-  }
-  .editor-table-cell {
-    width: auto !important;
-    min-width: 0 !important;
-    max-width: none !important;
-  }
-}
-
-// Lexical wraps table blocks in a runtime <div dir="auto" style="overflow-x:auto">.
-// Constrain that wrapper to parent width so it never expands layout unexpectedly.
-.lexical-editor-root .editor-content-editable {
-  > div[dir][style*="overflow-x: auto"],
-  > div[dir][style*="overflow-x:auto"] {
-    width: 100%;
-    max-width: 100%;
-    min-width: 0;
-    box-sizing: border-box;
-    overflow-x: auto;
-    overflow-y: hidden;
-  }
-
-  > div[dir][style*="overflow-x: auto"] > .editor-table,
-  > div[dir][style*="overflow-x:auto"] > .editor-table {
-    width: 100%;
-    max-width: 100%;
-    min-width: 0;
-  }
-
-  // Fallback: even if Lexical wrapper shape changes, keep table bounded.
-  table.editor-table {
-    width: 100%;
-    max-width: 100%;
-    min-width: 0;
-  }
 }

@@ -95,7 +95,7 @@ function PostDetailInner() {
             </CardHeader>
             <CardContent>
               {content ? (
-                <LexicalEditor value={content} readOnly />
+                <LexicalEditor value={content} readOnly  className="max-w-6xl mx-auto"/>
               ) : (
                 <p className="text-sm text-muted-foreground italic">
                   Bài viết chưa có nội dung

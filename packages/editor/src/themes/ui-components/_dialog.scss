@@ -1,7 +1,16 @@
+/**
+ * Dialog UI Component Styles
+ * 
+ * Styles for dialog overlays, content, and lightbox variants.
+ */
+
 @use "../variables" as *;
 @use "../mixins" as *;
 
-/* --- DIALOG --- */
+// ==========================================
+// 1. DIALOG OVERLAY
+// ==========================================
+
 .editor-dialog-overlay {
   position: fixed;
   inset: 0;
@@ -9,6 +18,10 @@
   @include backdrop-blur($editor-dialog-overlay-blur, $editor-dialog-overlay-bg);
   animation: editor-fade-in $editor-transition-normal ease-out;
 }
+
+// ==========================================
+// 2. DIALOG CONTENT
+// ==========================================
 
 .editor-dialog-content {
   position: fixed;
@@ -51,14 +64,18 @@
   }
 }
 
+// ==========================================
+// 3. DIALOG VARIANTS
+// ==========================================
+
 .editor-dialog-content--image {
   width: min(1400px, 96vw);
-  max-width: min(1400px, 96vw) !important;
+  max-width: min(1400px, 96vw);
 }
 
 .editor-dialog-content--lightbox {
   width: min(1400px, 96vw);
-  max-width: min(1400px, 96vw) !important;
+  max-width: min(1400px, 96vw);
   height: min(90vh, 920px);
   padding: 0;
   gap: 0;
@@ -72,6 +89,10 @@
     color: #ffffff;
   }
 }
+
+// ==========================================
+// 4. LIGHTBOX COMPONENTS
+// ==========================================
 
 .editor-lightbox {
   height: 100%;
@@ -114,7 +135,6 @@
   &.is-dragging {
     cursor: grabbing;
   }
-
 }
 
 .editor-lightbox__image-content {
@@ -124,6 +144,10 @@
   user-select: none;
   transition: transform 150ms ease-out;
 }
+
+// ==========================================
+// 5. LIGHTBOX ZOOM CONTROLS
+// ==========================================
 
 .editor-lightbox__zoom-controls {
   position: absolute;
@@ -174,6 +198,10 @@
   font-weight: 600;
 }
 
+// ==========================================
+// 6. LIGHTBOX NAVIGATION
+// ==========================================
+
 .editor-lightbox__nav {
   position: absolute;
   top: 50%;
@@ -209,6 +237,10 @@
   }
 }
 
+// ==========================================
+// 7. LIGHTBOX FOOTER & META
+// ==========================================
+
 .editor-lightbox__footer {
   flex: 0 0 auto;
   padding: 12px 12px 14px;
@@ -240,6 +272,10 @@
   white-space: nowrap;
 }
 
+// ==========================================
+// 8. LIGHTBOX THUMBNAILS
+// ==========================================
+
 .editor-lightbox__thumbs {
   display: flex;
   gap: 8px;
@@ -268,6 +304,10 @@
   height: 100%;
   object-fit: cover;
 }
+
+// ==========================================
+// 9. DIALOG HEADER & FOOTER
+// ==========================================
 
 .editor-dialog-header {
   @include flex-col;

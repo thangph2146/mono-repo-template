@@ -100,7 +100,7 @@ export function TableActionsToolbarPlugin() {
         title="Thao tác ô bảng"
         aria-label="Thao tác ô bảng"
       >
-        <IconSize size="md">
+        <IconSize size="sm">
           <TableProperties />
         </IconSize>
         Bảng
@@ -253,9 +253,7 @@ export function TableActionsToolbarPlugin() {
 
                 if (savedColWidths && deletedColIdx >= 0) {
                   const newSel = $getSelection()
-                  const updated = newSel
-                    ? $getCurrentTableNode(newSel)
-                    : null
+                  const updated = newSel ? $getCurrentTableNode(newSel) : null
                   if (updated) {
                     const newColWidths = updated.getColWidths()
                     const colCount = updated.getColumnCount()

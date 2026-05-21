@@ -1,5 +1,15 @@
+/**
+ * Draggable Block Plugin Styles
+ * 
+ * Styles for the draggable line and menu elements.
+ */
+
 @use "../variables" as *;
 @use "../mixins" as *;
+
+// ==========================================
+// 1. DRAGGABLE LINE
+// ==========================================
 
 .editor-draggable-line {
   background-color: var(--secondary-foreground);
@@ -11,6 +21,10 @@
   opacity: 0;
   will-change: transform;
 }
+
+// ==========================================
+// 2. DRAGGABLE MENU
+// ==========================================
 
 .editor-draggable-menu {
   position: absolute;

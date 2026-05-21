@@ -4,26 +4,34 @@
  * All variables use !default so they can be overridden by the consumer.
  */
 
-// Typography
+// ==========================================
+// 1. TYPOGRAPHY
+// ==========================================
+
+// Font Families
 $editor-font-family: var(--font-inter), "Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !default;
 $editor-font-family-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !default;
+
+// Font Sizes
 $editor-font-size-xs: 0.75rem !default;
 $editor-font-size-sm: 0.875rem !default;
 $editor-font-size-md: 1rem !default;
 $editor-font-size-lg: 1.125rem !default;
 $editor-font-size-base: var(--fs-body, 1rem) !default;
-$editor-line-height-tight: var(--lh-tight, 1.25) !default;
-$editor-line-height-snug: 1.375 !default;
-$editor-line-height-normal: var(--lh-normal, 1.5) !default;
-$editor-line-height-relaxed: 1.625 !default;
-$editor-line-height-loose: 2 !default;
-$editor-line-height-base: var(--lh-body-normal, 1.5) !default;
 
 // Font Weights
 $editor-font-weight-normal: 400 !default;
 $editor-font-weight-medium: 500 !default;
 $editor-font-weight-semibold: 600 !default;
 $editor-font-weight-bold: 700 !default;
+
+// Line Heights
+$editor-line-height-tight: var(--lh-tight, 1.25) !default;
+$editor-line-height-snug: 1.375 !default;
+$editor-line-height-normal: var(--lh-normal, 1.5) !default;
+$editor-line-height-relaxed: 1.625 !default;
+$editor-line-height-loose: 2 !default;
+$editor-line-height-base: var(--lh-body-normal, 1.5) !default;
 
 // Heading Sizes & Spacing
 $editor-h1-size: var(--fs-page-title, 3.6rem) !default;
@@ -38,6 +46,145 @@ $editor-heading-margin-top: var(--sp-5, 2.4rem) !default;
 $editor-heading-margin-bottom: var(--sp-3, 1.2rem) !default;
 $editor-heading-letter-spacing-tight: -0.025em !default;
 
+// ==========================================
+// 2. COLORS (Shadcn Compatible)
+// ==========================================
+
+$editor-primary-color: var(--primary, #3b82f6) !default;
+$editor-link-color: var(--primary, #3b82f6) !default; // Alias for semantic clarity
+$editor-secondary-color: var(--secondary, #f1f5f9) !default;
+$editor-secondary-foreground-color: var(--secondary-foreground, #0f172a) !default;
+$editor-text-color: var(--foreground, #212529) !default;
+$editor-bg-color: var(--background, transparent) !default;
+$editor-muted-color: var(--muted, #f1f3f5) !default;
+$editor-muted-foreground-color: var(--muted-foreground, #6c757d) !default;
+$editor-border-color: var(--border, #dee2e6) !default;
+$editor-quote-border-color: var(--input, #e9ecef) !default;
+$editor-accent-color: var(--accent, #f1f3f5) !default;
+$editor-accent-foreground-color: var(--accent-foreground, #212529) !default;
+$editor-accent-muted-color: var(--accent-muted, #e2e8f0) !default;
+$editor-destructive-color: var(--destructive, #ef4444) !default;
+$editor-destructive-foreground-color: var(--destructive-foreground, #ffffff) !default;
+$editor-popover-bg: var(--popover, #ffffff) !default;
+$editor-popover-fg: var(--popover-foreground, #0f172a) !default;
+$editor-ring-color: var(--ring, rgba(59, 130, 246, 0.5)) !default;
+$editor-input-border: var(--input, #e2e8f0) !default;
+
+// Code Colors
+$editor-code-bg: $editor-muted-color !default;
+$editor-code-color: $editor-muted-foreground-color !default;
+
+// Table Colors
+$editor-table-border-color: var(--border, #d1d5db) !default;
+$editor-table-header-bg: var(--muted, #f9fafb) !default;
+
+// Highlight Colors
+$editor-highlight-bg: rgba(255, 212, 0, 0.14) !default;
+$editor-highlight-border: rgba(255, 212, 0, 0.3) !default;
+$editor-highlight-selected-bg: rgba(255, 212, 0, 0.5) !default;
+$editor-highlight-selected-border: rgba(255, 212, 0, 1) !default;
+$editor-highlight-overlap-bg: rgba(255, 212, 0, 0.7) !default;
+
+// Special Text Colors
+$editor-special-text-bg: yellow !default;
+$editor-char-limit-bg: #ffbbbb !default;
+
+// Lightbox Colors
+$editor-lightbox-bg: #0b0f19 !default;
+$editor-lightbox-fg: #ffffff !default;
+$editor-lightbox-overlay-bg: rgba(0, 0, 0, 0.35) !default;
+$editor-lightbox-controls-bg: rgba(0, 0, 0, 0.45) !default;
+$editor-lightbox-border-subtle: rgba(255, 255, 255, 0.18) !default;
+$editor-lightbox-border-faint: rgba(255, 255, 255, 0.12) !default;
+$editor-lightbox-border-soft: rgba(255, 255, 255, 0.2) !default;
+$editor-lightbox-bg-subtle: rgba(255, 255, 255, 0.04) !default;
+$editor-lightbox-border-active: rgba(255, 255, 255, 0.62) !default;
+
+// Tint & Overlay Colors
+$editor-overlay-tint: rgba(0, 0, 0, 0.01) !default;
+$editor-hover-tint: rgba(0, 0, 0, 0.02) !default;
+$editor-toolbar-bg: rgba(255, 255, 255, 0.82) !default;
+$editor-primary-tint-soft: rgba(59, 130, 246, 0.08) !default;
+$editor-primary-tint: rgba(59, 130, 246, 0.1) !default;
+$editor-primary-tint-medium: rgba(59, 130, 246, 0.15) !default;
+$editor-primary-tint-strong: rgba(59, 130, 246, 0.3) !default;
+
+// Shadow Colors
+$editor-shadow-color-soft: rgba(0, 0, 0, 0.05) !default;
+$editor-shadow-color-subtle: rgba(0, 0, 0, 0.06) !default;
+$editor-shadow-color-muted: rgba(0, 0, 0, 0.08) !default;
+$editor-shadow-color-medium: rgba(0, 0, 0, 0.12) !default;
+$editor-shadow-color-strong: rgba(0, 0, 0, 0.15) !default;
+$editor-shadow-color-heavy: rgba(0, 0, 0, 0.2) !default;
+$editor-shadow-color-intense: rgba(0, 0, 0, 0.28) !default;
+
+// Inner Highlight
+$editor-inner-highlight: rgba(255, 255, 255, 0.5) !default;
+
+// Code Syntax Highlight Colors (Prism-like)
+$editor-token-comment: slategray !default;
+$editor-token-property: #905 !default;
+$editor-token-selector: #690 !default;
+$editor-token-operator: #9a6e3a !default;
+$editor-token-attr: #07a !default;
+$editor-token-variable: #e90 !default;
+$editor-token-function: #dd4a68 !default;
+$editor-token-punctuation: #999 !default;
+
+// Diff Colors
+$editor-diff-deleted-bg: #ffebe9 !default;
+$editor-diff-deleted-text: #ffcecb !default;
+$editor-diff-inserted-bg: #dafbe1 !default;
+$editor-diff-inserted-text: #aceebb !default;
+$editor-diff-unchanged-bg: #f0f2f5 !default;
+$editor-diff-unchanged-border: #ddd !default;
+
+// ==========================================
+// 3. SPACING & LAYOUT
+// ==========================================
+
+// Gaps
+$editor-gap-0-5: 2px !default;
+$editor-gap-1: 4px !default;
+$editor-gap-1-5: 6px !default;
+$editor-gap-2: 8px !default;
+$editor-gap-3: 12px !default;
+$editor-gap-4: 16px !default;
+$editor-gap-5: 20px !default;
+
+// Control Sizes
+$editor-control-size-sm: 32px !default;
+$editor-control-size-md: 36px !default;
+$editor-control-size-lg: 40px !default;
+$editor-control-size-xl: 44px !default;
+
+// Icon Sizes
+$editor-icon-size-xs: 12px !default;
+$editor-icon-size-sm: 16px !default;
+$editor-icon-size-md: 20px !default;
+$editor-icon-size-lg: 24px !default;
+$editor-icon-size-xl: 32px !default;
+
+// Editor Content
+$editor-content-min-height: 288px !default;
+$editor-content-padding-x: 32px !default;
+$editor-content-padding-y: 16px !default;
+$editor-placeholder-padding-y: 18px !default;
+
+// ==========================================
+// 4. BORDERS & RADIUS
+// ==========================================
+
+$editor-border-width: 1px !default;
+$editor-border-width-thick: 2px !default;
+$editor-outline-width: 2px !default;
+$editor-outline-offset: 2px !default;
+$editor-border-radius: var(--radius, 8px) !default;
+
+// ==========================================
+// 5. SPECIFIC ELEMENT SIZING
+// ==========================================
+
 // Code Block
 $editor-code-padding: 16px !default;
 $editor-code-font-size: 14px !default;
@@ -48,10 +195,9 @@ $editor-quote-padding: 16px !default;
 $editor-quote-border-width: 4px !default;
 $editor-quote-font-size: var(--fs-body, 1.6rem) !default;
 
-// Lists — gutter outside marker (ol “1.” rộng hơn bullet ul); bước lồng đồng nhất theo rem
+// Lists
 $editor-list-indent-step: 0px !default;
 $editor-list-padding-left: $editor-list-indent-step !default;
-// Bù nhẹ ul so với ol (cùng padding thì bullet hay lệch trái hơn số trên Chromium sau indent)
 $editor-ol-marker-align-extra: 60px !default;
 $editor-ul-marker-align-extra: 40px !default;
 $editor-list-item-margin-bottom: 4px !default;
@@ -66,12 +212,6 @@ $editor-checklist-icon-checkmark-size: 16px !default;
 // Paragraph
 $editor-paragraph-margin-vertical: var(--sp-3, 0.4rem) !default;
 
-// Editor Content
-$editor-content-min-height: 288px !default;
-$editor-content-padding-x: 32px !default;
-$editor-content-padding-y: 16px !default;
-$editor-placeholder-padding-y: 18px !default;
-
 // Table
 $editor-table-margin-vertical: 16px !default;
 $editor-table-cell-padding-x: 6px !default;
@@ -84,9 +224,6 @@ $editor-table-action-button-right: 4px !default;
 $editor-table-cell-editing-shadow: rgba(0, 0, 0, 0.1) !default;
 $editor-table-cell-selection-opacity: 0.3 !default;
 $editor-table-sorted-indicator-height: 4px !default;
-$editor-shadow-blur-sm: 4px !default;
-$editor-shadow-blur-md: 8px !default;
-$editor-shadow-blur-lg: 12px !default;
 
 // Media
 $editor-image-broken-size: 200px !default;
@@ -106,81 +243,95 @@ $editor-hashtag-opacity: 0.1 !default;
 $editor-image-caption-min-width: 100px !default;
 $editor-image-caption-bg: rgba(255, 255, 255, 0.9) !default;
 
-// Colors - Compatible with Shadcn CSS Variables
-$editor-primary-color: var(--primary, #3b82f6) !default; // blue-500 fallback
-$editor-link-color: var(--primary, #3b82f6) !default;
-$editor-text-color: var(--foreground, #212529) !default;
-$editor-bg-color: var(--background, transparent) !default;
-$editor-muted-color: var(--muted, #f1f3f5) !default;
-$editor-muted-foreground-color: var(--muted-foreground, #6c757d) !default;
-$editor-border-color: var(--border, #dee2e6) !default;
-$editor-quote-border-color: var(--input, #e9ecef) !default;
-$editor-accent-color: var(--accent, #f1f3f5) !default;
-$editor-accent-foreground-color: var(--accent-foreground, #212529) !default;
+// ==========================================
+// 6. SHADOWS
+// ==========================================
 
-// Borders & Outlines
-$editor-border-width: 1px !default;
-$editor-border-width-thick: 2px !default;
-$editor-outline-width: 2px !default;
-$editor-outline-offset: 2px !default;
+$editor-shadow-blur-sm: 4px !default;
+$editor-shadow-blur-md: 8px !default;
+$editor-shadow-blur-lg: 12px !default;
 
-// Layout
-$editor-border-radius: var(--radius, 8px) !default;
-$editor-spacing-unit: 8px !default;
-$editor-control-size-sm: 32px !default; // h-8
-$editor-control-size-md: 36px !default; // h-9
-$editor-control-size-lg: 40px !default; // h-10
-$editor-control-size-xl: 44px !default; // h-11
+// ==========================================
+// 7. TRANSITIONS & ANIMATIONS
+// ==========================================
 
-// Transitions
 $editor-transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1) !default;
 $editor-transition-normal: 200ms cubic-bezier(0.4, 0, 0.2, 1) !default;
 $editor-transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1) !default;
 
-// Animations
 $editor-animation-pulse: 2s !default;
 $editor-animation-spin: 1s !default;
 
-// Gaps
-$editor-gap-0-5: 2px !default;
-$editor-gap-1: 4px !default;
-$editor-gap-1-5: 6px !default;
-$editor-gap-2: 8px !default;
-$editor-gap-3: 12px !default;
-$editor-gap-4: 16px !default;
-$editor-gap-5: 20px !default;
+// ==========================================
+// 8. OPACITY
+// ==========================================
 
-// Opacity
 $editor-opacity-disabled: 0.5 !default;
 $editor-opacity-muted: 0.7 !default;
 $editor-opacity-soft: 0.3 !default;
+$editor-opacity-faint: 0.2 !default;
+$editor-opacity-subtle: 0.4 !default;
+$editor-opacity-table-sorted: 0.5 !default;
 
-// Z-index
+// ==========================================
+// 9. Z-INDEX LAYERS
+// ==========================================
+
+$editor-z-index-base: 1 !default;
 $editor-z-index-layer-1: 1 !default;
+$editor-z-index-layer-2: 2 !default;
 $editor-z-index-layer-10: 10 !default;
+$editor-z-index-layer-20: 20 !default;
+$editor-z-index-layer-30: 30 !default;
 $editor-z-index-toolbar: 20 !default;
+$editor-z-index-code-action-menu: 100 !default;
 $editor-z-index-floating: 1200 !default;
 $editor-z-index-dialog-overlay: 1300 !default;
 $editor-z-index-dialog: 1310 !default;
 $editor-z-index-popover: 1320 !default;
+$editor-z-index-lightbox: 1400 !default;
+
+// ==========================================
+// 10. COMPONENT DIMENSIONS
+// ==========================================
 
 // Dialog
 $editor-dialog-max-width-default: 90% !default;
 $editor-dialog-max-width-lg: 80% !default;
 $editor-dialog-overlay-blur: 4px !default;
 $editor-dialog-overlay-bg: rgba(0, 0, 0, 0.4) !default;
+$editor-dialog-lightbox-thumb-size: 72px !default;
+$editor-dialog-lightbox-thumb-height: 52px !default;
+$editor-dialog-lightbox-thumb-gap: 10px !default;
+
+// Popover
 $editor-popover-width: 18rem !default;
 $editor-popover-max-height: 300px !default;
- $editor-tooltip-max-width: 200px !default;
- $editor-toolbar-select-width: 220px !default;
- $editor-format-select-width: 72px !default;
- $editor-floating-toolbar-max-width: 560px !default;
- $editor-color-picker-height: 160px !default;
+
+// Tooltip
+$editor-tooltip-max-width: 200px !default;
+
+// Toolbar
+$editor-toolbar-select-width: 220px !default;
+$editor-format-select-width: 72px !default;
+$editor-floating-toolbar-max-width: 560px !default;
+$editor-floating-toolbar-height: 56px !default;
+
+// Color Picker
+$editor-color-picker-height: 160px !default;
 $editor-color-picker-width: 360px !default;
+
+// Scroll Area
 $editor-scroll-area-max-height: 350px !default;
- $editor-link-editor-max-width: 400px !default;
- $editor-component-picker-width: 250px !default;
- $editor-mentions-width: 200px !default;
+
+// Link Editor
+$editor-link-editor-max-width: 400px !default;
+
+// Component Picker
+$editor-component-picker-width: 250px !default;
+
+// Mentions
+$editor-mentions-width: 200px !default;
 
 // Select & Toggle
 $editor-select-min-width-auto: 7rem !default;
@@ -190,17 +341,35 @@ $editor-block-format-label-max-width: 80px !default;
 // Separator
 $editor-separator-min-height-vertical: 1.5rem !default;
 
-// Icon
-$editor-icon-size-xs: 12px !default;
-$editor-icon-size-sm: 16px !default;
-$editor-icon-size-md: 20px !default;
-$editor-icon-size-lg: 24px !default;
-$editor-icon-size-xl: 32px !default;
+// Code Action Menu
+$editor-code-action-menu-width: 140px !default;
+$editor-code-action-menu-height: 160px !default;
+$editor-code-action-menu-item-size: 28px !default;
 
-// Code
-$editor-code-bg: var(--muted, #f1f3f5) !default;
-$editor-code-color: var(--muted-foreground, #212529) !default;
+// Image
+$editor-image-preview-height: 320px !default;
+$editor-image-max-preview-height: 400px !default;
+$editor-image-broken-icon-size: 60px !default;
+
+// Tree View
+$editor-tree-view-width: 24rem !default;
 
 // Table
-$editor-table-border-color: var(--border, #d1d5db) !default;
-$editor-table-header-bg: var(--muted, #f9fafb) !default; // gray-50 fallback
+$editor-table-frozen-row-top: $editor-control-size-xl !default;
+$editor-table-add-rows-offset: 25px !default;
+$editor-table-resizer-left-offset: $editor-gap-2 !default;
+
+// Misc
+$editor-block-cursor-width: 20px !default;
+$editor-special-text-offset: 24px !default;
+
+// Lightbox
+$editor-lightbox-controls-size: 48px !default;
+$editor-lightbox-icon-size: 22px !default;
+$editor-lightbox-zoom-btn-size: 32px !default;
+$editor-lightbox-zoom-gap: 12px !default;
+$editor-lightbox-footer-padding: 14px !default;
+$editor-lightbox-footer-gap: 10px !default;
+
+// Number Input
+$editor-number-input-trigger-size: 28px !default;

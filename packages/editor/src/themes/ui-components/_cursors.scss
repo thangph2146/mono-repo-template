@@ -1,7 +1,16 @@
+/**
+ * Cursors UI Component Styles
+ * 
+ * Utility classes for cursor styles.
+ */
+
 @use "../variables" as *;
 @use "../mixins" as *;
 
-/* --- CURSORS --- */
+// ==========================================
+// 1. CURSOR STYLES
+// ==========================================
+
 .editor-cursor-default {
   cursor: default;
 }

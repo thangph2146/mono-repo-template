@@ -1,5 +1,15 @@
+/**
+ * Image Resizer Plugin Styles
+ * 
+ * Styles for the image resize handles that appear around selected images.
+ */
+
 @use "../variables" as *;
 @use "../mixins" as *;
+
+// ==========================================
+// 1. RESIZE HANDLES
+// ==========================================
 
 .editor-image-resizer {
   &-handle {
@@ -25,7 +35,11 @@
       background: var(--primary);
     }
 
-    // Directions
+    // ==========================================
+    // 2. DIRECTION-SPECIFIC POSITIONS
+    // ==========================================
+    
+    // North
     &--n {
       top: -7px;
       left: 50%;
@@ -33,12 +47,14 @@
       cursor: ns-resize;
     }
 
+    // Northeast
     &--ne {
       top: -7px;
       right: -7px;
       cursor: nesw-resize;
     }
 
+    // East
     &--e {
       top: 50%;
       right: -7px;
@@ -46,12 +62,14 @@
       cursor: ew-resize;
     }
 
+    // Southeast
     &--se {
       right: -7px;
       bottom: -7px;
       cursor: nwse-resize;
     }
 
+    // South
     &--s {
       bottom: -7px;
       left: 50%;
@@ -59,12 +77,14 @@
       cursor: ns-resize;
     }
 
+    // Southwest
     &--sw {
       bottom: -7px;
       left: -7px;
       cursor: nesw-resize;
     }
 
+    // West
     &--w {
       top: 50%;
       left: -7px;
@@ -72,6 +92,7 @@
       cursor: ew-resize;
     }
 
+    // Northwest
     &--nw {
       top: -7px;
       left: -7px;

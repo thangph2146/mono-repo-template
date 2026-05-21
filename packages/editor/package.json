@@ -1,5 +1,5 @@
 {
-  "name": "@lexical-editor",
+  "name": "@thangph2146/lexical-editor",
   "version": "0.0.24",
   "description": "Rich Text Editor library based on Lexical for React/Next.js",
   "license": "MIT",

@@ -1,21 +1,69 @@
+/**
+ * Core Misc Styles (Lexical Standard)
+ * 
+ * Follows Lexical theming conventions:
+ * - All styles scoped under .lexical-editor-root
+ * - Class names match editor-theme.ts mappings
+ * - No !important - uses proper CSS specificity
+ */
+
 @use "../variables" as *;
 @use "../mixins" as *;
 
+// ==========================================
+// 1. HASHTAG
+// ==========================================
+
 .lexical-editor-root {
-  // Tweet
-  .editor-tweet-container {
-    display: block;
-    width: 100%;
-    max-width: $editor-tweet-max-width;
+  .editor-hashtag {
+    background-color: var(--muted);
+    color: var(--primary);
+    padding: 2px 4px;
+    border-radius: 4px;
+    font-size: 0.9em;
   }
 
-  // Horizontal Rule
+  // ==========================================
+  // 2. AUTOCOMPLETE
+  // ==========================================
+
+  .editor-autocomplete {
+    color: var(--muted-foreground);
+    pointer-events: none;
+  }
+
+  // ==========================================
+  // 3. EMBED BLOCK
+  // ==========================================
+
+  .editor-embed-block {
+    display: block;
+    margin: $editor-gap-2 0;
+    padding: $editor-gap-2;
+    border: $editor-border-width solid var(--border);
+    border-radius: $editor-border-radius;
+    background-color: var(--background);
+    transition: box-shadow $editor-transition-fast;
+    user-select: none;
+
+    &.editor-embed-block-focused {
+      box-shadow: 0 0 0 $editor-border-width-thick var(--primary);
+      border-color: var(--primary);
+      outline: $editor-outline-width solid $editor-primary-color;
+    }
+  }
+
+  // ==========================================
+  // 4. HORIZONTAL RULE
+  // ==========================================
+
   .editor-hr {
     padding: calc($editor-gap-1 / 2);
     border: none;
     margin: $editor-hr-margin-vertical 0;
     cursor: pointer;
-    
+    transition: background-color $editor-transition-fast;
+
     &:after {
       content: "";
       display: block;
@@ -23,41 +71,46 @@
       background-color: $editor-border-color;
       line-height: $editor-hr-height;
     }
-    
+
+    &:hover {
+      background-color: var(--primary);
+    }
+
     &.selected {
       outline: $editor-outline-width solid $editor-primary-color;
       user-select: none;
     }
   }
 
-  // Embed Block
-  .editor-embed-block {
-    user-select: none;
-  }
-  
-  .editor-embed-block-focused {
-    outline: $editor-outline-width solid $editor-primary-color;
-  }
-  
-  // Autocomplete
-  .editor-autocomplete {
-    color: $editor-muted-foreground-color;
+  // ==========================================
+  // 5. OVERFLOW (CHARACTER LIMIT)
+  // ==========================================
+
+  .editor-overflow {
+    background-color: var(--destructive);
+    color: var(--destructive-foreground);
   }
 
-  // Character Limit (Lexical official)
+  // ==========================================
+  // 6. CHARACTER LIMIT
+  // ==========================================
+
   .editor-character-limit {
     display: inline;
-    background-color: #ffbbbb !important;
+    background-color: #ffbbbb;
   }
 
-  // Block Cursor (Lexical official)
+  // ==========================================
+  // 7. BLOCK CURSOR
+  // ==========================================
+
   .editor-block-cursor {
     display: block;
     pointer-events: none;
     position: absolute;
 
     &:after {
-      content: '';
+      content: "";
       display: block;
       position: absolute;
       top: -2px;
@@ -67,13 +120,19 @@
     }
   }
 
-  // Special Text (Lexical official)
+  // ==========================================
+  // 8. SPECIAL TEXT
+  // ==========================================
+
   .editor-special-text {
     background-color: yellow;
     font-weight: bold;
   }
 
-  // Page Layout (Lexical official - for print/page view)
+  // ==========================================
+  // 9. PAGE LAYOUT
+  // ==========================================
+
   .editor-page {
     position: relative;
     display: flex;
@@ -86,7 +145,10 @@
   }
 }
 
-// Page Layout Media Queries
+// ==========================================
+// 10. PAGE LAYOUT MEDIA QUERIES
+// ==========================================
+
 @media screen {
   .editor-page {
     max-width: 100%;
@@ -106,13 +168,19 @@
   .editor-page {
     page-break-inside: avoid;
     width: calc(
-      var(--page-width, 210mm) - var(--page-margin-right, 40px) - var(--page-margin-left, 40px)
+      var(--page-width, 210mm) - var(--page-margin-right, 40px) - var(
+          --page-margin-left,
+          40px
+        )
     );
     height: calc(
-      var(--page-height, 297mm) - var(--page-margin-top, 40px) - var(--page-margin-bottom, 40px)
+      var(--page-height, 297mm) - var(--page-margin-top, 40px) - var(
+          --page-margin-bottom,
+          40px
+        )
     );
   }
-  .editor-page + [type='page-break'] {
+  .editor-page + [type="page-break"] {
     display: none;
   }
 }

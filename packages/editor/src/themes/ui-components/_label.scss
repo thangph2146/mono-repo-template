@@ -1,7 +1,16 @@
+/**
+ * Label UI Component Styles
+ * 
+ * Styles for form labels.
+ */
+
 @use "../variables" as *;
 @use "../mixins" as *;
 
-/* --- LABEL --- */
+// ==========================================
+// 1. BASE LABEL
+// ==========================================
+
 .editor-label {
   @include text-sm;
   font-weight: $editor-font-weight-medium;

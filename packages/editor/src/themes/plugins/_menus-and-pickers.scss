@@ -1,5 +1,15 @@
+/**
+ * Menus & Pickers Plugin Styles
+ * 
+ * Styles for component picker, command menu, context menu, and actions bar.
+ */
+
 @use "../variables" as *;
 @use "../mixins" as *;
+
+// ==========================================
+// 1. COMPONENT PICKER MENU
+// ==========================================
 
 .editor-component-picker-menu {
   position: fixed;
@@ -12,11 +22,14 @@
   @include shadow-lg;
   overflow: hidden;
   
-  // Base visibility
   visibility: visible;
   opacity: 1;
   max-height: $editor-popover-max-height;
 }
+
+// ==========================================
+// 2. COMMAND MENU
+// ==========================================
 
 .editor-command {
   @include flex-col;
@@ -52,7 +65,7 @@
   user-select: none;
   @include rounded-sm;
   padding: calc($editor-gap-1 + 2px) $editor-gap-2;
-  border: $editor-border-width solid transparent; // Added for hover border
+  border: $editor-border-width solid transparent;
   @include text-sm;
   outline: none;
   gap: $editor-gap-2;
@@ -69,12 +82,16 @@
   }
 }
 
-// Cao hơn thanh sticky/action bar thường dùng z-index ~10 (vd. form admin).
-// Không dùng &:has(*) ép z-index thấp — mọi menu đều có con nên trước đây luôn rơi về 10 và bị đè.
+// ==========================================
+// 3. CONTEXT MENU
+// ==========================================
+
+// Higher than sticky/action bars (~z-index 10).
+// Uses specific selector chain to override Floating UI portal z-index.
 .editor-context-menu {
   background-color: var(--popover);
   color: var(--popover-foreground);
-  z-index: $editor-z-index-popover !important;
+  z-index: $editor-z-index-popover;
   position: relative;
   overflow: hidden;
   @include rounded-md;
@@ -84,11 +101,11 @@
 }
 
 [data-floating-ui-portal]:has(.editor-context-menu) {
-  z-index: $editor-z-index-popover !important;
+  z-index: $editor-z-index-popover;
 }
 
 [data-floating-ui-portal]:has(.editor-context-menu) > div {
-  z-index: $editor-z-index-popover !important;
+  z-index: $editor-z-index-popover;
 }
 
 .editor-context-menu-item {
@@ -99,7 +116,7 @@
   gap: $editor-gap-2;
   @include rounded-sm;
   padding: calc($editor-gap-1 + 2px) $editor-gap-2;
-  border: $editor-border-width solid transparent; // Added for hover border
+  border: $editor-border-width solid transparent;
   @include text-sm;
   outline: none;
   user-select: none;
@@ -114,10 +131,14 @@
 
 .editor-context-menu-separator {
   background-color: var(--border);
-  margin-left: -0.25rem; // -mx-1
+  margin-left: -0.25rem;
   margin-right: -0.25rem;
   height: $editor-border-width;
 }
+
+// ==========================================
+// 4. ACTIONS BAR
+// ==========================================
 
 // Scoped under `.lexical-editor-root` so `.lexical-editor-root div { padding: 0 }` does not win.
 .lexical-editor-root .editor-actions-bar {
@@ -139,14 +160,12 @@
   
   @include scrollbar-hide;
 
-  // Ẩn nội dung tooltip mặc định trong actions bar nếu nó đang bị hiển thị sai
   .editor-tooltip-content {
-    display: none !important;
+    display: none;
   }
   
-  // Chỉ hiển thị tooltip khi hover vào trigger
   .editor-tooltip-group:hover .editor-tooltip-content {
-    display: block !important;
+    display: block;
     position: absolute;
     bottom: 100%;
     left: 50%;

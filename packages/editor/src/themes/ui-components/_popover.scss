@@ -1,7 +1,16 @@
+/**
+ * Popover UI Component Styles
+ * 
+ * Styles for popover content containers.
+ */
+
 @use "../variables" as *;
 @use "../mixins" as *;
 
-/* --- POPOVER --- */
+// ==========================================
+// 1. POPOVER CONTENT
+// ==========================================
+
 .editor-popover-content {
   z-index: $editor-z-index-floating;
   width: $editor-popover-width;

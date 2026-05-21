@@ -1,5 +1,15 @@
+/**
+ * Color Picker Plugin Styles
+ * 
+ * Styles for the color picker area, sliders, swatches, and presets.
+ */
+
 @use "../variables" as *;
 @use "../mixins" as *;
+
+// ==========================================
+// 1. COLOR PICKER CONTENT
+// ==========================================
 
 .editor-color-picker-content {
   @include flex-col;
@@ -9,9 +19,13 @@
   gap: $editor-gap-4;
 }
 
+// ==========================================
+// 2. COLOR PICKER AREA
+// ==========================================
+
 .editor-color-picker-area {
   position: relative;
-  height: $editor-color-picker-height; // h-40
+  height: $editor-color-picker-height;
   width: 100%;
   cursor: crosshair;
   touch-action: none;
@@ -24,6 +38,10 @@
     opacity: $editor-opacity-disabled;
   }
 }
+
+// ==========================================
+// 3. SLIDER COMPONENTS
+// ==========================================
 
 .editor-slider-root {
   position: relative;
@@ -40,7 +58,7 @@
 
 .editor-slider-track {
   position: relative;
-  height: $editor-gap-3; // h-3
+  height: $editor-gap-3;
   width: 100%;
   flex-grow: 1;
   overflow: hidden;
@@ -51,7 +69,7 @@
   display: block;
   @include control-size($editor-icon-size-sm);
   @include rounded-full;
-  border: $editor-border-width solid var(--border); // border-primary/50
+  border: $editor-border-width solid var(--border);
   background-color: var(--background);
   @include shadow-sm;
   transition: background-color $editor-transition-fast, border-color $editor-transition-fast;
@@ -60,6 +78,10 @@
     @include focus-ring;
   }
 }
+
+// ==========================================
+// 4. COLOR SWATCHES
+// ==========================================
 
 .editor-color-swatch {
   box-sizing: border-box;
@@ -72,6 +94,10 @@
     opacity: $editor-opacity-disabled;
   }
 }
+
+// ==========================================
+// 5. COLOR PRESETS
+// ==========================================
 
 .editor-color-presets {
   @include flex-center;

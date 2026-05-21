@@ -1,7 +1,16 @@
+/**
+ * Input UI Component Styles
+ * 
+ * Styles for text inputs, input groups, and input variants.
+ */
+
 @use "../variables" as *;
 @use "../mixins" as *;
 
-/* --- INPUT --- */
+// ==========================================
+// 1. BASE INPUT
+// ==========================================
+
 .editor-input {
   @include flex-center;
   height: $editor-control-size-md;
@@ -46,6 +55,10 @@
   }
 }
 
+// ==========================================
+// 2. INPUT VARIANTS
+// ==========================================
+
 .editor-input-lg {
   height: $editor-control-size-xl;
   width: 100%;
@@ -55,7 +68,10 @@
   @include flex-center;
 }
 
-/* --- INPUT GROUP ITEM --- */
+// ==========================================
+// 3. INPUT GROUP ITEMS
+// ==========================================
+
 .editor-input-group-item {
   height: $editor-control-size-sm;
   -moz-appearance: textfield;

@@ -1,7 +1,16 @@
+/**
+ * Borders UI Component Styles
+ * 
+ * Utility classes for borders and outlines.
+ */
+
 @use "../variables" as *;
 @use "../mixins" as *;
 
-/* --- BORDERS --- */
+// ==========================================
+// 1. BORDER UTILITIES
+// ==========================================
+
 .editor-border {
   border: $editor-border-width solid var(--border);
 }
@@ -13,6 +22,10 @@
 .editor-border-transparent {
   border-color: transparent;
 }
+
+// ==========================================
+// 2. OUTLINE UTILITIES
+// ==========================================
 
 .editor-outline-none {
   outline: $editor-outline-width solid transparent;

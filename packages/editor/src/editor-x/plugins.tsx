@@ -9,6 +9,8 @@ import { HorizontalRulePlugin } from "@lexical/react/LexicalHorizontalRulePlugin
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin"
 import { TabIndentationPlugin } from "@lexical/react/LexicalTabIndentationPlugin"
 import { TablePlugin } from "@lexical/react/LexicalTablePlugin"
+import { MarkdownShortcutPlugin } from "@lexical/react/LexicalMarkdownShortcutPlugin"
+import { SelectionAlwaysOnDisplay } from "@lexical/react/LexicalSelectionAlwaysOnDisplay"
 
 import { ContentEditable } from "../editor-ui/content-editable"
 import { cn } from "../lib/utils"
@@ -84,6 +86,8 @@ import { ToolbarPlugin } from "../plugins/toolbar/toolbar-plugin"
 import { TypingPerfPlugin } from "../plugins/typing-pref-plugin"
 import { Separator } from "../ui/separator"
 import { Flex } from "../ui/flex"
+import { AutoLinkPlugin } from "../plugins/auto-link-plugin"
+import { MARKDOWN_TRANSFORMERS } from "../transformers/markdown-transformers"
 
 export function Plugins({
   readOnly = false,
@@ -281,7 +285,10 @@ export function Plugins({
             <TypingPerfPlugin />
             <TabFocusPlugin />
             <LinkPlugin />
+            <AutoLinkPlugin />
             <ClearEditorPlugin />
+            <SelectionAlwaysOnDisplay />
+            <MarkdownShortcutPlugin transformers={MARKDOWN_TRANSFORMERS} />
 
             <ComponentPickerMenuPlugin
               baseOptions={[

@@ -1,7 +1,16 @@
+/**
+ * Toggle UI Component Styles
+ * 
+ * Styles for toggle buttons with variants and sizes.
+ */
+
 @use "../variables" as *;
 @use "../mixins" as *;
 
-/* --- TOGGLE --- */
+// ==========================================
+// 1. BASE TOGGLE
+// ==========================================
+
 .editor-toggle {
   display: inline-flex;
   align-items: center;
@@ -31,9 +40,12 @@
     opacity: $editor-opacity-disabled;
   }
 
+  // ==========================================
+  // 2. ACTIVE STATE
+  // ==========================================
   &[data-state="on"] {
     background-color: $editor-accent-color;
-    color: $editor-accent-foreground-color !important;
+    color: $editor-accent-foreground-color;
 
     &:hover {
       @include editor-hover-base;
@@ -42,6 +54,9 @@
     }
   }
 
+  // ==========================================
+  // 3. VARIANTS
+  // ==========================================
   &--outline {
     border-color: var(--input);
     @include shadow-sm;
@@ -59,6 +74,9 @@
     }
   }
 
+  // ==========================================
+  // 4. SIZES
+  // ==========================================
   &--size-default {
     height: $editor-control-size-md;
     padding-left: $editor-gap-3;

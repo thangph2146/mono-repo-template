@@ -1,7 +1,16 @@
+/**
+ * Separator UI Component Styles
+ * 
+ * Styles for horizontal and vertical separators.
+ */
+
 @use "../variables" as *;
 @use "../mixins" as *;
 
-/* --- SEPARATOR --- */
+// ==========================================
+// 1. BASE SEPARATOR
+// ==========================================
+
 .editor-separator {
   background-color: var(--border);
   flex-shrink: 0;

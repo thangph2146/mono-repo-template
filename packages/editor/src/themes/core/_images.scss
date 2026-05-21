@@ -1,9 +1,20 @@
+/**
+ * Core Images Styles (Lexical Standard)
+ * 
+ * Follows Lexical theming conventions:
+ * - All styles scoped under .lexical-editor-root
+ * - Class names match editor-theme.ts mappings
+ * - No !important - uses proper CSS specificity
+ */
+
 @use "../variables" as *;
 @use "../mixins" as *;
 
-.lexical-editor-root {
+// ==========================================
+// 1. BASE IMAGE
+// ==========================================
 
-  // Images
+.lexical-editor-root {
   .editor-image {
     display: inline-block;
     position: relative;
@@ -30,6 +41,10 @@
     }
   }
 
+  // ==========================================
+  // 2. INLINE IMAGE
+  // ==========================================
+
   .editor-inline-image {
     display: inline-block;
     position: relative;
@@ -40,6 +55,10 @@
       height: auto;
     }
   }
+
+  // ==========================================
+  // 3. IMAGE FOCUS & DRAG
+  // ==========================================
 
   .editor-image-focused {
     outline: $editor-outline-width solid $editor-primary-color;
@@ -53,6 +72,10 @@
       cursor: grabbing;
     }
   }
+
+  // ==========================================
+  // 4. IMAGE CAPTION
+  // ==========================================
 
   .editor-image-caption {
     display: block;
@@ -76,6 +99,10 @@
     }
   }
 
+  // ==========================================
+  // 5. LAZY IMAGE
+  // ==========================================
+
   .editor-lazy-image-wrapper {
     display: inline-block;
 
@@ -84,7 +111,10 @@
     }
   }
 
-  // Broken Image
+  // ==========================================
+  // 6. BROKEN IMAGE
+  // ==========================================
+
   .editor-broken-image-container {
     display: inline-block;
     width: $editor-image-broken-size;

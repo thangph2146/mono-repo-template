@@ -1,13 +1,26 @@
+/**
+ * Form Layout UI Component Styles
+ * 
+ * Utility classes for form grid and item layouts.
+ */
+
 @use "../variables" as *;
 @use "../mixins" as *;
 
-/* --- FORM LAYOUT --- */
+// ==========================================
+// 1. FORM GRID
+// ==========================================
+
 .editor-form-grid {
   display: grid;
   gap: $editor-gap-4;
   padding-top: $editor-gap-4;
   padding-bottom: $editor-gap-4;
 }
+
+// ==========================================
+// 2. FORM ITEM
+// ==========================================
 
 .editor-form-item {
   display: grid;

@@ -299,20 +299,29 @@ export function TableWidthToolbarPlugin() {
       const colWidth = Math.max(24, targetWidth / colCount)
       const nextColWidths = Array.from({ length: colCount }, () => colWidth)
 
-      // Persist table width config for reopening dialog later.
+      // Persist table width config via data attributes and CSS custom properties.
+      // No !important needed - SCSS handles width via [data-table-width-mode] selectors.
       tableElement.dataset.tableWidthMode = config.mode
+
       if (config.mode === "percent") {
         const value = Math.max(50, Math.min(100, config.percent))
         tableElement.dataset.tableWidthPercent = String(value)
-        tableElement.style.setProperty("width", `${value}%`, "important")
+        tableElement.style.setProperty("--table-width-percent", `${value}%`)
+        tableElement.style.removeProperty("width")
+        tableElement.style.removeProperty("max-width")
       } else if (config.mode === "px") {
         const value = Math.max(240, Math.min(3000, config.px))
         tableElement.dataset.tableWidthPx = String(value)
-        tableElement.style.setProperty("width", `${value}px`, "important")
+        tableElement.style.setProperty("--table-width-px", `${value}px`)
+        tableElement.style.removeProperty("width")
+        tableElement.style.removeProperty("max-width")
       } else {
-        tableElement.style.setProperty("width", config.mode, "important")
+        // auto, fit-content, max-content, min-content
+        tableElement.style.removeProperty("--table-width-percent")
+        tableElement.style.removeProperty("--table-width-px")
+        tableElement.style.removeProperty("width")
+        tableElement.style.removeProperty("max-width")
       }
-      tableElement.style.setProperty("max-width", "100%", "important")
 
       if (
         typeof (

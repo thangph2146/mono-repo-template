@@ -1,10 +1,24 @@
+/**
+ * Auto Embed Plugin Styles
+ * 
+ * Styles for the auto-embed menu and wrapper.
+ */
+
 @use "../variables" as *;
 @use "../mixins" as *;
+
+// ==========================================
+// 1. AUTO EMBED MENU
+// ==========================================
 
 .editor-auto-embed-menu {
   width: $editor-mentions-width;
   padding: 0;
 }
+
+// ==========================================
+// 2. AUTO EMBED WRAPPER
+// ==========================================
 
 .editor-auto-embed-wrapper {
   transform: translateY(-100%);

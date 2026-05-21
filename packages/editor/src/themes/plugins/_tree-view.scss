@@ -1,10 +1,20 @@
+/**
+ * Tree View Plugin Styles
+ * 
+ * Styles for the tree view scroll area.
+ */
+
 @use "../variables" as *;
 @use "../mixins" as *;
+
+// ==========================================
+// 1. TREE VIEW SCROLL AREA
+// ==========================================
 
 .editor-tree-view-scroll-area {
   background-color: var(--foreground);
   color: var(--background);
-  height: 24rem; // h-96
+  height: 24rem;
   overflow: hidden;
   @include rounded-lg;
   padding: $editor-gap-2;

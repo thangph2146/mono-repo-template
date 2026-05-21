@@ -1,12 +1,25 @@
+/**
+ * Toggle Group & Toolbar Items UI Component Styles
+ * 
+ * Styles for toggle groups, toolbar items, and select triggers.
+ */
+
 @use "../variables" as *;
 @use "../mixins" as *;
 
-/* --- TOGGLE GROUP & TOOLBAR ITEMS --- */
+// ==========================================
+// 1. TOGGLE GROUP
+// ==========================================
+
 .editor-toggle-group {
   @include flex-center-justify;
   flex-wrap: wrap;
   gap: $editor-gap-1;
 }
+
+// ==========================================
+// 2. TOOLBAR & TOGGLE ITEMS (BASE)
+// ==========================================
 
 .editor-toolbar-item,
 .editor-toggle-group-item {
@@ -67,6 +80,10 @@
   }
 }
 
+// ==========================================
+// 3. TOOLBAR ITEM SPECIFIC
+// ==========================================
+
 .editor-toolbar-item {
   @include control-size($editor-control-size-md);
   padding: 0;
@@ -88,6 +105,10 @@
   &--gap-sm { gap: $editor-gap-1; }
   &--text-center { text-align: center; }
 }
+
+// ==========================================
+// 4. SELECT TRIGGERS
+// ==========================================
 
 .editor-toolbar-select-trigger {
   display: flex;
@@ -148,4 +169,3 @@
   @include flex-center-justify;
   margin-right: $editor-gap-2;
 }
-

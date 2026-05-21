@@ -1,31 +1,74 @@
+/**
+ * UI Components SCSS Entry Point
+ * 
+ * This file imports all UI component styles organized by category:
+ * 1. Layout & Structure
+ * 2. Buttons & Controls
+ * 3. Form Elements
+ * 4. Overlays (Dialog, Popover, etc.)
+ * 5. Navigation (Tabs, Toggle, etc.)
+ * 6. Utility Classes
+ * 
+ * Each UI component has its own file in the ui-components/ directory.
+ */
+
 @use "variables" as *;
 @use "mixins" as *;
 
-@use "ui-components/loader";
-@use "ui-components/tabs";
-@use "ui-components/form-layout";
-@use "ui-components/scroll-area";
+// ==========================================
+// 1. LAYOUT & STRUCTURE
+// ==========================================
 @use "ui-components/flex";
+@use "ui-components/form-layout";
 @use "ui-components/positioning";
 @use "ui-components/display-sizing";
-@use "ui-components/rounded";
-@use "ui-components/shadow";
-@use "ui-components/backgrounds";
 @use "ui-components/margins-paddings";
-@use "ui-components/cursors";
-@use "ui-components/text-utilities";
-@use "ui-components/borders";
-@use "ui-components/animations";
-@use "ui-components/icons";
-@use "ui-components/typography";
-@use "ui-components/toggle-toolbar";
+
+// ==========================================
+// 2. BUTTONS & CONTROLS
+// ==========================================
 @use "ui-components/button";
 @use "ui-components/separator";
+@use "ui-components/toggle-toolbar";
+
+// ==========================================
+// 3. FORM ELEMENTS
+// ==========================================
 @use "ui-components/input";
 @use "ui-components/label";
 @use "ui-components/checkbox";
-@use "ui-components/dialog";
-@use "ui-components/popover";
 @use "ui-components/select";
 @use "ui-components/toggle";
 @use "ui-components/number-input";
+
+// ==========================================
+// 4. OVERLAYS
+// ==========================================
+@use "ui-components/dialog";
+@use "ui-components/popover";
+@use "ui-components/scroll-area";
+
+// ==========================================
+// 5. NAVIGATION
+// ==========================================
+@use "ui-components/tabs";
+@use "ui-components/loader";
+
+// ==========================================
+// 6. UTILITY CLASSES
+// ==========================================
+
+// Visual
+@use "ui-components/rounded";
+@use "ui-components/shadow";
+@use "ui-components/backgrounds";
+@use "ui-components/borders";
+
+// Typography & Icons
+@use "ui-components/typography";
+@use "ui-components/icons";
+@use "ui-components/text-utilities";
+
+// Interaction
+@use "ui-components/cursors";
+@use "ui-components/animations";

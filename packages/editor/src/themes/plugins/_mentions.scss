@@ -1,5 +1,15 @@
+/**
+ * Mentions Plugin Styles
+ * 
+ * Styles for the mentions popover and items.
+ */
+
 @use "../variables" as *;
 @use "../mixins" as *;
+
+// ==========================================
+// 1. MENTIONS POPOVER
+// ==========================================
 
 .editor-mentions-popover {
   position: fixed;
@@ -8,6 +18,10 @@
   @include rounded-md;
   @include shadow-md;
 }
+
+// ==========================================
+// 2. MENTIONS ITEMS
+// ==========================================
 
 .editor-mentions-item {
   @include flex-center;

@@ -1,7 +1,16 @@
+/**
+ * Backgrounds UI Component Styles
+ * 
+ * Utility classes for background colors.
+ */
+
 @use "../variables" as *;
 @use "../mixins" as *;
 
-/* --- BACKGROUNDS --- */
+// ==========================================
+// 1. BACKGROUND COLORS
+// ==========================================
+
 .editor-bg-background {
   background-color: var(--background);
 }

@@ -1,5 +1,18 @@
+/**
+ * Table Plugin Styles
+ * 
+ * Styles for the table dialog and related UI elements.
+ * Follows Lexical theming conventions:
+ * - All styles scoped under .lexical-editor-root when possible
+ * - No !important - uses proper CSS specificity
+ */
+
 @use "../variables" as *;
 @use "../mixins" as *;
+
+// ==========================================
+// 1. TABLE DIALOG
+// ==========================================
 
 .editor-table-dialog {
   display: grid;
@@ -7,6 +20,9 @@
   padding: $editor-gap-2 0;
   animation: editor-fade-in $editor-transition-slow;
 
+  // ==========================================
+  // 2. DIALOG GROUPS
+  // ==========================================
   &__group {
     @include flex-col;
     gap: $editor-gap-2;
@@ -16,5 +32,49 @@
     @include flex-center;
     gap: $editor-gap-3;
     margin-top: $editor-gap-2;
+  }
+
+  // ==========================================
+  // 3. TABLE WIDTH CONTROLS
+  // ==========================================
+  &__width-mode-selector {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $editor-gap-2;
+  }
+
+  &__width-slider-group {
+    @include flex-col;
+    gap: $editor-gap-2;
+  }
+
+  &__width-presets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $editor-gap-2;
+  }
+
+  &__width-actions {
+    display: flex;
+    gap: $editor-gap-2;
+  }
+}
+
+// ==========================================
+// 4. TABLE WIDTH TOOLBAR BUTTON
+// ==========================================
+
+.editor-table-width-toolbar-btn {
+  transition: all $editor-transition-fast;
+
+  &.active {
+    border-color: var(--primary);
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+    box-shadow: 0 2px $editor-shadow-blur-sm rgba(0, 0, 0, 0.1);
+
+    &:hover {
+      background-color: color-mix(in srgb, var(--primary) 90%, black);
+    }
   }
 }
