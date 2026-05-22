@@ -11,7 +11,7 @@ import {
   LIST_CONTINUE_NUMBERING_ACROSS_INTERRUPTS,
   LIST_ORDERED_NUMBERING_RESET_AT_HEADING,
 } from "../../config/editor-list-config"
-import { $renumberOrderedListItems } from "./partial-list-type-conversion"
+import { $renumberOrderedListItems } from "../../lib/partial-list-type-conversion"
 
 /** Số `li` trực tiếp của một ordered list (dùng để tính `start` cho list kế tiếp). */
 export function $countDirectOrderedListItems(list: ListNode): number {

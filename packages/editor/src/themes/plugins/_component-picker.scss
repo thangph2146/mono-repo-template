@@ -1,0 +1,31 @@
+/**
+ * Component Picker Plugin Styles
+ * 
+ * Styles for the component picker menu.
+ * Follows Lexical theming conventions:
+ * - All styles use editor- prefix for isolation
+ * - No !important - uses proper CSS specificity
+ */
+
+@use "../variables" as *;
+@use "../mixins" as *;
+
+// ==========================================
+// 1. COMPONENT PICKER MENU
+// ==========================================
+
+.editor-component-picker-menu {
+  position: fixed;
+  z-index: $editor-z-index-popover;
+  width: $editor-component-picker-width;
+  @include rounded-md;
+  border: $editor-border-width solid var(--border);
+  background-color: var(--popover);
+  color: var(--popover-foreground);
+  @include shadow-lg;
+  overflow: hidden;
+  
+  visibility: visible;
+  opacity: 1;
+  max-height: $editor-popover-max-height;
+}

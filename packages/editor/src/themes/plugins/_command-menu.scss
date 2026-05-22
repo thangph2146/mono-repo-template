@@ -1,0 +1,66 @@
+/**
+ * Command Menu Plugin Styles
+ * 
+ * Styles for the command menu (cmdk-based).
+ * Follows Lexical theming conventions:
+ * - All styles use editor- prefix for isolation
+ * - No !important - uses proper CSS specificity
+ */
+
+@use "../variables" as *;
+@use "../mixins" as *;
+
+// ==========================================
+// 1. COMMAND MENU
+// ==========================================
+
+.editor-command {
+  @include flex-col;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.editor-command-list {
+  max-height: $editor-popover-max-height;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: $editor-gap-1;
+}
+
+.editor-command-group {
+  overflow: hidden;
+  color: var(--foreground);
+  
+  & > [cmdk-group-heading] {
+    padding: $editor-gap-2 $editor-gap-2 4px;
+    font-size: $editor-font-size-xs;
+    font-weight: $editor-font-weight-medium;
+    color: var(--muted-foreground);
+  }
+}
+
+.editor-command-item {
+  position: relative;
+  @include flex-center;
+  cursor: pointer;
+  user-select: none;
+  @include rounded-sm;
+  padding: calc($editor-gap-1 + 2px) $editor-gap-2;
+  border: $editor-border-width solid transparent;
+  @include text-sm;
+  outline: none;
+  gap: $editor-gap-2;
+  
+  @include editor-dropdown-item-interactive;
+
+  &[data-disabled="true"] {
+    pointer-events: none;
+    opacity: $editor-opacity-disabled;
+  }
+  
+  svg {
+    @include icon-size($editor-icon-size-sm);
+  }
+}

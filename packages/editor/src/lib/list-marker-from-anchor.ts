@@ -2,11 +2,11 @@ import { $findMatchingParent } from "@lexical/utils"
 import type { LexicalEditor, LexicalNode } from "lexical"
 import { $isListNode, ListNode } from "@lexical/list"
 
-import { createListWithColorNodeFromRegistry } from "../../editor-x/nodes"
+import { createListWithColorNodeFromRegistry } from "../editor-x/nodes"
 import {
   $createListWithColorNode,
   $isListWithColorNode,
-} from "../../nodes/list-with-color-node"
+} from "../nodes/list-with-color-node"
 
 /** Gọi bên trong `editor.update`. */
 export function $applyNumberListMarkerFromAnchor(

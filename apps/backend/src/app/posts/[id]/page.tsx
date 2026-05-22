@@ -82,7 +82,7 @@ function PostDetailInner() {
           className="gap-2 rounded-lg px-5 font-semibold"
           onClick={() => router.push(`/posts/${postId}/edit`)}
         >
-          <Pencil className="size-4" />
+          <Pencil/>
           Chỉnh sửa
         </Button>
       </div>

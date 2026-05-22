@@ -16,8 +16,10 @@ import type {
 import {
   $applyNodeReplacement,
   $getRoot,
+  createCommand,
   createEditor,
   DecoratorNode,
+  LexicalCommand,
   ParagraphNode,
   RootNode,
   TextNode,
@@ -365,3 +367,11 @@ export function $isImageNode(
 ): node is ImageNode {
   return node instanceof ImageNode
 }
+
+export type InsertImagePayload = Readonly<{
+  altText: string
+  src: string
+}>
+
+export const INSERT_IMAGE_COMMAND: LexicalCommand<InsertImagePayload> =
+  createCommand("INSERT_IMAGE_COMMAND")

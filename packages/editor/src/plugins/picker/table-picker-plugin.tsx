@@ -1,8 +1,8 @@
 import { INSERT_TABLE_COMMAND } from "@lexical/table"
 import { TableIcon } from "lucide-react"
 
+import { InsertTableDialog } from "../../editor-ui/dialogs"
 import { ComponentPickerOption } from "../../plugins/picker/component-picker-option"
-import { InsertTableDialog } from "../../plugins/table-plugin"
 import { IconSize } from "../../ui/typography"
 
 export function TablePickerPlugin() {

@@ -273,7 +273,7 @@ export function ComponentPickerMenuPlugin({
   baseOptions = [],
   dynamicOptionsFn,
 }: {
-  baseOptions?: Array<ComponentPickerOption>
+  baseOptions?: Array<ComponentPickerOption | null>
   dynamicOptionsFn?: ({
     queryString,
   }: {
@@ -300,7 +300,8 @@ export function ComponentPickerMenuPlugin({
   }, [dynamicOptionsFn, queryString])
 
   const options = useMemo(() => {
-    const baseFiltered = baseOptions.filter((option) => {
+    const baseFiltered = baseOptions.filter((option): option is ComponentPickerOption => {
+      if (!option) return false
       if (!queryString) return true
       return (
         new RegExp(queryString, "i").test(option.title) ||

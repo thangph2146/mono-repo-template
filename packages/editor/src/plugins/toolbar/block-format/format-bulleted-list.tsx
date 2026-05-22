@@ -5,8 +5,8 @@ import {
 import { $getSelection, $isRangeSelection } from "lexical"
 
 import { useToolbarContext } from "../../../context/toolbar-context"
-import { $tryPartialListTypeConversion } from "../../../plugins/list/partial-list-type-conversion"
-import { $applyBulletListMarkerFromAnchor } from "../../../plugins/shared/list-marker-from-anchor"
+import { $tryPartialListTypeConversion } from "../../../lib/partial-list-type-conversion"
+import { $applyBulletListMarkerFromAnchor } from "../../../lib/list-marker-from-anchor"
 import { blockTypeToBlockName } from "../../../plugins/toolbar/block-format/block-format-data"
 import { SelectItem } from "../../../ui/select"
 import { Flex } from "../../../ui/flex"

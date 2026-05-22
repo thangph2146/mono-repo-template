@@ -28,6 +28,7 @@ import { EmojiPickerPlugin } from "../plugins/emoji-picker-plugin"
 import { FloatingLinkEditorPlugin } from "../plugins/floating-link-editor-plugin"
 import { FloatingTextFormatToolbarPlugin } from "../plugins/floating-text-format-plugin"
 import { ImagesPlugin } from "../plugins/images-plugin"
+import { LayoutPlugin } from "../plugins/layout-plugin"
 import { LIST_TOOLBAR_BULLET_MARKER_ITEMS } from "../config/editor-list-config"
 import {
   ListFormatDropDown,
@@ -271,6 +272,7 @@ export function Plugins({
         <MentionsPlugin />
         {!readOnly && <DraggableBlockPlugin anchorElem={floatingAnchorElem} />}
         {!readOnly && <ImagesPlugin />}
+        {!readOnly && <LayoutPlugin />}
 
         {!readOnly && (
           <>

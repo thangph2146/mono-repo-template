@@ -1,9 +1,6 @@
 import { INSERT_EMBED_COMMAND } from "@lexical/react/LexicalAutoEmbedPlugin"
 
-import {
-  CustomEmbedConfig,
-  EmbedConfigs,
-} from "../../plugins/embeds/auto-embed-plugin"
+import { EmbedConfigs } from "../../editor-ui/dialogs"
 import { ComponentPickerOption } from "../../plugins/picker/component-picker-option"
 
 export function EmbedsPickerPlugin({
@@ -13,7 +10,9 @@ export function EmbedsPickerPlugin({
 }) {
   const embedConfig = EmbedConfigs.find(
     (config) => config.type === embed
-  ) as CustomEmbedConfig
+  )
+
+  if (!embedConfig) return null
 
   return new ComponentPickerOption(`Embed ${embedConfig.contentName}`, {
     icon: embedConfig.icon,

@@ -56,9 +56,12 @@
 @use "plugins/tree-view";
 
 // ==========================================
-// 4. MENUS & PICKERS
+// 4. MENUS & PICKERS (each plugin isolated)
 // ==========================================
-@use "plugins/menus-and-pickers";
+@use "plugins/component-picker";
+@use "plugins/command-menu";
+@use "plugins/context-menu";
+@use "plugins/actions-bar";
 @use "plugins/mentions";
 
 // ==========================================

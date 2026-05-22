@@ -3,7 +3,8 @@
 import { ImageIcon } from "lucide-react"
 
 import { useToolbarContext } from "../../../context/toolbar-context"
-import { InsertImageDialog } from "../../../plugins/images-plugin"
+import { InsertImageDialog } from "../../../editor-ui/dialogs"
+import { INSERT_IMAGE_COMMAND } from "../../../nodes/image-node"
 import { SelectItem } from "../../../ui/select"
 import { Flex } from "../../../ui/flex"
 import { IconSize } from "../../../ui/typography"
@@ -18,7 +19,12 @@ export function InsertImage() {
         showModal(
           "Insert Image",
           (onClose) => (
-            <InsertImageDialog activeEditor={activeEditor} onClose={onClose} />
+            <InsertImageDialog
+              onSubmit={(payload) =>
+                activeEditor.dispatchCommand(INSERT_IMAGE_COMMAND, payload)
+              }
+              onClose={onClose}
+            />
           ),
           false,
           "editor-dialog-content--image"

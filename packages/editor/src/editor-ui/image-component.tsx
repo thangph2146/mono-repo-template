@@ -21,7 +21,8 @@ import { $isImageNode, ImageNode } from "../nodes/image-node"
 import { cn } from "../lib/utils"
 import { useEditorContainer } from "../context/editor-container-context"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog"
-import { InsertImageDialog, InsertImagePayload } from "../plugins/images-plugin"
+import { InsertImageDialog } from "./dialogs"
+import type { InsertImagePayload } from "./dialogs"
 import { usePriorityImage } from "../context/priority-image-context"
 import {
   ImageLightboxDialog,
@@ -374,15 +375,14 @@ export default function ImageComponent({
                 <DialogTitle>Thay thế hình ảnh</DialogTitle>
               </DialogHeader>
               <InsertImageDialog
-                activeEditor={editor}
+                onSubmit={(payload) => {
+                  handleReplaceImage(payload)
+                  setIsReplaceDialogOpen(false)
+                }}
                 activeTab={resolveReplaceDialogTab()}
                 initialValues={{ src, altText }}
                 confirmLabel="Thay thế hình ảnh"
                 onClose={() => setIsReplaceDialogOpen(false)}
-                onInsert={(payload) => {
-                  handleReplaceImage(payload)
-                  setIsReplaceDialogOpen(false)
-                }}
               />
             </DialogContent>
           </Dialog>

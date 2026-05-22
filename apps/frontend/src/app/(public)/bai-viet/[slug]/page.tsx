@@ -61,7 +61,7 @@ export default async function PostDetailPage({ params }: Props) {
     <Page>
       <PageContent className={STORE_PAGE_CONTENT_CLASS}>
         <Container
-          max={STORE_CONTAINER_MAX_DEFAULT}
+          max={"6xl"}
           className={`${STORE_CONTAINER_INSET} space-y-4`}
         >
           <div className="flex flex-wrap items-center gap-2">

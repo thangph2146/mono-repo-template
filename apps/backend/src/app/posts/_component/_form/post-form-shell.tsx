@@ -84,7 +84,6 @@ export function PostFormShell({
           <Button
             type="button"
             variant="outline"
-            className="h-10 rounded-lg"
             onClick={onReset}
             disabled={submitting}
           >
@@ -93,7 +92,6 @@ export function PostFormShell({
           <Button
             type="submit"
             form="post-form"
-            className="h-10 rounded-lg font-bold"
             disabled={submitting}
           >
             {submitting ? "Đang lưu..." : editingId ? "Cập nhật" : "Xuất bản"}

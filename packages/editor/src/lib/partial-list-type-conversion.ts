@@ -8,8 +8,8 @@ import {
 import { $findMatchingParent } from "@lexical/utils"
 import type { LexicalEditor, LexicalNode, RangeSelection } from "lexical"
 
-import { createListWithColorNodeFromRegistry } from "../../editor-x/nodes"
-import { $isListWithColorNode } from "../../nodes/list-with-color-node"
+import { createListWithColorNodeFromRegistry } from "../editor-x/nodes"
+import { $isListWithColorNode } from "../nodes/list-with-color-node"
 
 /** Đồng bộ `value` từng `li` với `list.getStart()` (ordered / check). */
 export function $renumberOrderedListItems(list: ListNode): void {
