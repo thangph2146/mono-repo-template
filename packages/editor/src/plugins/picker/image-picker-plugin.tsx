@@ -14,13 +14,18 @@ export function ImagePickerPlugin() {
     ),
     keywords: ["image", "photo", "picture", "file"],
     onSelect: (_, editor, showModal) =>
-      showModal("Insert Image", (onClose) => (
-        <InsertImageDialog
-          onSubmit={(payload) =>
-            editor.dispatchCommand(INSERT_IMAGE_COMMAND, payload)
-          }
-          onClose={onClose}
-        />
-      )),
+      (showModal as (...args: unknown[]) => void)(
+        "Insert Image",
+        (onClose: () => void) => (
+          <InsertImageDialog
+            onSubmit={(payload) =>
+              editor.dispatchCommand(INSERT_IMAGE_COMMAND, payload)
+            }
+            onClose={onClose}
+          />
+        ),
+        false,
+        "editor-dialog-content--lg"
+      ),
   })
 }

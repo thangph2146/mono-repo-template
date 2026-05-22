@@ -27,7 +27,7 @@ export function InsertImage() {
             />
           ),
           false,
-          "editor-dialog-content--image"
+          "editor-dialog-content--lg"
         )
       }}
       className=""
