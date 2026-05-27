@@ -16,7 +16,8 @@ export function ContentEditable({
   placeholderClassName,
   placeholderDefaults = true,
 }: Props): JSX.Element {
-  const isReadOnlyOrReview = className?.includes("--readonly") || className?.includes("--review")
+  const isReadOnlyOrReview =
+    className?.includes("--readonly") || className?.includes("--review")
 
   const text = placeholder.trim()
   const showLexicalPlaceholder = text.length > 0
@@ -35,7 +36,10 @@ export function ContentEditable({
             "aria-placeholder": text,
             placeholder: (
               <div
-                className={cn(placeholderDefaults && "editor-placeholder", placeholderClassName)}
+                className={cn(
+                  placeholderDefaults && "editor-placeholder",
+                  placeholderClassName
+                )}
               >
                 {text}
               </div>

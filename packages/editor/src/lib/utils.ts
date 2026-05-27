@@ -1,4 +1,6 @@
-export function cn(...inputs: (string | undefined | null | boolean | Record<string, boolean>)[]): string {
+export function cn(
+  ...inputs: (string | undefined | null | boolean | Record<string, boolean>)[]
+): string {
   const classes: string[] = []
 
   for (const input of inputs) {

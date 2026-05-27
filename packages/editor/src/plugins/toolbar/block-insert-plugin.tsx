@@ -12,10 +12,7 @@ import { IconSize } from "../../ui/typography"
 
 export function BlockInsertPlugin({ children }: { children: React.ReactNode }) {
   return (
-    <Select
-      modal={false}
-      value={""}
-    >
+    <Select modal={false} value={""}>
       <SelectTrigger className="editor-toolbar-item editor-toolbar-item--w-auto editor-toolbar-item--gap-sm">
         <IconSize size="sm">
           <PlusIcon />

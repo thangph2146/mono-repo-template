@@ -151,6 +151,23 @@ export interface ProductPagedResponse {
 export type CreateProductInput = Omit<Product, keyof AuditFields>;
 export type UpdateProductInput = Partial<CreateProductInput>;
 
+export interface ChildCategory {
+  id: string;
+  name: string;
+  slug: string;
+  _count: { children: number };
+  postCount: number;
+}
+
+export interface RelatedPost {
+  id: string;
+  title: string;
+  slug: string;
+  published: boolean;
+  publishedAt: string | null;
+  createdAt: string;
+}
+
 export interface Category extends Omit<AuditFields, 'id'> {
   id: string;
   name: string;
@@ -164,6 +181,8 @@ export interface Category extends Omit<AuditFields, 'id'> {
   _count?: { children: number };
   postCount?: number;
   deletedAt?: Iso8601 | null;
+  children?: ChildCategory[];
+  posts?: RelatedPost[];
 }
 
 export type CreateCategoryInput = {
@@ -332,3 +351,45 @@ export interface RbacRole {
   description: string | null;
   permissions: string[];
 }
+
+/** PageContent — hướng dẫn sử dụng / nội dung trang động */
+export interface PageContentStep {
+  order: number;
+  title: string;
+  description: string;
+  imageUrl?: string | null;
+}
+
+export interface PageContent extends Omit<AuditFields, 'id'> {
+  id: string;
+  pageKey: string;
+  sectionKey: string;
+  isVisible: boolean;
+  content: {
+    title?: string | null;
+    description?: string | null;
+    order?: number;
+    steps?: PageContentStep[];
+  };
+  deletedAt?: Iso8601 | null;
+}
+
+export type CreatePageContentInput = {
+  pageKey: string;
+  sectionKey: string;
+  isVisible?: boolean;
+  content?: {
+    title?: string | null;
+    description?: string | null;
+    order?: number;
+    steps?: PageContentStep[];
+  };
+};
+
+export type UpdatePageContentInput = Partial<Omit<CreatePageContentInput, 'pageKey' | 'sectionKey'>>;
+
+/** Alias cho Guides (huong-dan-su-dung) */
+export type GuideStep = PageContentStep;
+export type GuideGroup = PageContent;
+export type CreateGuideInput = CreatePageContentInput;
+export type UpdateGuideInput = UpdatePageContentInput;

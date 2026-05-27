@@ -72,7 +72,7 @@ export function ListFormatDropDown({
       value={selectValue}
       onValueChange={(value) => {
         if (value === LIST_TOOLBAR_PLACEHOLDER_VALUE) return
-        
+
         // This logic handles when the user selects an option from the dropdown
         // that corresponds to an actual command (not the placeholder)
         // However, the actual command execution is handled by the `onPointerDown`
@@ -117,7 +117,8 @@ export function ListLevelDropDown(): JSX.Element {
     (targetDepth: number) => {
       const diff = targetDepth - listDepth
       if (diff === 0) return
-      const command = diff > 0 ? INDENT_CONTENT_COMMAND : OUTDENT_CONTENT_COMMAND
+      const command =
+        diff > 0 ? INDENT_CONTENT_COMMAND : OUTDENT_CONTENT_COMMAND
       const steps = Math.abs(diff)
       for (let i = 0; i < steps; i += 1) {
         activeEditor.dispatchCommand(command, undefined)
@@ -127,7 +128,9 @@ export function ListLevelDropDown(): JSX.Element {
   )
 
   const selectValue =
-    inList && listDepth > 0 ? `__editor_list_level_${listDepth}__` : LIST_LEVEL_PLACEHOLDER_VALUE
+    inList && listDepth > 0
+      ? `__editor_list_level_${listDepth}__`
+      : LIST_LEVEL_PLACEHOLDER_VALUE
 
   const maxDepth = LIST_MAX_INDENT_DEPTH
 
@@ -161,10 +164,7 @@ export function ListLevelDropDown(): JSX.Element {
       <SelectContent>
         <SelectGroup>
           {Array.from({ length: maxDepth }, (_, i) => i + 1).map((level) => (
-            <SelectItem
-              key={level}
-              value={`__editor_list_level_${level}__`}
-            >
+            <SelectItem key={level} value={`__editor_list_level_${level}__`}>
               Cấp {level}
             </SelectItem>
           ))}

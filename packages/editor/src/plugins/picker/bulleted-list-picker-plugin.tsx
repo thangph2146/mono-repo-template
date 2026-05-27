@@ -6,7 +6,11 @@ import { IconSize } from "../../ui/typography"
 
 export function BulletedListPickerPlugin() {
   return new ComponentPickerOption("Bulleted List", {
-    icon: <IconSize size="sm"><ListIcon /></IconSize>,
+    icon: (
+      <IconSize size="sm">
+        <ListIcon />
+      </IconSize>
+    ),
     keywords: ["bulleted list", "unordered list", "ul", "- list", "+ list"],
     onSelect: (_, editor) =>
       editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined),

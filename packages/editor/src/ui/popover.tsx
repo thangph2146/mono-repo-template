@@ -11,7 +11,13 @@ interface PopoverContextValue {
 
 const PopoverContext = React.createContext<PopoverContextValue | null>(null)
 
-export function Popover({ children, open: controlledOpen, defaultOpen = false, onOpenChange, modal = false }: { 
+export function Popover({
+  children,
+  open: controlledOpen,
+  defaultOpen = false,
+  onOpenChange,
+  modal = false,
+}: {
   children: React.ReactNode
   open?: boolean
   defaultOpen?: boolean
@@ -24,9 +30,15 @@ export function Popover({ children, open: controlledOpen, defaultOpen = false, o
   const open = controlledOpen ?? uncontrolledOpen
   const setOpen = onOpenChange ?? setUncontrolledOpen
 
-  const contextValue = React.useMemo(() => ({
-    open, setOpen, triggerRef, modal
-  }), [open, setOpen, modal])
+  const contextValue = React.useMemo(
+    () => ({
+      open,
+      setOpen,
+      triggerRef,
+      modal,
+    }),
+    [open, setOpen, modal]
+  )
 
   return (
     <PopoverContext.Provider value={contextValue}>
@@ -35,7 +47,15 @@ export function Popover({ children, open: controlledOpen, defaultOpen = false, o
   )
 }
 
-export function PopoverTrigger({ children, asChild, ...props }: React.HTMLAttributes<HTMLElement> & { asChild?: boolean, children: React.ReactNode, disabled?: boolean }) {
+export function PopoverTrigger({
+  children,
+  asChild,
+  ...props
+}: React.HTMLAttributes<HTMLElement> & {
+  asChild?: boolean
+  children: React.ReactNode
+  disabled?: boolean
+}) {
   const context = React.useContext(PopoverContext)
   if (!context) throw new Error("PopoverTrigger must be used within Popover")
 
@@ -44,17 +64,26 @@ export function PopoverTrigger({ children, asChild, ...props }: React.HTMLAttrib
   const handleClick = (e: React.MouseEvent<HTMLElement>) => {
     setOpen(!open)
     if (React.isValidElement(children)) {
-      (children as React.ReactElement<{ onClick?: React.MouseEventHandler<HTMLElement> }>).props.onClick?.(e)
+      ;(
+        children as React.ReactElement<{
+          onClick?: React.MouseEventHandler<HTMLElement>
+        }>
+      ).props.onClick?.(e)
     }
   }
 
   if (asChild && React.isValidElement(children)) {
-    // eslint-disable-next-line react-hooks/refs
-    return React.cloneElement(children as React.ReactElement<React.HTMLAttributes<HTMLElement> & { ref?: React.Ref<HTMLElement> }>, {
-      ref: triggerRef,
-      onClick: handleClick,
-      ...props
-    })
+    return React.cloneElement(
+      children as React.ReactElement<
+        React.HTMLAttributes<HTMLElement> & { ref?: React.Ref<HTMLElement> }
+      >,
+      // eslint-disable-next-line react-hooks/refs
+      {
+        ref: triggerRef,
+        onClick: handleClick,
+        ...props,
+      }
+    )
   }
 
   return (
@@ -69,7 +98,16 @@ export function PopoverTrigger({ children, asChild, ...props }: React.HTMLAttrib
   )
 }
 
-export function PopoverContent({ children, className, align = "center", sideOffset = 4, ...props }: React.HTMLAttributes<HTMLDivElement> & { align?: "start" | "center" | "end", sideOffset?: number }) {
+export function PopoverContent({
+  children,
+  className,
+  align = "center",
+  sideOffset = 4,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement> & {
+  align?: "start" | "center" | "end"
+  sideOffset?: number
+}) {
   const context = React.useContext(PopoverContext)
   const [position, setPosition] = React.useState({ top: 0, left: 0 })
   const contentRef = React.useRef<HTMLDivElement>(null)
@@ -83,17 +121,20 @@ export function PopoverContent({ children, className, align = "center", sideOffs
       if (align === "center") {
         left = rect.left + rect.width / 2 // Will need to subtract half content width after render
       } else if (align === "end") {
-        left = rect.right 
+        left = rect.right
       }
-      
+
       setPosition({
         top: rect.bottom + window.scrollY + sideOffset,
-        left: left + window.scrollX 
+        left: left + window.scrollX,
       })
 
       const handleClickOutside = (e: MouseEvent) => {
-        if (contentRef.current && !contentRef.current.contains(e.target as Node) && 
-            !context.triggerRef.current?.contains(e.target as Node)) {
+        if (
+          contentRef.current &&
+          !contentRef.current.contains(e.target as Node) &&
+          !context.triggerRef.current?.contains(e.target as Node)
+        ) {
           context.setOpen(false)
         }
       }
@@ -112,7 +153,7 @@ export function PopoverContent({ children, className, align = "center", sideOffs
         position: "absolute",
         top: position.top,
         left: position.left,
-        zIndex: 9999
+        zIndex: 9999,
       }}
       {...props}
     >
@@ -122,7 +163,13 @@ export function PopoverContent({ children, className, align = "center", sideOffs
   )
 }
 
-export function PopoverPortal({ children, container }: { children: React.ReactNode, container?: HTMLElement | null }) {
+export function PopoverPortal({
+  children,
+  container,
+}: {
+  children: React.ReactNode
+  container?: HTMLElement | null
+}) {
   if (!container) return <>{children}</>
   return createPortal(children, container)
 }

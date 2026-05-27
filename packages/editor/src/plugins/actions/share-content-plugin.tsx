@@ -11,16 +11,9 @@ import { CLEAR_HISTORY_COMMAND } from "lexical"
 import { SendIcon } from "lucide-react"
 import { toast } from "sonner"
 
-import {
-  docFromHash,
-  docToHash,
-} from "../../utils/doc-serialization"
+import { docFromHash, docToHash } from "../../utils/doc-serialization"
 import { Button } from "../../ui/button"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "../../ui/tooltip"
+import { Tooltip, TooltipContent, TooltipTrigger } from "../../ui/tooltip"
 import { IconSize } from "../../ui/typography"
 
 export function ShareContentPlugin() {

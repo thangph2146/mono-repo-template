@@ -353,10 +353,20 @@ export class PostsService {
       (filters?.categories?.trim() || filters?.categoryId?.trim())
     ) {
       const key = filters.categories?.trim() ? 'categories' : 'categoryId';
-      const rootId = filters[key];
-      const ids = await this.collectCategoryDescendantIds(rootId);
-      if (ids.length > 0) {
-        filters[key] = ids.join(',');
+      const rawValue = filters[key];
+      const rootIds = rawValue.includes(',')
+        ? rawValue
+            .split(',')
+            .map((x) => x.trim())
+            .filter(Boolean)
+        : [rawValue];
+      const allIds: string[] = [];
+      for (const rootId of rootIds) {
+        const ids = await this.collectCategoryDescendantIds(rootId);
+        allIds.push(...ids);
+      }
+      if (allIds.length > 0) {
+        filters[key] = allIds.join(',');
       }
     }
     const where = params.categoriesNone
@@ -538,7 +548,18 @@ export class PostsService {
     if (!existing) return null;
 
     if (data.title != null) existing.title = data.title;
-    if (data.slug != null) existing.slug = data.slug;
+    if (data.slug != null) {
+      const duplicate = await this.em.findOne(Post, {
+        slug: data.slug,
+        id: { $ne: id },
+      });
+      if (duplicate) {
+        throw new BadRequestException(
+          'Slug đã tồn tại, vui lòng chọn slug khác',
+        );
+      }
+      existing.slug = data.slug;
+    }
     if (data.content !== undefined) existing.content = data.content;
     if (data.excerpt !== undefined)
       existing.excerpt = truncateExcerpt(data.excerpt);
@@ -566,7 +587,12 @@ export class PostsService {
       existing.eventEndAt = parseNullableDate(data.eventEndAt, 'eventEndAt');
 
     this.em.persist(existing);
-    await this.em.flush();
+    try {
+      await this.em.flush();
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : String(error);
+      throw new BadRequestException(`Lỗi lưu bài viết: ${msg}`);
+    }
 
     if (data.categoryIds !== undefined) {
       const categoryIds = data.categoryIds.filter(
@@ -581,7 +607,12 @@ export class PostsService {
           postCategory.category = this.em.getReference(Category, categoryId);
           this.em.persist(postCategory);
         }
-        await this.em.flush();
+        try {
+          await this.em.flush();
+        } catch (error) {
+          const msg = error instanceof Error ? error.message : String(error);
+          throw new BadRequestException(`Lỗi lưu danh mục: ${msg}`);
+        }
       }
     }
     if (data.tagIds !== undefined) {
@@ -597,7 +628,12 @@ export class PostsService {
           postTag.tag = this.em.getReference(Tag, tagId);
           this.em.persist(postTag);
         }
-        await this.em.flush();
+        try {
+          await this.em.flush();
+        } catch (error) {
+          const msg = error instanceof Error ? error.message : String(error);
+          throw new BadRequestException(`Lỗi lưu thẻ: ${msg}`);
+        }
       }
     }
 

@@ -29,12 +29,28 @@ function AlignIcons({
 }) {
   switch (alignment) {
     case "left":
-      return <IconSize size="sm"><AlignLeftIcon /></IconSize>
+      return (
+        <IconSize size="sm">
+          <AlignLeftIcon />
+        </IconSize>
+      )
     case "center":
-      return <IconSize size="sm"><AlignCenterIcon /></IconSize>
+      return (
+        <IconSize size="sm">
+          <AlignCenterIcon />
+        </IconSize>
+      )
     case "right":
-      return <IconSize size="sm"><AlignRightIcon /></IconSize>
+      return (
+        <IconSize size="sm">
+          <AlignRightIcon />
+        </IconSize>
+      )
     case "justify":
-      return <IconSize size="sm"><AlignJustifyIcon /></IconSize>
+      return (
+        <IconSize size="sm">
+          <AlignJustifyIcon />
+        </IconSize>
+      )
   }
 }

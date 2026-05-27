@@ -1,16 +1,16 @@
-"use client";
+"use client"
 
-import { cn } from "../lib/utils";
-import { useTextSize } from "./text-size-provider";
+import { cn } from "../lib/utils"
+import { useTextSize } from "./text-size-provider"
 
-type TextSize = "sm" | "base" | "lg";
+type TextSize = "sm" | "base" | "lg"
 
 // ── Heading ─────────────────────────────────────────────────
 interface HeadingProps extends React.HTMLAttributes<HTMLElement> {
-  as?: "span" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
-  size?: "display" | "section" | "title" | "body" | "label";
-  color?: "default" | "primary" | "muted";
-  align?: "left" | "center" | "right";
+  as?: "span" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6"
+  size?: "display" | "section" | "title" | "body" | "label"
+  color?: "default" | "primary" | "muted"
+  align?: "left" | "center" | "right"
 }
 
 const headingSizeMap: Record<
@@ -42,7 +42,7 @@ const headingSizeMap: Record<
     base: "text-[clamp(0.75rem,0.2vw+0.55rem,0.875rem)] font-medium uppercase tracking-[0.02em]",
     lg: "text-[clamp(0.8125rem,0.2vw+0.6rem,0.9375rem)] font-medium uppercase tracking-[0.02em]",
   },
-};
+}
 
 export function Heading({
   as: Tag = "h2",
@@ -53,19 +53,19 @@ export function Heading({
   children,
   ...props
 }: HeadingProps) {
-  const { size: textSize } = useTextSize();
+  const { size: textSize } = useTextSize()
 
   const colorStyles: Record<string, string> = {
     default: "text-foreground",
     primary: "text-primary",
     muted: "text-muted-foreground",
-  };
+  }
 
   const alignStyles: Record<string, string> = {
     left: "text-left",
     center: "text-center",
     right: "text-right",
-  };
+  }
 
   return (
     <Tag
@@ -73,20 +73,20 @@ export function Heading({
         headingSizeMap[size][textSize],
         colorStyles[color],
         alignStyles[align],
-        className,
+        className
       )}
       {...props}
     >
       {children}
     </Tag>
-  );
+  )
 }
 
 // ── Text ───────────────────────────────────────────────────
 interface TextProps extends React.HTMLAttributes<HTMLParagraphElement> {
-  variant?: "body" | "muted" | "lead" | "small" | "caption" | "label";
-  align?: "left" | "center" | "right";
-  maxWidth?: boolean;
+  variant?: "body" | "muted" | "lead" | "small" | "caption" | "label"
+  align?: "left" | "center" | "right"
+  maxWidth?: boolean
 }
 
 const textVariantMap: Record<
@@ -123,7 +123,7 @@ const textVariantMap: Record<
     base: "text-[clamp(0.75rem,0.2vw+0.55rem,0.875rem)] font-medium uppercase tracking-[0.02em] text-muted-foreground",
     lg: "text-[clamp(0.8125rem,0.2vw+0.55rem,0.9375rem)] font-medium uppercase tracking-[0.02em] text-muted-foreground",
   },
-};
+}
 
 export function Text({
   as: Tag = "p",
@@ -134,33 +134,32 @@ export function Text({
   children,
   ...props
 }: TextProps & { as?: React.ElementType }) {
-  const { size: textSize } = useTextSize();
+  const { size: textSize } = useTextSize()
 
   const alignStyles: Record<string, string> = {
     left: "text-left",
     center: "text-center",
     right: "text-right",
-  };
+  }
 
   return (
     <Tag
       className={cn(
         textVariantMap[variant][textSize],
         alignStyles[align],
-        maxWidth &&
-          "w-full max-w-lg md:max-w-2xl mx-auto px-4 sm:px-0",
-        className,
+        maxWidth && "mx-auto w-full max-w-lg px-4 sm:px-0 md:max-w-2xl",
+        className
       )}
       {...props}
     >
       {children}
     </Tag>
-  );
+  )
 }
 
 // ── Badge ──────────────────────────────────────────────────
 interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
-  variant?: "default" | "primary" | "secondary" | "outline";
+  variant?: "default" | "primary" | "secondary" | "outline"
 }
 
 export function Badge({
@@ -178,13 +177,13 @@ export function Badge({
       "inline-flex items-center gap-2 px-3 py-1 rounded-full text-caption font-medium bg-secondary text-secondary-foreground",
     outline:
       "inline-flex items-center gap-2 px-3 py-1 rounded-full text-caption font-medium border border-border text-muted-foreground",
-  };
+  }
 
   return (
     <span className={cn(variantStyles[variant], className)} {...props}>
       {children}
     </span>
-  );
+  )
 }
 
 // ── Pulsing dot (for badges) ───────────────────────────────
@@ -192,15 +191,15 @@ export function LiveDot({ className }: { className?: string }) {
   return (
     <span
       className={cn(
-        "size-1.5 rounded-full bg-primary animate-pulse",
-        className,
+        "size-1.5 animate-pulse rounded-full bg-primary",
+        className
       )}
     />
-  );
+  )
 }
 
 interface IconSizeProps extends React.HTMLAttributes<HTMLSpanElement> {
-  size?: "xs" | "sm" | "md" | "lg";
+  size?: "xs" | "sm" | "md" | "lg"
 }
 
 const iconSizeMap: Record<NonNullable<IconSizeProps["size"]>, string> = {
@@ -208,7 +207,7 @@ const iconSizeMap: Record<NonNullable<IconSizeProps["size"]>, string> = {
   sm: "size-4",
   md: "size-5",
   lg: "size-6",
-};
+}
 
 export function IconSize({
   size = "md",
@@ -217,53 +216,66 @@ export function IconSize({
   ...props
 }: IconSizeProps) {
   return (
-    <span className={cn("inline-flex items-center justify-center", iconSizeMap[size], className)} {...props}>
+    <span
+      className={cn(
+        "inline-flex items-center justify-center",
+        iconSizeMap[size],
+        className
+      )}
+      {...props}
+    >
       {children}
     </span>
-  );
+  )
 }
 
 export function TypographyH1(props: Omit<HeadingProps, "as" | "size">) {
-  return <Heading as="h1" size="display" {...props} />;
+  return <Heading as="h1" size="display" {...props} />
 }
 
 export function TypographyH2(props: Omit<HeadingProps, "as" | "size">) {
-  return <Heading as="h2" size="section" {...props} />;
+  return <Heading as="h2" size="section" {...props} />
 }
 
 export function TypographyH3(props: Omit<HeadingProps, "as" | "size">) {
-  return <Heading as="h3" size="title" {...props} />;
+  return <Heading as="h3" size="title" {...props} />
 }
 
 export function TypographyDescriptionLarge(
   props: Omit<TextProps, "variant"> & { as?: React.ElementType }
 ) {
-  return <Text variant="lead" {...props} />;
+  return <Text variant="lead" {...props} />
 }
 
 export function TypographyPLargeMuted(
   props: Omit<TextProps, "variant"> & { as?: React.ElementType }
 ) {
-  return <Text variant="muted" {...props} />;
+  return <Text variant="muted" {...props} />
 }
 
 export function TypographyPSmallMuted(
   props: Omit<TextProps, "variant"> & { as?: React.ElementType }
 ) {
-  return <Text variant="small" {...props} />;
+  return <Text variant="small" {...props} />
 }
 
 export function TypographyPSmall(
   props: Omit<TextProps, "variant"> & { as?: React.ElementType }
 ) {
-  const { className, ...rest } = props;
-  return <Text variant="small" className={cn("text-foreground", className)} {...rest} />;
+  const { className, ...rest } = props
+  return (
+    <Text
+      variant="small"
+      className={cn("text-foreground", className)}
+      {...rest}
+    />
+  )
 }
 
 export function TypographySpanSmall(
   props: React.HTMLAttributes<HTMLSpanElement>
 ) {
-  const { className, ...rest } = props;
+  const { className, ...rest } = props
   return (
     <span
       className={cn(
@@ -272,5 +284,5 @@ export function TypographySpanSmall(
       )}
       {...rest}
     />
-  );
+  )
 }

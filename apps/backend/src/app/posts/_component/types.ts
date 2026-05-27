@@ -38,18 +38,6 @@ export type PostDetail = PostListRow & {
   content: unknown;
 };
 
-export type PagedResult<T> = { items: T[]; total: number };
-export type ApiEnvelope<T> = {
-  success?: boolean;
-  message?: string;
-  error?: string | null;
-  data?: T;
-};
-export type PagedApiShape<T> = {
-  data: T[];
-  pagination?: { total?: number };
-};
-
 export type FormState = {
   id?: string;
   title: string;

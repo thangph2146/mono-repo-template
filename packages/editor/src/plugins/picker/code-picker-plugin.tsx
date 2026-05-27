@@ -8,7 +8,11 @@ import { IconSize } from "../../ui/typography"
 
 export function CodePickerPlugin() {
   return new ComponentPickerOption("Code", {
-    icon: <IconSize size="sm"><CodeIcon /></IconSize>,
+    icon: (
+      <IconSize size="sm">
+        <CodeIcon />
+      </IconSize>
+    ),
     keywords: ["javascript", "python", "js", "codeblock"],
     onSelect: (_, editor) =>
       editor.update(() => {

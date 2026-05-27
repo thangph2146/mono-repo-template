@@ -1,18 +1,22 @@
 "use client"
 import { useState, useEffect } from "react"
 import { LexicalEditor } from "lexical"
-import { 
-  getContainerWidth, 
-  getImageAspectRatio 
-} from "../image-sizing"
+import { getContainerWidth, getImageAspectRatio } from "../image-sizing"
 
 export type DimensionValue = "inherit" | number
 
-export const imageCache = new Map<string, { width: number; height: number; ratio: number }>()
+export const imageCache = new Map<
+  string,
+  { width: number; height: number; ratio: number }
+>()
 export const DEFAULT_ASPECT_RATIO = 16 / 9
 export const DEFAULT_WIDTH = 800
 export const DEFAULT_HEIGHT = Math.round(DEFAULT_WIDTH / DEFAULT_ASPECT_RATIO)
-export const DEFAULT_DIMENSIONS = { width: DEFAULT_WIDTH, height: DEFAULT_HEIGHT, ratio: DEFAULT_ASPECT_RATIO }
+export const DEFAULT_DIMENSIONS = {
+  width: DEFAULT_WIDTH,
+  height: DEFAULT_HEIGHT,
+  ratio: DEFAULT_ASPECT_RATIO,
+}
 
 interface UseResponsiveImageDimensionsProps {
   editor: LexicalEditor
@@ -102,21 +106,13 @@ export function useResponsiveImageDimensions({
       }
     }
 
-
-
-
-
     const updateDimensions = () => {
       if (fullWidth) {
         scheduleDimensionsUpdate({ width: "inherit", height: "inherit" })
         return
       }
 
-      const containerWidth = getContainerWidth(
-        image,
-        editorRoot,
-        maxWidthLimit
-      )
+      const containerWidth = getContainerWidth(image, editorRoot, maxWidthLimit)
 
       if (!containerWidth) {
         scheduleDimensionsUpdate({ width, height })
@@ -127,7 +123,10 @@ export function useResponsiveImageDimensions({
       const baseWidth =
         typeof width === "number"
           ? width
-          : image.naturalWidth || cached?.width || image.getBoundingClientRect().width || containerWidth
+          : image.naturalWidth ||
+            cached?.width ||
+            image.getBoundingClientRect().width ||
+            containerWidth
 
       let baseHeight: DimensionValue
       if (typeof height === "number") {
@@ -137,7 +136,8 @@ export function useResponsiveImageDimensions({
       } else if (cached?.height) {
         baseHeight = cached.height
       } else {
-        const ratio = cached?.ratio || getImageAspectRatio(image) || DEFAULT_ASPECT_RATIO
+        const ratio =
+          cached?.ratio || getImageAspectRatio(image) || DEFAULT_ASPECT_RATIO
         baseHeight = ratio > 0 ? Math.round(baseWidth / ratio) : "inherit"
       }
 
@@ -154,9 +154,12 @@ export function useResponsiveImageDimensions({
         if (typeof baseHeight === "number") {
           nextHeight = Math.max(Math.round(baseHeight * scale), 1)
         } else if (baseHeight === "inherit") {
-          const ratio = cached?.ratio || getImageAspectRatio(image) || DEFAULT_ASPECT_RATIO
+          const ratio =
+            cached?.ratio || getImageAspectRatio(image) || DEFAULT_ASPECT_RATIO
           nextHeight =
-            ratio > 0 ? Math.max(Math.round(containerWidth / ratio), 1) : baseHeight
+            ratio > 0
+              ? Math.max(Math.round(containerWidth / ratio), 1)
+              : baseHeight
         }
       }
 

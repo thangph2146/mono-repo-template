@@ -7,7 +7,9 @@ const MOBILE_BREAKPOINT = 768
 function subscribe(callback: () => void) {
   if (typeof window === "undefined") return () => {}
 
-  const mediaQuery = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`)
+  const mediaQuery = window.matchMedia(
+    `(max-width: ${MOBILE_BREAKPOINT - 1}px)`
+  )
   mediaQuery.addEventListener("change", callback)
   return () => mediaQuery.removeEventListener("change", callback)
 }

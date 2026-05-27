@@ -1,3 +1,16 @@
+/**
+ * Plugins SCSS Entry Point
+ * 
+ * This file imports all plugin-specific styles organized by category:
+ * 1. Toolbar Components
+ * 2. Floating Toolbars & Overlays
+ * 3. Content Plugins (Table, Image, Layout, etc.)
+ * 4. Menus & Pickers
+ * 5. Utility Plugins
+ * 
+ * Each plugin has its own file in the plugins/ directory.
+ */
+
 @use "variables" as *;
 @use "mixins" as *;
 
@@ -5,33 +18,53 @@
 // 1. TOOLBAR COMPONENTS
 // ==========================================
 @use "plugins/toolbar";
+@use "plugins/toolbar-professional";
 
 // ==========================================
 // 2. FLOATING TOOLBARS & OVERLAYS
 // ==========================================
 @use "plugins/floating-toolbars";
-
-// ==========================================
-// 3. PLUGIN SPECIFIC STYLES
-// ==========================================
-@use "plugins/list-color";
-@use "plugins/color-picker";
-@use "plugins/table";
-@use "plugins/image";
-@use "plugins/image-resizer";
-@use "plugins/layout";
-@use "plugins/code-action-menu";
-@use "plugins/mentions";
-@use "plugins/tree-view";
-@use "plugins/draggable-block";
-@use "plugins/auto-embed";
 @use "plugins/floating-link-editor";
 
 // ==========================================
-// 4. MENUS & PICKERS
+// 3. CONTENT PLUGINS
 // ==========================================
-@use "plugins/menus-and-pickers";
 
-// Note: Core toggle styles are defined in ui-components.scss
-// Specific plugin overrides can be added here if needed
-@use "plugins/toolbar-professional";
+// Tables
+@use "plugins/table";
+
+// Images & Media
+@use "plugins/image";
+@use "plugins/image-resizer";
+
+// Layout & Structure
+@use "plugins/layout";
+
+// Lists
+@use "plugins/list-color";
+
+// Code
+@use "plugins/code-action-menu";
+
+// Draggable Elements
+@use "plugins/draggable-block";
+
+// Auto Embed
+@use "plugins/auto-embed";
+
+// Tree View
+@use "plugins/tree-view";
+
+// ==========================================
+// 4. MENUS & PICKERS (each plugin isolated)
+// ==========================================
+@use "plugins/component-picker";
+@use "plugins/command-menu";
+@use "plugins/context-menu";
+@use "plugins/actions-bar";
+@use "plugins/mentions";
+
+// ==========================================
+// 5. COLOR PICKERS & UI EXTENSIONS
+// ==========================================
+@use "plugins/color-picker";

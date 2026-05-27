@@ -3,18 +3,20 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@ui/components/badge";
 import { Button } from "@ui/components/button";
-import { Pencil, Trash2, ArchiveRestore } from "lucide-react";
+import { Eye, Pencil, Trash2, ArchiveRestore } from "lucide-react";
 import type { PostListRow, TaxonomyOption, CategoryTreeOption } from "./types";
 import { SummaryBadges } from "./summary-badges";
 
 export function getPostColumns({
-  openEdit,
+  navigateToEdit,
+  navigateToView,
   setConfirmAction,
   categoryTreeOptions,
   tagsOptions,
   formatDateTime,
 }: {
-  openEdit: (row: PostListRow) => void;
+  navigateToEdit: (id: string) => void;
+  navigateToView: (id: string) => void;
   setConfirmAction: (action: { kind: "delete" | "restore" | "purge"; row: PostListRow }) => void;
   categoryTreeOptions: CategoryTreeOption[];
   tagsOptions: TaxonomyOption[];
@@ -24,7 +26,7 @@ export function getPostColumns({
     {
       accessorKey: "title",
       header: "Tiêu đề",
-      meta: { filterPlaceholder: "Lọc tiêu đề…" },
+      enableColumnFilter: false,
       cell: ({ row }) => (
         <div className="space-y-1">
           <p className="font-medium">{row.original.title}</p>
@@ -108,10 +110,20 @@ export function getPostColumns({
         <div className="flex flex-wrap gap-1">
           <Button
             type="button"
+            variant="default"
+            size="sm"
+            className="h-8 gap-1 rounded-lg"
+            onClick={() => navigateToView(row.original.id)}
+          >
+            <Eye className="size-3.5" />
+            Xem
+          </Button>
+          <Button
+            type="button"
             variant="outline"
             size="sm"
             className="h-8 gap-1 rounded-lg"
-            onClick={() => void openEdit(row.original)}
+            onClick={() => navigateToEdit(row.original.id)}
           >
             <Pencil className="size-3.5" />
             Sửa
@@ -124,7 +136,7 @@ export function getPostColumns({
             onClick={() => setConfirmAction({ kind: "delete", row: row.original })}
           >
             <Trash2 className="size-3.5" />
-            Xóa tạm
+            Xóa tạm
           </Button>
         </div>
       ),
@@ -147,7 +159,7 @@ export function getTrashColumns({
     {
       accessorKey: "title",
       header: "Tiêu đề",
-      meta: { filterPlaceholder: "Lọc tiêu đề…" },
+      enableColumnFilter: false,
       cell: ({ row }) => (
         <div className="space-y-1">
           <p className="font-medium">{row.original.title}</p>

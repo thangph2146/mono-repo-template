@@ -6,7 +6,11 @@ import { IconSize } from "../../ui/typography"
 
 export function CheckListPickerPlugin() {
   return new ComponentPickerOption("Check List", {
-    icon: <IconSize size="sm"><ListTodoIcon /></IconSize>,
+    icon: (
+      <IconSize size="sm">
+        <ListTodoIcon />
+      </IconSize>
+    ),
     keywords: ["check list", "todo list"],
     onSelect: (_, editor) =>
       editor.dispatchCommand(INSERT_CHECK_LIST_COMMAND, undefined),

@@ -1,7 +1,7 @@
 import { ConfigService } from '@nestjs/config';
 import { Global, Module } from '@nestjs/common';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
-import { defineConfig, EntityCaseNamingStrategy } from '@mikro-orm/core';
+import { EntityCaseNamingStrategy, Options } from '@mikro-orm/core';
 import { SqliteDriver } from '@mikro-orm/sqlite';
 import { PostgreSqlDriver } from '@mikro-orm/postgresql';
 import { MySqlDriver } from '@mikro-orm/mysql';
@@ -28,11 +28,11 @@ function isSqliteFamily(type: SupportedDbType): boolean {
   return type === 'sqlite';
 }
 
-export function createMikroConfig(configService: ConfigService) {
+export function createMikroConfig(configService: ConfigService): Options<any> {
   const type = resolveDbType(configService.get<string>('DB_TYPE'));
   const debug = configService.get<string>('NODE_ENV') === 'development';
 
-  const baseConfig = defineConfig({
+  const baseConfig: Options<any> = {
     entities: [...ormEntities],
     debug,
     namingStrategy: EntityCaseNamingStrategy,
@@ -40,7 +40,7 @@ export function createMikroConfig(configService: ConfigService) {
       path: 'src/migrations',
       pathTs: 'src/migrations',
     },
-  });
+  };
 
   if (isSqliteFamily(type)) {
     return {
@@ -58,8 +58,10 @@ export function createMikroConfig(configService: ConfigService) {
       ...baseConfig,
       driver: Driver,
       clientUrl: url,
-      charset: type === 'postgres' ? undefined : 'utf8mb4',
-      collation: type === 'postgres' ? undefined : 'utf8mb4_unicode_ci',
+      ...(type !== 'postgres' && {
+        charset: 'utf8mb4',
+        collation: 'utf8mb4_unicode_ci',
+      }),
     };
   }
 
@@ -71,8 +73,10 @@ export function createMikroConfig(configService: ConfigService) {
     user: configService.get<string>('DB_USERNAME') || 'root',
     password: configService.get<string>('DB_PASSWORD') || '',
     dbName: configService.get<string>('DB_DATABASE') || 'tuyen_sinh',
-    charset: type === 'postgres' ? undefined : 'utf8mb4',
-    collation: type === 'postgres' ? undefined : 'utf8mb4_unicode_ci',
+    ...(type !== 'postgres' && {
+      charset: 'utf8mb4',
+      collation: 'utf8mb4_unicode_ci',
+    }),
   };
 }
 

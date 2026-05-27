@@ -1,7 +1,16 @@
+/**
+ * Animations UI Component Styles
+ * 
+ * Utility classes for animations and transitions.
+ */
+
 @use "../variables" as *;
 @use "../mixins" as *;
 
-/* --- ANIMATIONS & TRANSITIONS --- */
+// ==========================================
+// 1. TRANSITIONS
+// ==========================================
+
 .editor-transition-colors {
   transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
@@ -14,6 +23,10 @@
   transition-duration: $editor-transition-fast;
 }
 
+// ==========================================
+// 2. ANIMATIONS
+// ==========================================
+
 .editor-animate-pulse {
   animation: pulse $editor-animation-pulse cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
@@ -22,9 +35,17 @@
   animation: spin $editor-animation-spin linear infinite;
 }
 
+// ==========================================
+// 3. TRANSFORMS
+// ==========================================
+
 .editor-rotate-90 {
   transform: rotate(90deg);
 }
+
+// ==========================================
+// 4. RESIZE
+// ==========================================
 
 .editor-resize-none {
   resize: none;

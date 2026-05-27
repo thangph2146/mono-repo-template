@@ -13,6 +13,15 @@ function debounce<TArgs extends unknown[]>(fn: (...args: TArgs) => void, delay: 
   return debouncedFn;
 }
 
+type ColumnMeta = {
+  disableColumnFilter?: boolean;
+  className?: string;
+  filterPlaceholder?: string;
+  filterVariant?: string;
+  selectOptions?: Array<{ value: string; label: string }>;
+  treeOptions?: Array<{ value: string; label: string; children?: Array<{ value: string; label: string }> }>;
+};
+
 import {
   flexRender,
   getCoreRowModel,
@@ -105,6 +114,8 @@ export type AdminDataTableProps<TData> = {
   globalFilterPlaceholder?: string;
   /** Bật khi lọc do API/server — chỉ giữ state ô lọc, không lọc lại `data` trên client */
   manualFiltering?: boolean;
+  /** true: lọc từ lá lên (giữ cha khi còn lá con khớp) — dùng cho cây */
+  filterFromLeafRows?: boolean;
   columnFilters?: ColumnFiltersState;
   onColumnFiltersChange?: OnChangeFn<ColumnFiltersState>;
   globalFilter?: string;
@@ -153,6 +164,7 @@ export function AdminDataTable<TData>({
   getGlobalFilterText,
   globalFilterPlaceholder = "Tìm trong bảng…",
   manualFiltering = false,
+  filterFromLeafRows: filterFromLeafRowsProp = false,
   columnFilters: columnFiltersControlled,
   onColumnFiltersChange,
   globalFilter: globalFilterControlled,
@@ -229,28 +241,40 @@ export function AdminDataTable<TData>({
       id: "_expand",
       header: () => null,
       cell: ({ row }) => {
+        const indent = row.depth * 24;
         if (!row.getCanExpand()) {
-          return <span className="inline-block w-8 shrink-0" aria-hidden />;
+          return (
+            <span
+              className="inline-block shrink-0"
+              style={{ width: `${48 + indent}px` }}
+              aria-hidden
+            />
+          );
         }
         return (
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 shrink-0"
-            aria-expanded={row.getIsExpanded()}
-            aria-label={row.getIsExpanded() ? "Thu gọn" : "Mở rộng"}
-            onClick={(e) => {
-              e.stopPropagation();
-              row.getToggleExpandedHandler()();
-            }}
+          <div
+            className="flex items-center"
+            style={{ paddingLeft: `${indent}px` }}
           >
-            {row.getIsExpanded() ? (
-              <ChevronDown className="size-4" />
-            ) : (
-              <ChevronRight className="size-4" />
-            )}
-          </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 shrink-0"
+              aria-expanded={row.getIsExpanded()}
+              aria-label={row.getIsExpanded() ? "Thu gọn" : "Mở rộng"}
+              onClick={(e) => {
+                e.stopPropagation();
+                row.getToggleExpandedHandler()();
+              }}
+            >
+              {row.getIsExpanded() ? (
+                <ChevronDown className="size-4" />
+              ) : (
+                <ChevronRight className="size-4" />
+              )}
+            </Button>
+          </div>
         );
       },
       enableSorting: false,
@@ -284,7 +308,7 @@ export function AdminDataTable<TData>({
       ),
       enableSorting: false,
       enableColumnFilter: false,
-      meta: { disableColumnFilter: true },
+      meta: { disableColumnFilter: true, className: "sticky left-0 bg-background z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]" } satisfies ColumnMeta,
       size: 44,
     }),
     [],
@@ -323,9 +347,7 @@ export function AdminDataTable<TData>({
     getFilteredRowModel: getFilteredRowModel(),
     getExpandedRowModel: getExpandedRowModel(),
     manualFiltering,
-    // false: lọc từ dòng cha xuống (đúng cho cây SP→đơn vị). true + filterFn “luôn pass” ở lá
-    // khiến cha luôn được giữ vì còn lá con → lọc cột như không chạy.
-    filterFromLeafRows: false,
+    filterFromLeafRows: filterFromLeafRowsProp,
     globalFilterFn: manualFiltering
       ? "includesString"
       : getGlobalFilterText
@@ -679,6 +701,7 @@ export function AdminDataTable<TData>({
                     className={cn(
                       "align-top font-semibold whitespace-normal",
                       header.column.getCanSort() && "cursor-pointer select-none",
+                      (header.column.columnDef.meta as ColumnMeta | undefined)?.className
                     )}
                     onClick={header.column.getToggleSortingHandler()}
                   >
@@ -718,9 +741,16 @@ export function AdminDataTable<TData>({
                   key={row.id}
                   data-depth={row.depth}
                   className={cn(
-                    row.depth > 0 && "bg-muted/15",
+                    row.depth > 0 && "bg-muted/10",
+                    row.depth > 1 && "bg-muted/20",
                     getRowClassName?.(row),
                   )}
+                  style={{
+                    borderLeft:
+                      row.depth > 0
+                        ? `3px solid hsl(var(--primary) / ${0.15 + row.depth * 0.1})`
+                        : undefined,
+                  }}
                 >
                   {row.getVisibleCells().map((cell) => {
                     const colIndex = cell.column.getIndex();
@@ -731,11 +761,14 @@ export function AdminDataTable<TData>({
                     const firstDataColumnIndex =
                       (rowSelectionEnabled ? 1 : 0) + (getSubRows ? 1 : 0);
                     const indent =
-                      getSubRows && colIndex === firstDataColumnIndex ? row.depth * 14 : 0;
+                      getSubRows && colIndex === firstDataColumnIndex ? row.depth * 24 : 0;
                     return (
                       <TableCell
                         key={cell.id}
-                        className="whitespace-normal align-middle max-w-[min(420px,40vw)]"
+                        className={cn(
+                          "whitespace-normal align-middle max-w-[min(420px,40vw)]",
+                          (cell.column.columnDef.meta as ColumnMeta | undefined)?.className
+                        )}
                         style={{
                           paddingLeft:
                             indent > 0

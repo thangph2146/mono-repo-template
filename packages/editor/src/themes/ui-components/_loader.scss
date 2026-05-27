@@ -1,7 +1,16 @@
+/**
+ * Loader UI Component Styles
+ * 
+ * Styles for loading spinners.
+ */
+
 @use "../variables" as *;
 @use "../mixins" as *;
 
-/* --- LOADER --- */
+// ==========================================
+// 1. LOADER SPINNER
+// ==========================================
+
 .editor-loader {
   @include control-size($editor-icon-size-lg);
   animation: spin 1s linear infinite;

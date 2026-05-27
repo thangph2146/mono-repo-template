@@ -1,5 +1,16 @@
+/**
+ * Floating Link Editor Plugin Styles
+ * 
+ * Styles for the floating link editor that appears when selecting links.
+ * Scoped under `.lexical-editor-root` to avoid style conflicts.
+ */
+
 @use "../variables" as *;
 @use "../mixins" as *;
+
+// ==========================================
+// 1. MAIN CONTAINER
+// ==========================================
 
 // Scoped under `.lexical-editor-root` so reset rules like
 // `.lexical-editor-root div { padding: 0 }` (higher specificity than a single class)
@@ -22,6 +33,9 @@
   transition: opacity $editor-transition-normal;
   will-change: transform;
 
+  // ==========================================
+  // 2. INPUT CONTAINER
+  // ==========================================
   &__input-container {
     @include flex-center;
     gap: $editor-gap-1;
@@ -29,6 +43,9 @@
     width: 100%;
   }
 
+  // ==========================================
+  // 3. LINK LIBRARY
+  // ==========================================
   &__library {
     display: flex;
     flex-direction: column;
@@ -55,6 +72,9 @@
     }
   }
 
+  // ==========================================
+  // 4. VIEW CONTAINER & LINK
+  // ==========================================
   &__view-container {
     @include flex-center;
     justify-content: space-between;

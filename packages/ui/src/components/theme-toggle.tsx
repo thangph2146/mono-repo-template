@@ -1,13 +1,13 @@
-"use client";
+"use client"
 
-import { Button } from "./button";
-import { useTheme } from "./theme-provider";
-import { Sun, Moon } from "lucide-react";
-import { useHydrated } from "../hooks/use-hydrated";
+import { Button } from "./button"
+import { useTheme } from "./theme-provider"
+import { Sun, Moon } from "lucide-react"
+import { useHydrated } from "../hooks/use-hydrated"
 
 export function ThemeToggle() {
-  const { resolved, setTheme } = useTheme();
-  const hydrated = useHydrated();
+  const { resolved, setTheme } = useTheme()
+  const hydrated = useHydrated()
 
   return (
     <Button
@@ -26,5 +26,5 @@ export function ThemeToggle() {
         <span className="size-4" />
       )}
     </Button>
-  );
+  )
 }

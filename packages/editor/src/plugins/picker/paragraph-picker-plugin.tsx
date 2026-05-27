@@ -7,7 +7,11 @@ import { IconSize } from "../../ui/typography"
 
 export function ParagraphPickerPlugin() {
   return new ComponentPickerOption("Paragraph", {
-    icon: <IconSize size="sm"><TextIcon /></IconSize>,
+    icon: (
+      <IconSize size="sm">
+        <TextIcon />
+      </IconSize>
+    ),
     keywords: ["normal", "paragraph", "p", "text"],
     onSelect: (_, editor) =>
       editor.update(() => {

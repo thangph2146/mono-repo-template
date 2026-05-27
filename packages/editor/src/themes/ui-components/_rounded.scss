@@ -1,7 +1,16 @@
+/**
+ * Rounded UI Component Styles
+ * 
+ * Utility classes for border radius.
+ */
+
 @use "../variables" as *;
 @use "../mixins" as *;
 
-/* --- ROUNDED --- */
+// ==========================================
+// 1. BORDER RADIUS SIZES
+// ==========================================
+
 .editor-rounded-sm {
   @include rounded-sm;
 }

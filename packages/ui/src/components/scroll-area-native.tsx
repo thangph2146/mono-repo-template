@@ -5,7 +5,7 @@ import * as React from "react"
 import { cn } from "../lib/utils"
 
 interface NativeScrollAreaProps extends React.HTMLAttributes<HTMLDivElement> {
-  scrollbarSize?: "sm" | "md" | "lg";
+  scrollbarSize?: "sm" | "md" | "lg"
 }
 
 function NativeScrollArea({
@@ -25,7 +25,7 @@ function NativeScrollArea({
   return (
     <div
       data-slot="native-scroll-area"
-      className={cn("overflow-y-auto overflow-x-hidden", className)}
+      className={cn("overflow-x-hidden overflow-y-auto", className)}
       style={
         {
           scrollbarWidth: "thin",

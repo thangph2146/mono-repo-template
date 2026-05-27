@@ -3,7 +3,16 @@ import * as React from "react"
 import { JSX, useRef } from "react"
 import { calculateZoomLevel } from "@lexical/utils"
 import type { LexicalEditor } from "lexical"
-import { ImagePlus, ImageMinus, Maximize2, Minimize2, Trash2, AlignLeft, AlignCenter, AlignRight } from "lucide-react"
+import {
+  ImagePlus,
+  ImageMinus,
+  Maximize2,
+  Minimize2,
+  Trash2,
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
+} from "lucide-react"
 
 import { Button } from "../ui/button"
 import {
@@ -233,8 +242,12 @@ export function MediaResizer({
       positioning.startY = event.clientY / zoom
       positioning.isResizing = true
       positioning.direction = direction
-      
-      const containerWidth = getContainerWidth(media, editorRootElement, hardWidthLimit)
+
+      const containerWidth = getContainerWidth(
+        media,
+        editorRootElement,
+        hardWidthLimit
+      )
       positioning.maxWidthLimit = containerWidth || hardWidthLimit || Infinity
 
       setStartCursor(direction)

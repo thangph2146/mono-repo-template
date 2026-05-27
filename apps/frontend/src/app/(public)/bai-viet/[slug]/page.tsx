@@ -6,12 +6,11 @@ import { Container, Page, PageContent } from "@ui/components/layout"
 import { Heading } from "@ui/components/typography"
 import {
   STORE_CONTAINER_INSET,
-  STORE_CONTAINER_MAX_DEFAULT,
   STORE_PAGE_CONTENT_CLASS,
 } from "@ui/lib/layout-shell"
 import { logDevRouteHit } from "@/lib/dev-route-log"
 import { formatPostDate, getPublicPostBySlug } from "@/lib/public-posts"
-import { PostContentRenderer } from "@/components/shared/post-content-renderer"
+import { PostContent } from "@/components/shared/post-content"
 import { PublicPostViewBadge } from "@/components/shared/public-post-view-badge"
 import { buildSeoMetadata, SITE_NAME } from "@/lib/seo"
 
@@ -61,7 +60,7 @@ export default async function PostDetailPage({ params }: Props) {
     <Page>
       <PageContent className={STORE_PAGE_CONTENT_CLASS}>
         <Container
-          max={STORE_CONTAINER_MAX_DEFAULT}
+          max={"6xl"}
           className={`${STORE_CONTAINER_INSET} space-y-4`}
         >
           <div className="flex flex-wrap items-center gap-2">
@@ -82,7 +81,7 @@ export default async function PostDetailPage({ params }: Props) {
           <Heading as="h1" size="section">
             {post.title}
           </Heading>
-          <PostContentRenderer content={post.content} />
+          <PostContent content={post.content} />
         </Container>
       </PageContent>
     </Page>

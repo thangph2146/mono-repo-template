@@ -1,7 +1,18 @@
+/**
+ * Button UI Component Styles
+ * 
+ * Styles for buttons, button groups, and button icons.
+ * Includes variants: default, destructive, outline, secondary, ghost, link
+ * and sizes: sm, md, lg, icon
+ */
+
 @use "../variables" as *;
 @use "../mixins" as *;
 
-/* --- BUTTON --- */
+// ==========================================
+// 1. BASE BUTTON
+// ==========================================
+
 .editor-btn {
   @include flex-center-justify;
   gap: $editor-gap-2;
@@ -106,12 +117,12 @@
     border: none;
     padding: 0;
     height: auto;
-    box-shadow: none !important;
+    box-shadow: none;
 
     &:hover {
       text-decoration-line: underline;
       transform: none;
-      box-shadow: none !important;
+      box-shadow: none;
     }
   }
 
@@ -142,35 +153,42 @@
   &--size-icon,
   &.editor-btn--size-icon,
   button.editor-btn--size-icon {
-    width: $editor-control-size-md !important;
-    height: $editor-control-size-md !important;
-    min-width: $editor-control-size-md !important;
-    min-height: $editor-control-size-md !important;
+    width: $editor-control-size-md;
+    height: $editor-control-size-md;
+    min-width: $editor-control-size-md;
+    min-height: $editor-control-size-md;
     flex-shrink: 0;
-    padding: 0 !important;
+    padding: 0;
   }
 
-  /* Sau mọi biến thể (--ghost/--outline) để active không bị ghi đè */
+  // Active state (placed after all variants to ensure proper cascade)
   &[data-state="on"],
   &[data-state="active"] {
     background-color: var(--primary);
-    color: var(--primary-foreground) !important;
+    color: var(--primary-foreground);
     border-color: var(--primary);
 
     &:hover:not(:disabled) {
       background-color: color-mix(in srgb, var(--primary), black 10%);
-      color: var(--primary-foreground) !important;
+      color: var(--primary-foreground);
       border-color: color-mix(in srgb, var(--primary), black 10%);
     }
   }
 }
 
-/* --- BUTTON GROUP --- */
+// ==========================================
+// 2. BUTTON GROUP
+// ==========================================
+
 .editor-button-group {
   @include flex-center;
   flex-wrap: wrap;
   gap: $editor-gap-1;
 }
+
+// ==========================================
+// 3. BUTTON ICONS
+// ==========================================
 
 .editor-btn-icon-lg {
   @include control-size($editor-control-size-lg);

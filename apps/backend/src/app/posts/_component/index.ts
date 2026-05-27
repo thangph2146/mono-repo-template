@@ -4,9 +4,6 @@ export type {
   PostListRow,
   PostConfirmAction,
   PostDetail,
-  PagedResult,
-  ApiEnvelope,
-  PagedApiShape,
   FormState,
   EditorTextNodeShape,
   EditorParagraphNodeShape,
@@ -27,8 +24,17 @@ export {
   toLocalInputValue,
   formatDateTime,
   normalizeContentForEditor,
+  type CategoryTreeNode,
 } from "./utils";
 
 export { SummaryBadges } from "./summary-badges";
 
 export { getPostColumns, getTrashColumns } from "./columns";
+
+export {
+  usePostForm,
+  postFormSchema,
+} from "./_hooks";
+export type { PostFormValues } from "./_hooks";
+
+export { PostFormShell } from "./_form";

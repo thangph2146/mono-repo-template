@@ -4,6 +4,15 @@
  * Header: X-User-Id (bắt buộc).
  */
 import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBody,
+  ApiQuery,
+  ApiParam,
+  ApiHeader,
+} from '@nestjs/swagger';
+import {
   Controller,
   Get,
   Post,
@@ -31,6 +40,7 @@ import { RESOURCES, ACTIONS } from '../config/permissions';
 type RoleListStatus = 'active' | 'deleted' | 'all';
 type RoleBulkAction = 'delete' | 'restore' | 'hard-delete';
 
+@ApiTags('Roles')
 @Controller(ADMIN_ROUTES.ROLES)
 export class RolesController {
   private readonly logger = new Logger(RolesController.name);
@@ -97,6 +107,18 @@ export class RolesController {
   }
 
   @Get()
+  @ApiOperation({ summary: 'List roles with pagination' })
+  @ApiHeader({ name: 'X-User-Id', required: true })
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  @ApiQuery({ name: 'search', required: false, type: String })
+  @ApiQuery({
+    name: 'status',
+    required: false,
+    enum: ['active', 'deleted', 'all'],
+  })
+  @ApiResponse({ status: 200, description: 'Roles retrieved successfully' })
+  @ApiResponse({ status: 401, description: 'Missing X-User-Id header' })
   async list(
     @Res() res: Response,
     @Headers() headers: Record<string, string | undefined>,
@@ -133,6 +155,12 @@ export class RolesController {
   }
 
   @Get('options')
+  @ApiOperation({ summary: 'Get role options for dropdowns' })
+  @ApiHeader({ name: 'X-User-Id', required: true })
+  @ApiQuery({ name: 'column', required: false, type: String })
+  @ApiQuery({ name: 'search', required: false, type: String })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  @ApiResponse({ status: 200, description: 'Options retrieved successfully' })
   async options(
     @Res() res: Response,
     @Headers() headers: Record<string, string | undefined>,
@@ -154,6 +182,11 @@ export class RolesController {
   }
 
   @Get(':id')
+  @ApiOperation({ summary: 'Get role by ID' })
+  @ApiHeader({ name: 'X-User-Id', required: true })
+  @ApiParam({ name: 'id', type: String })
+  @ApiResponse({ status: 200, description: 'Role found' })
+  @ApiResponse({ status: 404, description: 'Role not found' })
   async getById(
     @Res() res: Response,
     @Headers() headers: Record<string, string | undefined>,
@@ -176,6 +209,11 @@ export class RolesController {
   }
 
   @Post()
+  @ApiOperation({ summary: 'Create new role' })
+  @ApiHeader({ name: 'X-User-Id', required: true })
+  @ApiBody({ description: 'Role data', required: true })
+  @ApiResponse({ status: 201, description: 'Role created successfully' })
+  @ApiResponse({ status: 400, description: 'Invalid input' })
   async create(
     @Res() res: Response,
     @Headers() headers: Record<string, string | undefined>,
@@ -227,6 +265,12 @@ export class RolesController {
   }
 
   @Put(':id')
+  @ApiOperation({ summary: 'Update role by ID' })
+  @ApiHeader({ name: 'X-User-Id', required: true })
+  @ApiParam({ name: 'id', type: String })
+  @ApiBody({ description: 'Updated role data' })
+  @ApiResponse({ status: 200, description: 'Role updated successfully' })
+  @ApiResponse({ status: 404, description: 'Role not found' })
   async update(
     @Res() res: Response,
     @Headers() headers: Record<string, string | undefined>,
@@ -281,6 +325,11 @@ export class RolesController {
   }
 
   @Delete(':id/hard-delete')
+  @ApiOperation({ summary: 'Hard delete role permanently' })
+  @ApiHeader({ name: 'X-User-Id', required: true })
+  @ApiParam({ name: 'id', type: String })
+  @ApiResponse({ status: 200, description: 'Role deleted permanently' })
+  @ApiResponse({ status: 404, description: 'Role not found' })
   async hardDelete(
     @Res() res: Response,
     @Headers() headers: Record<string, string | undefined>,
@@ -318,6 +367,14 @@ export class RolesController {
   }
 
   @Delete(':id')
+  @ApiOperation({ summary: 'Soft delete role' })
+  @ApiHeader({ name: 'X-User-Id', required: true })
+  @ApiParam({ name: 'id', type: String })
+  @ApiResponse({ status: 200, description: 'Role deleted' })
+  @ApiResponse({
+    status: 404,
+    description: 'Role not found or already deleted',
+  })
   async softDelete(
     @Res() res: Response,
     @Headers() headers: Record<string, string | undefined>,
@@ -356,6 +413,11 @@ export class RolesController {
   }
 
   @Post('bulk')
+  @ApiOperation({ summary: 'Bulk action on roles' })
+  @ApiHeader({ name: 'X-User-Id', required: true })
+  @ApiBody({ description: 'Bulk action with ids' })
+  @ApiResponse({ status: 200, description: 'Bulk action completed' })
+  @ApiResponse({ status: 400, description: 'Invalid action' })
   async bulk(
     @Res() res: Response,
     @Headers() headers: Record<string, string | undefined>,
@@ -415,6 +477,11 @@ export class RolesController {
   }
 
   @Post(':id/restore')
+  @ApiOperation({ summary: 'Restore soft-deleted role' })
+  @ApiHeader({ name: 'X-User-Id', required: true })
+  @ApiParam({ name: 'id', type: String })
+  @ApiResponse({ status: 200, description: 'Role restored' })
+  @ApiResponse({ status: 404, description: 'Role not found or not deleted' })
   async restore(
     @Res() res: Response,
     @Headers() headers: Record<string, string | undefined>,

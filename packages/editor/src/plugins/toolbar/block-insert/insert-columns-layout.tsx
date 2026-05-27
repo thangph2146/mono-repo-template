@@ -3,7 +3,8 @@
 import { Columns3Icon } from "lucide-react"
 
 import { useToolbarContext } from "../../../context/toolbar-context"
-import { InsertLayoutDialog } from "../../../plugins/layout-plugin"
+import { InsertLayoutDialog, LayoutDialogValues } from "../../../editor-ui/dialogs"
+import { INSERT_LAYOUT_COMMAND } from "../../../nodes/layout-container-node"
 import { SelectItem } from "../../../ui/select"
 import { Flex } from "../../../ui/flex"
 import { IconSize } from "../../../ui/typography"
@@ -16,7 +17,12 @@ export function InsertColumnsLayout() {
       value="columns"
       onPointerUp={() =>
         showModal("Insert Columns Layout", (onClose) => (
-          <InsertLayoutDialog activeEditor={activeEditor} onClose={onClose} />
+          <InsertLayoutDialog
+            onSubmit={(values: LayoutDialogValues) =>
+              activeEditor.dispatchCommand(INSERT_LAYOUT_COMMAND, values)
+            }
+            onClose={onClose}
+          />
         ))
       }
       className=""

@@ -41,12 +41,8 @@ import { setFloatingElemPosition } from "../utils/set-floating-elem-position"
 import { Button } from "../ui/button"
 import { Flex } from "../ui/flex"
 import { Separator } from "../ui/separator"
-import {
-  IconSize,
-} from "../ui/typography"
+import { IconSize } from "../ui/typography"
 import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group"
-
-
 
 function FloatingTextFormat({
   editor,
@@ -95,9 +91,7 @@ function FloatingTextFormat({
           const y = e.clientY
           const elementUnderMouse = document.elementFromPoint(x, y)
 
-          if (
-            !popupCharStylesEditorRef.current.contains(elementUnderMouse)
-          ) {
+          if (!popupCharStylesEditorRef.current.contains(elementUnderMouse)) {
             // Mouse is not over the target element => not a normal click, but probably a drag
             popupCharStylesEditorRef.current.style.pointerEvents = "none"
           }
@@ -154,7 +148,12 @@ function FloatingTextFormat({
         "editor-floating-text-format--visible"
       )
     } else {
-      setFloatingElemPosition(null, popupCharStylesEditorElem, anchorElem, isLink)
+      setFloatingElemPosition(
+        null,
+        popupCharStylesEditorElem,
+        anchorElem,
+        isLink
+      )
       popupCharStylesEditorElem.classList.remove(
         "editor-floating-text-format--visible"
       )
@@ -206,10 +205,7 @@ function FloatingTextFormat({
   }, [editor, $updateTextFormatFloatingToolbar])
 
   return (
-    <div
-      ref={popupCharStylesEditorRef}
-      className="editor-floating-text-format"
-    >
+    <div ref={popupCharStylesEditorRef} className="editor-floating-text-format">
       {editor.isEditable() && (
         <Flex align="center" gap={1} className="editor-flex-nowrap">
           <div className="editor-floating-group editor-flex editor-items-center">
@@ -297,9 +293,10 @@ function FloatingTextFormat({
             </Button>
           </div>
 
-          <Separator orientation="vertical" className="editor-separator--vertical" />
-
-
+          <Separator
+            orientation="vertical"
+            className="editor-separator--vertical"
+          />
 
           <div className="editor-floating-group editor-flex editor-items-center">
             <ToggleGroup

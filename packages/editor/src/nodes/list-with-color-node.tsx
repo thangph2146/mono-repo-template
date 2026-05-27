@@ -1,11 +1,7 @@
 "use client"
 
 import type { DOMExportOutput, EditorConfig, LexicalEditor } from "lexical"
-import {
-  ListNode,
-  type ListType,
-  type SerializedListNode,
-} from "@lexical/list"
+import { ListNode, type ListType, type SerializedListNode } from "@lexical/list"
 import type { LexicalNode, LexicalUpdateJSON, NodeKey } from "lexical"
 import { $applyNodeReplacement } from "lexical"
 
@@ -17,7 +13,11 @@ export type SerializedListWithColorNode = Omit<SerializedListNode, "type"> & {
 
 const LIST_WITH_COLOR_TYPE = "listwithcolor"
 
-function applyListAttributesToDom(dom: HTMLElement, color?: string, markerType?: string): void {
+function applyListAttributesToDom(
+  dom: HTMLElement,
+  color?: string,
+  markerType?: string
+): void {
   if (color) {
     dom.style.setProperty("--list-marker-color", color, "important")
     dom.setAttribute("data-list-color", color)
@@ -48,7 +48,10 @@ export class ListWithColorNode extends ListNode {
     return LIST_WITH_COLOR_TYPE
   }
 
-  static override clone(node: ListWithColorNode, key?: NodeKey): ListWithColorNode {
+  static override clone(
+    node: ListWithColorNode,
+    key?: NodeKey
+  ): ListWithColorNode {
     const listType = node.getListType()
     const start = node.getStart()
     const sameKey = key ?? node.getKey()
@@ -95,7 +98,10 @@ export class ListWithColorNode extends ListNode {
     return this
   }
 
-  override createDOM(config: EditorConfig, _editor?: LexicalEditor): HTMLElement {
+  override createDOM(
+    config: EditorConfig,
+    _editor?: LexicalEditor
+  ): HTMLElement {
     const dom = super.createDOM(config, _editor)
     applyListAttributesToDom(dom, this.__listColor, this.__markerType)
     return dom
@@ -121,7 +127,8 @@ export class ListWithColorNode extends ListNode {
     serializedNode: LexicalUpdateJSON<SerializedListWithColorNode>
   ): this {
     super.updateFromJSON(serializedNode)
-    const { listColor, markerType } = serializedNode as SerializedListWithColorNode
+    const { listColor, markerType } =
+      serializedNode as SerializedListWithColorNode
     if (listColor !== undefined) this.setListColor(listColor)
     if (markerType !== undefined) this.setMarkerType(markerType)
     return this
@@ -130,7 +137,11 @@ export class ListWithColorNode extends ListNode {
   override exportDOM(editor: LexicalEditor): DOMExportOutput {
     const output = super.exportDOM(editor)
     if (output.element && output.element instanceof HTMLElement) {
-      applyListAttributesToDom(output.element, this.__listColor, this.__markerType)
+      applyListAttributesToDom(
+        output.element,
+        this.__listColor,
+        this.__markerType
+      )
     }
     return output
   }
@@ -156,5 +167,8 @@ export function $createListWithColorNode(
 export function $isListWithColorNode(
   node: LexicalNode | null | undefined
 ): node is ListWithColorNode {
-  return node instanceof ListWithColorNode || (node != null && node.getType() === "listwithcolor")
+  return (
+    node instanceof ListWithColorNode ||
+    (node != null && node.getType() === "listwithcolor")
+  )
 }

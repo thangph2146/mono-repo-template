@@ -12,7 +12,7 @@ import {
   $unmergeCell,
 } from "@lexical/table"
 import { $findMatchingParent } from "@lexical/utils"
-import { $getSelection, type BaseSelection } from "lexical"
+import { $getSelection, $isRangeSelection, type BaseSelection } from "lexical"
 import {
   Columns3,
   Combine,
@@ -103,7 +103,7 @@ export function TableActionsToolbarPlugin() {
         <IconSize size="sm">
           <TableProperties />
         </IconSize>
-        <span>Bảng</span>
+        Bảng
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
@@ -132,7 +132,7 @@ export function TableActionsToolbarPlugin() {
             }}
           >
             <Flex align="center" gap={2}>
-              <IconSize size="sm">
+              <IconSize size="md">
                 <SplitSquareVertical />
               </IconSize>
               <span>Tách ô</span>
@@ -198,7 +198,9 @@ export function TableActionsToolbarPlugin() {
           <SelectLabel>Xóa</SelectLabel>
           <SelectItem
             value="__del-row"
-            className={!canDeleteRow ? "editor-select-item--disabled" : undefined}
+            className={
+              !canDeleteRow ? "editor-select-item--disabled" : undefined
+            }
             onPointerUp={() => {
               if (!canDeleteRow) return
               activeEditor.update(() => $deleteTableRowAtSelection())
@@ -213,10 +215,56 @@ export function TableActionsToolbarPlugin() {
           </SelectItem>
           <SelectItem
             value="__del-col"
-            className={!canDeleteColumn ? "editor-select-item--disabled" : undefined}
+            className={
+              !canDeleteColumn ? "editor-select-item--disabled" : undefined
+            }
             onPointerUp={() => {
               if (!canDeleteColumn) return
-              activeEditor.update(() => $deleteTableColumnAtSelection())
+              activeEditor.update(() => {
+                const sel = $getSelection()
+                const table = sel ? $getCurrentTableNode(sel) : null
+                const savedColWidths = table?.getColWidths() ?? null
+
+                let deletedColIdx = -1
+                if (sel && $isRangeSelection(sel) && table) {
+                  const anchor = sel.anchor.getNode()
+                  const cell = anchor
+                    ? $findMatchingParent(anchor, $isTableCellNode)
+                    : null
+                  if (cell && $isTableCellNode(cell)) {
+                    const row = cell.getParent()
+                    if (row) {
+                      const cells = row.getChildren()
+                      let idx = 0
+                      for (const c of cells) {
+                        if ($isTableCellNode(c)) {
+                          if (c.is(cell)) {
+                            deletedColIdx = idx
+                            break
+                          }
+                          idx += c.getColSpan()
+                        }
+                      }
+                    }
+                  }
+                }
+
+                $deleteTableColumnAtSelection()
+
+                if (savedColWidths && deletedColIdx >= 0) {
+                  const newSel = $getSelection()
+                  const updated = newSel ? $getCurrentTableNode(newSel) : null
+                  if (updated) {
+                    const newColWidths = updated.getColWidths()
+                    const colCount = updated.getColumnCount()
+                    if (!newColWidths || newColWidths.length !== colCount) {
+                      const fixed = [...savedColWidths]
+                      fixed.splice(deletedColIdx, 1)
+                      updated.setColWidths(fixed)
+                    }
+                  }
+                }
+              })
             }}
           >
             <Flex align="center" gap={2}>

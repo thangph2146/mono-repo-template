@@ -1,35 +1,26 @@
-# Graphify — `@backend` (Hub admin Next)
+# Graphify — `apps/backend`
 
-Thư mục **`apps/backend/.graphify/`** chứa artefact Graphify cho admin Next.
+Thư mục `.graphify/` giữ **snapshot** (`snapshot/`) và **Markdown cho AI** (`markdown/`).
 
-- **`markdown/`** — file `.md` sinh cho Graphify của app này.
-- **`snapshot/`** — `context.json` + `graph.json` từ `update.cjs`.
+## File trong thư mục này
 
-## File Markdown sinh (`pnpm graphify:ai-summary`)
-
-| File | Mục đích |
-|------|----------|
-| `markdown/SUMMARY_FOR_AI.md` | Routes admin, module map (từ `../snapshot/context.json`). |
-| `markdown/FOLDER_TREE.md` | Cây `src/` từ `../snapshot/graph.json`. |
-| `markdown/GRAPH_STATS.md` | Quy mô graph, top in/out-degree. |
-
-## Thứ tự đọc cho AI (ưu tiên)
-
-1. **`markdown/SUMMARY_FOR_AI.md`**
-2. **`markdown/FOLDER_TREE.md`**, **`markdown/GRAPH_STATS.md`**
-3. **[Chỉ mục monorepo + chỉ dẫn theo chủ đề](../../../.graphify/markdown/SUMMARY_FOR_AI.md)**
-4. **`snapshot/context.json`** — có chừng mực.
-5. **`snapshot/graph.json`**, **`branch.json`**, **`manifest.json`**, **`cache/`**
+| File / Thư mục | Mục đích |
+|----------------|----------|
+| `snapshot/graph.json` | Đồ thị node/link (sinh bởi `node scripts/graphify-update.cjs apps/backend`) |
+| `snapshot/context.json` | Snapshot nội dung file (<30KB) để AI hiểu hệ thống |
+| `markdown/SUMMARY_FOR_AI.md` | Tóm tắt module map, routes, stats (sinh bởi `pnpm graphify:ai-summary`) |
+| `markdown/FOLDER_TREE.md` | Cây thư mục `src/` dạng ASCII |
+| `markdown/GRAPH_STATS.md` | Thống kê graph: node/link count, top in/out-degree |
+| `README.md` | Mô tả layout thư mục (file này) |
 
 ## Làm mới
 
 ```bash
-node .graphify/update.cjs
+node scripts/graphify-update.cjs apps/backend
 pnpm graphify:ai-summary
 ```
 
-## Monorepo
+## Liên kết
 
-- **Chỉ mục gốc:** `../../../.graphify/markdown/SUMMARY_FOR_AI.md`
-- **Packages:** `../../../packages/.graphify/`
-- **Storefront:** `apps/frontend/.graphify/`
+- [SUMMARY monorepo](../../../.graphify/markdown/SUMMARY_FOR_AI.md)
+- [packages SUMMARY](../../../packages/.graphify/markdown/SUMMARY_FOR_AI.md)

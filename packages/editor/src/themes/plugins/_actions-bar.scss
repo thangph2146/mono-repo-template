@@ -1,0 +1,59 @@
+/**
+ * Actions Bar Plugin Styles
+ * 
+ * Styles for the actions bar at the bottom of the editor.
+ * Follows Lexical theming conventions:
+ * - Scoped under .lexical-editor-root to avoid specificity conflicts
+ * - No !important - uses proper CSS specificity
+ */
+
+@use "../variables" as *;
+@use "../mixins" as *;
+
+// ==========================================
+// 1. ACTIONS BAR
+// ==========================================
+
+// Scoped under `.lexical-editor-root` so `.lexical-editor-root div { padding: 0 }` does not win.
+.lexical-editor-root .editor-actions-bar {
+  clear: both;
+  padding: 2px;
+  @include flex-center;
+  width: 100%;
+  @include flex-center-between;
+  gap: $editor-gap-3;
+  overflow-x: auto;
+  flex-wrap: nowrap;
+  border-top: $editor-border-width solid var(--border);
+  border-left: $editor-border-width solid var(--border);
+  border-right: $editor-border-width solid var(--border);
+  border-bottom: $editor-border-width solid var(--border);
+  border-bottom-left-radius: $editor-border-radius;
+  border-bottom-right-radius: $editor-border-radius;
+  @include backdrop-blur($editor-dialog-overlay-blur * 2, color-mix(in srgb, var(--background), transparent 50%));
+  
+  @include scrollbar-hide;
+
+  .editor-tooltip-content {
+    display: none;
+  }
+  
+  .editor-tooltip-group:hover .editor-tooltip-content {
+    display: block;
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-bottom: $editor-gap-2;
+    background: var(--popover);
+    color: var(--popover-foreground);
+    padding: $editor-gap-1 $editor-gap-2;
+    @include rounded-sm;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    border: $editor-border-width solid var(--border);
+    @include shadow-sm;
+    z-index: $editor-z-index-floating;
+    pointer-events: none;
+  }
+}

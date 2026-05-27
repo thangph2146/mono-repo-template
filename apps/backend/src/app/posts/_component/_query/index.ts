@@ -1,6 +1,7 @@
 export {
   usePostsQuery,
   useTrashQuery,
+  usePostDetailQuery,
 } from "./use-posts-queries";
 export type {
   UsePostsQueriesProps,
@@ -11,8 +12,6 @@ export {
   useTagsQuery,
 } from "./use-taxonomy-queries";
 export {
-  useCreateMutation,
-  useUpdateMutation,
   useDeleteMutation,
   useRestoreMutation,
   usePurgeMutation,

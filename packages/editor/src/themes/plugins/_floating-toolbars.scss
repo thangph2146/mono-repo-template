@@ -1,5 +1,15 @@
+/**
+ * Floating Toolbars Plugin Styles
+ * 
+ * Styles for floating toolbar and floating text format toolbar.
+ */
+
 @use "../variables" as *;
 @use "../mixins" as *;
+
+// ==========================================
+// 1. FLOATING TOOLBAR (BASE)
+// ==========================================
 
 .editor-floating-toolbar {
   @include floating-toolbar-base;
@@ -8,12 +18,15 @@
   flex-wrap: wrap;
 }
 
+// ==========================================
+// 2. FLOATING TEXT FORMAT TOOLBAR
+// ==========================================
+
 .editor-floating-text-format {
   @include floating-toolbar-base;
   @include backdrop-blur(8px, rgba(var(--background-rgb, 255, 255, 255), 0.8));
   @include backdrop-blur-dark(8px, rgba(var(--background-rgb, 15, 15, 15), 0.8));
   
-  // Hover effect for the whole bar
   &:hover {
     @include shadow-xl;
   }
@@ -53,13 +66,12 @@
     }
   }
 
-  // Group of buttons with border as requested
+  // Group of buttons
   .editor-floating-group, .editor-floating-group--lg {
     @include flex-center;
     gap: $editor-gap-0-5;
     padding: $editor-gap-0-5;
     border-radius: calc($editor-border-radius - 2px);
-    // Remove border from inner groups to make it cleaner
     border: none;
     background-color: transparent;
   }

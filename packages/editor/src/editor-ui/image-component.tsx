@@ -1,13 +1,6 @@
 "use client"
 import * as React from "react"
-import {
-  JSX,
-  Suspense,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react"
+import { JSX, Suspense, useCallback, useEffect, useRef, useState } from "react"
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"
 import { useLexicalEditable } from "@lexical/react/useLexicalEditable"
 import {
@@ -27,18 +20,14 @@ import { ImageResizer } from "../editor-ui/image-resizer"
 import { $isImageNode, ImageNode } from "../nodes/image-node"
 import { cn } from "../lib/utils"
 import { useEditorContainer } from "../context/editor-container-context"
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "../ui/dialog"
-import {
-  InsertImageDialog,
-  InsertImagePayload,
-} from "../plugins/images-plugin"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog"
+import { InsertImageDialog } from "./dialogs"
+import type { InsertImagePayload } from "./dialogs"
 import { usePriorityImage } from "../context/priority-image-context"
-import { ImageLightboxDialog, type LightboxImage } from "./image-lightbox-dialog"
+import {
+  ImageLightboxDialog,
+  type LightboxImage,
+} from "./image-lightbox-dialog"
 
 // Sub-components
 import { LazyImage } from "./lazy-image"
@@ -47,7 +36,10 @@ import { ImagePlaceholder } from "./image-placeholder"
 import { CaptionComposer } from "./caption-composer"
 
 // Hooks
-import { useResponsiveImageDimensions, DimensionValue } from "./hooks/use-responsive-image-dimensions"
+import {
+  useResponsiveImageDimensions,
+  DimensionValue,
+} from "./hooks/use-responsive-image-dimensions"
 import { useImageCaptionControls } from "./hooks/use-image-caption-controls"
 import { useImageNodeInteractions } from "./hooks/use-image-node-interactions"
 
@@ -64,7 +56,9 @@ const collectImages = (node: LexicalNode, images: LightboxImage[]) => {
     return
   }
   if ($isElementNode(node)) {
-    ;(node as ElementNode).getChildren().forEach((child) => collectImages(child, images))
+    ;(node as ElementNode)
+      .getChildren()
+      .forEach((child) => collectImages(child, images))
   }
 }
 
@@ -113,23 +107,23 @@ export default function ImageComponent({
   const [isLoadError, setIsLoadError] = useState<boolean>(false)
   const [isReplaceDialogOpen, setIsReplaceDialogOpen] = useState(false)
   const isEditable = useLexicalEditable()
-  const [lightbox, setLightbox] = useState<null | { images: LightboxImage[]; index: number }>(null)
+  const [lightbox, setLightbox] = useState<null | {
+    images: LightboxImage[]
+    index: number
+  }>(null)
   const editorContainer = useEditorContainer()
-  
+
   const prioritySrc = usePriorityImage()
   const isPriority = src === prioritySrc
-  
+
   // Custom hooks for logic separation
-  const {
-    hasCaptionContent,
-    localShowCaption,
-    setShowCaption,
-  } = useImageCaptionControls({
-    caption,
-    editor,
-    nodeKey,
-    showCaption,
-  })
+  const { hasCaptionContent, localShowCaption, setShowCaption } =
+    useImageCaptionControls({
+      caption,
+      editor,
+      nodeKey,
+      showCaption,
+    })
 
   const responsiveDimensions = useResponsiveImageDimensions({
     editor,
@@ -258,9 +252,7 @@ export default function ImageComponent({
   const isFocused = (isSelected || isResizing) && isEditable
   const shouldRenderCaption =
     showCaption &&
-    (isEditable
-      ? localShowCaption && captionsEnabled
-      : hasCaptionContent)
+    (isEditable ? localShowCaption && captionsEnabled : hasCaptionContent)
 
   const imageClassName = cn(
     "editor-image",
@@ -282,7 +274,10 @@ export default function ImageComponent({
       return list
     })
     if (images.length === 0) return
-    const index = Math.max(0, images.findIndex((img) => img.key === nodeKey))
+    const index = Math.max(
+      0,
+      images.findIndex((img) => img.key === nodeKey)
+    )
     setLightbox({ images, index })
   }, [editor, isEditable, nodeKey])
 
@@ -372,20 +367,22 @@ export default function ImageComponent({
             open={isReplaceDialogOpen}
             onOpenChange={setIsReplaceDialogOpen}
           >
-            <DialogContent className="editor-dialog-content--lg" disableOutsideClick={true}>
+            <DialogContent
+              className="editor-dialog-content--lg"
+              disableOutsideClick={true}
+            >
               <DialogHeader>
                 <DialogTitle>Thay thế hình ảnh</DialogTitle>
               </DialogHeader>
               <InsertImageDialog
-                activeEditor={editor}
+                onSubmit={(payload) => {
+                  handleReplaceImage(payload)
+                  setIsReplaceDialogOpen(false)
+                }}
                 activeTab={resolveReplaceDialogTab()}
                 initialValues={{ src, altText }}
                 confirmLabel="Thay thế hình ảnh"
                 onClose={() => setIsReplaceDialogOpen(false)}
-                onInsert={(payload) => {
-                  handleReplaceImage(payload)
-                  setIsReplaceDialogOpen(false)
-                }}
               />
             </DialogContent>
           </Dialog>
@@ -396,7 +393,11 @@ export default function ImageComponent({
             open={true}
             images={lightbox.images}
             index={lightbox.index}
-            onIndexChange={(nextIndex) => setLightbox((prev) => (prev ? { ...prev, index: nextIndex } : prev))}
+            onIndexChange={(nextIndex) =>
+              setLightbox((prev) =>
+                prev ? { ...prev, index: nextIndex } : prev
+              )
+            }
             onClose={() => setLightbox(null)}
           />
         ) : null}

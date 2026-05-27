@@ -1,25 +1,89 @@
 # Cây thư mục — backend (Graphify)
 
-> **Sinh tự động:** `2026-05-14T07:53:08.085Z` từ `snapshot/graph.json` (node `directory` / `route-group` dưới `src/`).
+> **Sinh tự động:** `2026-05-27T01:47:05.548Z` từ `snapshot/graph.json` (node `directory` / `route-group` dưới `src/`).
 
 ```text
 src/
 ├── app/
+│   ├── api/
+│   │   └── graphify/
 │   ├── categories/
+│   │   ├── _component/
+│   │   │   ├── _alert-dialog/
+│   │   │   ├── _form/
+│   │   │   ├── _hooks/
+│   │   │   ├── _query/
+│   │   │   └── _table/
+│   │   ├── [id]/
+│   │   │   └── edit/
+│   │   └── new/
 │   ├── contact-requests/
+│   │   ├── _component/
+│   │   │   ├── _alert-dialog/
+│   │   │   ├── _form/
+│   │   │   ├── _hooks/
+│   │   │   ├── _query/
+│   │   │   └── _table/
+│   │   └── [id]/
+│   │       └── edit/
 │   ├── data/
+│   ├── database-schema/
+│   ├── graph/
 │   ├── guides/
+│   │   ├── _component/
+│   │   │   ├── _alert-dialog/
+│   │   │   ├── _form/
+│   │   │   ├── _hooks/
+│   │   │   ├── _query/
+│   │   │   └── _table/
+│   │   ├── [id]/
+│   │   │   └── edit/
+│   │   └── new/
 │   ├── login/
 │   ├── my-students/
 │   ├── parent-students/
+│   │   └── _component/
+│   │       ├── _query/
+│   │       └── _table/
 │   ├── posts/
+│   │   ├── _component/
+│   │   │   ├── _alert-dialog/
+│   │   │   ├── _form/
+│   │   │   ├── _hooks/
+│   │   │   ├── _query/
+│   │   │   └── _table/
+│   │   ├── [id]/
+│   │   │   └── edit/
+│   │   └── new/
 │   ├── profile/
 │   ├── rbac/
+│   │   └── _component/
+│   │       ├── _alert-dialog/
+│   │       └── _query/
 │   ├── register/
 │   ├── staff/
+│   │   ├── _component/
+│   │   │   ├── _alert-dialog/
+│   │   │   ├── _form/
+│   │   │   ├── _hooks/
+│   │   │   ├── _query/
+│   │   │   └── _table/
+│   │   ├── [id]/
+│   │   │   └── edit/
+│   │   └── new/
 │   └── tags/
+│       ├── _component/
+│       │   ├── _alert-dialog/
+│       │   ├── _form/
+│       │   ├── _hooks/
+│       │   ├── _query/
+│       │   └── _table/
+│       ├── [id]/
+│       │   └── edit/
+│       └── new/
 ├── components/
-│   └── admin-data-table/
+│   ├── admin-data-table/
+│   └── graphify/
 ├── features/
 │   └── auth/
 ├── hooks/

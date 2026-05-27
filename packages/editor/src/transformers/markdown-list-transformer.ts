@@ -19,7 +19,9 @@ export const UNORDERED_LIST: ElementTransformer = {
     if (!$isListNode(node) || node.getListType() !== "bullet") {
       return null
     }
-    const marker = $isListWithColorNode(node) ? node.getMarkerType() || "-" : "-"
+    const marker = $isListWithColorNode(node)
+      ? node.getMarkerType() || "-"
+      : "-"
     const children = node.getChildren()
     const output = []
     for (const child of children) {
@@ -39,7 +41,7 @@ export const UNORDERED_LIST: ElementTransformer = {
     }
 
     parentNode.replace(list)
-    
+
     const item = $createListItemNode()
     list.append(item)
     item.append(..._children)

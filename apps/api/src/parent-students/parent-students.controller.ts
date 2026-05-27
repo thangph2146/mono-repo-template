@@ -207,6 +207,8 @@ export class ParentStudentsAdminController {
         page,
         limit,
         status: query.status,
+        search: query.search,
+        createdAt: query.createdAt,
       });
       const { statusCode, body } = createSuccessResponse(result);
       return res.status(statusCode).json(body);

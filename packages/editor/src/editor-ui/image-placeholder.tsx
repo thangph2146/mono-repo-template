@@ -16,7 +16,7 @@ export function ImagePlaceholder({
 }: ImagePlaceholderProps): JSX.Element {
   const MAX_CONTAINER_WIDTH = 800
   const MAX_CONTAINER_HEIGHT = 600
-  
+
   const getNumeric = (val: DimensionValue, max: number) => {
     if (typeof val === "number") return val
     return max
@@ -31,7 +31,8 @@ export function ImagePlaceholder({
       style={{
         width: width === "inherit" ? "100%" : pWidth,
         height: height === "inherit" ? "auto" : pHeight,
-        aspectRatio: width === "inherit" || height === "inherit" ? "16/9" : undefined,
+        aspectRatio:
+          width === "inherit" || height === "inherit" ? "16/9" : undefined,
         maxWidth: "100%",
       }}
     >

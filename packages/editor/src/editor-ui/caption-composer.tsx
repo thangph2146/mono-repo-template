@@ -14,10 +14,7 @@ interface CaptionComposerProps {
 /**
  * CaptionComposer - A nested editor for image captions.
  */
-export function CaptionComposer({
-  caption,
-  isEditable,
-}: CaptionComposerProps) {
+export function CaptionComposer({ caption, isEditable }: CaptionComposerProps) {
   return (
     <LexicalNestedComposer initialEditor={caption}>
       <HistoryPlugin />

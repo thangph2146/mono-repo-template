@@ -4,6 +4,15 @@
  * Header: X-User-Id (bắt buộc).
  */
 import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBody,
+  ApiQuery,
+  ApiParam,
+  ApiHeader,
+} from '@nestjs/swagger';
+import {
   Controller,
   Get,
   Post,
@@ -30,6 +39,7 @@ import { RESOURCES, ACTIONS } from '../config/permissions';
 type CategoryListStatus = 'active' | 'deleted' | 'all';
 type CategoryBulkAction = 'delete' | 'restore' | 'hard-delete' | 'set-parent';
 
+@ApiTags('Categories')
 @Controller(ADMIN_ROUTES.CATEGORIES)
 export class CategoriesController {
   private readonly logger = new Logger(CategoriesController.name);
@@ -96,6 +106,21 @@ export class CategoriesController {
   }
 
   @Get()
+  @ApiOperation({ summary: 'List categories with pagination' })
+  @ApiHeader({ name: 'X-User-Id', required: true })
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  @ApiQuery({ name: 'search', required: false, type: String })
+  @ApiQuery({
+    name: 'status',
+    required: false,
+    enum: ['active', 'deleted', 'all'],
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Categories retrieved successfully',
+  })
+  @ApiResponse({ status: 401, description: 'Missing X-User-Id header' })
   async list(
     @Res() res: Response,
     @Headers() headers: Record<string, string | undefined>,
@@ -135,6 +160,12 @@ export class CategoriesController {
   }
 
   @Get('options')
+  @ApiOperation({ summary: 'Get category options for dropdowns' })
+  @ApiHeader({ name: 'X-User-Id', required: true })
+  @ApiQuery({ name: 'column', required: false, type: String })
+  @ApiQuery({ name: 'search', required: false, type: String })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  @ApiResponse({ status: 200, description: 'Options retrieved successfully' })
   async options(
     @Res() res: Response,
     @Headers() headers: Record<string, string | undefined>,
@@ -158,6 +189,11 @@ export class CategoriesController {
   }
 
   @Get(':id')
+  @ApiOperation({ summary: 'Get category by ID' })
+  @ApiHeader({ name: 'X-User-Id', required: true })
+  @ApiParam({ name: 'id', type: String })
+  @ApiResponse({ status: 200, description: 'Category found' })
+  @ApiResponse({ status: 404, description: 'Category not found' })
   async getById(
     @Res() res: Response,
     @Headers() headers: Record<string, string | undefined>,
@@ -183,6 +219,11 @@ export class CategoriesController {
   }
 
   @Post()
+  @ApiOperation({ summary: 'Create new category' })
+  @ApiHeader({ name: 'X-User-Id', required: true })
+  @ApiBody({ description: 'Category data', required: true })
+  @ApiResponse({ status: 201, description: 'Category created successfully' })
+  @ApiResponse({ status: 400, description: 'Invalid input' })
   async create(
     @Res() res: Response,
     @Headers() headers: Record<string, string | undefined>,
@@ -233,6 +274,12 @@ export class CategoriesController {
   }
 
   @Put(':id')
+  @ApiOperation({ summary: 'Update category by ID' })
+  @ApiHeader({ name: 'X-User-Id', required: true })
+  @ApiParam({ name: 'id', type: String })
+  @ApiBody({ description: 'Updated category data' })
+  @ApiResponse({ status: 200, description: 'Category updated successfully' })
+  @ApiResponse({ status: 404, description: 'Category not found' })
   async update(
     @Res() res: Response,
     @Headers() headers: Record<string, string | undefined>,
@@ -281,6 +328,11 @@ export class CategoriesController {
   }
 
   @Post('bulk')
+  @ApiOperation({ summary: 'Bulk action on categories' })
+  @ApiHeader({ name: 'X-User-Id', required: true })
+  @ApiBody({ description: 'Bulk action with ids' })
+  @ApiResponse({ status: 200, description: 'Bulk action completed' })
+  @ApiResponse({ status: 400, description: 'Invalid action' })
   async bulk(
     @Res() res: Response,
     @Headers() headers: Record<string, string | undefined>,
@@ -351,6 +403,11 @@ export class CategoriesController {
   }
 
   @Delete(':id/hard-delete')
+  @ApiOperation({ summary: 'Hard delete category permanently' })
+  @ApiHeader({ name: 'X-User-Id', required: true })
+  @ApiParam({ name: 'id', type: String })
+  @ApiResponse({ status: 200, description: 'Category deleted permanently' })
+  @ApiResponse({ status: 404, description: 'Category not found' })
   async hardDelete(
     @Res() res: Response,
     @Headers() headers: Record<string, string | undefined>,
@@ -389,6 +446,14 @@ export class CategoriesController {
   }
 
   @Delete(':id')
+  @ApiOperation({ summary: 'Soft delete category' })
+  @ApiHeader({ name: 'X-User-Id', required: true })
+  @ApiParam({ name: 'id', type: String })
+  @ApiResponse({ status: 200, description: 'Category deleted' })
+  @ApiResponse({
+    status: 404,
+    description: 'Category not found or already deleted',
+  })
   async softDelete(
     @Res() res: Response,
     @Headers() headers: Record<string, string | undefined>,
@@ -427,6 +492,14 @@ export class CategoriesController {
   }
 
   @Post(':id/restore')
+  @ApiOperation({ summary: 'Restore soft-deleted category' })
+  @ApiHeader({ name: 'X-User-Id', required: true })
+  @ApiParam({ name: 'id', type: String })
+  @ApiResponse({ status: 200, description: 'Category restored' })
+  @ApiResponse({
+    status: 404,
+    description: 'Category not found or not deleted',
+  })
   async restore(
     @Res() res: Response,
     @Headers() headers: Record<string, string | undefined>,

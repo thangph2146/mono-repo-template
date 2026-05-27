@@ -560,6 +560,16 @@
       "client": false
     },
     {
+      "id": "file_src_entities_parent_student_entity_ts",
+      "label": "parent-student.entity.ts",
+      "path": "src/entities/parent-student.entity.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/entities",
+      "type": "ts",
+      "client": false
+    },
+    {
       "id": "file_src_entities_post_category_entity_ts",
       "label": "post-category.entity.ts",
       "path": "src/entities/post-category.entity.ts",
@@ -670,9 +680,9 @@
       "client": false
     },
     {
-      "id": "file_src_full_export_2026_05_13_json",
-      "label": "full-export-2026-05-13.json",
-      "path": "src/full-export-2026-05-13.json",
+      "id": "file_src_full_export_2026_05_14_json",
+      "label": "full-export-2026-05-14.json",
+      "path": "src/full-export-2026-05-14.json",
       "color": "#00ff41",
       "size": 10,
       "community": "src",
@@ -846,6 +856,16 @@
       "client": false
     },
     {
+      "id": "file_src_migrations_migration20260514100000_ts",
+      "label": "Migration20260514100000.ts",
+      "path": "src/migrations/Migration20260514100000.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/migrations",
+      "type": "ts",
+      "client": false
+    },
+    {
       "id": "dir_src_mikro_orm",
       "label": "mikro-orm/",
       "path": "src/mikro-orm",
@@ -949,6 +969,45 @@
       "color": "#00ff41",
       "size": 10,
       "community": "src/page-contents",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_parent_students",
+      "label": "parent-students/",
+      "path": "src/parent-students",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_parent_students_parent_students_controller_ts",
+      "label": "parent-students.controller.ts",
+      "path": "src/parent-students/parent-students.controller.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/parent-students",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_parent_students_parent_students_module_ts",
+      "label": "parent-students.module.ts",
+      "path": "src/parent-students/parent-students.module.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/parent-students",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_parent_students_parent_students_service_ts",
+      "label": "parent-students.service.ts",
+      "path": "src/parent-students/parent-students.service.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/parent-students",
       "type": "ts",
       "client": false
     },
@@ -1151,6 +1210,16 @@
       "id": "file_src_seed_full_export_ts",
       "label": "seed-full-export.ts",
       "path": "src/seed-full-export.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_seed_guides_ts",
+      "label": "seed-guides.ts",
+      "path": "src/seed-guides.ts",
       "color": "#00ff41",
       "size": 10,
       "community": "src",
@@ -1841,6 +1910,11 @@
     },
     {
       "source": "dir_src_entities",
+      "target": "file_src_entities_parent_student_entity_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_entities",
       "target": "file_src_entities_post_category_entity_ts",
       "relation": "contains"
     },
@@ -1896,7 +1970,7 @@
     },
     {
       "source": "dir_src",
-      "target": "file_src_full_export_2026_05_13_json",
+      "target": "file_src_full_export_2026_05_14_json",
       "relation": "contains"
     },
     {
@@ -1985,6 +2059,11 @@
       "relation": "contains"
     },
     {
+      "source": "dir_src_migrations",
+      "target": "file_src_migrations_migration20260514100000_ts",
+      "relation": "contains"
+    },
+    {
       "source": "dir_src",
       "target": "dir_src_mikro_orm",
       "relation": "contains"
@@ -2037,6 +2116,26 @@
     {
       "source": "dir_src_page_contents",
       "target": "file_src_page_contents_page_contents_service_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_parent_students",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_parent_students",
+      "target": "file_src_parent_students_parent_students_controller_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_parent_students",
+      "target": "file_src_parent_students_parent_students_module_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_parent_students",
+      "target": "file_src_parent_students_parent_students_service_ts",
       "relation": "contains"
     },
     {
@@ -2142,6 +2241,11 @@
     {
       "source": "dir_src",
       "target": "file_src_seed_full_export_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "file_src_seed_guides_ts",
       "relation": "contains"
     },
     {
@@ -2562,6 +2666,11 @@
     {
       "source": "file_src_app_module_ts",
       "target": "file_src_system_system_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_module_ts",
+      "target": "file_src_parent_students_parent_students_module_ts",
       "relation": "imports"
     },
     {
@@ -3110,6 +3219,16 @@
       "relation": "imports"
     },
     {
+      "source": "file_src_entities_parent_student_entity_ts",
+      "target": "file_src_entities_base_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_parent_student_entity_ts",
+      "target": "file_src_entities_user_entity_ts",
+      "relation": "imports"
+    },
+    {
       "source": "file_src_entities_post_category_entity_ts",
       "target": "file_src_entities_post_entity_ts",
       "relation": "imports"
@@ -3526,6 +3645,11 @@
     },
     {
       "source": "file_src_mikro_orm_orm_entities_ts",
+      "target": "file_src_entities_parent_student_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_mikro_orm_orm_entities_ts",
       "target": "file_src_entities_post_entity_ts",
       "relation": "imports"
     },
@@ -3687,6 +3811,41 @@
     {
       "source": "file_src_page_contents_page_contents_service_ts",
       "target": "file_src_entities_page_content_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_parent_students_parent_students_controller_ts",
+      "target": "file_src_parent_students_parent_students_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_parent_students_parent_students_controller_ts",
+      "target": "file_src_common_api_response_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_parent_students_parent_students_controller_ts",
+      "target": "file_src_config_constants_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_parent_students_parent_students_module_ts",
+      "target": "file_src_parent_students_parent_students_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_parent_students_parent_students_module_ts",
+      "target": "file_src_parent_students_parent_students_controller_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_parent_students_parent_students_service_ts",
+      "target": "file_src_entities_parent_student_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_parent_students_parent_students_service_ts",
+      "target": "file_src_common_pagination_ts",
       "relation": "imports"
     },
     {
@@ -4145,6 +4304,11 @@
       "relation": "imports"
     },
     {
+      "source": "file_src_seed_guides_ts",
+      "target": "file_src_entities_page_content_entity_ts",
+      "relation": "imports"
+    },
+    {
       "source": "file_src_seed_superadmin_ts",
       "target": "file_src_entities_user_entity_ts",
       "relation": "imports"
@@ -4526,6 +4690,11 @@
     },
     {
       "source": "file_src_system_system_service_ts",
+      "target": "file_src_entities_parent_student_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_system_system_service_ts",
       "target": "file_src_entities_post_category_entity_ts",
       "relation": "imports"
     },
@@ -4642,6 +4811,11 @@
     {
       "source": "file_src_tags_tags_service_ts",
       "target": "file_src_entities_tag_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_tags_tags_service_ts",
+      "target": "file_src_entities_post_tag_entity_ts",
       "relation": "imports"
     },
     {

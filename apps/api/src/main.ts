@@ -10,6 +10,7 @@ import {
 } from 'express';
 import helmet from 'helmet';
 import { ValidationPipe, Logger } from '@nestjs/common';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { LoggingInterceptor } from './common/logging.interceptor';
 import { IoAdapter } from '@nestjs/platform-socket.io';
@@ -88,9 +89,35 @@ async function bootstrap() {
   app.use(ApiAccessMiddleware);
   app.useWebSocketAdapter(new IoAdapter(app));
   app.useGlobalInterceptors(new LoggingInterceptor());
-  await app.listen(appConfig.port);
 
   const logger = new Logger('Bootstrap');
+
+  // Swagger API Documentation
+  if (appConfig.nodeEnv !== 'production') {
+    const swaggerConfig = new DocumentBuilder()
+      .setTitle('Store Sync API')
+      .setDescription('API documentation for Store Sync platform')
+      .setVersion('1.0')
+      .addBearerAuth(
+        { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
+        'access-token',
+      )
+      .addServer(`http://localhost:${appConfig.port}`, 'Local Development')
+      .build();
+    const document = SwaggerModule.createDocument(app, swaggerConfig);
+    SwaggerModule.setup('api/docs', app, document, {
+      customSiteTitle: 'Store Sync API Docs',
+      swaggerOptions: {
+        persistAuthorization: true,
+        tagsSorter: 'alpha',
+        operationsSorter: 'alpha',
+      },
+    });
+    logger.log(`Swagger Docs: http://localhost:${appConfig.port}/api/docs`);
+  }
+
+  await app.listen(appConfig.port);
+
   const dbUrl = appConfig.databaseUrl
     ? appConfig.databaseUrl.replace(/:\/\/[^:]+:[^@]+@/, '://***:***@')
     : 'N/A';

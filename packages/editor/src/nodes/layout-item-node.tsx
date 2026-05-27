@@ -55,7 +55,11 @@ export class LayoutItemNode extends ElementNode {
     return dom
   }
 
-  updateDOM(prevNode: LayoutItemNode, dom: HTMLElement, config: EditorConfig): boolean {
+  updateDOM(
+    prevNode: LayoutItemNode,
+    dom: HTMLElement,
+    config: EditorConfig
+  ): boolean {
     const expectedClass = getLayoutItemThemeClass(config)
     if (dom.className !== expectedClass) {
       dom.className = ""

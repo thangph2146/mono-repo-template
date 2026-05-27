@@ -15,12 +15,7 @@ import { TextNode } from "lexical"
 import { createPortal } from "react-dom"
 
 import { useEditorModal } from "../editor-hooks/use-modal"
-import {
-  Command,
-  CommandGroup,
-  CommandItem,
-  CommandList,
-} from "../ui/command"
+import { Command, CommandGroup, CommandItem, CommandList } from "../ui/command"
 import { logger } from "../lib/logger"
 
 import { ComponentPickerOption } from "./picker/component-picker-option"
@@ -41,7 +36,11 @@ function MenuContent({
 
   // Scroll to selected item when selectedIndex changes
   useEffect(() => {
-    if (selectedIndex !== null && selectedIndex >= 0 && selectedIndex < options.length) {
+    if (
+      selectedIndex !== null &&
+      selectedIndex >= 0 &&
+      selectedIndex < options.length
+    ) {
       // Sử dụng setTimeout để đảm bảo DOM đã được render và cmdk đã update selected state
       const timeoutId = setTimeout(() => {
         const container = containerRef.current
@@ -57,7 +56,9 @@ function MenuContent({
 
         // Fallback: nếu không tìm thấy bằng attribute, tìm theo index
         if (!selectedItem) {
-          const allItems = container.querySelectorAll('[data-slot="command-item"]')
+          const allItems = container.querySelectorAll(
+            '[data-slot="command-item"]'
+          )
           selectedItem = allItems[selectedIndex] as HTMLElement
           logger.debug("MenuContent: Found item by index", {
             selectedIndex,
@@ -65,13 +66,15 @@ function MenuContent({
             found: !!selectedItem,
           })
         } else {
-          logger.debug("MenuContent: Found item by attribute", { selectedIndex })
+          logger.debug("MenuContent: Found item by attribute", {
+            selectedIndex,
+          })
         }
 
         if (selectedItem) {
           // Tìm ScrollArea viewport
           const scrollContainer = container.querySelector(
-            '[data-radix-scroll-area-viewport]'
+            "[data-radix-scroll-area-viewport]"
           ) as HTMLElement
 
           if (scrollContainer) {
@@ -80,7 +83,9 @@ function MenuContent({
             const scrollHeight = scrollContainer.scrollHeight
 
             // Tìm tất cả items để tính offset
-            const allItems = container.querySelectorAll('[data-slot="command-item"]')
+            const allItems = container.querySelectorAll(
+              '[data-slot="command-item"]'
+            )
             let itemOffsetTop = 0
 
             // Tính offset của item bằng cách cộng offsetHeight của tất cả items trước nó
@@ -90,7 +95,9 @@ function MenuContent({
             }
 
             // Thêm padding của CommandGroup nếu có
-            const commandGroup = selectedItem.closest('[data-slot="command-group"]') as HTMLElement
+            const commandGroup = selectedItem.closest(
+              '[data-slot="command-group"]'
+            ) as HTMLElement
             if (commandGroup) {
               const groupStyle = window.getComputedStyle(commandGroup)
               const paddingTop = parseFloat(groupStyle.paddingTop) || 0
@@ -110,16 +117,21 @@ function MenuContent({
               itemHeight,
               itemTop: itemRect.top,
               containerTop: containerRect.top,
-              itemVisible: itemRect.top >= containerRect.top && itemRect.bottom <= containerRect.bottom,
+              itemVisible:
+                itemRect.top >= containerRect.top &&
+                itemRect.bottom <= containerRect.bottom,
             })
 
             // Kiểm tra xem item có đang visible trong viewport không
-            const isItemVisible = itemRect.top >= containerRect.top && itemRect.bottom <= containerRect.bottom
+            const isItemVisible =
+              itemRect.top >= containerRect.top &&
+              itemRect.bottom <= containerRect.bottom
             const itemNearTop = itemRect.top < containerRect.top + 20
             const itemNearBottom = itemRect.bottom > containerRect.bottom - 20
 
             // Tính toán scroll position để item nằm ở giữa container
-            let targetScrollTop = itemOffsetTop - containerHeight / 2 + itemHeight / 2
+            let targetScrollTop =
+              itemOffsetTop - containerHeight / 2 + itemHeight / 2
 
             // Tính maxScroll dựa trên tổng chiều cao của tất cả items
             // Nếu scrollHeight === containerHeight, tính toán dựa trên items
@@ -142,12 +154,19 @@ function MenuContent({
             }
 
             // Đảm bảo không scroll quá đầu hoặc cuối
-            targetScrollTop = Math.max(0, Math.min(targetScrollTop, calculatedMaxScroll))
+            targetScrollTop = Math.max(
+              0,
+              Math.min(targetScrollTop, calculatedMaxScroll)
+            )
 
             // Scroll nếu item không visible hoặc gần edge
             const needsScroll = !isItemVisible || itemNearTop || itemNearBottom
 
-            if (needsScroll && Math.abs(targetScrollTop - currentScrollTop) > 1 && calculatedMaxScroll > 0) {
+            if (
+              needsScroll &&
+              Math.abs(targetScrollTop - currentScrollTop) > 1 &&
+              calculatedMaxScroll > 0
+            ) {
               scrollContainer.scrollTo({
                 top: targetScrollTop,
                 behavior: "smooth",
@@ -179,13 +198,21 @@ function MenuContent({
             }
           } else {
             // Fallback: scroll directly
-            logger.debug("MenuContent: No scroll container, scrolling directly", {
-              selectedIndex,
+            logger.debug(
+              "MenuContent: No scroll container, scrolling directly",
+              {
+                selectedIndex,
+              }
+            )
+            selectedItem.scrollIntoView({
+              block: "nearest",
+              behavior: "smooth",
             })
-            selectedItem.scrollIntoView({ block: "nearest", behavior: "smooth" })
           }
         } else {
-          logger.warn("MenuContent: Could not find selected item", { selectedIndex })
+          logger.warn("MenuContent: Could not find selected item", {
+            selectedIndex,
+          })
         }
       }, 10) // Tăng delay một chút để đảm bảo cmdk đã update state
 
@@ -246,7 +273,7 @@ export function ComponentPickerMenuPlugin({
   baseOptions = [],
   dynamicOptionsFn,
 }: {
-  baseOptions?: Array<ComponentPickerOption>
+  baseOptions?: Array<ComponentPickerOption | null>
   dynamicOptionsFn?: ({
     queryString,
   }: {
@@ -267,16 +294,23 @@ export function ComponentPickerMenuPlugin({
   })
 
   const getDynamicOptions = useCallback(() => {
-    return dynamicOptionsFn ? dynamicOptionsFn({ queryString: queryString || "" }) : []
+    return dynamicOptionsFn
+      ? dynamicOptionsFn({ queryString: queryString || "" })
+      : []
   }, [dynamicOptionsFn, queryString])
 
   const options = useMemo(() => {
-    const baseFiltered = baseOptions.filter((option) => {
+    const baseFiltered = baseOptions.filter((option): option is ComponentPickerOption => {
+      if (!option) return false
       if (!queryString) return true
-      return new RegExp(queryString, "i").test(option.title) ||
-        option.keywords.some((keyword) => new RegExp(queryString, "i").test(keyword))
+      return (
+        new RegExp(queryString, "i").test(option.title) ||
+        option.keywords.some((keyword) =>
+          new RegExp(queryString, "i").test(keyword)
+        )
+      )
     })
-    
+
     return [...baseFiltered, ...getDynamicOptions()]
   }, [baseOptions, getDynamicOptions, queryString])
 
@@ -343,17 +377,17 @@ export function ComponentPickerMenuPlugin({
           const menuHeight = Math.min(options.length * 40 + 16, 300)
           const viewportHeight = window.innerHeight
           const viewportWidth = window.innerWidth
-          
+
           // Với fixed positioning, sử dụng getBoundingClientRect() đã trả về vị trí relative to viewport
           // Không cần cộng window.scrollY vì fixed position đã relative to viewport
           let top = anchorRect.bottom + 4
           if (top + menuHeight > viewportHeight) {
             top = anchorRect.top - menuHeight - 4
           }
-          
+
           // Đảm bảo menu không bị tràn ra ngoài viewport
           top = Math.max(4, Math.min(top, viewportHeight - menuHeight - 4))
-          
+
           // Tính toán left position, đảm bảo menu không bị tràn ra ngoài viewport
           let left = anchorRect.left
           const menuWidth = 250
@@ -361,7 +395,7 @@ export function ComponentPickerMenuPlugin({
             left = viewportWidth - menuWidth - 4
           }
           left = Math.max(4, left)
-          
+
           const menuPosition = {
             top: `${top}px`,
             left: `${left}px`,
@@ -383,7 +417,7 @@ export function ComponentPickerMenuPlugin({
             },
             optionsCount: options.length,
           })
-          
+
           return createPortal(
             <div
               className="editor-component-picker-menu"
@@ -398,9 +432,9 @@ export function ComponentPickerMenuPlugin({
                 selectOptionAndCleanUp={selectOptionAndCleanUp}
                 setHighlightedIndex={setHighlightedIndex}
               />
-                </div>,
+            </div>,
             document.body
-              )
+          )
         }}
       />
     </>

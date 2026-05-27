@@ -116,6 +116,8 @@ function buildWhere(params: ListUsersParams): Record<string, unknown> {
         where.email = { $like: `%${value}%` };
       } else if (key === 'name') {
         where.name = { $like: `%${value}%` };
+      } else if (key === 'phone') {
+        where.phone = { $like: `%${value}%` };
       } else if (key === 'isActive') {
         where.isActive = value === 'true';
       }

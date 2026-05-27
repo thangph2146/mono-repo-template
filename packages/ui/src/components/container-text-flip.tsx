@@ -1,21 +1,21 @@
-"use client";
+"use client"
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react"
 
-import { motion, AnimatePresence } from "framer-motion";
-import { cn } from "../lib/utils";
+import { motion, AnimatePresence } from "framer-motion"
+import { cn } from "../lib/utils"
 
 export interface ContainerTextFlipProps {
   /** Array of words to cycle through in the animation */
-  words?: string[];
+  words?: string[]
   /** Time in milliseconds between word transitions */
-  interval?: number;
+  interval?: number
   /** Additional CSS classes to apply to the container */
-  className?: string;
+  className?: string
   /** Additional CSS classes to apply to the text */
-  textClassName?: string;
+  textClassName?: string
   /** Duration of the transition animation in milliseconds */
-  animationDuration?: number;
+  animationDuration?: number
 }
 
 export function ContainerTextFlip({
@@ -25,34 +25,37 @@ export function ContainerTextFlip({
   textClassName,
   animationDuration = 700,
 }: ContainerTextFlipProps) {
-  const [currentWordIndex, setCurrentWordIndex] = useState(0);
+  const [currentWordIndex, setCurrentWordIndex] = useState(0)
 
   // Memoize longest word to avoid recalculation on every render
-  const longestWord = useMemo(() => 
-    [...words].sort((a, b) => b.length - a.length)[0],
+  const longestWord = useMemo(
+    () => [...words].sort((a, b) => b.length - a.length)[0],
     [words]
-  );
+  )
 
   useEffect(() => {
     const intervalId = setInterval(() => {
-      setCurrentWordIndex((prevIndex) => (prevIndex + 1) % words.length);
-    }, interval);
+      setCurrentWordIndex((prevIndex) => (prevIndex + 1) % words.length)
+    }, interval)
 
-    return () => clearInterval(intervalId);
-  }, [words, interval]);
+    return () => clearInterval(intervalId)
+  }, [words, interval])
 
   return (
     <motion.span
       className={cn(
-        "relative inline-flex items-center justify-center rounded-lg px-4 py-1 text-center font-bold min-h-[1.5em]",
-        className,
+        "relative inline-flex min-h-[1.5em] items-center justify-center rounded-lg px-4 py-1 text-center font-bold",
+        className
       )}
     >
       {/* Ghost text to maintain stable width based on longest word */}
-      <span className="invisible h-0 pointer-events-none select-none px-2" aria-hidden="true">
+      <span
+        className="pointer-events-none invisible h-0 px-2 select-none"
+        aria-hidden="true"
+      >
         {longestWord}
       </span>
-      
+
       <div className="absolute inset-0 flex items-center justify-center">
         <AnimatePresence mode="wait">
           <motion.div
@@ -71,6 +74,5 @@ export function ContainerTextFlip({
         </AnimatePresence>
       </div>
     </motion.span>
-  );
+  )
 }
-

@@ -34,14 +34,18 @@ export function createListWithColorNodeFromRegistry(
   start: number,
   sourceNode?: ListNode
 ): InstanceType<typeof ListWithColorNode> {
-  const _editor = editor as unknown as { _nodes?: Map<string, { klass: Klass<LexicalNode> }> }
+  const _editor = editor as unknown as {
+    _nodes?: Map<string, { klass: Klass<LexicalNode> }>
+  }
   const registeredNode = _editor._nodes?.get("listwithcolor")
-  
+
   let newList: InstanceType<typeof ListWithColorNode>
 
   if (registeredNode && registeredNode.klass) {
     const Klass = registeredNode.klass as typeof ListWithColorNode
-    newList = new Klass(listType, start) as InstanceType<typeof ListWithColorNode>
+    newList = new Klass(listType, start) as InstanceType<
+      typeof ListWithColorNode
+    >
   } else {
     newList = new ListWithColorNode(listType, start)
   }

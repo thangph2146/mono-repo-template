@@ -10,7 +10,10 @@ export interface FlexProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 export const Flex = React.forwardRef<HTMLDivElement, FlexProps>(
-  ({ className, align, justify, direction, wrap, gap, style, ...props }, ref) => {
+  (
+    { className, align, justify, direction, wrap, gap, style, ...props },
+    ref
+  ) => {
     const isStandardGap =
       typeof gap === "number" && [0.5, 1, 1.5, 2, 3, 4, 5].includes(gap)
     const gapClass = isStandardGap

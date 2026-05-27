@@ -141,10 +141,7 @@ function YouTubeComponent({
     if (!containerWidth) {
       return
     }
-    if (
-      editorHardWidthLimit &&
-      containerWidth > editorHardWidthLimit
-    ) {
+    if (editorHardWidthLimit && containerWidth > editorHardWidthLimit) {
       setContainerWidth(editorHardWidthLimit)
       return
     }
@@ -158,8 +155,7 @@ function YouTubeComponent({
     containerWidth || maxWidth,
     editorHardWidthLimit || containerWidth || maxWidth
   )
-  const targetWidth =
-    typeof width === "number" ? width : availableWidth
+  const targetWidth = typeof width === "number" ? width : availableWidth
   const boundedWidth =
     typeof targetWidth === "number"
       ? Math.min(targetWidth, availableWidth)
@@ -244,9 +240,7 @@ function YouTubeComponent({
     >
       <div
         style={{
-          width: fullWidth
-            ? "100%"
-            : `${Math.max(safeRenderedWidth, 0)}px`,
+          width: fullWidth ? "100%" : `${Math.max(safeRenderedWidth, 0)}px`,
           aspectRatio: cssAspectRatio,
           maxWidth: "100%",
           height: "auto",
@@ -270,7 +264,7 @@ function YouTubeComponent({
           }
           allowFullScreen={true}
           title="YouTube video"
-          className={`block absolute inset-0 h-full w-full ${
+          className={`absolute inset-0 block h-full w-full ${
             disablePlaybackInteractions ? "pointer-events-none" : ""
           }`}
           tabIndex={disablePlaybackInteractions ? -1 : undefined}

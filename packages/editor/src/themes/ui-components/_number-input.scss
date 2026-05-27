@@ -1,5 +1,15 @@
+/**
+ * Number Input UI Component Styles
+ * 
+ * Styles for number input with increment/decrement buttons.
+ */
+
 @use "../variables" as *;
 @use "../mixins" as *;
+
+// ==========================================
+// 1. CONTAINER
+// ==========================================
 
 .editor-number-input-container {
   display: flex;
@@ -7,9 +17,9 @@
   border: $editor-border-width solid var(--border);
   border-radius: $editor-border-radius;
   background-color: var(--background);
-  height: $editor-control-size-xl; // h-11 to match color picker trigger
+  height: $editor-control-size-xl;
   transition: border-color $editor-transition-normal;
-  padding: 2px; // Small padding to make inner buttons look nested
+  padding: 2px;
   gap: 2px;
 
   &:focus-within {
@@ -17,24 +27,32 @@
   }
 }
 
+// ==========================================
+// 2. INCREMENT/DECREMENT BUTTONS
+// ==========================================
+
 .editor-number-input-btn {
-  height: 100% !important;
-  width: $editor-control-size-lg !important;
-  @include rounded-md; // Increase rounding to match container more closely
+  height: 100%;
+  width: $editor-control-size-lg;
+  @include rounded-md;
   flex-shrink: 0;
   color: var(--muted-foreground);
-  border: none !important;
-  box-shadow: none !important;
+  border: none;
+  box-shadow: none;
   
   &:hover:not(:disabled) {
-    background-color: var(--accent) !important;
-    color: var(--accent-foreground) !important;
+    background-color: var(--accent);
+    color: var(--accent-foreground);
   }
 
   &:active:not(:disabled) {
-    background-color: var(--accent-muted) !important;
+    background-color: var(--accent-muted);
   }
 }
+
+// ==========================================
+// 3. INPUT WRAPPER
+// ==========================================
 
 .editor-number-input-wrapper {
   position: relative;
@@ -47,17 +65,21 @@
   overflow: hidden;
 }
 
+// ==========================================
+// 4. INPUT FIELD
+// ==========================================
+
 .editor-number-input-field {
-  border: none !important;
-  border-radius: 0 !important;
-  height: 100% !important;
+  border: none;
+  border-radius: 0;
+  height: 100%;
   text-align: center;
-  padding-right: 28px !important; // space for unit
-  box-shadow: none !important;
-  background: transparent !important;
+  padding-right: 28px;
+  box-shadow: none;
+  background: transparent;
   
   &:focus {
-    box-shadow: none !important; // Don't show inner focus ring, container handles it
+    box-shadow: none;
   }
   
   &::-webkit-inner-spin-button,
@@ -68,6 +90,10 @@
   
   -moz-appearance: textfield;
 }
+
+// ==========================================
+// 5. UNIT LABEL
+// ==========================================
 
 .editor-number-input-unit {
   position: absolute;

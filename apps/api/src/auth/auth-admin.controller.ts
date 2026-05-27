@@ -1,4 +1,11 @@
 import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBody,
+  ApiHeader,
+} from '@nestjs/swagger';
+import {
   Controller,
   Get,
   Post,
@@ -15,11 +22,31 @@ import {
 } from '../common/api-response';
 import { APP_HEADERS, ADMIN_ROUTES } from '../config/constants';
 
+export class LoginDto {
+  email: string;
+  password: string;
+}
+
+export class DevLoginDto {
+  userId: string;
+}
+
+export class GoogleLoginDto {
+  email: string;
+  name: string;
+  image: string;
+}
+
+export class LogoutDto {
+  userId: string;
+}
+
 /**
  * Auth API cho Admin (tuyen-sinh-admin).
  * Đăng nhập CMS với email/password, trả về user + permissions + roles.
  * Sau này có thể thêm AuthPublicController (auth/public) cho đăng nhập public.
  */
+@ApiTags('Auth')
 @Controller(ADMIN_ROUTES.AUTH)
 export class AuthAdminController {
   private readonly logger = new Logger(AuthAdminController.name);
@@ -31,6 +58,15 @@ export class AuthAdminController {
    * Dùng để refresh session khi role/user được cập nhật (realtime cho tài khoản đang đăng nhập).
    */
   @Get('me')
+  @ApiOperation({ summary: 'Get current user session' })
+  @ApiHeader({
+    name: 'X-User-Id',
+    required: true,
+    description: 'User ID header',
+  })
+  @ApiResponse({ status: 200, description: 'Session retrieved successfully' })
+  @ApiResponse({ status: 401, description: 'Missing X-User-Id header' })
+  @ApiResponse({ status: 404, description: 'User not found or inactive' })
   async me(
     @Res() res: Response,
     @Headers() headers: Record<string, string | undefined>,
@@ -91,6 +127,11 @@ export class AuthAdminController {
   }
 
   @Post('login')
+  @ApiOperation({ summary: 'Admin login with email/password' })
+  @ApiBody({ type: LoginDto })
+  @ApiResponse({ status: 200, description: 'Login successful' })
+  @ApiResponse({ status: 401, description: 'Invalid credentials' })
+  @ApiResponse({ status: 500, description: 'Internal server error' })
   async login(
     @Body() body: { email?: string; password?: string },
     @Res() res: Response,
@@ -128,6 +169,11 @@ export class AuthAdminController {
   }
 
   @Post('dev-login')
+  @ApiOperation({ summary: 'Development login (dev only)' })
+  @ApiBody({ type: DevLoginDto })
+  @ApiResponse({ status: 200, description: 'Dev login successful' })
+  @ApiResponse({ status: 400, description: 'Missing userId' })
+  @ApiResponse({ status: 404, description: 'Not available in production' })
   async developmentLogin(
     @Body() body: { userId?: string },
     @Res() res: Response,
@@ -175,6 +221,10 @@ export class AuthAdminController {
   }
 
   @Post('google')
+  @ApiOperation({ summary: 'Login with Google account' })
+  @ApiBody({ type: GoogleLoginDto })
+  @ApiResponse({ status: 200, description: 'Google login successful' })
+  @ApiResponse({ status: 401, description: 'Authentication failed' })
   async google(
     @Body() body: { email?: string; name?: string; image?: string },
     @Res() res: Response,
@@ -213,6 +263,10 @@ export class AuthAdminController {
   }
 
   @Post('logout')
+  @ApiOperation({ summary: 'Logout user' })
+  @ApiBody({ type: LogoutDto })
+  @ApiResponse({ status: 200, description: 'Logout successful' })
+  @ApiResponse({ status: 500, description: 'Internal server error' })
   async logout(@Body() body: { userId?: string }, @Res() res: Response) {
     this.logger.log(`logout userId=${body?.userId ?? '-'}`);
     try {

@@ -23,12 +23,7 @@ import {
 } from "lexical"
 import { createPortal } from "react-dom"
 
-import {
-  Command,
-  CommandGroup,
-  CommandItem,
-  CommandList,
-} from "../ui/command"
+import { Command, CommandGroup, CommandItem, CommandList } from "../ui/command"
 
 const LexicalTypeaheadMenuPlugin = dynamic(
   () =>

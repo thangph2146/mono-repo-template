@@ -1,43 +1,61 @@
+/**
+ * Core Code Styles (Lexical Standard)
+ * 
+ * Follows Lexical theming conventions:
+ * - All styles scoped under .lexical-editor-root
+ * - Class names match editor-theme.ts mappings
+ * - No !important - uses proper CSS specificity
+ */
+
 @use "../variables" as *;
 @use "../mixins" as *;
 
+// ==========================================
+// 1. CODE BLOCK
+// ==========================================
+
 .lexical-editor-root {
-  // Code Block
   .editor-code {
-    background: linear-gradient(135deg, var(--muted, #f8f9fa) 0%, rgba(0, 0, 0, 0.01) 100%);
+    background: linear-gradient(
+      135deg,
+      var(--muted, #f8f9fa) 0%,
+      rgba(0, 0, 0, 0.01) 100%
+    );
     color: var(--foreground, #212529);
     font-family: $editor-font-family-mono;
     display: block;
-    padding: $editor-code-padding $editor-code-padding $editor-code-padding ($editor-code-padding * 4);
+    padding: $editor-code-padding $editor-code-padding $editor-code-padding
+      ($editor-code-padding * 4);
     line-height: $editor-line-height-base;
     font-size: $editor-code-font-size;
-    margin: $editor-code-margin 0 !important;
+    margin: $editor-code-margin 0;
     overflow-x: auto;
     border: $editor-border-width solid var(--border);
     position: relative;
     border-radius: $editor-border-radius;
     tab-size: 2;
-    box-shadow: 
+    box-shadow:
       0 2px 4px rgba(0, 0, 0, 0.05),
       inset 0 1px 2px rgba(255, 255, 255, 0.5);
     transition: all $editor-transition-normal;
 
     &:hover {
-      box-shadow: 
+      box-shadow:
         0 4px 12px rgba(0, 0, 0, 0.08),
         inset 0 1px 2px rgba(255, 255, 255, 0.5);
     }
 
     &:focus-within {
       border-color: var(--primary, #3b82f6);
-      box-shadow: 
+      box-shadow:
         0 4px 12px rgba(59, 130, 246, 0.15),
         inset 0 1px 2px rgba(255, 255, 255, 0.5);
     }
 
-    // =============================================
-    // Line Numbers (Gutter)
-    // =============================================
+    // ==========================================
+    // 2. LINE NUMBERS (GUTTER)
+    // ==========================================
+
     &::before {
       content: attr(data-gutter);
       position: absolute;
@@ -61,10 +79,10 @@
       letter-spacing: 0.5px;
     }
 
-    // =============================================
-    // Syntax Highlighting Support
-    // =============================================
-    // Add visual separation for different code elements
+    // ==========================================
+    // 3. SYNTAX HIGHLIGHTING SUPPORT
+    // ==========================================
+
     code {
       font-family: $editor-font-family-mono;
     }
@@ -89,13 +107,14 @@
     }
   }
 
-  // =============================================
-  // Inline Code
-  // =============================================
-  .editor-text-code { 
+  // ==========================================
+  // 4. INLINE CODE
+  // ==========================================
+
+  .editor-text-code {
     background-color: var(--muted, #f5f5f5);
     color: var(--primary, #3b82f6);
-    padding: $editor-inline-code-padding-y $editor-inline-code-padding-x; 
+    padding: $editor-inline-code-padding-y $editor-inline-code-padding-x;
     font-family: $editor-font-family-mono;
     font-size: calc($editor-code-font-size - 1px);
     border-radius: $editor-border-radius;
@@ -109,9 +128,10 @@
     }
   }
 
-  // =============================================
-  // Hashtag
-  // =============================================
+  // ==========================================
+  // 5. HASHTAG
+  // ==========================================
+
   .editor-hashtag {
     background-color: rgba($editor-primary-color, $editor-hashtag-opacity);
     color: $editor-primary-color;
@@ -122,5 +142,48 @@
     &:hover {
       opacity: 0.8;
     }
+  }
+
+  // ==========================================
+  // 6. SYNTAX HIGHLIGHTING TOKENS
+  // ==========================================
+
+  .editor-token-comment {
+    color: slategray;
+  }
+  .editor-token-property {
+    color: #905;
+  }
+  .editor-token-selector {
+    color: #690;
+  }
+  .editor-token-operator {
+    color: #9a6e3a;
+  }
+  .editor-token-attr {
+    color: #07a;
+  }
+  .editor-token-variable {
+    color: #e90;
+  }
+  .editor-token-function {
+    color: #dd4a68;
+  }
+  .editor-token-punctuation {
+    color: #999;
+  }
+
+  // Diff tokens
+  .editor-token-deleted {
+    border-image: linear-gradient(to right, #ffcecb 50%, #ffebe9 50%) fill 0/0/0
+      100vw;
+  }
+  .editor-token-inserted {
+    border-image: linear-gradient(to right, #aceebb 50%, #dafbe1 50%) fill 0/0/0
+      100vw;
+  }
+  .editor-token-unchanged {
+    border-image: linear-gradient(to right, #ddd 50%, #f0f2f5 50%) fill 0/0/0
+      100vw;
   }
 }

@@ -41,7 +41,8 @@ import {
 } from "@/hooks/queries";
 import { ApiError } from "@/lib/api";
 import { patchAdminSessionProfile } from "@/lib/auth-session";
-import { Container } from "@ui/components/layout";
+import { PageSection } from "@ui/components/layout";
+import { AdminPageGuard } from "@/components/admin-page-guard";
 import { TypographyH1 } from "@ui/components/typography";
 import { ADMIN_PAGE_TITLE_PROFILE_CLASS } from "@ui/lib/layout-shell";
 import type { RbacRole } from "@workspace/api-client";
@@ -122,7 +123,7 @@ function getPermissionUiLabel(code: string): string {
     .join(" / ");
 }
 
-export default function AdminProfilePage() {
+function AdminProfilePageInner() {
   const { user: sessionUser } = useAuth();
   const canSeeRbacPage =
     sessionUser != null &&
@@ -253,7 +254,7 @@ export default function AdminProfilePage() {
   }
 
   return (
-    <Container max="full" className="space-y-6">
+    <PageSection max="full" className="min-w-0 space-y-6">
       <div>
         <TypographyH1 className={ADMIN_PAGE_TITLE_PROFILE_CLASS}>
           Hồ sơ tài khoản
@@ -583,6 +584,14 @@ export default function AdminProfilePage() {
           </Card>
         </div>
       </div>
-    </Container>
+    </PageSection>
+  );
+}
+
+export default function AdminProfilePage() {
+  return (
+    <AdminPageGuard>
+      <AdminProfilePageInner />
+    </AdminPageGuard>
   );
 }

@@ -95,6 +95,8 @@ export class ParentStudentsService {
     page: number;
     limit: number;
     status?: string;
+    search?: string;
+    createdAt?: string;
   }): Promise<{
     data: ParentStudentRowDto[];
     pagination: {
@@ -115,6 +117,35 @@ export class ParentStudentsService {
       ['pending', 'approved', 'rejected'].includes(params.status)
     ) {
       where.status = params.status;
+    }
+    if (params.search?.trim()) {
+      const q = params.search.trim();
+      const escaped = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      where.$or = [
+        { studentCode: { $re: `(?i)${escaped}` } },
+        { studentName: { $re: `(?i)${escaped}` } },
+        { parentId: { $re: `(?i)${escaped}` } },
+      ];
+    }
+    if (params.createdAt?.trim()) {
+      const [fromStr, toStr] = params.createdAt.split(',');
+      const dateRange: Record<string, Date> = {};
+      if (fromStr?.trim()) {
+        const fromDate = new Date(fromStr.trim());
+        if (!isNaN(fromDate.getTime())) {
+          dateRange.$gte = fromDate;
+        }
+      }
+      if (toStr?.trim()) {
+        const toDate = new Date(toStr.trim());
+        toDate.setHours(23, 59, 59, 999);
+        if (!isNaN(toDate.getTime())) {
+          dateRange.$lte = toDate;
+        }
+      }
+      if (Object.keys(dateRange).length > 0) {
+        where.createdAt = dateRange;
+      }
     }
     const [rows, total] = await Promise.all([
       this.em.find(ParentStudent, where, {

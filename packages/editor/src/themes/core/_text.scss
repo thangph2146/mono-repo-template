@@ -1,34 +1,158 @@
+/**
+ * Core Text Styles (Lexical Standard)
+ * 
+ * Follows Lexical theming conventions:
+ * - All styles scoped under .lexical-editor-root
+ * - Class names match editor-theme.ts mappings
+ * - No !important - uses proper CSS specificity
+ */
+
 @use "../variables" as *;
 @use "../mixins" as *;
 
-.lexical-editor-root {
-  // Text Formatting
-  .editor-link { 
-    color: $editor-link-color; 
-    text-decoration: none; 
-    &:hover { text-decoration: underline; cursor: pointer; } 
-  }
-  .editor-text-bold { font-weight: $editor-font-weight-bold; }
-  .editor-text-italic { font-style: italic; }
-  .editor-text-underline { text-decoration: underline; }
-  .editor-text-strikethrough { text-decoration: line-through; }
-  .editor-text-underline-strikethrough { text-decoration: underline line-through; }
-  .editor-text-subscript { vertical-align: sub; font-size: $editor-script-font-size; }
-  .editor-text-superscript { vertical-align: super; font-size: $editor-script-font-size; }
+// ==========================================
+// 1. TEXT FORMATTING
+// ==========================================
 
-  // Text Alignment
+.lexical-editor-root {
+  .editor-link {
+    color: $editor-link-color;
+    text-decoration: none;
+    &:hover {
+      text-decoration: underline;
+      cursor: pointer;
+    }
+  }
+
+  .editor-text-bold {
+    font-weight: $editor-font-weight-bold;
+  }
+  .editor-text-italic {
+    font-style: italic;
+  }
+  .editor-text-underline {
+    text-decoration: underline;
+  }
+  .editor-text-strikethrough {
+    text-decoration: line-through;
+  }
+  .editor-text-underline-strikethrough {
+    text-decoration: underline line-through;
+  }
+  .editor-text-subscript {
+    vertical-align: sub;
+    font-size: $editor-script-font-size;
+  }
+  .editor-text-superscript {
+    vertical-align: super;
+    font-size: $editor-script-font-size;
+  }
+
+  // ==========================================
+  // 2. TEXT TRANSFORMS
+  // ==========================================
+
+  .editor-text-lowercase {
+    text-transform: lowercase;
+  }
+  .editor-text-uppercase {
+    text-transform: uppercase;
+  }
+  .editor-text-capitalize {
+    text-transform: capitalize;
+  }
+
+  // ==========================================
+  // 3. TAB NODE
+  // ==========================================
+
+  .editor-tab-node {
+    position: relative;
+    text-decoration: none;
+
+    &.editor-text-underline::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0.15em;
+      border-bottom: 0.1em solid currentColor;
+    }
+
+    &.editor-text-strikethrough::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0.69em;
+      border-top: 0.1em solid currentColor;
+    }
+
+    &.editor-text-underline-strikethrough::before,
+    &.editor-text-underline-strikethrough::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+    }
+
+    &.editor-text-underline-strikethrough::before {
+      top: 0.69em;
+      border-top: 0.1em solid currentColor;
+    }
+
+    &.editor-text-underline-strikethrough::after {
+      bottom: 0.05em;
+      border-bottom: 0.1em solid currentColor;
+    }
+  }
+
+  // ==========================================
+  // 4. TEXT HIGHLIGHT / MARK
+  // ==========================================
+
+  .editor-text-highlight {
+    background: rgba(255, 212, 0, 0.14);
+    border-bottom: 2px solid rgba(255, 212, 0, 0.3);
+  }
+
+  .editor-mark {
+    background: rgba(255, 212, 0, 0.14);
+    border-bottom: 2px solid rgba(255, 212, 0, 0.3);
+    padding-bottom: 2px;
+
+    &.editor-mark-overlap {
+      background: rgba(255, 212, 0, 0.3);
+      border-bottom: 2px solid rgba(255, 212, 0, 0.7);
+    }
+
+    &.selected {
+      background: rgba(255, 212, 0, 0.5);
+      border-bottom: 2px solid rgba(255, 212, 0, 1);
+    }
+
+    &.editor-mark-overlap.selected {
+      background: rgba(255, 212, 0, 0.7);
+      border-bottom: 2px solid rgba(255, 212, 0, 0.7);
+    }
+  }
+
+  // ==========================================
+  // 5. TEXT ALIGNMENT
+  // ==========================================
+
   .editor-text-align-left {
     text-align: left;
   }
-  
+
   .editor-text-align-center {
     text-align: center;
   }
-  
+
   .editor-text-align-right {
     text-align: right;
   }
-  
+
   .editor-text-align-justify {
     text-align: justify;
   }

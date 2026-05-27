@@ -1,6 +1,6 @@
 # `packages/*` — tóm tắt workspace cho AI (Graphify)
 
-> **Sinh tự động:** `2026-05-14T07:53:08.098Z` — liệt kê package trong `packages/` (không nhúng source).
+> **Sinh tự động:** `2026-05-27T01:47:05.565Z` — liệt kê package trong `packages/` (không nhúng source).
 
 ## Vai trò trong kiến trúc microservice
 
@@ -12,11 +12,11 @@
 | Package | Thư mục | Ghi chú |
 |---------|----------|---------|
 | `@thangph2146/lexical-editor` | `packages/editor/` | Editor Lexical workspace; tiêu thụ bởi Next apps + có thể tái xuất UI. |
-| `@ui` | `packages/ui/` | Thư viện UI (React); không import `apps/*`. |
 | `@workspace/api-client` | `packages/api-client/` | SDK HTTP tới `@api`; không import app Nest/Next. |
 | `@workspace/eslint-config` | `packages/eslint-config/` | ESLint flat + `service-boundaries` (ranh giới import). |
 | `@workspace/query-client` | `packages/query-client/` | `QueryClient` + retry/stale mặc định TanStack Query (dùng chung Next apps). |
 | `@workspace/typescript-config` | `packages/typescript-config/` | tsconfig cơ sở cho package/app. |
+| `@workspace/ui` | `packages/ui/` | — |
 
 ## File Markdown trong `packages/.graphify/markdown/`
 

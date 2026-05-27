@@ -1,0 +1,65 @@
+/**
+ * Context Menu Plugin Styles
+ * 
+ * Styles for the context menu.
+ * Follows Lexical theming conventions:
+ * - All styles use editor- prefix for isolation
+ * - No !important - uses proper CSS specificity
+ */
+
+@use "../variables" as *;
+@use "../mixins" as *;
+
+// ==========================================
+// 1. CONTEXT MENU
+// ==========================================
+
+// Higher than sticky/action bars (~z-index 10).
+// Uses specific selector chain to override Floating UI portal z-index.
+.editor-context-menu {
+  background-color: var(--popover);
+  color: var(--popover-foreground);
+  z-index: $editor-z-index-popover;
+  position: relative;
+  overflow: hidden;
+  @include rounded-md;
+  border: $editor-border-width solid var(--border);
+  @include shadow-md;
+  outline: none;
+}
+
+[data-floating-ui-portal]:has(.editor-context-menu) {
+  z-index: $editor-z-index-popover;
+}
+
+[data-floating-ui-portal]:has(.editor-context-menu) > div {
+  z-index: $editor-z-index-popover;
+}
+
+.editor-context-menu-item {
+  position: relative;
+  width: 100%;
+  @include flex-center;
+  cursor: default;
+  gap: $editor-gap-2;
+  @include rounded-sm;
+  padding: calc($editor-gap-1 + 2px) $editor-gap-2;
+  border: $editor-border-width solid transparent;
+  @include text-sm;
+  outline: none;
+  user-select: none;
+  
+  @include editor-dropdown-item-interactive;
+  
+  &[data-disabled="true"] {
+    pointer-events: none;
+    opacity: $editor-opacity-disabled;
+  }
+}
+
+.editor-context-menu-separator {
+  background-color: var(--border);
+  margin-left: -0.25rem;
+  margin-right: -0.25rem;
+  height: $editor-border-width;
+}

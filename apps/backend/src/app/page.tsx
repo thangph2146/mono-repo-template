@@ -217,7 +217,7 @@ export default function AdminDashboardPage() {
   const stats = buildStats(data?.overview, isLoading)
 
   return (
-    <PageSection max="full" className="min-w-0 space-y-8">
+    <PageSection max="full" className="min-w-0 space-y-6">
       {/* Header */}
       <div>
         <TypographyH1 className={ADMIN_PAGE_TITLE_PRIMARY_CLASS}>

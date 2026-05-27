@@ -25,6 +25,25 @@ export interface CategoryRowDto {
   deletedAt: string | null;
   _count?: { children: number };
   postCount?: number;
+  children?: ChildCategoryDto[];
+  posts?: RelatedPostDto[];
+}
+
+export interface ChildCategoryDto {
+  id: string;
+  name: string;
+  slug: string;
+  _count: { children: number };
+  postCount: number;
+}
+
+export interface RelatedPostDto {
+  id: string;
+  title: string;
+  slug: string;
+  published: boolean;
+  publishedAt: string | null;
+  createdAt: string;
 }
 
 export interface ListCategoriesParams {
@@ -45,17 +64,17 @@ export interface ListCategoriesResult {
   };
 }
 
-function mapRow(r: CategoryWithParent): CategoryRowDto {
-  const toIsoString = (value: unknown): string | null => {
-    if (value == null) return null;
-    if (value instanceof Date) return value.toISOString();
-    if (typeof value === 'string' || typeof value === 'number') {
-      const parsed = new Date(value);
-      return Number.isNaN(parsed.getTime()) ? null : parsed.toISOString();
-    }
-    return null;
-  };
+function toIsoString(value: unknown): string | null {
+  if (value == null) return null;
+  if (value instanceof Date) return value.toISOString();
+  if (typeof value === 'string' || typeof value === 'number') {
+    const parsed = new Date(value);
+    return Number.isNaN(parsed.getTime()) ? null : parsed.toISOString();
+  }
+  return null;
+}
 
+function mapRow(r: CategoryWithParent): CategoryRowDto {
   return {
     id: r.id,
     name: r.name,
@@ -100,7 +119,13 @@ function buildWhere(params: ListCategoriesParams): Record<string, unknown> {
       } else if (key === 'slug') {
         where.slug = { $like: `%${trimmed}%` };
       } else if (key === 'parentId') {
-        where.parent = trimmed;
+        const ids = trimmed.includes(',')
+          ? trimmed
+              .split(',')
+              .map((x) => x.trim())
+              .filter(Boolean)
+          : [trimmed];
+        where.parent = ids.length > 1 ? { id: { $in: ids } } : ids[0];
       }
     }
   }
@@ -233,13 +258,58 @@ export class CategoriesService {
     const row = await this.em.findOne(
       Category,
       { id },
-      { populate: ['parent', 'children'] },
+      { populate: ['parent'] },
     );
 
     if (!row) return null;
 
+    const [childrenCount, postCount, childrenRows, postPivotRows] =
+      await Promise.all([
+        this.em.count(Category, { parent: row.id, deletedAt: null }),
+        this.countPostsByCategoryTree(row.id),
+        this.em.find(
+          Category,
+          { parent: row.id, deletedAt: null },
+          { populate: ['children'] },
+        ),
+        this.em.find(
+          PostCategory,
+          { category: row.id },
+          {
+            populate: ['post'],
+            limit: 10,
+            orderBy: { post: { createdAt: 'DESC' } },
+          },
+        ),
+      ]);
+
+    const children = await Promise.all(
+      childrenRows.map(async (child) => ({
+        id: child.id,
+        name: child.name,
+        slug: child.slug,
+        _count: { children: child.children.length },
+        postCount: await this.countPostsByCategoryTree(child.id),
+      })),
+    );
+
+    const posts = postPivotRows.map((pc) => {
+      const p = pc.post;
+      return {
+        id: p.id,
+        title: p.title,
+        slug: p.slug,
+        published: p.published,
+        publishedAt: toIsoString(p.publishedAt),
+        createdAt: toIsoString(p.createdAt) ?? '',
+      };
+    });
+
     const dto = mapRow(row as CategoryWithParent);
-    dto.postCount = await this.countPostsByCategoryTree(row.id);
+    dto._count = { children: childrenCount };
+    dto.postCount = postCount;
+    dto.children = children;
+    dto.posts = posts;
     return dto;
   }
 

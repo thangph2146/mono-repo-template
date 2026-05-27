@@ -178,8 +178,8 @@ function DataBackupPageInner() {
       }>;
       toast.success(
         payload.message ||
-          payload.data?.message ||
-          "Import JSON hoàn tất.",
+        payload.data?.message ||
+        "Import JSON hoàn tất.",
       );
     } catch (e) {
       toast.error(
@@ -211,8 +211,8 @@ function DataBackupPageInner() {
       }>;
       toast.success(
         payload.message ||
-          payload.data?.message ||
-          "Import Excel hoàn tất.",
+        payload.data?.message ||
+        "Import Excel hoàn tất.",
       );
     } catch (e) {
       toast.error(
@@ -226,7 +226,7 @@ function DataBackupPageInner() {
   const exportBusy = exporting !== null;
 
   return (
-    <PageSection max="full" className="min-w-0 space-y-8 pb-10">
+    <PageSection max="full" className="min-w-0 space-y-6">
       {/* Tiêu đề + bối cảnh ngay khi mở trang */}
       <header className="space-y-3">
         <div className="flex flex-wrap items-start gap-4">

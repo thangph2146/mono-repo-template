@@ -25,7 +25,9 @@ export interface EditorUploadsContextType {
   onUploadFile?: (file: File) => Promise<{ url: string; error?: string }>
 }
 
-const EditorUploadsContext = createContext<EditorUploadsContextType | undefined>(undefined)
+const EditorUploadsContext = createContext<
+  EditorUploadsContextType | undefined
+>(undefined)
 
 export function EditorUploadsProvider({
   children,

@@ -1,7 +1,12 @@
 "use client"
 
 import { useCallback, useRef, useState } from "react"
-import { $isTableCellNode, $isTableSelection, type TableCellNode, TableNode } from "@lexical/table"
+import {
+  $isTableCellNode,
+  $isTableSelection,
+  type TableCellNode,
+  TableNode,
+} from "@lexical/table"
 import {
   $getSelectionStyleValueForProperty,
   $patchStyleText,
@@ -88,9 +93,14 @@ export function FontBackgroundToolbarPlugin() {
   const [bgColor, setBgColor] = useState("#fff")
   const activeLayoutItemKeyRef = useRef<NodeKey | null>(null)
 
-  const extractStyleValue = (style: string, property: string): string | null => {
+  const extractStyleValue = (
+    style: string,
+    property: string
+  ): string | null => {
     const escapedProperty = property.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
-    const match = style.match(new RegExp(`${escapedProperty}\\s*:\\s*([^;]+)`, "i"))
+    const match = style.match(
+      new RegExp(`${escapedProperty}\\s*:\\s*([^;]+)`, "i")
+    )
     return match?.[1]?.trim() ?? null
   }
 
@@ -109,8 +119,9 @@ export function FontBackgroundToolbarPlugin() {
 
   const $updateToolbar = (selection: BaseSelection) => {
     if ($isRangeSelection(selection)) {
-      const layoutItem = $findMatchingParent(selection.anchor.getNode(), (node) =>
-        $isLayoutItemNode(node)
+      const layoutItem = $findMatchingParent(
+        selection.anchor.getNode(),
+        (node) => $isLayoutItemNode(node)
       )
       if ($isLayoutItemNode(layoutItem)) {
         activeLayoutItemKeyRef.current = layoutItem.getKey()
@@ -169,7 +180,11 @@ export function FontBackgroundToolbarPlugin() {
               withBackground.setBackgroundColor(overlayColor)
             } else {
               cell.setStyle(
-                setStyleProperty(cell.getStyle(), "background-color", overlayColor)
+                setStyleProperty(
+                  cell.getStyle(),
+                  "background-color",
+                  overlayColor
+                )
               )
             }
           }
@@ -181,15 +196,18 @@ export function FontBackgroundToolbarPlugin() {
         if (selectedLayoutItemKey) {
           const node = $getNodeByKey(selectedLayoutItemKey)
           if ($isLayoutItemNode(node)) {
-            node.setStyle(setStyleProperty(node.getStyle(), "background-color", value))
+            node.setStyle(
+              setStyleProperty(node.getStyle(), "background-color", value)
+            )
             shouldApplyTextStyle = false
             return
           }
         }
 
         if (!$isRangeSelection(selection)) return
-        const layoutItem = $findMatchingParent(selection.anchor.getNode(), (node) =>
-          $isLayoutItemNode(node)
+        const layoutItem = $findMatchingParent(
+          selection.anchor.getNode(),
+          (node) => $isLayoutItemNode(node)
         )
         if ($isLayoutItemNode(layoutItem)) {
           layoutItem.setStyle(
@@ -214,7 +232,11 @@ export function FontBackgroundToolbarPlugin() {
       onValueChange={onBgColorSelect}
     >
       <ColorPickerTrigger asChild>
-        <Button variant={"outline"} size={"icon"} className="editor-toolbar-item--lg">
+        <Button
+          variant={"outline"}
+          size={"icon"}
+          className="editor-toolbar-item--lg"
+        >
           <IconSize size="sm">
             <PaintBucketIcon />
           </IconSize>
@@ -223,12 +245,12 @@ export function FontBackgroundToolbarPlugin() {
       <ColorPickerContent>
         <ColorPickerArea />
         <Flex align="center" gap={2}>
-            <ColorPickerEyeDropper />
-            <Flex direction="column" gap={2} className="editor-flex-1">
-              <ColorPickerHueSlider />
-              <ColorPickerAlphaSlider />
-            </Flex>
+          <ColorPickerEyeDropper />
+          <Flex direction="column" gap={2} className="editor-flex-1">
+            <ColorPickerHueSlider />
+            <ColorPickerAlphaSlider />
           </Flex>
+        </Flex>
         <Flex align="center" gap={2}>
           <ColorPickerFormatSelect />
           <ColorPickerInput />

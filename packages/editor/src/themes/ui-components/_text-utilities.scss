@@ -1,7 +1,16 @@
+/**
+ * Text Utilities UI Component Styles
+ * 
+ * Utility classes for text sizing, colors, and formatting.
+ */
+
 @use "../variables" as *;
 @use "../mixins" as *;
 
-/* --- TEXT UTILITIES --- */
+// ==========================================
+// 1. TEXT SIZING
+// ==========================================
+
 .editor-text-xs-muted {
   font-size: $editor-font-size-xs;
   color: $editor-muted-foreground-color;
@@ -11,6 +20,10 @@
   @include text-sm;
 }
 
+// ==========================================
+// 2. FONT WEIGHTS & FAMILIES
+// ==========================================
+
 .editor-font-medium {
   font-weight: $editor-font-weight-medium;
 }
@@ -19,6 +32,10 @@
   font-family: $editor-font-family-mono;
 }
 
+// ==========================================
+// 3. TEXT COLORS
+// ==========================================
+
 .editor-text-muted-foreground {
   color: $editor-muted-foreground-color;
 }
@@ -26,6 +43,10 @@
 .editor-text-foreground-50 {
   color: color-mix(in srgb, var(--foreground), transparent 50%);
 }
+
+// ==========================================
+// 4. TEXT TRANSFORMS & WRAPPING
+// ==========================================
 
 .editor-uppercase {
   text-transform: uppercase;
@@ -42,6 +63,10 @@
 .editor-word-break-break-word {
   word-break: break-word;
 }
+
+// ==========================================
+// 5. CARET COLOR
+// ==========================================
 
 .editor-caret-primary {
   caret-color: var(--primary);

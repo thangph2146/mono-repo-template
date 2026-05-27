@@ -78,7 +78,12 @@ export function NodeOptionsToolbarPlugin(): JSX.Element | null {
         if ($isListNode(node)) {
           const listType = node.getListType()
           const start = node.getStart()
-          const newList = createListWithColorNodeFromRegistry(activeEditor, listType, start, node)
+          const newList = createListWithColorNodeFromRegistry(
+            activeEditor,
+            listType,
+            start,
+            node
+          )
           newList.setListColor(color)
           const children = node.getChildren()
           for (const c of children) newList.append(c)

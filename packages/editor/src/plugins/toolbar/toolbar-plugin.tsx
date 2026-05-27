@@ -24,10 +24,12 @@ export function ToolbarPlugin({
   children,
   className,
   style,
+  stickyTop,
 }: {
   children: (props: { blockType: string }) => ReactNode
   className?: string
   style?: CSSProperties
+  stickyTop?: number
 }) {
   const [editor] = useLexicalComposerContext()
   const { headerHeight } = useHeaderHeight()
@@ -44,7 +46,7 @@ export function ToolbarPlugin({
       SELECTION_CHANGE_COMMAND,
       (_payload, newEditor) => {
         setActiveEditor(newEditor)
-        
+
         // Detect block type from selection
         newEditor.getEditorState().read(() => {
           const selection = $getSelection()
@@ -87,7 +89,7 @@ export function ToolbarPlugin({
             }
           }
         })
-        
+
         return false
       },
       COMMAND_PRIORITY_CRITICAL
@@ -105,13 +107,10 @@ export function ToolbarPlugin({
       {modal}
 
       <div
-        className={cn(
-          "editor-toolbar",
-          className
-        )}
+        className={cn("editor-toolbar", className)}
         style={{
           ...style,
-          top: Math.round(headerHeight),
+          top: stickyTop ?? Math.round(headerHeight),
         }}
       >
         {children({ blockType })}

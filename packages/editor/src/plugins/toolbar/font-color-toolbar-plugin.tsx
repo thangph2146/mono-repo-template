@@ -68,7 +68,11 @@ export function FontColorToolbarPlugin() {
       onValueChange={onFontColorSelect}
     >
       <ColorPickerTrigger asChild>
-        <Button variant="outline" size="icon" className="editor-toolbar-item--lg">
+        <Button
+          variant="outline"
+          size="icon"
+          className="editor-toolbar-item--lg"
+        >
           <IconSize size="sm">
             <BaselineIcon />
           </IconSize>
@@ -77,12 +81,12 @@ export function FontColorToolbarPlugin() {
       <ColorPickerContent>
         <ColorPickerArea />
         <Flex align="center" gap={2}>
-            <ColorPickerEyeDropper />
-            <Flex direction="column" gap={2} className="editor-flex-1">
-              <ColorPickerHueSlider />
-              <ColorPickerAlphaSlider />
-            </Flex>
+          <ColorPickerEyeDropper />
+          <Flex direction="column" gap={2} className="editor-flex-1">
+            <ColorPickerHueSlider />
+            <ColorPickerAlphaSlider />
           </Flex>
+        </Flex>
         <Flex align="center" gap={2}>
           <ColorPickerFormatSelect />
           <ColorPickerInput />

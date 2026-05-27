@@ -21,12 +21,7 @@ import { CircleUserRoundIcon } from "lucide-react"
 import { createPortal } from "react-dom"
 
 import { $createMentionNode } from "../nodes/mention-node"
-import {
-  Command,
-  CommandGroup,
-  CommandItem,
-  CommandList,
-} from "../ui/command"
+import { Command, CommandGroup, CommandItem, CommandList } from "../ui/command"
 import { IconSize } from "../ui/typography"
 
 const LexicalTypeaheadMenuPlugin = dynamic(

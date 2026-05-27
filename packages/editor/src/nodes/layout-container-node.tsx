@@ -4,12 +4,13 @@ import type {
   DOMConversionOutput,
   DOMExportOutput,
   EditorConfig,
+  LexicalCommand,
   LexicalNode,
   NodeKey,
   SerializedElementNode,
   Spread,
 } from "lexical"
-import { ElementNode } from "lexical"
+import { ElementNode, createCommand } from "lexical"
 
 export type SerializedLayoutContainerNode = Spread<
   {
@@ -129,3 +130,16 @@ export function $isLayoutContainerNode(
 ): node is LayoutContainerNode {
   return node instanceof LayoutContainerNode
 }
+
+export type InsertLayoutPayload =
+  | string
+  | {
+      template: string
+      itemBackgroundColor?: string
+      itemPaddingXPx?: number
+      itemPaddingYPx?: number
+      itemBorderRadiusPx?: number
+    }
+
+export const INSERT_LAYOUT_COMMAND: LexicalCommand<InsertLayoutPayload> =
+  createCommand<InsertLayoutPayload>()

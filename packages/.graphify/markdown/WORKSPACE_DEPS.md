@@ -1,6 +1,6 @@
 # Phụ thuộc workspace (`workspace:*`)
 
-> **Sinh tự động:** `2026-05-14T07:53:08.096Z` — quét `package.json` trong `packages/*` và `apps/*` (chỉ liên kết nội bộ monorepo).
+> **Sinh tự động:** `2026-05-27T01:47:05.561Z` — quét `package.json` trong `packages/*` và `apps/*` (chỉ liên kết nội bộ monorepo).
 
 ## `packages/*`
 
@@ -8,12 +8,12 @@
 |------------------|---------------------|------|---------|
 | `@thangph2146/lexical-editor` | `@workspace/eslint-config` | `workspace:*` | `packages/editor/` |
 | `@thangph2146/lexical-editor` | `@workspace/typescript-config` | `workspace:*` | `packages/editor/` |
-| `@ui` | `@workspace/eslint-config` | `workspace:*` | `packages/ui/` |
-| `@ui` | `@workspace/typescript-config` | `workspace:*` | `packages/ui/` |
 | `@workspace/api-client` | `@workspace/eslint-config` | `workspace:*` | `packages/api-client/` |
 | `@workspace/api-client` | `@workspace/typescript-config` | `workspace:*` | `packages/api-client/` |
 | `@workspace/query-client` | `@workspace/eslint-config` | `workspace:*` | `packages/query-client/` |
 | `@workspace/query-client` | `@workspace/typescript-config` | `workspace:*` | `packages/query-client/` |
+| `@workspace/ui` | `@workspace/eslint-config` | `workspace:*` | `packages/ui/` |
+| `@workspace/ui` | `@workspace/typescript-config` | `workspace:*` | `packages/ui/` |
 
 ## `apps/*`
 

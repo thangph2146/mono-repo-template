@@ -1,7 +1,16 @@
+/**
+ * Icons UI Component Styles
+ * 
+ * Utility classes for icon sizing.
+ */
+
 @use "../variables" as *;
 @use "../mixins" as *;
 
-/* --- ICONS --- */
+// ==========================================
+// 1. ICON SIZES
+// ==========================================
+
 .editor-icon-xs {
   @include icon-size($editor-icon-size-xs);
 }

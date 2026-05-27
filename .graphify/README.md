@@ -1,21 +1,21 @@
 # Graphify — monorepo (hub-parent-template)
 
-Thư mục `.graphify/` ở **root** giữ **chỉ mục monorepo** (`markdown/SUMMARY_FOR_AI.md`), checklist cho AI (`README.md`), và tùy chọn **snapshot** (`snapshot/`) khi chạy `node .graphify/update.cjs`. Artefact Markdown chi tiết nằm trong **`apps/<app>/.graphify/markdown/`** và **`packages/.graphify/markdown/`** (JSON snapshot tương ứng trong `snapshot/` từng app).
+Thư mục `.graphify/` ở **root** giữ **chỉ mục monorepo** (`markdown/SUMMARY_FOR_AI.md`), checklist cho AI (`README.md`), và tùy chọn **snapshot** (`snapshot/`) khi chạy `node scripts/graphify-update.cjs`. Artefact Markdown chi tiết nằm trong **`apps/<app>/.graphify/markdown/`** và **`packages/.graphify/markdown/`** (JSON snapshot tương ứng trong `snapshot/` từng app).
 
 ## File Markdown tại `.graphify/` (root)
 
 | File | Vai trò |
 |------|---------|
 | **`README.md`** | Hướng dẫn người + agent (file này; không sinh bởi script). |
-| **`markdown/SUMMARY_FOR_AI.md`** | Chỉ mục monorepo + **mục “Chỉ dẫn theo chủ đề”** (bảng mục tiêu → đường dẫn); sinh bởi `pnpm graphify:ai-summary`. |
+| **`markdown/SUMMARY_FOR_AI.md`** | Chỉ mục monorepo + **mục "Chỉ dẫn theo chủ đề"** (bảng mục tiêu → đường dẫn); sinh bởi `pnpm graphify:ai-summary`. |
 
-JSON snapshot repo-level (nếu dùng): **`.graphify/snapshot/`** — từ `node .graphify/update.cjs` ở root (tùy chọn; snapshot **đầy đủ theo service** nằm ở `apps/*/.graphify/snapshot/`).
+JSON snapshot repo-level (nếu dùng): **`.graphify/snapshot/`** — từ `node scripts/graphify-update.cjs .` ở root (tùy chọn; snapshot **đầy đủ theo service** nằm ở `apps/*/.graphify/snapshot/`).
 
 ## Ma trận artefact (clean scope)
 
 | Phạm vi | Markdown (AI) | Snapshot JSON |
 |----------|----------------|-----------------|
-| **Root** `.graphify/` | `markdown/SUMMARY_FOR_AI.md` | `snapshot/` (nếu chạy `node .graphify/update.cjs`) |
+| **Root** `.graphify/` | `markdown/SUMMARY_FOR_AI.md` | `snapshot/` (nếu chạy `node scripts/graphify-update.cjs .`) |
 | **`packages/`** | `packages/.graphify/markdown/*.md` | — |
 | **Mỗi app** | `apps/<app>/.graphify/markdown/*.md` | `apps/<app>/.graphify/snapshot/` |
 
@@ -28,9 +28,10 @@ JSON snapshot repo-level (nếu dùng): **`.graphify/snapshot/`** — từ `node
 ## Làm mới snapshot
 
 ```bash
-node apps/frontend/.graphify/update.cjs
-node apps/backend/.graphify/update.cjs
-node apps/api/.graphify/update.cjs
+# Single script for all apps:
+node scripts/graphify-update.cjs apps/frontend
+node scripts/graphify-update.cjs apps/backend
+node scripts/graphify-update.cjs apps/api
 pnpm graphify:ai-summary
 ```
 
@@ -42,9 +43,9 @@ Dùng cho người và agent: xác nhận code vẫn sạch và snapshot Graphif
 
 1. **`pnpm check`** — bounds + lint + typecheck (bắt buộc trước khi coi task xong).
 2. **Nếu đổi cấu trúc file/route/module:** chạy lại cả ba pipeline snapshot rồi tóm tắt AI:
-   - `node apps/frontend/.graphify/update.cjs`
-   - `node apps/backend/.graphify/update.cjs`
-   - `node apps/api/.graphify/update.cjs`
+   - `node scripts/graphify-update.cjs apps/frontend`
+   - `node scripts/graphify-update.cjs apps/backend`
+   - `node scripts/graphify-update.cjs apps/api`
    - `pnpm graphify:ai-summary`
 3. **Đối chiếu nhanh (diff hoặc đọc lại file sinh):**
    - **`markdown/SUMMARY_FOR_AI.md` (root)** — mục *Chỉ dẫn theo chủ đề* + bảng app.

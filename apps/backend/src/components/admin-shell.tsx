@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import {
   ChevronDown,
@@ -39,6 +39,7 @@ import { useTheme } from "@ui/components/theme-provider";
 import { canAccessStaffAdmin } from "@workspace/api-client";
 import { useAuth, useClientReady } from "@/providers/auth-provider";
 import { AdminNotificationBell } from "@/components/admin-notification-bell";
+import { ScrollToTop } from "@/components/scroll-to-top";
 import {
   ADMIN_SESSION_EVENT,
   clearAdminSession,
@@ -100,7 +101,7 @@ function AuthLoadingScreen({ message }: { message: string }) {
   );
 }
 
-export function AdminShell({ children }: { children: ReactNode }) {
+export function AdminShell({ children, classMain, isSidebar }: { children: ReactNode, classMain?: string, isSidebar?: boolean }) {
   const pathname = usePathname();
   const router = useRouter();
   const clientReady = useClientReady();
@@ -111,7 +112,6 @@ export function AdminShell({ children }: { children: ReactNode }) {
   const onAuthRoute = isAuthPath(pathname);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
-  const skipSidebarPersist = useRef(true);
 
   useEffect(() => {
     try {
@@ -122,16 +122,30 @@ export function AdminShell({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    if (skipSidebarPersist.current) {
-      skipSidebarPersist.current = false;
-      return;
-    }
     try {
       localStorage.setItem(SIDEBAR_COLLAPSED_KEY, sidebarCollapsed ? "1" : "0");
     } catch {
       /* ignore */
     }
   }, [sidebarCollapsed]);
+
+  // Force editor toolbar sticky via JS to overcome any CSS specificity issues
+  useEffect(() => {
+    const forceToolbarSticky = () => {
+      document.querySelectorAll<HTMLElement>(".editor-toolbar").forEach((el) => {
+        el.style.setProperty("position", "sticky", "important");
+        el.style.setProperty("top", "0px", "important");
+      });
+    };
+    forceToolbarSticky();
+    const timer = setTimeout(forceToolbarSticky, 500);
+    const observer = new MutationObserver(forceToolbarSticky);
+    observer.observe(document.body, { childList: true, subtree: true });
+    return () => {
+      clearTimeout(timer);
+      observer.disconnect();
+    };
+  }, []);
 
   useEffect(() => {
     if (!clientReady) return;
@@ -184,7 +198,8 @@ export function AdminShell({ children }: { children: ReactNode }) {
   const rolesDisplay = roleSummary(user);
 
   return (
-    <div className="flex min-h-screen w-full flex-col bg-background font-sans text-foreground md:flex-row">
+    <>
+    <div className="flex h-screen w-full flex-col bg-background font-sans text-foreground md:flex-row">
         <Sheet open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
           <SheetContent
             id="admin-mobile-nav"
@@ -199,10 +214,10 @@ export function AdminShell({ children }: { children: ReactNode }) {
           </SheetContent>
         </Sheet>
 
-        <Sidebar collapsed={sidebarCollapsed} />
+        {isSidebar && <Sidebar collapsed={sidebarCollapsed} />}
 
-        <div className="flex min-w-0 flex-1 flex-col">
-          <header className="sticky top-0 z-10 flex min-h-16 shrink-0 items-center justify-between border-b border-border/70 bg-background/85 px-3 shadow-[0_1px_0_0_hsl(var(--border)/0.4)] backdrop-blur-xl supports-[backdrop-filter]:bg-background/75 sm:min-h-[4.5rem] sm:px-5 lg:px-6">
+        <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
+          <header data-admin-header="true" className="sticky top-0 z-10 flex min-h-16 shrink-0 items-center justify-between border-b border-border/70 bg-background/85 px-3 shadow-[0_1px_0_0_hsl(var(--border)/0.4)] backdrop-blur-xl supports-[backdrop-filter]:bg-background/75 sm:min-h-[4.5rem] sm:px-5 lg:px-6">
             <div className="flex min-w-0 items-center gap-2 sm:gap-3">
               <Button
                 type="button"
@@ -359,14 +374,20 @@ export function AdminShell({ children }: { children: ReactNode }) {
               </DropdownMenu>
             </div>
           </header>
-          <main className={ADMIN_MAIN_SCROLL_CLASS}>
-            <Page as="div">
-              <PageContent className={ADMIN_PAGE_CONTENT_CLASS}>
-                {children}
-              </PageContent>
-            </Page>
+          <main className={cn(ADMIN_MAIN_SCROLL_CLASS, classMain)}>
+            {pathname === "/admin/graph" ? (
+              children
+            ) : (
+              <Page as="div">
+                <PageContent className={ADMIN_PAGE_CONTENT_CLASS}>
+                  {children}
+                </PageContent>
+              </Page>
+            )}
           </main>
         </div>
       </div>
+      <ScrollToTop />
+    </>
   );
 }

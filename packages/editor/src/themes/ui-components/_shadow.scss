@@ -1,7 +1,16 @@
+/**
+ * Shadow UI Component Styles
+ * 
+ * Utility classes for box shadows.
+ */
+
 @use "../variables" as *;
 @use "../mixins" as *;
 
-/* --- SHADOW --- */
+// ==========================================
+// 1. SHADOW SIZES
+// ==========================================
+
 .editor-shadow-sm {
   @include shadow-sm;
 }

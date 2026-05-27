@@ -8,7 +8,11 @@ import { IconSize } from "../../ui/typography"
 
 export function QuotePickerPlugin() {
   return new ComponentPickerOption("Quote", {
-    icon: <IconSize size="sm"><QuoteIcon /></IconSize>,
+    icon: (
+      <IconSize size="sm">
+        <QuoteIcon />
+      </IconSize>
+    ),
     keywords: ["block quote"],
     onSelect: (_, editor) =>
       editor.update(() => {

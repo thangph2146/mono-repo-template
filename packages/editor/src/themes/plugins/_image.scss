@@ -1,5 +1,15 @@
+/**
+ * Image Plugin Styles
+ * 
+ * Styles for image grid, image buttons, image library, and folder tree.
+ */
+
 @use "../variables" as *;
 @use "../mixins" as *;
+
+// ==========================================
+// 1. IMAGE GRID
+// ==========================================
 
 .editor-image-grid {
   display: grid;
@@ -7,6 +17,10 @@
   gap: $editor-gap-2;
   margin-bottom: $editor-gap-3;
 }
+
+// ==========================================
+// 2. IMAGE BUTTON
+// ==========================================
 
 .editor-image-btn {
   position: relative;
@@ -77,6 +91,10 @@
   }
 }
 
+// ==========================================
+// 3. IMAGE LIST & LIBRARY
+// ==========================================
+
 .editor-image-list {
   display: flex;
   flex-direction: column;
@@ -91,6 +109,10 @@
   flex-direction: column;
   gap: $editor-gap-1;
 }
+
+// ==========================================
+// 4. IMAGE PREVIEW
+// ==========================================
 
 .editor-image-preview {
   overflow: hidden;
@@ -107,6 +129,10 @@
     display: block;
   }
 }
+
+// ==========================================
+// 5. FOLDER TREE
+// ==========================================
 
 .editor-folder-tree-trigger {
   @include flex-center;
@@ -129,6 +155,10 @@
   margin-left: $editor-gap-4;
   margin-top: $editor-gap-1;
 }
+
+// ==========================================
+// 6. EMPTY STATE
+// ==========================================
 
 .editor-empty-state {
   text-align: center;

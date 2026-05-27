@@ -28,7 +28,7 @@ export class DownloadLinkNode extends LinkNode {
         target: node.getTarget(),
         title: node.getTitle(),
       },
-      node.__key,
+      node.__key
     )
   }
 
@@ -52,7 +52,9 @@ export class DownloadLinkNode extends LinkNode {
     return this
   }
 
-  override createDOM(config: EditorConfig): HTMLAnchorElement | HTMLSpanElement {
+  override createDOM(
+    config: EditorConfig
+  ): HTMLAnchorElement | HTMLSpanElement {
     const dom = super.createDOM(config)
     this.applyDownloadDOM(dom)
     return dom
@@ -76,7 +78,9 @@ export class DownloadLinkNode extends LinkNode {
     } as SerializedDownloadLinkNode
   }
 
-  static override importJSON(serializedNode: SerializedDownloadLinkNode): DownloadLinkNode {
+  static override importJSON(
+    serializedNode: SerializedDownloadLinkNode
+  ): DownloadLinkNode {
     const node = new DownloadLinkNode(
       serializedNode.url,
       serializedNode.download,
@@ -85,7 +89,7 @@ export class DownloadLinkNode extends LinkNode {
         target: serializedNode.target ?? null,
         title: serializedNode.title ?? null,
       },
-      (serializedNode as unknown as { key?: NodeKey }).key,
+      (serializedNode as unknown as { key?: NodeKey }).key
     )
     return node
   }
@@ -115,4 +119,3 @@ export function $isDownloadLinkNode(
 ): node is DownloadLinkNode {
   return node instanceof DownloadLinkNode
 }
-

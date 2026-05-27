@@ -1,5 +1,15 @@
+/**
+ * List Color Plugin Styles
+ * 
+ * Styles for the list color dialog and trigger button.
+ */
+
 @use "../variables" as *;
 @use "../mixins" as *;
+
+// ==========================================
+// 1. LIST COLOR DIALOG
+// ==========================================
 
 .editor-list-color-dialog {
   @include flex-col;
@@ -40,6 +50,10 @@
     }
   }
 }
+
+// ==========================================
+// 2. LIST COLOR TRIGGER
+// ==========================================
 
 .editor-list-color-trigger {
   height: $editor-control-size-xl;

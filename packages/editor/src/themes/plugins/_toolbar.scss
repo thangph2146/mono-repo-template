@@ -1,9 +1,19 @@
+/**
+ * Toolbar Plugin Styles
+ * 
+ * Styles for the main editor toolbar, toolbar groups, and separators.
+ */
+
 @use "../variables" as *;
 @use "../mixins" as *;
 
+// ==========================================
+// 1. MAIN TOOLBAR
+// ==========================================
+
 .editor-toolbar {
   position: sticky;
-  top: 0; // Can be overridden by inline style from ToolbarPlugin
+  top: 0;
   z-index: $editor-z-index-toolbar;
   @include flex-center;
   justify-content: flex-start;
@@ -33,6 +43,10 @@
   }
 }
 
+// ==========================================
+// 2. TOOLBAR GROUP
+// ==========================================
+
 .editor-toolbar-group {
   @include flex-center;
   gap: $editor-gap-1;
@@ -42,7 +56,9 @@
   background-color: color-mix(in srgb, var(--background) 78%, transparent);
 }
 
-// Note: Toolbar items and select triggers are defined in ui-components.scss
+// ==========================================
+// 3. TOOLBAR SEPARATOR
+// ==========================================
 
 .editor-toolbar-separator {
   height: $editor-icon-size-lg;

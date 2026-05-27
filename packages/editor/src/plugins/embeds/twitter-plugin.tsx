@@ -12,10 +12,7 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import { $insertNodeToNearestRoot } from "@lexical/utils"
 import { COMMAND_PRIORITY_EDITOR, createCommand, LexicalCommand } from "lexical"
 
-import {
-  $createTweetNode,
-  TweetNode,
-} from "../../nodes/embeds/tweet-node"
+import { $createTweetNode, TweetNode } from "../../nodes/embeds/tweet-node"
 
 export const INSERT_TWEET_COMMAND: LexicalCommand<string> = createCommand(
   "INSERT_TWEET_COMMAND"
