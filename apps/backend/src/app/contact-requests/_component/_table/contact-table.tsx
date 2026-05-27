@@ -161,8 +161,7 @@ export function ContactRequestTable(props: ContactRequestTableProps) {
         {
           id: "bulk-contact-delete",
           label: "Xóa tạm đã chọn",
-          variant: "outline",
-          className: "border-destructive/40 text-destructive",
+          variant: "destructive",
           onAction: async (rows) => {
             const ids = rows.map((c) => String(c.id));
             if (!ids.length) return;
@@ -180,8 +179,6 @@ export function ContactRequestTable(props: ContactRequestTableProps) {
               <Button
                 type="button"
                 variant="outline"
-                size="sm"
-                className="h-9 gap-1.5 rounded-lg"
                 disabled={data.length === 0}
                 onClick={handleCsvExport}
               >
@@ -191,8 +188,6 @@ export function ContactRequestTable(props: ContactRequestTableProps) {
               <Button
                 type="button"
                 variant="outline"
-                size="sm"
-                className="h-9 gap-1.5 rounded-lg"
                 disabled={data.length === 0}
                 onClick={handleXlsxExport}
               >
@@ -204,8 +199,6 @@ export function ContactRequestTable(props: ContactRequestTableProps) {
           <Button
             type="button"
             variant="outline"
-            size="sm"
-            className="h-9 gap-1.5 rounded-lg"
             onClick={onClearFilters}
           >
             <FilterX className="size-4" aria-hidden />

@@ -61,8 +61,6 @@ export function CategoriesTable({
           <Button
             type="button"
             variant="outline"
-            size="sm"
-            className="h-9 gap-2 rounded-lg"
             onClick={() => {
               void onRefresh();
             }}
@@ -73,8 +71,6 @@ export function CategoriesTable({
           <Button
             type="button"
             variant="outline"
-            size="sm"
-            className="h-9 gap-2 rounded-lg"
             onClick={onClearFilters}
           >
             <FilterX className="size-4" aria-hidden />
@@ -91,8 +87,7 @@ export function CategoriesTable({
         {
           id: "bulk-category-delete",
           label: "Xóa tạm đã chọn",
-          variant: "outline",
-          className: "border-destructive/40 text-destructive",
+          variant: "destructive",
           confirm: {
             title: "Đưa các danh mục đã chọn vào thùng rác?",
             description: (rows) =>

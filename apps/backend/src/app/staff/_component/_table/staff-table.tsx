@@ -92,8 +92,7 @@ export function StaffTable(props: StaffTableProps) {
         {
           id: "bulk-staff-delete",
           label: "Xóa tạm đã chọn",
-          variant: "outline",
-          className: "border-destructive/40 text-destructive",
+          variant: "destructive",
           onAction: async (rows) => {
             const ids = rows
               .filter((u) => String(u.id) !== String(currentUserId ?? ""))
@@ -108,8 +107,6 @@ export function StaffTable(props: StaffTableProps) {
           <Button
             type="button"
             variant="outline"
-            size="sm"
-            className="h-9 gap-1.5 rounded-lg"
             onClick={onClearFilters}
           >
             <FilterX className="size-4" aria-hidden />

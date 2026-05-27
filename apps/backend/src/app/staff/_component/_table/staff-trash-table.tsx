@@ -90,7 +90,7 @@ export function StaffTrashTable(props: StaffTrashTableProps) {
         {
           id: "bulk-staff-restore",
           label: "Khôi phục đã chọn",
-          variant: "default",
+          variant: "outline",
           onAction: async (rows) => {
             const ids = rows.map((u) => String(u.id));
             if (!ids.length) return;
@@ -113,8 +113,6 @@ export function StaffTrashTable(props: StaffTrashTableProps) {
           <Button
             type="button"
             variant="outline"
-            size="sm"
-            className="h-9 gap-1.5 rounded-lg"
             onClick={() => void onRefresh()}
           >
             <RefreshCw
@@ -126,8 +124,6 @@ export function StaffTrashTable(props: StaffTrashTableProps) {
           <Button
             type="button"
             variant="outline"
-            size="sm"
-            className="h-9 gap-1.5 rounded-lg"
             onClick={onClearFilters}
           >
             <FilterX className="size-4" aria-hidden />

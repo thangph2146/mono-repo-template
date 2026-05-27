@@ -68,8 +68,6 @@ export function TagsTrashTable({
           <Button
             type="button"
             variant="outline"
-            size="sm"
-            className="h-9 gap-2 rounded-lg"
             onClick={() => { void onRefresh(); }}
           >
             <RefreshCw className={isFetching ? "size-4 animate-spin" : "size-4"} aria-hidden />
@@ -77,9 +75,7 @@ export function TagsTrashTable({
           </Button>
           <Button
             type="button"
-            variant="outline"
-            size="sm"
-            className="h-9 gap-2 rounded-lg"
+            variant="destructive"
             onClick={onClearFilters}
           >
             <FilterX className="size-4" aria-hidden />

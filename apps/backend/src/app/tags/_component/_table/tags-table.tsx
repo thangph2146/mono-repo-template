@@ -58,9 +58,7 @@ export function TagsTable({
         <div className="flex flex-wrap items-center gap-2">
           <Button
             type="button"
-            variant="outline"
-            size="sm"
-            className="h-9 gap-2 rounded-lg"
+            variant="outline" 
             onClick={() => { void onRefresh(); }}
           >
             <RefreshCw className={isFetching ? "size-4 animate-spin" : "size-4"} aria-hidden />
@@ -69,8 +67,6 @@ export function TagsTable({
           <Button
             type="button"
             variant="outline"
-            size="sm"
-            className="h-9 gap-2 rounded-lg"
             onClick={onClearFilters}
           >
             <FilterX className="size-4" aria-hidden />
@@ -87,8 +83,7 @@ export function TagsTable({
         {
           id: "bulk-tag-delete",
           label: "Xóa tạm đã chọn",
-          variant: "outline",
-          className: "border-destructive/40 text-destructive",
+          variant: "destructive",
           confirm: {
             title: "Đưa các thẻ đã chọn vào thùng rác?",
             description: (rows) =>
