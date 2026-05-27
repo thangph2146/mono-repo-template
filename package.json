@@ -40,5 +40,15 @@
   "packageManager": "pnpm@9.15.9",
   "engines": {
     "node": ">=20"
+  },
+  "pnpm": {
+    "peerDependencyRules": {
+      "ignoreMissing": [
+        "tree-sitter"
+      ],
+      "allowedVersions": {
+        "tree-sitter": "*"
+      }
+    }
   }
 }
