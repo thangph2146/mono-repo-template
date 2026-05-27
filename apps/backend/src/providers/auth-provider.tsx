@@ -14,6 +14,7 @@ import { canAccessStaffAdmin } from "@workspace/api-client";
 import {
   loginWithDevelopmentUser,
   loginWithEmail,
+  loginWithGoogle,
   toAdminSessionUser,
 } from "@/features/auth/auth-api";
 import {
@@ -56,6 +57,7 @@ type AuthContextValue = {
   user: AuthUser | null;
   login: (email: string, password: string) => Promise<StaffLoginResult>;
   loginDevelopment: (userId: string) => Promise<StaffLoginResult>;
+  loginGoogle: (credential: string) => Promise<StaffLoginResult>;
   logout: () => void;
 };
 
@@ -102,6 +104,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return "success";
   }, []);
 
+  const loginGoogle = useCallback(async (credential: string) => {
+    let u: AuthUser;
+    try {
+      const payload = await loginWithGoogle(credential);
+      u = toAdminSessionUser(payload);
+    } catch {
+      return "invalid_credentials";
+    }
+    if (!canAccessStaffAdmin(u)) return "staff_only";
+    writeAdminSession(u);
+    window.dispatchEvent(new Event(ADMIN_SESSION_EVENT));
+    return "success";
+  }, []);
+
   const logout = useCallback(() => {
     clearAdminSession();
     window.dispatchEvent(new Event(ADMIN_SESSION_EVENT));
@@ -109,8 +125,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [router]);
 
   const value = useMemo(
-    () => ({ user, login, loginDevelopment, logout }),
-    [user, login, loginDevelopment, logout],
+    () => ({ user, login, loginDevelopment, loginGoogle, logout }),
+    [user, login, loginDevelopment, loginGoogle, logout],
   );
 
   return (

@@ -29,6 +29,7 @@ import {
 import { useAuth, useClientReady } from "@/providers/auth-provider"
 import {
   fetchDevLoginOptions,
+  fetchGoogleOAuthConfig,
   type DevLoginOption,
 } from "@/features/auth/auth-api"
 import { AUTH_LOGIN_PATH, AUTH_REGISTER_PATH } from "@/lib/auth-routes"
@@ -63,7 +64,7 @@ function decodeBridgeSession(raw: string): AuthUser | null {
 
 export function SignInForm() {
   const router = useRouter()
-  const { login, loginDevelopment } = useAuth()
+  const { login, loginDevelopment, loginGoogle } = useAuth()
   const clientReady = useClientReady()
   const isDevelopment = process.env.NODE_ENV === "development"
   const [email, setEmail] = useState("")
@@ -74,8 +75,11 @@ export function SignInForm() {
   const [devLoginOptions, setDevLoginOptions] = useState<DevLoginOption[]>([])
   const [selectedDevLoginId, setSelectedDevLoginId] = useState("")
   const [devLoginOptionsLoading, setDevLoginOptionsLoading] = useState(false)
+  const [googleClientId, setGoogleClientId] = useState<string | null>(null)
   const staffOnlyToastRef = useRef(false)
   const bridgeHandledRef = useRef(false)
+  const googleBtnRef = useRef<HTMLDivElement>(null)
+  const googleInitializedRef = useRef(false)
 
   useEffect(() => {
     if (!clientReady || bridgeHandledRef.current) return
@@ -137,6 +141,72 @@ export function SignInForm() {
       cancelled = true
     }
   }, [clientReady, isDevelopment])
+
+  useEffect(() => {
+    if (!clientReady) return
+    if (googleInitializedRef.current) return
+
+    let cancelled = false
+
+    fetchGoogleOAuthConfig()
+      .then((config) => {
+        if (cancelled) return
+        setGoogleClientId(config.clientId)
+      })
+      .catch(() => {})
+
+    return () => {
+      cancelled = true
+    }
+  }, [clientReady])
+
+  useEffect(() => {
+    if (!clientReady || !googleClientId || googleInitializedRef.current) return
+    if (!googleBtnRef.current) return
+
+    const script = document.createElement("script")
+    script.src = "https://accounts.google.com/gsi/client"
+    script.async = true
+    script.defer = true
+    script.onload = () => {
+      if (!window.google || googleInitializedRef.current) return
+      googleInitializedRef.current = true
+      window.google.accounts.id.initialize({
+        client_id: googleClientId,
+        callback: async (response) => {
+          if (!response?.credential) {
+            toast.error("Đăng nhập Google thất bại.")
+            return
+          }
+          setBusy(true)
+          try {
+            const result = await loginGoogle(response.credential)
+            if (result === "success") {
+              toast.success("Đăng nhập Google thành công.")
+              router.replace("/")
+            } else if (result === "staff_only") {
+              toast.error("Tài khoản Google này không có quyền truy cập cổng quản trị.")
+            } else {
+              toast.error("Đăng nhập Google thất bại.")
+            }
+          } finally {
+            setBusy(false)
+          }
+        },
+      })
+      window.google.accounts.id.renderButton(googleBtnRef.current!, {
+        type: "standard",
+        shape: "rectangular",
+        theme: "outline",
+        text: "signin_with",
+        size: "large",
+        width: googleBtnRef.current!.clientWidth || 300,
+      })
+    }
+    document.head.appendChild(script)
+
+    return () => {}
+  }, [clientReady, googleClientId, loginGoogle, router])
 
   const onSelectDevLogin = (value: string | null) => {
     const nextValue = value ?? ""
@@ -369,23 +439,16 @@ export function SignInForm() {
                   </FieldSeparator>
 
                   <Field>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="min-h-[44px] w-full border-secondary/30 hover:bg-secondary/10"
-                      onClick={() =>
-                        toast.info(
-                          "Đăng nhập Google cho cổng quản trị chưa được cấu hình."
-                        )
-                      }
+                    <div
+                      ref={googleBtnRef}
+                      className="flex min-h-[44px] w-full items-center justify-center"
                     >
-                      <span className="text-xl font-bold text-secondary">
-                        G
-                      </span>
-                      <span className="text-base font-bold text-secondary">
-                        Đăng nhập bằng Google
-                      </span>
-                    </Button>
+                      {!googleClientId && (
+                        <span className="text-sm text-muted-foreground">
+                          Đăng nhập Google chưa được cấu hình.
+                        </span>
+                      )}
+                    </div>
                   </Field>
 
                   <FieldError>{error}</FieldError>

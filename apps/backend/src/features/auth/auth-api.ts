@@ -158,6 +158,17 @@ export function loginWithEmail(body: { email: string; password: string }) {
   );
 }
 
+export function loginWithGoogle(credential: string) {
+  return postApi<AuthLoginPayload, { credential: string }>(
+    "/auth/admin/google",
+    { credential },
+  );
+}
+
+export function fetchGoogleOAuthConfig() {
+  return getApi<{ clientId: string }>("/auth/admin/google/config");
+}
+
 export function loginWithDevelopmentUser(body: { userId: string }) {
   return postApi<AuthLoginPayload, { userId: string }>(
     "/auth/admin/dev-login",

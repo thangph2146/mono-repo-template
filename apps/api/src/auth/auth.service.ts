@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { compare, hash } from 'bcryptjs';
 import { randomBytes } from 'crypto';
+import { OAuth2Client } from 'google-auth-library';
 import { EntityManager } from '@mikro-orm/core';
 import { AUTH_ROLE_NAMES } from '../config/constants';
 import { User } from '../entities/user.entity';
@@ -32,6 +33,38 @@ export class AuthService {
   private readonly logger = new Logger(AuthService.name);
 
   constructor(private readonly em: EntityManager) {}
+
+  async verifyGoogleToken(credential: string): Promise<{
+    email: string;
+    name?: string | null;
+    image?: string | null;
+  } | null> {
+    const clientId = process.env.GOOGLE_CLIENT_ID;
+    if (!clientId) {
+      this.logger.warn('GOOGLE_CLIENT_ID not configured');
+      return null;
+    }
+    try {
+      const client = new OAuth2Client(clientId);
+      const ticket = await client.verifyIdToken({
+        idToken: credential,
+        audience: clientId,
+      });
+      const payload = ticket.getPayload();
+      if (!payload?.email) {
+        this.logger.warn('Google token missing email');
+        return null;
+      }
+      return {
+        email: payload.email,
+        name: payload.name ?? null,
+        image: payload.picture ?? null,
+      };
+    } catch (err) {
+      this.logger.error('Google token verification failed', err);
+      return null;
+    }
+  }
 
   private async getOrCreateRole(
     name: string,

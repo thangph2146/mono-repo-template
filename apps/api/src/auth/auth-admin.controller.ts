@@ -32,9 +32,7 @@ export class DevLoginDto {
 }
 
 export class GoogleLoginDto {
-  email: string;
-  name: string;
-  image: string;
+  credential: string;
 }
 
 export class LogoutDto {
@@ -220,21 +218,46 @@ export class AuthAdminController {
     }
   }
 
+  @Get('google/config')
+  @ApiOperation({ summary: 'Get Google OAuth client ID for frontend' })
+  @ApiResponse({ status: 200, description: 'Returns Google OAuth config' })
+  getGoogleConfig(@Res() res: Response) {
+    const clientId = process.env.GOOGLE_CLIENT_ID || '';
+    const { statusCode, body } = createSuccessResponse({
+      clientId,
+    });
+    return res.status(statusCode).json(body);
+  }
+
   @Post('google')
-  @ApiOperation({ summary: 'Login with Google account' })
+  @ApiOperation({ summary: 'Login with Google credential (idToken)' })
   @ApiBody({ type: GoogleLoginDto })
   @ApiResponse({ status: 200, description: 'Google login successful' })
   @ApiResponse({ status: 401, description: 'Authentication failed' })
-  async google(
-    @Body() body: { email?: string; name?: string; image?: string },
-    @Res() res: Response,
-  ) {
-    this.logger.log(`google email=${body?.email ?? '-'}`);
+  async google(@Body() body: { credential?: string }, @Res() res: Response) {
+    this.logger.log(`google credential received`);
     try {
+      if (!body?.credential) {
+        const { statusCode, body: errBody } = createErrorResponse(
+          'Thiếu credential Google.',
+          { status: 400 },
+        );
+        return res.status(statusCode).json(errBody);
+      }
+
+      const profile = await this.authService.verifyGoogleToken(body.credential);
+      if (!profile) {
+        const { statusCode, body: errBody } = createErrorResponse(
+          'Credential Google không hợp lệ.',
+          { status: 401 },
+        );
+        return res.status(statusCode).json(errBody);
+      }
+
       const user = await this.authService.loginWithGoogle({
-        email: body.email ?? '',
-        name: body.name ?? null,
-        image: body.image ?? null,
+        email: profile.email,
+        name: profile.name ?? null,
+        image: profile.image ?? null,
       });
 
       if (!user) {
