@@ -156,9 +156,14 @@ export class SystemController {
       }
 
       const buffer = await this.systemService.exportExcelData(model);
+      const now = new Date();
+      const y = now.getFullYear();
+      const m = String(now.getMonth() + 1).padStart(2, '0');
+      const d = String(now.getDate()).padStart(2, '0');
+      const dateStamp = `${y}-${m}-${d}`;
       const filename = model
-        ? `hub-system-${model}.xlsx`
-        : 'hub-system-export.xlsx';
+        ? `hub-system-${model}-${dateStamp}.xlsx`
+        : `hub-system-export-${dateStamp}.xlsx`;
       res.setHeader(
         'Content-Type',
         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',

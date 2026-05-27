@@ -53,6 +53,14 @@ function DataBackupPageInner() {
   const [exporting, setExporting] = useState<"json" | "excel" | null>(null);
   const [importing, setImporting] = useState<"json" | "excel" | null>(null);
 
+  const dateStamp = () => {
+    const now = new Date()
+    const y = now.getFullYear()
+    const m = String(now.getMonth() + 1).padStart(2, "0")
+    const d = String(now.getDate()).padStart(2, "0")
+    return `${y}-${m}-${d}`
+  }
+
   const authHeaders = (): HeadersInit => {
     const headers: Record<string, string> = {};
     const uid = readAdminSession()?.id;
@@ -118,8 +126,8 @@ function DataBackupPageInner() {
       const blob = new Blob([JSON.stringify(payload.data, null, 2)], {
         type: "application/json;charset=utf-8",
       });
-      downloadBlob(blob, "hub-system-export.json");
-      toast.success("Đã tải `hub-system-export.json`.");
+      downloadBlob(blob, `hub-system-export-${dateStamp()}.json`);
+      toast.success(`Đã tải hub-system-export-${dateStamp()}.json.`);
     } catch (e) {
       toast.error(
         e instanceof Error ? e.message : "Lỗi mạng — kiểm tra API đang chạy.",
@@ -140,8 +148,8 @@ function DataBackupPageInner() {
         return;
       }
       const blob = await res.blob();
-      downloadBlob(blob, "hub-system-export.xlsx");
-      toast.success("Đã tải `hub-system-export.xlsx`.");
+      downloadBlob(blob, `hub-system-export-${dateStamp()}.xlsx`);
+      toast.success(`Đã tải hub-system-export-${dateStamp()}.xlsx.`);
     } catch (e) {
       toast.error(
         e instanceof Error ? e.message : "Lỗi mạng — kiểm tra API đang chạy.",

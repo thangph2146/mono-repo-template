@@ -47,7 +47,18 @@ import {
 
 const EXCEL_META_SHEET = '__meta';
 const EXCEL_NULL_MARKER = '__HUB_NULL__';
+const EXCEL_MAX_CELL_CHARS = 32767;
 type ExcelWorkbookLoadInput = Parameters<ExcelJS.Workbook['xlsx']['load']>[0];
+
+/** Xoá ký tự điều khiển XML (0x00–0x08, 0x0B–0x0C, 0x0E–0x1F) có thể làm hỏng XLSX. */
+function sanitizeExcelString(raw: string): string {
+  if (!raw) return raw;
+  const re = new RegExp(
+    '[\x00-\x08\x0B\x0C\x0E-\x1F]', // eslint-disable-line no-control-regex
+    'g',
+  );
+  return raw.replace(re, '');
+}
 
 /** bcrypt — chỉ khi bản ghi user thiếu password trong JSON export. */
 let importUserFallbackPasswordHash: string | null = null;
@@ -218,12 +229,18 @@ function encodeExcelCellValue(value: unknown): string | number | boolean {
   if (value === null) return EXCEL_NULL_MARKER;
   if (value === undefined) return '';
   if (value instanceof Date) return value.toISOString();
-  if (typeof value === 'string') return value;
-  if (typeof value === 'number' || typeof value === 'boolean') return value;
+  if (typeof value === 'string')
+    return sanitizeExcelString(value).slice(0, EXCEL_MAX_CELL_CHARS);
+  if (typeof value === 'boolean') return value;
+  if (typeof value === 'number') {
+    if (Number.isFinite(value)) return value;
+    return EXCEL_NULL_MARKER;
+  }
   try {
-    return JSON.stringify(value);
+    const str = JSON.stringify(value);
+    return sanitizeExcelString(str).slice(0, EXCEL_MAX_CELL_CHARS);
   } catch {
-    return String(value);
+    return EXCEL_NULL_MARKER;
   }
 }
 
