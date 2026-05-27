@@ -8,9 +8,12 @@ import {
   Clock,
   CheckCircle2,
   XCircle,
-  BookOpen,
   AlertCircle,
-  RefreshCw,
+  BarChart3,
+  Star,
+  BookCheck,
+  Award,
+  ScrollText,
 } from "lucide-react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { Button } from "@ui/components/button"
@@ -33,6 +36,7 @@ import {
 } from "@ui/components/dialog"
 import { Badge } from "@ui/components/badge"
 import { Skeleton } from "@ui/components/skeleton"
+import { cn } from "@ui/lib/utils"
 import { PageSection } from "@ui/components/layout"
 import { TypographyH1 } from "@ui/components/typography"
 import {
@@ -42,6 +46,12 @@ import {
 } from "@ui/lib/layout-shell"
 import { useAuth } from "@/providers/auth-provider"
 import { api } from "@/lib/api"
+import { StudentScoresSection } from "./_component"
+import type {
+  DetailedScore,
+  YearAverage,
+  TermAverage,
+} from "@/types/student-scores"
 
 interface ParentStudentRow {
   id: string
@@ -52,33 +62,6 @@ interface ParentStudentRow {
   status: "pending" | "approved" | "rejected"
   reviewedAt: string | null
   createdAt: string
-}
-
-interface GradeSubject {
-  subjectCode: string
-  subjectName: string
-  credits: number
-  scoreProcess?: number | null
-  scoreMidterm?: number | null
-  scoreFinal?: number | null
-  scoreAvg?: number | null
-  scoreText?: string | null
-  passed?: boolean | null
-}
-
-interface GradeSemester {
-  semesterCode: string
-  semesterName: string
-  gpa?: number | null
-  subjects: GradeSubject[]
-}
-
-interface GradeResult {
-  studentCode: string
-  studentName?: string
-  semesters: GradeSemester[]
-  gpaOverall?: number | null
-  totalCredits?: number | null
 }
 
 const STATUS_CONFIG = {
@@ -105,119 +88,89 @@ const STATUS_CONFIG = {
   },
 }
 
-function scoreColor(score: number | null | undefined): string {
-  if (score == null) return "text-muted-foreground"
-  if (score >= 8.5)
-    return "text-emerald-600 dark:text-emerald-400 font-semibold"
-  if (score >= 7.0) return "text-blue-600 dark:text-blue-400 font-semibold"
-  if (score >= 5.0) return "text-amber-600 dark:text-amber-400"
-  return "text-rose-600 dark:text-rose-400 font-semibold"
+const MOCK_DETAILED_SCORES: DetailedScore[] = [
+  { studyUnitID: "1", studyUnitAlias: "IT101-01", curriculumID: "IT101", curriculumName: "Nhập môn lập trình", yearStudy: "2024-2025", termID: "1", classStudentID: "C01", classStudentName: "Lớp 01", studyProgramID: "P01", studyProgramName: "Cử nhân CNTT", studyTypeID: "T01", studyTypeName: "Chính quy", mark10: 8.5, mark4: 3.5, markLetter: "A" },
+  { studyUnitID: "2", studyUnitAlias: "IT102-01", curriculumID: "IT102", curriculumName: "Cấu trúc dữ liệu & Giải thuật", yearStudy: "2024-2025", termID: "1", classStudentID: "C01", classStudentName: "Lớp 01", studyProgramID: "P01", studyProgramName: "Cử nhân CNTT", studyTypeID: "T01", studyTypeName: "Chính quy", mark10: 7.2, mark4: 2.8, markLetter: "B" },
+  { studyUnitID: "3", studyUnitAlias: "MT101-01", curriculumID: "MT101", curriculumName: "Toán cao cấp A1", yearStudy: "2024-2025", termID: "1", classStudentID: "C01", classStudentName: "Lớp 01", studyProgramID: "P01", studyProgramName: "Cử nhân CNTT", studyTypeID: "T01", studyTypeName: "Chính quy", mark10: 5.5, mark4: 2.0, markLetter: "C" },
+  { studyUnitID: "4", studyUnitAlias: "EN101-01", curriculumID: "EN101", curriculumName: "Tiếng Anh cơ bản", yearStudy: "2024-2025", termID: "1", classStudentID: "C01", classStudentName: "Lớp 01", studyProgramID: "P01", studyProgramName: "Cử nhân CNTT", studyTypeID: "T01", studyTypeName: "Chính quy", mark10: 9.0, mark4: 3.7, markLetter: "A+" },
+  { studyUnitID: "5", studyUnitAlias: "IT201-01", curriculumID: "IT201", curriculumName: "Lập trình hướng đối tượng", yearStudy: "2024-2025", termID: "2", classStudentID: "C01", classStudentName: "Lớp 01", studyProgramID: "P01", studyProgramName: "Cử nhân CNTT", studyTypeID: "T01", studyTypeName: "Chính quy", mark10: 6.8, mark4: 2.5, markLetter: "B-" },
+  { studyUnitID: "6", studyUnitAlias: "IT202-01", curriculumID: "IT202", curriculumName: "Cơ sở dữ liệu", yearStudy: "2024-2025", termID: "2", classStudentID: "C01", classStudentName: "Lớp 01", studyProgramID: "P01", studyProgramName: "Cử nhân CNTT", studyTypeID: "T01", studyTypeName: "Chính quy", mark10: 7.8, mark4: 3.0, markLetter: "B+" },
+  { studyUnitID: "7", studyUnitAlias: "MT201-01", curriculumID: "MT201", curriculumName: "Toán rời rạc", yearStudy: "2024-2025", termID: "2", classStudentID: "C01", classStudentName: "Lớp 01", studyProgramID: "P01", studyProgramName: "Cử nhân CNTT", studyTypeID: "T01", studyTypeName: "Chính quy", mark10: 4.5, mark4: 1.5, markLetter: "D" },
+  { studyUnitID: "8", studyUnitAlias: "IT301-01", curriculumID: "IT301", curriculumName: "Phân tích & Thiết kế hệ thống", yearStudy: "2025-2026", termID: "1", classStudentID: "C02", classStudentName: "Lớp 02", studyProgramID: "P01", studyProgramName: "Cử nhân CNTT", studyTypeID: "T01", studyTypeName: "Chính quy", mark10: 8.0, mark4: 3.2, markLetter: "B+" },
+  { studyUnitID: "9", studyUnitAlias: "IT302-01", curriculumID: "IT302", curriculumName: "Mạng máy tính", yearStudy: "2025-2026", termID: "1", classStudentID: "C02", classStudentName: "Lớp 02", studyProgramID: "P01", studyProgramName: "Cử nhân CNTT", studyTypeID: "T01", studyTypeName: "Chính quy", mark10: 7.0, mark4: 2.7, markLetter: "B" },
+  { studyUnitID: "10", studyUnitAlias: "IT303-01", curriculumID: "IT303", curriculumName: "Hệ điều hành", yearStudy: "2025-2026", termID: "1", classStudentID: "C02", classStudentName: "Lớp 02", studyProgramID: "P01", studyProgramName: "Cử nhân CNTT", studyTypeID: "T01", studyTypeName: "Chính quy", mark10: 6.0, mark4: 2.2, markLetter: "C-" },
+  { studyUnitID: "11", studyUnitAlias: "IT304-01", curriculumID: "IT304", curriculumName: "Công nghệ phần mềm", yearStudy: "2025-2026", termID: "1", classStudentID: "C02", classStudentName: "Lớp 02", studyProgramID: "P01", studyProgramName: "Cử nhân CNTT", studyTypeID: "T01", studyTypeName: "Chính quy", mark10: 8.5, mark4: 3.5, markLetter: "A" },
+]
+
+const MOCK_YEAR_AVERAGES: YearAverage[] = [
+  { yearStudy: "2024-2025", averageScore10: 7.4, averageScore4: 2.8, averageGatherScore10: 7.4, averageGatherScore4: 2.8, updateDate: "2025-06-15" },
+  { yearStudy: "2025-2026", averageScore10: 7.5, averageScore4: 2.9, averageGatherScore10: 7.45, averageGatherScore4: 2.85, updateDate: "2026-01-20" },
+]
+
+const MOCK_TERM_AVERAGES: TermAverage[] = [
+  { yearStudy: "2024-2025", termID: "1", orderTerm: 1, averageScore10: 7.55, averageScore4: 2.88, averageGatherScore10: 7.55, averageGatherScore4: 2.88, updateDate: "2025-01-15" },
+  { yearStudy: "2024-2025", termID: "2", orderTerm: 2, averageScore10: 6.3, averageScore4: 2.33, averageGatherScore10: 7.05, averageGatherScore4: 2.67, updateDate: "2025-06-15" },
+  { yearStudy: "2025-2026", termID: "1", orderTerm: 1, averageScore10: 7.5, averageScore4: 2.9, averageGatherScore10: 7.45, averageGatherScore4: 2.85, updateDate: "2026-01-20" },
+]
+
+function DevStudentCard({
+  studentCode,
+  studentName,
+}: {
+  studentCode: string
+  studentName: string
+}) {
+  const [open, setOpen] = useState(false)
+  return (
+    <Card className="relative flex flex-col transition-shadow hover:shadow-md">
+      <CardHeader className="pb-2">
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex items-center gap-3">
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400">
+              <GraduationCap className="size-5" />
+            </div>
+            <div>
+              <CardTitle className="text-base">{studentName}</CardTitle>
+              <CardDescription className="font-mono text-xs">{studentCode}</CardDescription>
+            </div>
+          </div>
+          <Badge variant="secondary" className="bg-emerald-100 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-400">
+            <CheckCircle2 className="mr-1 size-3" />
+            Đã duyệt
+          </Badge>
+        </div>
+      </CardHeader>
+      <CardContent className="flex-1 pt-0">
+        <p className="text-xs text-muted-foreground">Yêu cầu: 15/09/2024</p>
+        <div className="mt-3">
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-8 gap-1.5 text-xs"
+            onClick={() => setOpen(true)}
+          >
+            <BarChart3 className="size-3.5" />
+            Xem kết quả học tập
+          </Button>
+          <EnhancedGradeDialog
+            studentCode={studentCode}
+            studentName={studentName}
+            open={open}
+            onClose={() => setOpen(false)}
+          />
+        </div>
+      </CardContent>
+    </Card>
+  )
 }
 
-function ScoreCell({ value }: { value: number | null | undefined }) {
-  if (value == null) return <span className="text-muted-foreground">—</span>
-  return <span className={scoreColor(value)}>{value.toFixed(1)}</span>
-}
+const MOCK_STUDENTS = [
+  { code: "SV2024001", name: "Nguyễn Văn An" },
+  { code: "SV2024002", name: "Trần Thị Bình" },
+  { code: "SV2024003", name: "Lê Hoàng Cường" },
+]
 
-function normalizeGradeResult(raw: unknown): GradeResult {
-  if (!raw || typeof raw !== "object") return { studentCode: "", semesters: [] }
-  const r = raw as Record<string, unknown>
-
-  const semesters: GradeSemester[] = []
-  const rawSemesters = Array.isArray(r.semesters)
-    ? r.semesters
-    : Array.isArray(r.data)
-      ? r.data
-      : []
-
-  for (const sem of rawSemesters as Record<string, unknown>[]) {
-    const subjects: GradeSubject[] = []
-    const rawSubjects = Array.isArray(sem.subjects)
-      ? sem.subjects
-      : Array.isArray(sem.scores)
-        ? sem.scores
-        : []
-    for (const sub of rawSubjects as Record<string, unknown>[]) {
-      subjects.push({
-        subjectCode: String(sub.subjectCode ?? sub.code ?? sub.maMonHoc ?? ""),
-        subjectName: String(sub.subjectName ?? sub.name ?? sub.tenMonHoc ?? ""),
-        credits: Number(sub.credits ?? sub.tinChi ?? 0),
-        scoreProcess:
-          sub.scoreProcess != null
-            ? Number(sub.scoreProcess)
-            : sub.diemQT != null
-              ? Number(sub.diemQT)
-              : null,
-        scoreMidterm:
-          sub.scoreMidterm != null
-            ? Number(sub.scoreMidterm)
-            : sub.diemGK != null
-              ? Number(sub.diemGK)
-              : null,
-        scoreFinal:
-          sub.scoreFinal != null
-            ? Number(sub.scoreFinal)
-            : sub.diemCK != null
-              ? Number(sub.diemCK)
-              : null,
-        scoreAvg:
-          sub.scoreAvg != null
-            ? Number(sub.scoreAvg)
-            : sub.diemTB != null
-              ? Number(sub.diemTB)
-              : null,
-        scoreText:
-          sub.scoreText != null
-            ? String(sub.scoreText)
-            : sub.diemChu != null
-              ? String(sub.diemChu)
-              : null,
-        passed:
-          sub.passed != null
-            ? Boolean(sub.passed)
-            : sub.ketQua != null
-              ? sub.ketQua === "Đạt" || sub.ketQua === true
-              : null,
-      })
-    }
-    semesters.push({
-      semesterCode: String(sem.semesterCode ?? sem.code ?? sem.maHocKy ?? ""),
-      semesterName: String(sem.semesterName ?? sem.name ?? sem.tenHocKy ?? ""),
-      gpa:
-        sem.gpa != null
-          ? Number(sem.gpa)
-          : sem.diemTBHocKy != null
-            ? Number(sem.diemTBHocKy)
-            : null,
-      subjects,
-    })
-  }
-
-  return {
-    studentCode: String(r.studentCode ?? r.maSinhVien ?? ""),
-    studentName:
-      r.studentName != null
-        ? String(r.studentName)
-        : r.hoTen != null
-          ? String(r.hoTen)
-          : undefined,
-    semesters,
-    gpaOverall:
-      r.gpaOverall != null
-        ? Number(r.gpaOverall)
-        : r.diemTBTichLuy != null
-          ? Number(r.diemTBTichLuy)
-          : null,
-    totalCredits:
-      r.totalCredits != null
-        ? Number(r.totalCredits)
-        : r.tongTinChi != null
-          ? Number(r.tongTinChi)
-          : null,
-  }
-}
-
-function GradeDialog({
+function EnhancedGradeDialog({
   studentCode,
   studentName,
   open,
@@ -228,185 +181,122 @@ function GradeDialog({
   open: boolean
   onClose: () => void
 }) {
-  const { data, isLoading, isError, refetch } = useQuery<GradeResult>({
-    queryKey: ["grades", studentCode],
+  const isDev = process.env.NODE_ENV === "development"
+  const {
+    data: detailedScores,
+    isLoading: isLoadingDetailed,
+  } = useQuery<DetailedScore[]>({
+    queryKey: ["student-scores", "detailed", studentCode],
     queryFn: async () => {
+      if (isDev) return MOCK_DETAILED_SCORES
       const payload = await api.http.get<unknown>(
-        `/parent/my-students/grades/${encodeURIComponent(studentCode)}`
+        `/parent/my-students/scores/detailed/${encodeURIComponent(studentCode)}`
       )
-      const envelope = payload as { data?: unknown }
-      return normalizeGradeResult(envelope.data)
+      const envelope = payload as { data?: DetailedScore[] }
+      return envelope.data ?? []
     },
     enabled: open,
     staleTime: 5 * 60_000,
+    retry: false,
   })
+
+  const {
+    data: yearAverages,
+    isLoading: isLoadingYear,
+  } = useQuery<YearAverage[]>({
+    queryKey: ["student-averages", "year", studentCode],
+    queryFn: async () => {
+      if (isDev) return MOCK_YEAR_AVERAGES
+      const payload = await api.http.get<unknown>(
+        `/parent/my-students/averages/year/${encodeURIComponent(studentCode)}`
+      )
+      const envelope = payload as { data?: YearAverage[] }
+      return envelope.data ?? []
+    },
+    enabled: open,
+    staleTime: 5 * 60_000,
+    retry: false,
+  })
+
+  const {
+    data: termAverages,
+    isLoading: isLoadingTerm,
+  } = useQuery<TermAverage[]>({
+    queryKey: ["student-averages", "terms", studentCode],
+    queryFn: async () => {
+      if (isDev) return MOCK_TERM_AVERAGES
+      const payload = await api.http.get<unknown>(
+        `/parent/my-students/averages/terms/${encodeURIComponent(studentCode)}`
+      )
+      const envelope = payload as { data?: TermAverage[] }
+      return envelope.data ?? []
+    },
+    enabled: open,
+    staleTime: 5 * 60_000,
+    retry: false,
+  })
+
+  const resolvedDetailed = isDev ? MOCK_DETAILED_SCORES : detailedScores
+  const resolvedYear = isDev ? MOCK_YEAR_AVERAGES : yearAverages
+  const resolvedTerm = isDev ? MOCK_TERM_AVERAGES : termAverages
+
+  const overallGpa = isDev ? 7.45 : null
+  const totalCredits = isDev ? 78 : null
+  const passedSubjects = isDev ? 10 : null
+  const totalSubjects = isDev ? 11 : null
+
+  const statCards = [
+    { label: "GPA tổng", value: overallGpa?.toFixed(2) ?? null, icon: Star, color: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-50 dark:bg-emerald-950/20", iconBg: "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400" },
+    { label: "Tín chỉ tích lũy", value: totalCredits ?? null, icon: BookCheck, color: "text-blue-600 dark:text-blue-400", bg: "bg-blue-50 dark:bg-blue-950/20", iconBg: "bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400" },
+    { label: "Môn đã đạt", value: passedSubjects != null ? `${passedSubjects}/${totalSubjects}` : null, icon: ScrollText, color: "text-purple-600 dark:text-purple-400", bg: "bg-purple-50 dark:bg-purple-950/20", iconBg: "bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400" },
+    { label: "Xếp loại", value: overallGpa != null ? (overallGpa >= 8.0 ? "Giỏi" : overallGpa >= 6.5 ? "Khá" : overallGpa >= 5.0 ? "Trung bình" : "Yếu") : null, icon: Award, color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-50 dark:bg-amber-950/20", iconBg: "bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400" },
+  ]
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-h-[90vh] max-w-7xl overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <BookOpen className="size-5" />
-            Bảng điểm — {studentName ?? studentCode}
+          <DialogTitle className="text-xl">
+            Kết quả học tập — <span className="font-bold">{studentName ?? studentCode}</span>
           </DialogTitle>
-          <DialogDescription className="font-mono text-xs">
-            {studentName ? studentCode : ""}
-          </DialogDescription>
+          {studentName && (
+            <DialogDescription className="font-mono text-xs">{studentCode}</DialogDescription>
+          )}
         </DialogHeader>
 
-        <div className="space-y-4">
-          {isLoading && (
-            <div className="space-y-3 py-4">
-              <Skeleton className="h-5 w-40" />
-              <Skeleton className="h-32 w-full" />
-              <Skeleton className="h-32 w-full" />
-            </div>
-          )}
-
-          {isError && (
-            <div className="flex items-center gap-2 rounded-lg border border-rose-200 bg-rose-50 px-3 py-3 text-sm text-rose-600 dark:border-rose-800 dark:bg-rose-950/30 dark:text-rose-400">
-              <AlertCircle className="size-4 shrink-0" />
-              Không thể tải bảng điểm. Hệ thống điểm ngoài có thể chưa cấu hình.
-              <Button
-                variant="ghost"
-                size="sm"
-                className="ml-auto h-7 px-2 text-xs"
-                onClick={() => refetch()}
-              >
-                <RefreshCw className="size-3.5" />
-                Thử lại
-              </Button>
-            </div>
-          )}
-
-          {data && (
-            <div className="space-y-4">
-              {data.gpaOverall != null && (
-                <div className="flex flex-wrap gap-3">
-                  <div className="rounded-lg border bg-muted/40 px-3 py-1.5 text-sm">
-                    GPA tổng:{" "}
-                    <span className={scoreColor(data.gpaOverall)}>
-                      {data.gpaOverall.toFixed(2)}
-                    </span>
-                  </div>
-                  {data.totalCredits != null && (
-                    <div className="rounded-lg border bg-muted/40 px-3 py-1.5 text-sm">
-                      Tổng tín chỉ:{" "}
-                      <span className="font-semibold">{data.totalCredits}</span>
+        {(overallGpa != null || totalCredits != null) && (
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            {statCards.map((s) => {
+              const Icon = s.icon
+              return (
+                <Card key={s.label} size="sm" className={cn("border-0", s.bg)}>
+                  <CardHeader className="flex-row items-center gap-2 pb-1">
+                    <div className={cn("flex size-6 items-center justify-center rounded", s.iconBg)}>
+                      <Icon className="size-3.5" />
                     </div>
-                  )}
-                </div>
-              )}
+                    <CardTitle className="text-xs font-medium text-muted-foreground">{s.label}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-0">
+                    <div className={cn("text-lg font-bold leading-tight tracking-tight", s.color)}>
+                      {s.value ?? "—"}
+                    </div>
+                  </CardContent>
+                </Card>
+              )
+            })}
+          </div>
+        )}
 
-              {data.semesters.length === 0 && (
-                <p className="py-4 text-center text-sm text-muted-foreground">
-                  Chưa có dữ liệu điểm.
-                </p>
-              )}
-
-              {data.semesters.map((sem) => (
-                <div
-                  key={sem.semesterCode}
-                  className="overflow-hidden rounded-lg border"
-                >
-                  <div className="flex items-center justify-between border-b bg-muted/40 px-4 py-2">
-                    <span className="text-sm font-semibold">
-                      {sem.semesterName}
-                    </span>
-                    {sem.gpa != null && (
-                      <span className="text-sm">
-                        GPA học kỳ:{" "}
-                        <span className={scoreColor(sem.gpa)}>
-                          {sem.gpa.toFixed(2)}
-                        </span>
-                      </span>
-                    )}
-                  </div>
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
-                      <thead className="bg-muted/20 text-xs text-muted-foreground">
-                        <tr>
-                          <th className="px-3 py-2 text-left font-medium">
-                            Môn học
-                          </th>
-                          <th className="px-3 py-2 text-center font-medium">
-                            TC
-                          </th>
-                          <th className="px-3 py-2 text-center font-medium">
-                            QT
-                          </th>
-                          <th className="px-3 py-2 text-center font-medium">
-                            GK
-                          </th>
-                          <th className="px-3 py-2 text-center font-medium">
-                            CK
-                          </th>
-                          <th className="px-3 py-2 text-center font-medium">
-                            TB
-                          </th>
-                          <th className="px-3 py-2 text-center font-medium">
-                            Chữ
-                          </th>
-                          <th className="px-3 py-2 text-center font-medium">
-                            KQ
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y">
-                        {sem.subjects.map((sub) => (
-                          <tr
-                            key={sub.subjectCode}
-                            className="hover:bg-muted/20"
-                          >
-                            <td className="px-3 py-2">
-                              <div className="font-medium">
-                                {sub.subjectName}
-                              </div>
-                              <div className="text-xs text-muted-foreground">
-                                {sub.subjectCode}
-                              </div>
-                            </td>
-                            <td className="px-3 py-2 text-center tabular-nums">
-                              {sub.credits}
-                            </td>
-                            <td className="px-3 py-2 text-center tabular-nums">
-                              <ScoreCell value={sub.scoreProcess} />
-                            </td>
-                            <td className="px-3 py-2 text-center tabular-nums">
-                              <ScoreCell value={sub.scoreMidterm} />
-                            </td>
-                            <td className="px-3 py-2 text-center tabular-nums">
-                              <ScoreCell value={sub.scoreFinal} />
-                            </td>
-                            <td className="px-3 py-2 text-center tabular-nums">
-                              <ScoreCell value={sub.scoreAvg} />
-                            </td>
-                            <td className="px-3 py-2 text-center font-medium">
-                              {sub.scoreText ?? "—"}
-                            </td>
-                            <td className="px-3 py-2 text-center">
-                              {sub.passed == null ? (
-                                <span className="text-muted-foreground">—</span>
-                              ) : sub.passed ? (
-                                <span className="font-medium text-emerald-600 dark:text-emerald-400">
-                                  Đạt
-                                </span>
-                              ) : (
-                                <span className="font-medium text-rose-600 dark:text-rose-400">
-                                  Rớt
-                                </span>
-                              )}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+        <StudentScoresSection
+          isActive={true}
+          studentName={studentName}
+          detailedScores={resolvedDetailed}
+          isLoadingDetailed={isLoadingDetailed}
+          yearAverages={resolvedYear}
+          isLoadingYear={isLoadingYear}
+          termAverages={resolvedTerm}
+          isLoadingTerm={isLoadingTerm}
+        />
       </DialogContent>
     </Dialog>
   )
@@ -428,10 +318,10 @@ function GradePanel({
         className="h-8 gap-1.5 text-xs"
         onClick={() => setOpen(true)}
       >
-        <BookOpen className="size-3.5" />
-        Xem bảng điểm
+        <BarChart3 className="size-3.5" />
+        Xem kết quả học tập
       </Button>
-      <GradeDialog
+      <EnhancedGradeDialog
         studentCode={studentCode}
         studentName={studentName}
         open={open}
@@ -642,6 +532,21 @@ export default function MyStudentsPage() {
             </Button>
           </CardContent>
         </Card>
+      )}
+
+      {process.env.NODE_ENV === "development" && (
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 rounded-lg border border-dashed border-yellow-400 bg-yellow-50 px-4 py-3 text-sm text-yellow-700 dark:bg-yellow-950/20 dark:text-yellow-400">
+            <BarChart3 className="size-4 shrink-0" />
+            <span className="font-medium">Demo danh sách sinh viên</span>
+            <span className="text-yellow-600/70">— Dữ liệu mẫu — nhấn &quot;Xem kết quả học tập&quot; để xem bảng điểm 3 tab</span>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            {MOCK_STUDENTS.map((s) => (
+              <DevStudentCard key={s.code} studentCode={s.code} studentName={s.name} />
+            ))}
+          </div>
+        </div>
       )}
 
       {students && students.length > 0 && (
