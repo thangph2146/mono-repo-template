@@ -4,6 +4,11 @@
  *   GET    /parent/my-students           — danh sách học sinh của phụ huynh đang đăng nhập
  *   DELETE /parent/my-students/:id       — xóa yêu cầu (chỉ khi pending/rejected)
  *
+ *   | GET | scores/detailed/{studentCode}   | Chi tiết điểm                     |
+ *   | GET | averages/year/{studentCode}     | Điểm trung bình năm               |
+ *   | GET | averages/terms/{studentCode}    | Điểm trung bình học kỳ            |
+ *   | GET | averages/overall/{studentCode}  | Tổng hợp điểm trung bình chung     |
+ *
  * Routes admin:
  *   GET    /admin/parent-students        — toàn bộ yêu cầu (có filter status)
  *   PATCH  /admin/parent-students/:id/review — duyệt / từ chối
