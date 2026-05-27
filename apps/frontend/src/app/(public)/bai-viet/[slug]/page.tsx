@@ -6,7 +6,6 @@ import { Container, Page, PageContent } from "@ui/components/layout"
 import { Heading } from "@ui/components/typography"
 import {
   STORE_CONTAINER_INSET,
-  STORE_CONTAINER_MAX_DEFAULT,
   STORE_PAGE_CONTENT_CLASS,
 } from "@ui/lib/layout-shell"
 import { logDevRouteHit } from "@/lib/dev-route-log"

@@ -292,7 +292,7 @@ function StaffPageInner() {
   }
 
   return (
-    <PageSection max="full" className="mx-auto min-w-0 space-y-6">
+    <PageSection max="full" className="min-w-0 space-y-6">
       <div>
         <TypographyH1 className={ADMIN_PAGE_TITLE_PRIMARY_CLASS}>
           <Users className={ADMIN_PAGE_TITLE_ICON_CLASS} aria-hidden />
@@ -322,7 +322,7 @@ function StaffPageInner() {
                 <ArchiveRestore className="size-4 shrink-0" aria-hidden />
                 Thùng rác
                 {trashedStaffQuery.data != null &&
-                trashedStaffQuery.data.total > 0 ? (
+                  trashedStaffQuery.data.total > 0 ? (
                   <Badge
                     variant="secondary"
                     className="px-1.5 py-0 text-[10px] tabular-nums"

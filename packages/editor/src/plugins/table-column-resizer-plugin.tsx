@@ -258,16 +258,16 @@ export function TableColumnResizerPlugin({
             typeof (tableNode as unknown as Record<string, unknown>)
               .setColWidths === "function"
           ) {
-            ;(
+            ; (
               (tableNode as unknown as Record<string, unknown>)
                 .setColWidths as (widths: number[]) => void
             )(nextColWidths)
           } else {
             // Fallback for different Lexical versions if needed
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            ;(tableNode as any).__colWidths = nextColWidths
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            ;(tableNode as any).__widths = nextColWidths
+            ; (tableNode as any).__colWidths = nextColWidths
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              ; (tableNode as any).__widths = nextColWidths
             tableNode.markDirty()
           }
         })
@@ -435,16 +435,18 @@ export function TableColumnResizerPlugin({
           setHoverState(null)
         }
       } else {
+        // nextHoverState is HoverState (narrowed by !nextHoverState guard above),
+        // but TS 5.9 correlated discriminant narrows it to never after !hoverState check
+        const nhCellKey = (nextHoverState as HoverState).cellKey
+        const nhEdge = (nextHoverState as HoverState).edge
         setCursor("col-resize")
-        // @ts-ignore TypeScript narrowing bug with HoverState | null
-        if (
-          hoverState === null ||
-          // @ts-ignore
-          hoverState.cellKey !== nextHoverState.cellKey ||
-          // @ts-ignore
-          hoverState.edge !== nextHoverState.edge
+        if (!hoverState) {
+          setHoverState(nextHoverState as HoverState)
+        } else if (
+          hoverState.cellKey !== nhCellKey ||
+          hoverState.edge !== nhEdge
         ) {
-          setHoverState(nextHoverState)
+          setHoverState(nextHoverState as HoverState)
         }
       }
     }

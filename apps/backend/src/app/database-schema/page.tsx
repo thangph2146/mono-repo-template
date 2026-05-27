@@ -174,132 +174,132 @@ function SchemaCanvas({
         </span>
       </div>
 
-    <div
-      ref={canvasRef}
-      className="relative w-full overflow-auto border bg-muted/20 p-4 rounded-lg"
-      style={{ height: 'calc(100vh - 300px)', minHeight: '80vh' }}
-    >
-      {/* Zoom Controls */}
-  
       <div
-        className="relative"
-        style={{
-          width: canvasWidth,
-          height: canvasHeight,
-          transform: `scale(${zoom})`,
-          transformOrigin: 'top left',
-        }}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
+        ref={canvasRef}
+        className="relative w-full overflow-auto border bg-muted/20 p-4 rounded-lg"
+        style={{ height: 'calc(100vh - 300px)', minHeight: '80vh' }}
       >
-        <svg className="absolute inset-0 w-full h-full pointer-events-none">
-          {relations.map((rel, idx) => {
-            const fromPos = positions[rel.fromTable]
-            const toPos = positions[rel.toTable]
-            if (!fromPos || !toPos) return null
+        {/* Zoom Controls */}
 
-            const fromX = fromPos.x + fromPos.width / 2
-            const fromY = fromPos.y + fromPos.height / 2
-            const toX = toPos.x + toPos.width / 2
-            const toY = toPos.y + toPos.height / 2
+        <div
+          className="relative"
+          style={{
+            width: canvasWidth,
+            height: canvasHeight,
+            transform: `scale(${zoom})`,
+            transformOrigin: 'top left',
+          }}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseUp}
+        >
+          <svg className="absolute inset-0 w-full h-full pointer-events-none">
+            {relations.map((rel, idx) => {
+              const fromPos = positions[rel.fromTable]
+              const toPos = positions[rel.toTable]
+              if (!fromPos || !toPos) return null
 
-            // Calculate label position (midpoint)
-            const midX = (fromX + toX) / 2
-            const midY = (fromY + toY) / 2
+              const fromX = fromPos.x + fromPos.width / 2
+              const fromY = fromPos.y + fromPos.height / 2
+              const toX = toPos.x + toPos.width / 2
+              const toY = toPos.y + toPos.height / 2
+
+              // Calculate label position (midpoint)
+              const midX = (fromX + toX) / 2
+              const midY = (fromY + toY) / 2
+
+              return (
+                <g key={`${rel.fromTable}-${rel.toTable}-${idx}`}>
+                  <line
+                    x1={fromX}
+                    y1={fromY}
+                    x2={toX}
+                    y2={toY}
+                    stroke="currentColor"
+                    strokeWidth="3"
+                    className="text-muted-foreground opacity-60"
+                  />
+                  <circle cx={fromX} cy={fromY} r="6" fill="currentColor" className="text-primary" />
+                  <circle cx={toX} cy={toY} r="6" fill="currentColor" className="text-primary" />
+                  {/* Cardinality label */}
+                  <rect
+                    x={midX - 20}
+                    y={midY - 10}
+                    width={40}
+                    height={20}
+                    fill="currentColor"
+                    className="bg-background opacity-90"
+                    rx="4"
+                  />
+                  <text
+                    x={midX}
+                    y={midY + 4}
+                    textAnchor="middle"
+                    fontSize="10"
+                    fill="currentColor"
+                    className="text-primary-foreground"
+                  >
+                    {rel.cardinality === 'many-to-one' ? 'N:1' : rel.cardinality === 'one-to-one' ? '1:1' : 'self'}
+                  </text>
+                </g>
+              )
+            })}
+          </svg>
+
+          {tables.map((table) => {
+            const pos = positions[table.name]
+            if (!pos) return null
 
             return (
-              <g key={`${rel.fromTable}-${rel.toTable}-${idx}`}>
-                <line
-                  x1={fromX}
-                  y1={fromY}
-                  x2={toX}
-                  y2={toY}
-                  stroke="currentColor"
-                  strokeWidth="3"
-                  className="text-muted-foreground opacity-60"
-                />
-                <circle cx={fromX} cy={fromY} r="6" fill="currentColor" className="text-primary" />
-                <circle cx={toX} cy={toY} r="6" fill="currentColor" className="text-primary" />
-                {/* Cardinality label */}
-                <rect
-                  x={midX - 20}
-                  y={midY - 10}
-                  width={40}
-                  height={20}
-                  fill="currentColor"
-                  className="bg-background opacity-90"
-                  rx="4"
-                />
-                <text
-                  x={midX}
-                  y={midY + 4}
-                  textAnchor="middle"
-                  fontSize="10"
-                  fill="currentColor"
-                  className="text-primary-foreground"
+              <div
+                key={table.name}
+                className="absolute cursor-move overflow-hidden rounded-lg border-2 bg-card shadow-lg"
+                style={{
+                  left: pos.x,
+                  top: pos.y,
+                  width: pos.width,
+                }}
+                onMouseDown={(e) => handleMouseDown(e, table.name)}
+              >
+                <div
+                  className={cn(
+                    "border-b-2 bg-muted/40 px-4 py-3",
+                    domainClassNames[table.domain],
+                  )}
                 >
-                  {rel.cardinality === 'many-to-one' ? 'N:1' : rel.cardinality === 'one-to-one' ? '1:1' : 'self'}
-                </text>
-              </g>
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="font-mono text-base font-bold">{table.name}</span>
+                    <Badge variant="outline" className={cn("text-xs", domainClassNames[table.domain])}>
+                      {table.domain}
+                    </Badge>
+                  </div>
+                  <p className="mt-1 text-sm opacity-80">{table.description}</p>
+                </div>
+                <div className="divide-y p-3">
+                  {table.columns.map((column) => (
+                    <div
+                      key={column.name}
+                      className="flex items-center justify-between gap-2 py-2 text-sm"
+                    >
+                      <div className="flex min-w-0 items-center gap-2">
+                        {column.kind === "pk" && <KeyRound className="size-4 text-primary" />}
+                        {column.kind === "fk" && <GitBranch className="size-4 text-muted-foreground" />}
+                        <span className="truncate font-mono font-medium">{column.name}</span>
+                        {column.nullable && (
+                          <span className="rounded bg-muted px-2 py-0.5 text-xs text-muted-foreground">
+                            NULL
+                          </span>
+                        )}
+                      </div>
+                      <span className="font-mono text-muted-foreground text-sm">{column.type}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
             )
           })}
-        </svg>
-
-        {tables.map((table) => {
-          const pos = positions[table.name]
-          if (!pos) return null
-
-          return (
-            <div
-              key={table.name}
-              className="absolute cursor-move overflow-hidden rounded-lg border-2 bg-card shadow-lg"
-              style={{
-                left: pos.x,
-                top: pos.y,
-                width: pos.width,
-              }}
-              onMouseDown={(e) => handleMouseDown(e, table.name)}
-            >
-              <div
-                className={cn(
-                  "border-b-2 bg-muted/40 px-4 py-3",
-                  domainClassNames[table.domain],
-                )}
-              >
-                <div className="flex items-center justify-between gap-2">
-                  <span className="font-mono text-base font-bold">{table.name}</span>
-                  <Badge variant="outline" className={cn("text-xs", domainClassNames[table.domain])}>
-                    {table.domain}
-                  </Badge>
-                </div>
-                <p className="mt-1 text-sm opacity-80">{table.description}</p>
-              </div>
-              <div className="divide-y p-3">
-                {table.columns.map((column) => (
-                  <div
-                    key={column.name}
-                    className="flex items-center justify-between gap-2 py-2 text-sm"
-                  >
-                    <div className="flex min-w-0 items-center gap-2">
-                      {column.kind === "pk" && <KeyRound className="size-4 text-primary" />}
-                      {column.kind === "fk" && <GitBranch className="size-4 text-muted-foreground" />}
-                      <span className="truncate font-mono font-medium">{column.name}</span>
-                      {column.nullable && (
-                        <span className="rounded bg-muted px-2 py-0.5 text-xs text-muted-foreground">
-                          NULL
-                        </span>
-                      )}
-                    </div>
-                    <span className="font-mono text-muted-foreground text-sm">{column.type}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )
-        })}
+        </div>
       </div>
-    </div>
     </>
   )
 }
@@ -328,7 +328,7 @@ function DatabaseSchemaPageInner() {
 
   if (loading) {
     return (
-      <PageSection max="full" className="min-w-0 space-y-6 pb-10">
+      <PageSection max="full" className="min-w-0 space-y-6">
         <div className="flex items-center justify-center py-20">
           <p className="text-muted-foreground">Đang tải sơ đồ CSDL...</p>
         </div>
@@ -338,7 +338,7 @@ function DatabaseSchemaPageInner() {
 
   if (error || !schema) {
     return (
-      <PageSection max="full" className="min-w-0 space-y-6 pb-10">
+      <PageSection max="full" className="min-w-0 space-y-6">
         <div className="flex items-center justify-center py-20">
           <p className="text-destructive">{error || 'Không thể tải dữ liệu'}</p>
         </div>
@@ -349,8 +349,8 @@ function DatabaseSchemaPageInner() {
   const { tables: schemaTables, relations: schemaRelations } = schema
 
   return (
-    <PageSection max="full" className="min-w-0 space-y-6 pb-10">
-        <SchemaCanvas tables={schemaTables} relations={schemaRelations} />
+    <PageSection max="full" className="min-w-0 space-y-6">
+      <SchemaCanvas tables={schemaTables} relations={schemaRelations} />
     </PageSection>
   )
 }

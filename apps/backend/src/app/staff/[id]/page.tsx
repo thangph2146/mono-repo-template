@@ -25,6 +25,7 @@ import {
 import { Button } from "@ui/components/button"
 import { Badge } from "@ui/components/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@ui/components/card"
+import { PageSection } from "@ui/components/layout";
 import {
   canUserAccess,
   formatDateTime,
@@ -55,7 +56,7 @@ function StaffDetailPageInner() {
 
   if (!session || !canManageUsers) {
     return (
-      <>
+      <PageSection max="full" className="min-w-0 space-y-6">
         <TypographyH1 className={ADMIN_PAGE_TITLE_PRIMARY_CLASS}>
           <UserCircle className={ADMIN_PAGE_TITLE_ICON_CLASS} aria-hidden />
           Chi tiết nhân sự
@@ -65,13 +66,13 @@ function StaffDetailPageInner() {
             <p className="text-muted-foreground">Không có quyền truy cập</p>
           </CardContent>
         </Card>
-      </>
+      </PageSection>
     )
   }
 
   if (userQuery.isLoading || !user) {
     return (
-      <>
+      <PageSection max="full" className="min-w-0 space-y-6">
         <TypographyH1 className={ADMIN_PAGE_TITLE_PRIMARY_CLASS}>
           <UserCircle className={ADMIN_PAGE_TITLE_ICON_CLASS} aria-hidden />
           Chi tiết nhân sự
@@ -81,12 +82,12 @@ function StaffDetailPageInner() {
             <p className="text-muted-foreground">Đang tải...</p>
           </CardContent>
         </Card>
-      </>
+      </PageSection>
     )
   }
 
   return (
-    <>
+    <PageSection max="full" className="min-w-0 space-y-6">
       <div className="mb-6 flex items-center justify-between">
         <TypographyH1 className={ADMIN_PAGE_TITLE_PRIMARY_CLASS}>
           <UserCircle className={ADMIN_PAGE_TITLE_ICON_CLASS} aria-hidden />
@@ -342,7 +343,7 @@ function StaffDetailPageInner() {
           </CardContent>
         </Card>
       </div>
-    </>
+    </PageSection>
   )
 }
 

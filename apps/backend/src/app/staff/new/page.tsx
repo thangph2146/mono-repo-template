@@ -6,7 +6,8 @@ import { StaffFormShell } from "../_component/_form";
 import { useRbacCatalog } from "@/hooks/queries";
 import { useAuth } from "@/providers/auth-provider";
 import { AdminPageGuard } from "@/components/admin-page-guard";
-import { ADMIN_PAGE_FORM_COLUMN_CLASS, ADMIN_PAGE_TITLE_FORM_CLASS, ADMIN_PAGE_TITLE_ICON_SM_CLASS } from "@ui/lib/layout-shell";
+import { PageSection } from "@ui/components/layout";
+import { ADMIN_PAGE_TITLE_FORM_CLASS, ADMIN_PAGE_TITLE_ICON_SM_CLASS } from "@ui/lib/layout-shell";
 import { TypographyH1 } from "@ui/components/typography";
 import { UserPlus } from "lucide-react";
 import { canUserAccess, PERMISSION_CODES } from "@workspace/api-client";
@@ -29,7 +30,7 @@ function NewStaffPageInner() {
 
   if (!session || !canManageUsers) {
     return (
-      <div className={ADMIN_PAGE_FORM_COLUMN_CLASS}>
+      <PageSection max="full" className="min-w-0 space-y-6">
         <TypographyH1 className={ADMIN_PAGE_TITLE_FORM_CLASS}>
           <UserPlus className={ADMIN_PAGE_TITLE_ICON_SM_CLASS} aria-hidden />
           Thêm nhân sự mới
@@ -39,7 +40,7 @@ function NewStaffPageInner() {
             <p className="text-muted-foreground">Không có quyền truy cập</p>
           </CardContent>
         </Card>
-      </div>
+      </PageSection>
     );
   }
 
@@ -64,14 +65,16 @@ function NewStaffPageInner() {
   };
 
   return (
-    <StaffFormShell
-      isEdit={false}
-      form={form}
-      roles={roles}
-      onSubmit={handleSubmit}
-      onCancel={handleCancel}
-      submitting={createMutation.isPending}
-    />
+    <PageSection max="full" className="min-w-0 space-y-6">
+      <StaffFormShell
+        isEdit={false}
+        form={form}
+        roles={roles}
+        onSubmit={handleSubmit}
+        onCancel={handleCancel}
+        submitting={createMutation.isPending}
+      />
+    </PageSection>
   );
 }
 

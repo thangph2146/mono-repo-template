@@ -5,7 +5,6 @@ import { useEffect, useState, useCallback, useMemo } from "react"
 import { Button } from "../button"
 import { Input } from "../input"
 import { Badge } from "../badge"
-import { Separator } from "../separator"
 import { Skeleton } from "../skeleton"
 import { ScrollArea } from "../scroll-area"
 import {
@@ -20,7 +19,6 @@ import { GraphifyForceGraph3D } from "./force-graph-3d"
 import { cn } from "../../lib/utils"
 import {
   Network,
-  ArrowLeft,
   RefreshCw,
   AlertTriangle,
   Search,
@@ -144,8 +142,8 @@ function FolderNode({
 }
 
 export interface GraphifyPageProps {
-  homeHref?: string
-  homeLabel?: string
+  _homeHref?: string
+  _homeLabel?: string
   apiPath?: string
   /**
    * When `true`, the graph view fills the parent container's height
@@ -171,8 +169,8 @@ export interface GraphifyPageProps {
 }
 
 export function GraphifyPage({
-  homeHref = "/",
-  homeLabel = "Home",
+  _homeHref = "/",
+  _homeLabel = "Home",
   apiPath = "/api/graphify",
   classes = {},
 }: GraphifyPageProps) {
@@ -302,14 +300,6 @@ export function GraphifyPage({
           classes.header
         )}
       >
-        <a
-          href={homeHref}
-          className="flex items-center gap-1.5 text-muted-foreground transition-colors hover:text-foreground"
-        >
-          <ArrowLeft className="size-4" />
-          <span className="text-body-sm font-medium">{homeLabel}</span>
-        </a>
-        <Separator orientation="vertical" className="h-4" />
         <Network className="size-4 text-primary" />
         <Text variant="body" className="font-semibold text-foreground">
           Graphify 3D Architecture

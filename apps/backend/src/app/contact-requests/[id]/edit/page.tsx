@@ -6,6 +6,7 @@ import { useContactForm } from "../../_component/_hooks/use-contact-form";
 import { ContactFormShell } from "../../_component/_form/contact-form-shell";
 import { useContactRequestDetail } from "@/hooks/queries";
 import { useUpdateContactRequest } from "../../_component/_query/use-contact-queries";
+import { PageSection } from "@ui/components/layout";
 import { AdminPageGuard } from "@/components/admin-page-guard";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@ui/components/button";
@@ -29,7 +30,7 @@ function EditContactRequestPageInner() {
       const content = contact.content || contact.message || "";
       const lines = content.split('\n').filter(line => line.trim());
       const parsed: Record<string, string> = {};
-      
+
       for (const line of lines) {
         const match = line.match(/^([^:]+):\s*(.+)$/);
         if (match) {
@@ -37,7 +38,7 @@ function EditContactRequestPageInner() {
           parsed[key.trim()] = value.trim();
         }
       }
-      
+
       populateForm({
         name: contact.name,
         email: contact.email,
@@ -76,7 +77,7 @@ function EditContactRequestPageInner() {
 
   if (contactQuery.isLoading || !contact) {
     return (
-      <>
+      <PageSection max="full" className="min-w-0 space-y-6">
         <div className="mb-4 flex items-center gap-2">
           <Button
             type="button"
@@ -92,12 +93,12 @@ function EditContactRequestPageInner() {
         <div className="py-12 text-center">
           <p className="text-muted-foreground">Đang tải...</p>
         </div>
-      </>
+      </PageSection>
     );
   }
 
   return (
-    <>
+    <PageSection max="full" className="min-w-0 space-y-6">
       <div className="mb-4 flex items-center gap-2">
         <Button
           type="button"
@@ -117,7 +118,7 @@ function EditContactRequestPageInner() {
         onCancel={handleCancel}
         submitting={updateMutation.isPending}
       />
-    </>
+    </PageSection>
   );
 }
 

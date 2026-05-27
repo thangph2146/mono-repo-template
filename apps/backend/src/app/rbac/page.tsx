@@ -28,6 +28,7 @@ import {
 import { Input } from "@ui/components/input";
 import { Label } from "@ui/components/label";
 import { PageSection } from "@ui/components/layout";
+import { AdminPageGuard } from "@/components/admin-page-guard";
 import { ScrollArea } from "@ui/components/scroll-area";
 import { Switch } from "@ui/components/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@ui/components/tabs";
@@ -525,62 +526,63 @@ export default function RbacPage() {
   }
 
   return (
-    <PageSection max="full" className="mx-auto min-w-0 space-y-6">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <TypographyH1 className={ADMIN_PAGE_TITLE_PRIMARY_CLASS}>
-            <Shield className={ADMIN_PAGE_TITLE_ICON_CLASS} aria-hidden />
-            Phân quyền
-          </TypographyH1>
-          <TypographyPLargeMuted className={ADMIN_PAGE_SUBTITLE_CLASS}>
-            Quản lý vai trò bằng bảng dùng chung, đầy đủ luồng tạo/sửa/xóa/khôi phục/xóa hẳn.
-          </TypographyPLargeMuted>
-        </div>
-        <div className="flex gap-2">
-          <Button type="button" variant="outline" className="h-11 rounded-lg" onClick={() => void invalidateRoles()}>
-            <RefreshCw className={(listQuery.isFetching || trashQuery.isFetching) ? "size-4 animate-spin" : "size-4"} />
-            Làm mới
-          </Button>
-          {canManageRoles ? (
-            <Button type="button" className="h-11 rounded-lg" onClick={openCreateDialog}>
-              <Plus className="size-4" />
-              Tạo role
+    <AdminPageGuard roles={["super_admin"]}>
+      <PageSection max="full" className="min-w-0 space-y-6">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <TypographyH1 className={ADMIN_PAGE_TITLE_PRIMARY_CLASS}>
+              <Shield className={ADMIN_PAGE_TITLE_ICON_CLASS} aria-hidden />
+              Phân quyền
+            </TypographyH1>
+            <TypographyPLargeMuted className={ADMIN_PAGE_SUBTITLE_CLASS}>
+              Quản lý vai trò bằng bảng dùng chung, đầy đủ luồng tạo/sửa/xóa/khôi phục/xóa hẳn.
+            </TypographyPLargeMuted>
+          </div>
+          <div className="flex gap-2">
+            <Button type="button" variant="outline" className="h-11 rounded-lg" onClick={() => void invalidateRoles()}>
+              <RefreshCw className={(listQuery.isFetching || trashQuery.isFetching) ? "size-4 animate-spin" : "size-4"} />
+              Làm mới
             </Button>
-          ) : null}
-        </div>
-      </div>
-
-      <Tabs value={tab} onValueChange={(value) => value === "list" || value === "trash" ? setTab(value) : null}>
-        <TabsList className="h-auto min-h-9 flex-wrap gap-1 rounded-lg p-1">
-          <TabsTrigger value="list" className="rounded-lg">Danh sách</TabsTrigger>
-          <TabsTrigger value="trash" className="rounded-lg">
-            Thùng rác
-            {(trashQuery.data?.total ?? 0) > 0 ? (
-              <Badge variant="secondary" className="ml-2 px-1.5 py-0 text-[10px]">
-                {trashQuery.data?.total}
-              </Badge>
+            {canManageRoles ? (
+              <Button type="button" className="h-11 rounded-lg" onClick={openCreateDialog}>
+                <Plus className="size-4" />
+                Tạo role
+              </Button>
             ) : null}
-          </TabsTrigger>
-        </TabsList>
+          </div>
+        </div>
 
-        <TabsContent value="list" className="mt-4 space-y-4">
-          <AdminDataTable<RoleRow>
-            data={listItems}
-            getRowId={(row) => row.id}
-            columns={columns}
-            isLoading={listQuery.isLoading || permissionCatalog.isLoading}
-            emptyLabel="Chưa có vai trò."
-            manualFiltering
-            globalFilter={globalFilter}
-            onGlobalFilterChange={setGlobalFilter}
-            globalFilterPlaceholder="Tìm theo tên, mã role..."
-            rowSelectionEnabled
-            selectedRowIds={selectedRowIds}
-            onSelectedRowIdsChange={setSelectedRowIds}
-            canSelectRow={(row) => !isSuperAdminRoleCode(row.original.code)}
-            bulkActions={
-              canManageRoles
-                ? [
+        <Tabs value={tab} onValueChange={(value) => value === "list" || value === "trash" ? setTab(value) : null}>
+          <TabsList className="h-auto min-h-9 flex-wrap gap-1 rounded-lg p-1">
+            <TabsTrigger value="list" className="rounded-lg">Danh sách</TabsTrigger>
+            <TabsTrigger value="trash" className="rounded-lg">
+              Thùng rác
+              {(trashQuery.data?.total ?? 0) > 0 ? (
+                <Badge variant="secondary" className="ml-2 px-1.5 py-0 text-[10px]">
+                  {trashQuery.data?.total}
+                </Badge>
+              ) : null}
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="list" className="mt-4 space-y-4">
+            <AdminDataTable<RoleRow>
+              data={listItems}
+              getRowId={(row) => row.id}
+              columns={columns}
+              isLoading={listQuery.isLoading || permissionCatalog.isLoading}
+              emptyLabel="Chưa có vai trò."
+              manualFiltering
+              globalFilter={globalFilter}
+              onGlobalFilterChange={setGlobalFilter}
+              globalFilterPlaceholder="Tìm theo tên, mã role..."
+              rowSelectionEnabled
+              selectedRowIds={selectedRowIds}
+              onSelectedRowIdsChange={setSelectedRowIds}
+              canSelectRow={(row) => !isSuperAdminRoleCode(row.original.code)}
+              bulkActions={
+                canManageRoles
+                  ? [
                     {
                       id: "bulk-delete",
                       label: "Xóa tạm đã chọn",
@@ -592,42 +594,42 @@ export default function RbacPage() {
                       },
                     },
                   ]
-                : []
-            }
-            footer={
-              <AdminTablePaginationFooter
-                page={page}
-                pageSize={pageSize}
-                total={listQuery.data?.total ?? 0}
-                isLoading={listQuery.isLoading}
-                onPageChange={setPage}
-                onPageSizeChange={setPageSize}
-                emptySummary="Không có vai trò"
-                itemLabel="vai trò"
-              />
-            }
-          />
+                  : []
+              }
+              footer={
+                <AdminTablePaginationFooter
+                  page={page}
+                  pageSize={pageSize}
+                  total={listQuery.data?.total ?? 0}
+                  isLoading={listQuery.isLoading}
+                  onPageChange={setPage}
+                  onPageSizeChange={setPageSize}
+                  emptySummary="Không có vai trò"
+                  itemLabel="vai trò"
+                />
+              }
+            />
 
-        </TabsContent>
+          </TabsContent>
 
-        <TabsContent value="trash" className="mt-4">
-          <AdminDataTable<RoleRow>
-            data={trashItems}
-            getRowId={(row) => row.id}
-            columns={trashColumns}
-            isLoading={trashQuery.isLoading}
-            emptyLabel="Thùng rác trống."
-            manualFiltering
-            globalFilter={trashGlobalFilter}
-            onGlobalFilterChange={setTrashGlobalFilter}
-            globalFilterPlaceholder="Tìm trong thùng rác..."
-            rowSelectionEnabled
-            selectedRowIds={trashSelectedRowIds}
-            onSelectedRowIdsChange={setTrashSelectedRowIds}
-            canSelectRow={(row) => !isSuperAdminRoleCode(row.original.code)}
-            bulkActions={
-              canManageRoles
-                ? [
+          <TabsContent value="trash" className="mt-4">
+            <AdminDataTable<RoleRow>
+              data={trashItems}
+              getRowId={(row) => row.id}
+              columns={trashColumns}
+              isLoading={trashQuery.isLoading}
+              emptyLabel="Thùng rác trống."
+              manualFiltering
+              globalFilter={trashGlobalFilter}
+              onGlobalFilterChange={setTrashGlobalFilter}
+              globalFilterPlaceholder="Tìm trong thùng rác..."
+              rowSelectionEnabled
+              selectedRowIds={trashSelectedRowIds}
+              onSelectedRowIdsChange={setTrashSelectedRowIds}
+              canSelectRow={(row) => !isSuperAdminRoleCode(row.original.code)}
+              bulkActions={
+                canManageRoles
+                  ? [
                     {
                       id: "bulk-restore",
                       label: "Khôi phục đã chọn",
@@ -647,279 +649,280 @@ export default function RbacPage() {
                       },
                     },
                   ]
-                : []
-            }
-            footer={
-              <AdminTablePaginationFooter
-                page={trashPage}
-                pageSize={trashPageSize}
-                total={trashQuery.data?.total ?? 0}
-                isLoading={trashQuery.isLoading}
-                onPageChange={setTrashPage}
-                onPageSizeChange={setTrashPageSize}
-                emptySummary="Không có vai trò trong thùng rác"
-                itemLabel="vai trò"
-              />
-            }
-          />
-        </TabsContent>
-      </Tabs>
-
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className={ADMIN_DIALOG_CONTENT_LG_CLASS}>
-          <DialogHeader>
-            <DialogTitle>{form.id ? "Cập nhật role" : "Tạo role mới"}</DialogTitle>
-            <DialogDescription>
-              Thiết lập thông tin vai trò và chọn permission phù hợp.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-2">
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="space-y-2">
-                <Label>Mã vai trò</Label>
-                <Input
-                  value={form.code}
-                  placeholder="content_editor"
-                  onChange={(event) =>
-                    setForm((current) => ({ ...current, code: roleCodeify(event.target.value) }))
-                  }
+                  : []
+              }
+              footer={
+                <AdminTablePaginationFooter
+                  page={trashPage}
+                  pageSize={trashPageSize}
+                  total={trashQuery.data?.total ?? 0}
+                  isLoading={trashQuery.isLoading}
+                  onPageChange={setTrashPage}
+                  onPageSizeChange={setTrashPageSize}
+                  emptySummary="Không có vai trò trong thùng rác"
+                  itemLabel="vai trò"
                 />
-              </div>
-              <div className="space-y-2">
-                <Label>Tên hiển thị</Label>
-                <Input
-                  value={form.name}
-                  placeholder="Biên tập nội dung"
-                  onChange={(event) =>
-                    setForm((current) => ({
-                      ...current,
-                      name: event.target.value,
-                      code: current.code || roleCodeify(event.target.value),
-                    }))
-                  }
-                />
-              </div>
-            </div>
+              }
+            />
+          </TabsContent>
+        </Tabs>
 
-            <div className="space-y-2">
-              <Label>Mô tả</Label>
-              <Textarea
-                value={form.description}
-                onChange={(event) => setForm((current) => ({ ...current, description: event.target.value }))}
-                placeholder="Mô tả rõ vai trò này phục vụ bộ phận nào..."
-              />
-            </div>
-
-            <div className="flex items-center justify-between rounded-lg border border-border px-4 py-3">
-              <div>
-                <div className="text-sm font-semibold">Kích hoạt ngay</div>
-                <TypographyPSmallMuted>
-                  Nếu tắt, role tạo ra ở trạng thái không hoạt động.
-                </TypographyPSmallMuted>
-              </div>
-              <Switch
-                checked={form.isActive}
-                onCheckedChange={(checked) => setForm((current) => ({ ...current, isActive: checked }))}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label>Bắt đầu từ mẫu</Label>
-              <div className="flex flex-wrap gap-2">
-                {ROLE_PRESETS.map((preset) => (
-                  <Button
-                    key={preset.code}
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    className="h-8 rounded-lg text-xs"
-                    title={preset.permissions.length === 0 ? "Role này không cần permission — quyền truy cập dựa trên tên role" : `Chọn ${preset.permissions.length} permission`}
-                    onClick={() =>
+        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+          <DialogContent className={ADMIN_DIALOG_CONTENT_LG_CLASS}>
+            <DialogHeader>
+              <DialogTitle>{form.id ? "Cập nhật role" : "Tạo role mới"}</DialogTitle>
+              <DialogDescription>
+                Thiết lập thông tin vai trò và chọn permission phù hợp.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-2">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label>Mã vai trò</Label>
+                  <Input
+                    value={form.code}
+                    placeholder="content_editor"
+                    onChange={(event) =>
+                      setForm((current) => ({ ...current, code: roleCodeify(event.target.value) }))
+                    }
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Tên hiển thị</Label>
+                  <Input
+                    value={form.name}
+                    placeholder="Biên tập nội dung"
+                    onChange={(event) =>
                       setForm((current) => ({
                         ...current,
-                        code: current.code || preset.code,
-                        name: current.name || preset.name,
-                        description: current.description || preset.description,
-                        permissions: [...new Set([...current.permissions, ...preset.permissions])],
+                        name: event.target.value,
+                        code: current.code || roleCodeify(event.target.value),
                       }))
                     }
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Mô tả</Label>
+                <Textarea
+                  value={form.description}
+                  onChange={(event) => setForm((current) => ({ ...current, description: event.target.value }))}
+                  placeholder="Mô tả rõ vai trò này phục vụ bộ phận nào..."
+                />
+              </div>
+
+              <div className="flex items-center justify-between rounded-lg border border-border px-4 py-3">
+                <div>
+                  <div className="text-sm font-semibold">Kích hoạt ngay</div>
+                  <TypographyPSmallMuted>
+                    Nếu tắt, role tạo ra ở trạng thái không hoạt động.
+                  </TypographyPSmallMuted>
+                </div>
+                <Switch
+                  checked={form.isActive}
+                  onCheckedChange={(checked) => setForm((current) => ({ ...current, isActive: checked }))}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Bắt đầu từ mẫu</Label>
+                <div className="flex flex-wrap gap-2">
+                  {ROLE_PRESETS.map((preset) => (
+                    <Button
+                      key={preset.code}
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="h-8 rounded-lg text-xs"
+                      title={preset.permissions.length === 0 ? "Role này không cần permission — quyền truy cập dựa trên tên role" : `Chọn ${preset.permissions.length} permission`}
+                      onClick={() =>
+                        setForm((current) => ({
+                          ...current,
+                          code: current.code || preset.code,
+                          name: current.name || preset.name,
+                          description: current.description || preset.description,
+                          permissions: [...new Set([...current.permissions, ...preset.permissions])],
+                        }))
+                      }
+                    >
+                      {preset.label}
+                      {preset.permissions.length > 0 && (
+                        <span className="ml-1 rounded bg-primary/10 px-1 text-[10px] text-primary">
+                          {preset.permissions.length}
+                        </span>
+                      )}
+                    </Button>
+                  ))}
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 rounded-lg text-xs text-muted-foreground"
+                    onClick={() => setForm((current) => ({ ...current, permissions: [] }))}
                   >
-                    {preset.label}
-                    {preset.permissions.length > 0 && (
-                      <span className="ml-1 rounded bg-primary/10 px-1 text-[10px] text-primary">
-                        {preset.permissions.length}
-                      </span>
-                    )}
+                    Bỏ chọn tất cả
                   </Button>
-                ))}
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="h-8 rounded-lg text-xs text-muted-foreground"
-                  onClick={() => setForm((current) => ({ ...current, permissions: [] }))}
-                >
-                  Bỏ chọn tất cả
-                </Button>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Permission ({form.permissions.length}/{permissions.length})</Label>
+                <Input
+                  value={permissionSearch}
+                  onChange={(event) => setPermissionSearch(event.target.value)}
+                  placeholder="Tìm permission..."
+                />
+                <ScrollArea className="h-[220px] rounded-lg border border-border/60 bg-muted/10">
+                  <div className="space-y-4 p-3">
+                    {permissionGroups.length === 0 ? (
+                      <p className="py-8 text-center text-sm text-muted-foreground">
+                        Không có permission khớp tìm kiếm.
+                      </p>
+                    ) : (
+                      permissionGroups.map((group) => {
+                        const selectedInGroup = group.items.filter((p) =>
+                          form.permissions.includes(p.code),
+                        ).length;
+                        return (
+                          <section
+                            key={group.key}
+                            className="overflow-hidden rounded-lg border border-border/50 bg-background/70 shadow-sm"
+                            aria-labelledby={`perm-group-${group.key}`}
+                          >
+                            <header
+                              id={`perm-group-${group.key}`}
+                              className="flex items-center justify-between gap-3 border-b border-border/50 bg-muted/25 px-3 py-2"
+                            >
+                              <div className="min-w-0">
+                                <p className="truncate font-mono text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                                  {group.key}
+                                </p>
+                                <p className="truncate text-sm font-semibold text-foreground">{group.label}</p>
+                              </div>
+                              <span className="shrink-0 rounded-md border border-border/60 bg-background/90 px-2 py-0.5 text-xs tabular-nums text-muted-foreground">
+                                {selectedInGroup}/{group.items.length}
+                              </span>
+                            </header>
+                            <div className="grid gap-2 p-2 sm:grid-cols-2">
+                              {group.items.map((permission) => (
+                                <label
+                                  key={permission.code}
+                                  className="flex items-start gap-2 rounded-lg border border-border/60 bg-background/90 p-2"
+                                >
+                                  <Checkbox
+                                    checked={form.permissions.includes(permission.code)}
+                                    onCheckedChange={(checked) =>
+                                      setForm((current) => ({
+                                        ...current,
+                                        permissions:
+                                          checked === true
+                                            ? [...new Set([...current.permissions, permission.code])]
+                                            : current.permissions.filter((item) => item !== permission.code),
+                                      }))
+                                    }
+                                  />
+                                  <span className="min-w-0">
+                                    <span className="block text-sm font-medium">
+                                      {permissionLabelVi(permission.code)}
+                                    </span>
+                                    <span className="block font-mono text-xs text-muted-foreground">
+                                      {permission.code}
+                                    </span>
+                                  </span>
+                                </label>
+                              ))}
+                            </div>
+                          </section>
+                        );
+                      })
+                    )}
+                  </div>
+                </ScrollArea>
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label>Permission ({form.permissions.length}/{permissions.length})</Label>
-              <Input
-                value={permissionSearch}
-                onChange={(event) => setPermissionSearch(event.target.value)}
-                placeholder="Tìm permission..."
-              />
-              <ScrollArea className="h-[220px] rounded-lg border border-border/60 bg-muted/10">
-                <div className="space-y-4 p-3">
-                  {permissionGroups.length === 0 ? (
-                    <p className="py-8 text-center text-sm text-muted-foreground">
-                      Không có permission khớp tìm kiếm.
-                    </p>
-                  ) : (
-                    permissionGroups.map((group) => {
-                      const selectedInGroup = group.items.filter((p) =>
-                        form.permissions.includes(p.code),
-                      ).length;
-                      return (
-                        <section
-                          key={group.key}
-                          className="overflow-hidden rounded-lg border border-border/50 bg-background/70 shadow-sm"
-                          aria-labelledby={`perm-group-${group.key}`}
-                        >
-                          <header
-                            id={`perm-group-${group.key}`}
-                            className="flex items-center justify-between gap-3 border-b border-border/50 bg-muted/25 px-3 py-2"
-                          >
-                            <div className="min-w-0">
-                              <p className="truncate font-mono text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-                                {group.key}
-                              </p>
-                              <p className="truncate text-sm font-semibold text-foreground">{group.label}</p>
-                            </div>
-                            <span className="shrink-0 rounded-md border border-border/60 bg-background/90 px-2 py-0.5 text-xs tabular-nums text-muted-foreground">
-                              {selectedInGroup}/{group.items.length}
-                            </span>
-                          </header>
-                          <div className="grid gap-2 p-2 sm:grid-cols-2">
-                            {group.items.map((permission) => (
-                              <label
-                                key={permission.code}
-                                className="flex items-start gap-2 rounded-lg border border-border/60 bg-background/90 p-2"
-                              >
-                                <Checkbox
-                                  checked={form.permissions.includes(permission.code)}
-                                  onCheckedChange={(checked) =>
-                                    setForm((current) => ({
-                                      ...current,
-                                      permissions:
-                                        checked === true
-                                          ? [...new Set([...current.permissions, permission.code])]
-                                          : current.permissions.filter((item) => item !== permission.code),
-                                    }))
-                                  }
-                                />
-                                <span className="min-w-0">
-                                  <span className="block text-sm font-medium">
-                                    {permissionLabelVi(permission.code)}
-                                  </span>
-                                  <span className="block font-mono text-xs text-muted-foreground">
-                                    {permission.code}
-                                  </span>
-                                </span>
-                              </label>
-                            ))}
-                          </div>
-                        </section>
-                      );
-                    })
-                  )}
-                </div>
-              </ScrollArea>
-            </div>
-          </div>
+            <DialogFooter>
+              <Button type="button" variant="outline" className="mr-auto rounded-lg" onClick={() => setDialogOpen(false)}>
+                Hủy
+              </Button>
+              <Button
+                type="button"
+                className="rounded-lg"
+                onClick={() => void handleSave()}
+                disabled={createMutation.isPending || updateMutation.isPending}
+              >
+                {createMutation.isPending || updateMutation.isPending ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : (
+                  <Plus className="size-4" />
+                )}
+                {form.id ? "Lưu thay đổi" : "Tạo role"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
-          <DialogFooter>
-            <Button type="button" variant="outline" className="mr-auto rounded-lg" onClick={() => setDialogOpen(false)}>
-              Hủy
-            </Button>
-            <Button
-              type="button"
-              className="rounded-lg"
-              onClick={() => void handleSave()}
-              disabled={createMutation.isPending || updateMutation.isPending}
-            >
-              {createMutation.isPending || updateMutation.isPending ? (
-                <Loader2 className="size-4 animate-spin" />
-              ) : (
-                <Plus className="size-4" />
-              )}
-              {form.id ? "Lưu thay đổi" : "Tạo role"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+        <AdminConfirmActionDialog
+          open={deleteTarget != null}
+          onOpenChange={(open) => !open && setDeleteTarget(null)}
+          title="Xóa role?"
+          description={
+            deleteTarget ? `Role "${deleteTarget.name}" sẽ được xóa tạm và chuyển vào thùng rác.` : undefined
+          }
+          icon={<Trash2 className="size-4 text-destructive" />}
+          confirmLabel="Xóa tạm"
+          confirmDestructive
+          confirmLoading={deleteMutation.isPending}
+          onConfirm={async () => {
+            if (!deleteTarget) return;
+            await deleteMutation.mutateAsync(deleteTarget.id);
+            toast.success(`Đã xóa role "${deleteTarget.name}"`);
+            setDeleteTarget(null);
+          }}
+          contentClassName={ADMIN_ALERT_DIALOG_CONTENT_CLASS}
+        />
 
-      <AdminConfirmActionDialog
-        open={deleteTarget != null}
-        onOpenChange={(open) => !open && setDeleteTarget(null)}
-        title="Xóa role?"
-        description={
-          deleteTarget ? `Role "${deleteTarget.name}" sẽ được xóa tạm và chuyển vào thùng rác.` : undefined
-        }
-        icon={<Trash2 className="size-4 text-destructive" />}
-        confirmLabel="Xóa tạm"
-        confirmDestructive
-        confirmLoading={deleteMutation.isPending}
-        onConfirm={async () => {
-          if (!deleteTarget) return;
-          await deleteMutation.mutateAsync(deleteTarget.id);
-          toast.success(`Đã xóa role "${deleteTarget.name}"`);
-          setDeleteTarget(null);
-        }}
-        contentClassName={ADMIN_ALERT_DIALOG_CONTENT_CLASS}
-      />
+        <AdminConfirmActionDialog
+          open={restoreTarget != null}
+          onOpenChange={(open) => !open && setRestoreTarget(null)}
+          title="Khôi phục role?"
+          description={
+            restoreTarget ? `Role "${restoreTarget.name}" sẽ quay lại danh sách hoạt động.` : undefined
+          }
+          icon={<ArchiveRestore className="size-4 text-primary" />}
+          confirmLabel="Khôi phục"
+          confirmLoading={restoreMutation.isPending}
+          onConfirm={async () => {
+            if (!restoreTarget) return;
+            await restoreMutation.mutateAsync(restoreTarget.id);
+            toast.success(`Đã khôi phục role "${restoreTarget.name}"`);
+            setRestoreTarget(null);
+          }}
+          contentClassName={ADMIN_ALERT_DIALOG_CONTENT_CLASS}
+        />
 
-      <AdminConfirmActionDialog
-        open={restoreTarget != null}
-        onOpenChange={(open) => !open && setRestoreTarget(null)}
-        title="Khôi phục role?"
-        description={
-          restoreTarget ? `Role "${restoreTarget.name}" sẽ quay lại danh sách hoạt động.` : undefined
-        }
-        icon={<ArchiveRestore className="size-4 text-primary" />}
-        confirmLabel="Khôi phục"
-        confirmLoading={restoreMutation.isPending}
-        onConfirm={async () => {
-          if (!restoreTarget) return;
-          await restoreMutation.mutateAsync(restoreTarget.id);
-          toast.success(`Đã khôi phục role "${restoreTarget.name}"`);
-          setRestoreTarget(null);
-        }}
-        contentClassName={ADMIN_ALERT_DIALOG_CONTENT_CLASS}
-      />
-
-      <AdminConfirmActionDialog
-        open={purgeTarget != null}
-        onOpenChange={(open) => !open && setPurgeTarget(null)}
-        title="Xóa vĩnh viễn role?"
-        description={
-          purgeTarget ? `Role "${purgeTarget.name}" sẽ bị xóa vĩnh viễn và không thể hoàn tác.` : undefined
-        }
-        icon={<Trash2 className="size-4 text-destructive" />}
-        confirmLabel="Xóa vĩnh viễn"
-        confirmDestructive
-        confirmLoading={purgeMutation.isPending}
-        onConfirm={async () => {
-          if (!purgeTarget) return;
-          await purgeMutation.mutateAsync(purgeTarget.id);
-          toast.success(`Đã xóa vĩnh viễn role "${purgeTarget.name}"`);
-          setPurgeTarget(null);
-        }}
-        contentClassName={ADMIN_ALERT_DIALOG_CONTENT_CLASS}
-      />
-    </PageSection>
+        <AdminConfirmActionDialog
+          open={purgeTarget != null}
+          onOpenChange={(open) => !open && setPurgeTarget(null)}
+          title="Xóa vĩnh viễn role?"
+          description={
+            purgeTarget ? `Role "${purgeTarget.name}" sẽ bị xóa vĩnh viễn và không thể hoàn tác.` : undefined
+          }
+          icon={<Trash2 className="size-4 text-destructive" />}
+          confirmLabel="Xóa vĩnh viễn"
+          confirmDestructive
+          confirmLoading={purgeMutation.isPending}
+          onConfirm={async () => {
+            if (!purgeTarget) return;
+            await purgeMutation.mutateAsync(purgeTarget.id);
+            toast.success(`Đã xóa vĩnh viễn role "${purgeTarget.name}"`);
+            setPurgeTarget(null);
+          }}
+          contentClassName={ADMIN_ALERT_DIALOG_CONTENT_CLASS}
+        />
+      </PageSection>
+    </AdminPageGuard>
   );
 }
 

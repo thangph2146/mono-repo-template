@@ -7,6 +7,7 @@ import { StaffFormShell } from "../../_component/_form";
 import { useRbacCatalog, useStaffProfile } from "@/hooks/queries";
 import { useAuth } from "@/providers/auth-provider";
 import { AdminPageGuard } from "@/components/admin-page-guard";
+import { PageSection } from "@ui/components/layout";
 import { ADMIN_PAGE_TITLE_FORM_CLASS, ADMIN_PAGE_TITLE_ICON_SM_CLASS } from "@ui/lib/layout-shell";
 import { TypographyH1 } from "@ui/components/typography";
 import { Pencil } from "lucide-react";
@@ -79,7 +80,7 @@ function EditStaffPageInner() {
 
   if (userQuery.isLoading || !user) {
     return (
-      <>
+      <PageSection max="full" className="min-w-0 space-y-6">
         <TypographyH1 className={ADMIN_PAGE_TITLE_FORM_CLASS}>
           <Pencil className={ADMIN_PAGE_TITLE_ICON_SM_CLASS} aria-hidden />
           Sửa nhân sự
@@ -87,19 +88,21 @@ function EditStaffPageInner() {
         <div className="py-12 text-center">
           <p className="text-muted-foreground">Đang tải...</p>
         </div>
-      </>
+      </PageSection>
     );
   }
 
   return (
-    <StaffFormShell
-      isEdit={true}
-      form={form}
-      roles={roles}
-      onSubmit={handleSubmit}
-      onCancel={handleCancel}
-      submitting={updateMutation.isPending}
-    />
+    <PageSection max="full" className="min-w-0 space-y-6">
+      <StaffFormShell
+        isEdit={true}
+        form={form}
+        roles={roles}
+        onSubmit={handleSubmit}
+        onCancel={handleCancel}
+        submitting={updateMutation.isPending}
+      />
+    </PageSection>
   );
 }
 
