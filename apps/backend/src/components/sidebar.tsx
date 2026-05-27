@@ -68,16 +68,43 @@ const menuTree: MenuTreeItem[] = [
     permission: null,
   },
   {
-    type: "leaf",
-    href: "/my-students",
-    label: "Con tôi",
-    icon: GraduationCap,
-    permission: null,
-    roleGuard: "parent",
+    type: "group",
+    label: "Quản lý Sinh viên",
+    icon: FolderTree,
+    children: [
+      {
+        href: "/my-students",
+        label: "Sinh viên",
+        icon: GraduationCap,
+        permission: null,
+        roleGuard: "parent",
+      },
+      {
+        href: "/parent-students",
+        label: "Duyệt sinh viên",
+        icon: UserCheck,
+        permission: null,
+        anyPermission: [PERMISSION_CODES.USERS_MANAGE],
+        adminOnly: true,
+      },
+      {
+        href: "/contact-requests",
+        label: "Liên hệ hỗ trợ",
+        icon: Headset,
+        anyPermission: [
+          PERMISSION_CODES.CONTACT_REQUESTS_VIEW,
+          PERMISSION_CODES.CONTACT_REQUESTS_MANAGE,
+          PERMISSION_CODES.CONTACT_REQUESTS_UPDATE,
+          PERMISSION_CODES.CONTACT_REQUESTS_ASSIGN,
+        ],
+        permission: null,
+        adminOnly: true,
+      },
+    ],
   },
   {
     type: "group",
-    label: "Truyền thông",
+    label: "Quản lý Truyền thông",
     icon: FolderTree,
     children: [
       {
@@ -116,8 +143,8 @@ const menuTree: MenuTreeItem[] = [
   },
   {
     type: "group",
-    label: "Hệ thống",
-    icon: Database,
+    label: "quản lý HRM",
+    icon: Users,
     children: [
       {
         href: "/staff",
@@ -134,6 +161,13 @@ const menuTree: MenuTreeItem[] = [
         permission: PERMISSION_CODES.RBAC_READ,
         adminOnly: true,
       },
+    ],
+  },
+  {
+    type: "group",
+    label: "Hệ thống",
+    icon: Database,
+    children: [
       {
         href: "/data",
         label: "Sao lưu dữ liệu",
@@ -141,27 +175,7 @@ const menuTree: MenuTreeItem[] = [
         permission: PERMISSION_CODES.DATA_MAINTENANCE,
         adminOnly: true,
       },
-      {
-        href: "/contact-requests",
-        label: "Liên hệ hỗ trợ",
-        icon: Headset,
-        anyPermission: [
-          PERMISSION_CODES.CONTACT_REQUESTS_VIEW,
-          PERMISSION_CODES.CONTACT_REQUESTS_MANAGE,
-          PERMISSION_CODES.CONTACT_REQUESTS_UPDATE,
-          PERMISSION_CODES.CONTACT_REQUESTS_ASSIGN,
-        ],
-        permission: null,
-        adminOnly: true,
-      },
-      {
-        href: "/parent-students",
-        label: "Duyệt học sinh",
-        icon: UserCheck,
-        permission: null,
-        anyPermission: [PERMISSION_CODES.USERS_MANAGE],
-        adminOnly: true,
-      },
+
       {
         href: "/database-schema",
         label: "Quan hệ CSDL",

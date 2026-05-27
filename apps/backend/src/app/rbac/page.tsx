@@ -475,8 +475,6 @@ export default function RbacPage() {
             <Button
               type="button"
               variant="outline"
-              size="sm"
-              className="h-8 gap-1 rounded-lg"
               onClick={() => setRestoreTarget(row.original)}
               disabled={!canManageRoles}
             >
@@ -485,9 +483,7 @@ export default function RbacPage() {
             </Button>
             <Button
               type="button"
-              variant="outline"
-              size="sm"
-              className="h-8 gap-1 rounded-lg border-destructive/40 text-destructive hover:bg-destructive/10"
+              variant="destructive"
               onClick={() => setPurgeTarget(row.original)}
               disabled={!canManageRoles}
             >
@@ -586,8 +582,7 @@ export default function RbacPage() {
                     {
                       id: "bulk-delete",
                       label: "Xóa tạm đã chọn",
-                      variant: "outline",
-                      className: "border-destructive/40 text-destructive",
+                      variant: "destructive",
                       onAction: async (rows) => {
                         await bulkMutation.mutateAsync({ action: "delete", ids: rows.map((row) => row.id) });
                         toast.success("Đã xóa tạm các role đã chọn (chuyển vào thùng rác)");
@@ -641,8 +636,7 @@ export default function RbacPage() {
                     {
                       id: "bulk-purge",
                       label: "Xóa hẳn đã chọn",
-                      variant: "outline",
-                      className: "border-destructive/40 text-destructive",
+                      variant: "destructive",
                       onAction: async (rows) => {
                         await bulkMutation.mutateAsync({ action: "hard-delete", ids: rows.map((row) => row.id) });
                         toast.success("Đã xóa vĩnh viễn các role đã chọn");

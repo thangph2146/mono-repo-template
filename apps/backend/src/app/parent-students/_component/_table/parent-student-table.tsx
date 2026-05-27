@@ -73,8 +73,6 @@ export function ParentStudentTable({
           <Button
             type="button"
             variant="outline"
-            size="sm"
-            className="h-9 gap-2 rounded-lg"
             onClick={() => {
               void onRefresh();
             }}
@@ -85,8 +83,6 @@ export function ParentStudentTable({
           <Button
             type="button"
             variant="outline"
-            size="sm"
-            className="h-9 gap-2 rounded-lg"
             onClick={onClearFilters}
           >
             <FilterX className="size-4" aria-hidden />
@@ -94,15 +90,14 @@ export function ParentStudentTable({
           </Button>
         </div>
       }
-      rowSelectionEnabled
+      rowSelectionEnabled 
       selectedRowIds={selectedRowIds}
       onSelectedRowIdsChange={onSelectedRowIdsChange}
       bulkActions={[
         {
           id: "bulk-parent-student-approve",
           label: "Duyệt đã chọn",
-          variant: "outline",
-          className: "border-emerald-200 text-emerald-700 dark:border-emerald-800 dark:text-emerald-400",
+          variant: "default",
           confirm: {
             title: "Duyệt các yêu cầu đã chọn?",
             description: (rows) =>
@@ -114,8 +109,7 @@ export function ParentStudentTable({
         {
           id: "bulk-parent-student-reject",
           label: "Từ chối đã chọn",
-          variant: "outline",
-          className: "border-destructive/40 text-destructive",
+          variant: "destructive",
           confirm: {
             title: "Từ chối các yêu cầu đã chọn?",
             description: (rows) =>

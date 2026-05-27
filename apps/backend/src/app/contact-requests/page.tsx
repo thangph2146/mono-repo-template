@@ -256,8 +256,6 @@ function ContactRequestsPageInner() {
           <Button
             type="button"
             variant="outline"
-            size="sm"
-            className="gap-2"
             onClick={() => {
               activeQuery.refetch()
               trashQuery.refetch()

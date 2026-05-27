@@ -208,8 +208,6 @@ export function getTrashColumns({
           <Button
             type="button"
             variant="outline"
-            size="sm"
-            className="h-8 gap-1 rounded-lg"
             onClick={() => setConfirmAction({ kind: "restore", row: row.original })}
           >
             <ArchiveRestore className="size-3.5" />
@@ -217,9 +215,7 @@ export function getTrashColumns({
           </Button>
           <Button
             type="button"
-            variant="outline"
-            size="sm"
-            className="h-8 gap-1 rounded-lg border-destructive/40 text-destructive hover:bg-destructive/10"
+            variant="default"
             onClick={() => setConfirmAction({ kind: "purge", row: row.original })}
           >
             <Trash2 className="size-3.5" />

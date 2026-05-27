@@ -518,17 +518,17 @@ export default function MyStudentsPage() {
               className={ADMIN_PAGE_TITLE_ICON_CLASS}
               aria-hidden
             />
-            Con tôi
+            Quản lý sinh viên
           </TypographyH1>
           <p className={ADMIN_PAGE_SUBTITLE_CLASS}>
             Xin chào,{" "}
             <span className="font-semibold text-foreground">{displayName}</span>
-            . Quản lý liên kết học sinh và theo dõi kết quả học tập.
+            . Quản lý liên kết sinh viên và theo dõi kết quả học tập.
           </p>
         </div>
         <Button onClick={() => setAddOpen(true)} className="shrink-0 gap-2">
           <Plus className="size-4" />
-          Thêm con
+          Thêm sinh viên
         </Button>
       </div>
 
@@ -555,9 +555,9 @@ export default function MyStudentsPage() {
               <GraduationCap className="size-7 text-muted-foreground" />
             </div>
             <div>
-              <p className="font-semibold">Chưa có liên kết học sinh nào</p>
+              <p className="font-semibold">Chưa có liên kết sinh viên nào</p>
               <p className="mt-1 text-sm text-muted-foreground">
-                Nhấn &ldquo;Thêm con&rdquo; để gửi yêu cầu liên kết với mã sinh
+                Nhấn &ldquo;Thêm sinh viên&rdquo; để gửi yêu cầu liên kết với mã sinh
                 viên.
               </p>
             </div>
@@ -567,7 +567,7 @@ export default function MyStudentsPage() {
               className="mt-1 gap-2"
             >
               <Plus className="size-4" />
-              Thêm con
+              Thêm sinh viên
             </Button>
           </CardContent>
         </Card>
@@ -577,7 +577,7 @@ export default function MyStudentsPage() {
         <div className="space-y-4">
           <div className="flex items-center gap-2 rounded-lg border border-dashed border-yellow-400 bg-yellow-50 px-4 py-3 text-sm text-yellow-700 dark:bg-yellow-950/20 dark:text-yellow-400">
             <BarChart3 className="size-4 shrink-0" />
-            <span className="font-medium">Demo danh sách sinh viên</span>
+            <span className="font-medium">Demo danh sách liên kết sinh viên</span>
             <span className="text-yellow-600/70">— Dữ liệu mẫu — nhấn &quot;Xem kết quả học tập&quot; để xem bảng điểm 3 tab</span>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
@@ -689,7 +689,7 @@ export default function MyStudentsPage() {
             <DialogTitle>Xác nhận xóa yêu cầu</DialogTitle>
           </DialogHeader>
           <p className="text-sm text-muted-foreground">
-            Bạn chắc chắn muốn xóa yêu cầu liên kết học sinh này? Thao tác không
+            Bạn chắc chắn muốn xóa yêu cầu liên kết sinh viên này? Thao tác không
             thể hoàn tác.
           </p>
           <DialogFooter>

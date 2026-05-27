@@ -149,7 +149,7 @@ export function ContactRequestTrashTable(props: ContactRequestTrashTableProps) {
         {
           id: "bulk-contact-restore",
           label: "Khôi phục đã chọn",
-          variant: "outline",
+          variant: "default",
           onAction: async (rows) => {
             const ids = rows.map((c) => String(c.id));
             if (!ids.length) return;
@@ -159,8 +159,7 @@ export function ContactRequestTrashTable(props: ContactRequestTrashTableProps) {
         {
           id: "bulk-contact-purge",
           label: "Xóa hẳn đã chọn",
-          variant: "outline",
-          className: "border-destructive/40 text-destructive",
+          variant: "destructive",
           onAction: async (rows) => {
             const ids = rows.map((c) => String(c.id));
             if (!ids.length) return;
@@ -178,8 +177,6 @@ export function ContactRequestTrashTable(props: ContactRequestTrashTableProps) {
               <Button
                 type="button"
                 variant="outline"
-                size="sm"
-                className="h-9 gap-1.5 rounded-lg"
                 disabled={data.length === 0}
                 onClick={handleCsvExport}
               >
@@ -189,8 +186,6 @@ export function ContactRequestTrashTable(props: ContactRequestTrashTableProps) {
               <Button
                 type="button"
                 variant="outline"
-                size="sm"
-                className="h-9 gap-1.5 rounded-lg"
                 disabled={data.length === 0}
                 onClick={handleXlsxExport}
               >
@@ -202,8 +197,6 @@ export function ContactRequestTrashTable(props: ContactRequestTrashTableProps) {
           <Button
             type="button"
             variant="outline"
-            size="sm"
-            className="h-9 gap-1.5 rounded-lg"
             onClick={onClearFilters}
           >
             <FilterX className="size-4" aria-hidden />

@@ -128,17 +128,14 @@ export function getParentStudentsColumns(props: ParentStudentsColumnsProps): Col
         <div className="flex items-center gap-2">
           <Button
             size="sm"
-            variant="outline"
-            className="h-7 gap-1 border-emerald-200 px-2 text-xs text-emerald-700 hover:bg-emerald-50 dark:border-emerald-800 dark:text-emerald-400"
+            variant="default"
             onClick={() => onApprove(row.original)}
           >
             <CheckCircle2 className="size-3.5" />
             Duyệt
           </Button>
           <Button
-            size="sm"
-            variant="outline"
-            className="h-7 gap-1 border-rose-200 px-2 text-xs text-rose-700 hover:bg-rose-50 dark:border-rose-800 dark:text-rose-400"
+            variant="destructive"
             onClick={() => onReject(row.original)}
           >
             <XCircle className="size-3.5" />

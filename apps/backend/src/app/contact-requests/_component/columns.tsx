@@ -235,15 +235,13 @@ export function getContactRequestColumns(props: ContactRequestColumnsProps): Col
         const contact = row.original;
         return (
           <div className="flex flex-wrap gap-1">
-            <Button variant="default" size="sm" onClick={() => onView(contact)}>
+            <Button variant="default" onClick={() => onView(contact)}>
               <Eye className="size-3.5" aria-hidden />
               Xem
             </Button>
             <Button
               type="button"
               variant="outline"
-              size="sm"
-              className="h-8 gap-1 rounded-lg"
               onClick={() => onEdit(contact)}
               disabled={busy}
             >
@@ -252,14 +250,12 @@ export function getContactRequestColumns(props: ContactRequestColumnsProps): Col
             </Button>
             <Button
               type="button"
-              variant="outline"
-              size="sm"
-              className="h-8 gap-1 rounded-lg border-destructive/40 text-destructive hover:bg-destructive/10"
+              variant="destructive"
               onClick={() => onDelete(contact)}
               disabled={busy}
             >
               <Trash2 className="size-3.5" aria-hidden />
-              Xóa
+              Xóa tạm
             </Button>
           </div>
         );
@@ -329,9 +325,7 @@ export function getTrashColumns(props: {
         <div className="flex flex-wrap gap-1 sticky right-0 bg-background">
           <Button
             type="button"
-            variant="outline"
-            size="sm"
-            className="h-8 gap-1 rounded-lg"
+            variant="default"
             onClick={() => onRestore(row.original)}
             disabled={busy}
           >
@@ -340,9 +334,7 @@ export function getTrashColumns(props: {
           </Button>
           <Button
             type="button"
-            variant="outline"
-            size="sm"
-            className="h-8 gap-1 rounded-lg border-destructive/40 text-destructive hover:bg-destructive/10"
+            variant="destructive"
             onClick={() => onPurge(row.original)}
             disabled={busy}
           >
