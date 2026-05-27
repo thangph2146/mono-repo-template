@@ -160,6 +160,254 @@ export class ParentStudentsPublicController {
     }
   }
 
+  @Get('scores/detailed/:studentCode')
+  async getDetailedScores(
+    @Param('studentCode') studentCode: string,
+    @Headers() headers: Record<string, string | undefined>,
+    @Res() res: Response,
+  ) {
+    const parentId = headers[APP_HEADERS.USER_ID]?.trim();
+    if (!parentId) {
+      const { statusCode, body } = createErrorResponse('Chưa đăng nhập', {
+        status: 401,
+      });
+      return res.status(statusCode).json(body);
+    }
+    try {
+      const links = await this.svc.listByParent(parentId);
+      const approved = links.find(
+        (l) => l.studentCode === studentCode && l.status === 'approved',
+      );
+      if (!approved) {
+        const { statusCode, body } = createErrorResponse(
+          'Học sinh chưa được duyệt hoặc không thuộc tài khoản này',
+          { status: 403 },
+        );
+        return res.status(statusCode).json(body);
+      }
+      const externalApiUrl = process.env.EXTERNAL_API_URL;
+      if (!externalApiUrl) {
+        return res.status(200).json({
+          success: true,
+          data: [],
+          message: 'EXTERNAL_API_URL chưa được cấu hình',
+        });
+      }
+      const fetchHeaders: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+      if (process.env.EXTERNAL_API_TOKEN) {
+        fetchHeaders['Authorization'] =
+          `Bearer ${process.env.EXTERNAL_API_TOKEN}`;
+      }
+      const response = await fetch(
+        `${externalApiUrl}/api/scores/detailed/${encodeURIComponent(studentCode)}`,
+        { headers: fetchHeaders, signal: AbortSignal.timeout(10000) },
+      );
+      if (!response.ok) {
+        const { statusCode, body } = createErrorResponse(
+          `API điểm trả về lỗi: ${response.status}`,
+        );
+        return res.status(statusCode).json(body);
+      }
+      const data = await response.json();
+      const { statusCode, body } = createSuccessResponse(data);
+      return res.status(statusCode).json(body);
+    } catch (err) {
+      this.logger.error('getDetailedScores', err);
+      const { statusCode, body } = createErrorResponse(
+        'Không thể lấy dữ liệu điểm chi tiết',
+      );
+      return res.status(statusCode).json(body);
+    }
+  }
+
+  @Get('averages/year/:studentCode')
+  async getYearAverages(
+    @Param('studentCode') studentCode: string,
+    @Headers() headers: Record<string, string | undefined>,
+    @Res() res: Response,
+  ) {
+    const parentId = headers[APP_HEADERS.USER_ID]?.trim();
+    if (!parentId) {
+      const { statusCode, body } = createErrorResponse('Chưa đăng nhập', {
+        status: 401,
+      });
+      return res.status(statusCode).json(body);
+    }
+    try {
+      const links = await this.svc.listByParent(parentId);
+      const approved = links.find(
+        (l) => l.studentCode === studentCode && l.status === 'approved',
+      );
+      if (!approved) {
+        const { statusCode, body } = createErrorResponse(
+          'Học sinh chưa được duyệt hoặc không thuộc tài khoản này',
+          { status: 403 },
+        );
+        return res.status(statusCode).json(body);
+      }
+      const externalApiUrl = process.env.EXTERNAL_API_URL;
+      if (!externalApiUrl) {
+        return res.status(200).json({
+          success: true,
+          data: [],
+          message: 'EXTERNAL_API_URL chưa được cấu hình',
+        });
+      }
+      const fetchHeaders: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+      if (process.env.EXTERNAL_API_TOKEN) {
+        fetchHeaders['Authorization'] =
+          `Bearer ${process.env.EXTERNAL_API_TOKEN}`;
+      }
+      const response = await fetch(
+        `${externalApiUrl}/api/averages/year/${encodeURIComponent(studentCode)}`,
+        { headers: fetchHeaders, signal: AbortSignal.timeout(10000) },
+      );
+      if (!response.ok) {
+        const { statusCode, body } = createErrorResponse(
+          `API điểm trả về lỗi: ${response.status}`,
+        );
+        return res.status(statusCode).json(body);
+      }
+      const data = await response.json();
+      const { statusCode, body } = createSuccessResponse(data);
+      return res.status(statusCode).json(body);
+    } catch (err) {
+      this.logger.error('getYearAverages', err);
+      const { statusCode, body } = createErrorResponse(
+        'Không thể lấy dữ liệu điểm trung bình năm',
+      );
+      return res.status(statusCode).json(body);
+    }
+  }
+
+  @Get('averages/terms/:studentCode')
+  async getTermAverages(
+    @Param('studentCode') studentCode: string,
+    @Headers() headers: Record<string, string | undefined>,
+    @Res() res: Response,
+  ) {
+    const parentId = headers[APP_HEADERS.USER_ID]?.trim();
+    if (!parentId) {
+      const { statusCode, body } = createErrorResponse('Chưa đăng nhập', {
+        status: 401,
+      });
+      return res.status(statusCode).json(body);
+    }
+    try {
+      const links = await this.svc.listByParent(parentId);
+      const approved = links.find(
+        (l) => l.studentCode === studentCode && l.status === 'approved',
+      );
+      if (!approved) {
+        const { statusCode, body } = createErrorResponse(
+          'Học sinh chưa được duyệt hoặc không thuộc tài khoản này',
+          { status: 403 },
+        );
+        return res.status(statusCode).json(body);
+      }
+      const externalApiUrl = process.env.EXTERNAL_API_URL;
+      if (!externalApiUrl) {
+        return res.status(200).json({
+          success: true,
+          data: [],
+          message: 'EXTERNAL_API_URL chưa được cấu hình',
+        });
+      }
+      const fetchHeaders: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+      if (process.env.EXTERNAL_API_TOKEN) {
+        fetchHeaders['Authorization'] =
+          `Bearer ${process.env.EXTERNAL_API_TOKEN}`;
+      }
+      const response = await fetch(
+        `${externalApiUrl}/api/averages/terms/${encodeURIComponent(studentCode)}`,
+        { headers: fetchHeaders, signal: AbortSignal.timeout(10000) },
+      );
+      if (!response.ok) {
+        const { statusCode, body } = createErrorResponse(
+          `API điểm trả về lỗi: ${response.status}`,
+        );
+        return res.status(statusCode).json(body);
+      }
+      const data = await response.json();
+      const { statusCode, body } = createSuccessResponse(data);
+      return res.status(statusCode).json(body);
+    } catch (err) {
+      this.logger.error('getTermAverages', err);
+      const { statusCode, body } = createErrorResponse(
+        'Không thể lấy dữ liệu điểm trung bình học kỳ',
+      );
+      return res.status(statusCode).json(body);
+    }
+  }
+
+  @Get('averages/overall/:studentCode')
+  async getOverallAverage(
+    @Param('studentCode') studentCode: string,
+    @Headers() headers: Record<string, string | undefined>,
+    @Res() res: Response,
+  ) {
+    const parentId = headers[APP_HEADERS.USER_ID]?.trim();
+    if (!parentId) {
+      const { statusCode, body } = createErrorResponse('Chưa đăng nhập', {
+        status: 401,
+      });
+      return res.status(statusCode).json(body);
+    }
+    try {
+      const links = await this.svc.listByParent(parentId);
+      const approved = links.find(
+        (l) => l.studentCode === studentCode && l.status === 'approved',
+      );
+      if (!approved) {
+        const { statusCode, body } = createErrorResponse(
+          'Học sinh chưa được duyệt hoặc không thuộc tài khoản này',
+          { status: 403 },
+        );
+        return res.status(statusCode).json(body);
+      }
+      const externalApiUrl = process.env.EXTERNAL_API_URL;
+      if (!externalApiUrl) {
+        return res.status(200).json({
+          success: true,
+          data: null,
+          message: 'EXTERNAL_API_URL chưa được cấu hình',
+        });
+      }
+      const fetchHeaders: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+      if (process.env.EXTERNAL_API_TOKEN) {
+        fetchHeaders['Authorization'] =
+          `Bearer ${process.env.EXTERNAL_API_TOKEN}`;
+      }
+      const response = await fetch(
+        `${externalApiUrl}/api/averages/overall/${encodeURIComponent(studentCode)}`,
+        { headers: fetchHeaders, signal: AbortSignal.timeout(10000) },
+      );
+      if (!response.ok) {
+        const { statusCode, body } = createErrorResponse(
+          `API điểm trả về lỗi: ${response.status}`,
+        );
+        return res.status(statusCode).json(body);
+      }
+      const data = await response.json();
+      const { statusCode, body } = createSuccessResponse(data);
+      return res.status(statusCode).json(body);
+    } catch (err) {
+      this.logger.error('getOverallAverage', err);
+      const { statusCode, body } = createErrorResponse(
+        'Không thể lấy dữ liệu tổng hợp điểm',
+      );
+      return res.status(statusCode).json(body);
+    }
+  }
+
   @Delete(':id')
   async remove(
     @Param('id') id: string,
