@@ -57,12 +57,16 @@ services:
     build:
       context: .
       dockerfile: apps/backend/Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:3002/api
+        NEXT_PUBLIC_ADMIN_URL: ""
+        NEXT_PUBLIC_BACKEND_BASE_PATH: /admin
+        NEXT_PUBLIC_TRAILING_SLASH: "false"
     container_name: store-sync-backend
     restart: unless-stopped
     environment:
       NODE_ENV: production
       PORT: 3001
-      NEXT_PUBLIC_API_URL: http://localhost:3002/api
     ports:
       - "3001:3001"
     depends_on:
@@ -75,12 +79,15 @@ services:
     build:
       context: .
       dockerfile: apps/frontend/Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:3002/api
+        NEXT_PUBLIC_ADMIN_URL: http://localhost:3001
+        NEXT_PUBLIC_SITE_URL: ""
     container_name: store-sync-frontend
     restart: unless-stopped
     environment:
       NODE_ENV: production
       PORT: 3000
-      NEXT_PUBLIC_API_URL: http://localhost:3002/api
     ports:
       - "3000:3000"
     depends_on:

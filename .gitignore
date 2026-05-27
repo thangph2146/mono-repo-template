@@ -34,3 +34,9 @@ npm-debug.log*
 # Misc
 .DS_Store
 *.pem
+
+# Graphify auto-generated artifacts (platform-specific paths)
+**/.graphify/worktree.json
+**/.graphify/branch.json
+**/.graphify/manifest.json
+apps/api/eslint-report.json

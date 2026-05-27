@@ -21,6 +21,14 @@ COPY --from=pruner /repo/out/pnpm-lock.yaml ./pnpm-lock.yaml
 RUN pnpm install --frozen-lockfile
 
 COPY --from=pruner /repo/out/full/ ./
+
+# Override NEXT_PUBLIC_* vars at build time per environment.
+ARG NEXT_PUBLIC_API_URL
+ARG NEXT_PUBLIC_ADMIN_URL
+ARG NEXT_PUBLIC_SITE_URL
+ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+ENV NEXT_PUBLIC_ADMIN_URL=${NEXT_PUBLIC_ADMIN_URL}
+ENV NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL}
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN pnpm turbo run build --filter=@frontend...
 
