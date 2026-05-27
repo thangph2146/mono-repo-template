@@ -95,6 +95,7 @@ export function TagsTrashTable({
         {
           id: "bulk-tag-restore",
           label: "Khôi phục đã chọn",
+          variant: "default",
           confirm: {
             title: "Khôi phục các thẻ đã chọn?",
             description: (rows) =>
@@ -106,8 +107,7 @@ export function TagsTrashTable({
         {
           id: "bulk-tag-purge",
           label: "Xóa vĩnh viễn đã chọn",
-          variant: "outline",
-          className: "border-destructive/40 text-destructive",
+          variant: "destructive",
           confirm: {
             title: "Xóa vĩnh viễn các thẻ đã chọn?",
             description: (rows) =>

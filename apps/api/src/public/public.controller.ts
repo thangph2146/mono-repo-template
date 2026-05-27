@@ -19,6 +19,7 @@ import {
 import { AdmissionResultsService } from '../admission-results/admission-results.service';
 import { PageContentsService } from '../page-contents/page-contents.service';
 import type { CreateContactRequestDto } from './public-contact-requests.service';
+import { AuthService } from '../auth/auth.service';
 import { UsersService } from '../users/users.service';
 import {
   createSuccessResponse,
@@ -53,6 +54,7 @@ export class PublicController {
     private readonly admissionResultsService: AdmissionResultsService,
     private readonly pageContentsService: PageContentsService,
     private readonly usersService: UsersService,
+    private readonly authService: AuthService,
   ) {}
 
   private logApiError(api: string, error: unknown, metadata?: unknown): void {
@@ -252,6 +254,65 @@ export class PublicController {
         { status: 500 },
       );
       return res.status(statusCode).json(errBody);
+    }
+  }
+
+  @Get('auth/google/config')
+  getPublicGoogleConfig(@Res() res: Response) {
+    const clientId = process.env.GOOGLE_CLIENT_ID || '';
+    const { statusCode, body } = createSuccessResponse({ clientId });
+    return res.status(statusCode).json(body);
+  }
+
+  @Post('auth/google')
+  async publicGoogleLogin(
+    @Body() body: { credential?: string },
+    @Res() res: Response,
+  ) {
+    this.logger.log('public google credential received');
+    try {
+      if (!body?.credential) {
+        const { statusCode, body: errBody } = createErrorResponse(
+          'Thiếu credential Google.',
+          { status: 400 },
+        );
+        return res.status(statusCode).json(errBody);
+      }
+
+      const profile = await this.authService.verifyGoogleToken(body.credential);
+      if (!profile) {
+        const { statusCode, body: errBody } = createErrorResponse(
+          'Credential Google không hợp lệ.',
+          { status: 401 },
+        );
+        return res.status(statusCode).json(errBody);
+      }
+
+      const user = await this.authService.loginWithGoogleAsParent({
+        email: profile.email,
+        name: profile.name ?? null,
+        image: profile.image ?? null,
+      });
+
+      if (!user) {
+        const { statusCode, body: errBody } = createErrorResponse(
+          'Không thể xác thực tài khoản Google.',
+          { status: 401 },
+        );
+        return res.status(statusCode).json(errBody);
+      }
+
+      const { statusCode, body: okBody } = createSuccessResponse(user, {
+        message: 'Đăng nhập Google thành công',
+      });
+      return res.status(statusCode).json(okBody);
+    } catch (error) {
+      this.logApiError('POST /api/public/auth/google', error);
+      const { statusCode, body } = createErrorResponse(
+        'Đã xảy ra lỗi khi đăng nhập Google.',
+        { status: 500 },
+      );
+      return res.status(statusCode).json(body);
     }
   }
 

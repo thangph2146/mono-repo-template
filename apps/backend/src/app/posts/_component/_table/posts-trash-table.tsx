@@ -97,6 +97,7 @@ export function PostsTrashTable({
         {
           id: "bulk-post-restore",
           label: "Khôi phục đã chọn",
+          variant: "default",
           confirm: {
             title: "Khôi phục các bài viết đã chọn?",
             description: (rows) =>
@@ -109,8 +110,7 @@ export function PostsTrashTable({
         {
           id: "bulk-post-purge",
           label: "Xóa vĩnh viễn đã chọn",
-          variant: "outline",
-          className: "border-destructive/40 text-destructive",
+          variant: "destructive",
           confirm: {
             title: "Xóa vĩnh viễn các bài viết đã chọn?",
             description: (rows) =>

@@ -168,7 +168,6 @@ export function getStaffColumns(props: StaffColumnsProps): ColumnDef<StaffRow>[]
           <div className="flex flex-wrap gap-1">
             <Button
               variant="default"
-              size="sm"
               onClick={() => onView(u)}
             >
               <Eye className="size-3.5" aria-hidden />
@@ -177,8 +176,6 @@ export function getStaffColumns(props: StaffColumnsProps): ColumnDef<StaffRow>[]
             <Button
               type="button"
               variant="outline"
-              size="sm"
-              className="h-8 gap-1 rounded-lg"
               onClick={() => onEdit(u)}
               disabled={busy}
             >
@@ -187,9 +184,7 @@ export function getStaffColumns(props: StaffColumnsProps): ColumnDef<StaffRow>[]
             </Button>
             <Button
               type="button"
-              variant="outline"
-              size="sm"
-              className="h-8 gap-1 rounded-lg border-destructive/40 text-destructive hover:bg-destructive/10"
+              variant="destructive"
               onClick={() => onDelete(u)}
               disabled={busy || String(u.id) === String(currentUserId ?? "")}
               title={
@@ -268,8 +263,6 @@ export function getTrashColumns(props: {
           <Button
             type="button"
             variant="outline"
-            size="sm"
-            className="h-8 gap-1 rounded-lg"
             onClick={() => onRestore(row.original)}
             disabled={busy}
           >
@@ -278,9 +271,7 @@ export function getTrashColumns(props: {
           </Button>
           <Button
             type="button"
-            variant="outline"
-            size="sm"
-            className="h-8 gap-1 rounded-lg border-destructive/40 text-destructive hover:bg-destructive/10"
+            variant="destructive"
             onClick={() => onPurge(row.original)}
             disabled={busy}
           >

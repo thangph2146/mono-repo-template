@@ -90,8 +90,6 @@ export function getTagColumns({
             <Button
               type="button"
               variant="default"
-              size="sm"
-              className="h-8 gap-1 rounded-lg"
               onClick={() => openDetail(row.original)}
             >
               <Eye className="size-3.5" />
@@ -100,8 +98,6 @@ export function getTagColumns({
             <Button
               type="button"
               variant="outline"
-              size="sm"
-              className="h-8 gap-1 rounded-lg"
               onClick={() => openEdit(row.original)}
             >
               <Pencil className="size-3.5" />
@@ -109,9 +105,7 @@ export function getTagColumns({
             </Button>
             <Button
               type="button"
-              variant="outline"
-              size="sm"
-              className="h-8 gap-1 rounded-lg border-destructive/40 text-destructive hover:bg-destructive/10"
+              variant="destructive"
               onClick={() => setConfirmAction({ kind: "delete", row: row.original })}
             >
               <Trash2 className="size-3.5" />
@@ -155,8 +149,6 @@ export function getTrashColumns({
           <Button
             type="button"
             variant="outline"
-            size="sm"
-            className="h-8 gap-1 rounded-lg"
             onClick={() => setConfirmAction({ kind: "restore", row: row.original })}
           >
             <ArchiveRestore className="size-3.5" />
@@ -164,9 +156,7 @@ export function getTrashColumns({
           </Button>
           <Button
             type="button"
-            variant="outline"
-            size="sm"
-            className="h-8 gap-1 rounded-lg border-destructive/40 text-destructive hover:bg-destructive/10"
+            variant="destructive"
             onClick={() => setConfirmAction({ kind: "purge", row: row.original })}
           >
             <Trash2 className="size-3.5" />

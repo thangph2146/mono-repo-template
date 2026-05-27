@@ -90,6 +90,7 @@ export function StaffTrashTable(props: StaffTrashTableProps) {
         {
           id: "bulk-staff-restore",
           label: "Khôi phục đã chọn",
+          variant: "default",
           onAction: async (rows) => {
             const ids = rows.map((u) => String(u.id));
             if (!ids.length) return;
@@ -99,8 +100,7 @@ export function StaffTrashTable(props: StaffTrashTableProps) {
         {
           id: "bulk-staff-purge",
           label: "Xóa vĩnh viễn đã chọn",
-          variant: "outline",
-          className: "border-destructive/40 text-destructive",
+          variant: "destructive",
           onAction: async (rows) => {
             const ids = rows.map((u) => String(u.id));
             if (!ids.length) return;

@@ -156,6 +156,68 @@ export class AuthService {
     return payload;
   }
 
+  async loginWithGoogleAsParent(
+    profile: GoogleProfileDto,
+  ): Promise<AuthUserPayload | null> {
+    const email = profile.email?.trim()?.toLowerCase();
+    if (!email) return null;
+
+    const parentRole = await this.getOrCreateRole(
+      AUTH_ROLE_NAMES.PARENT,
+      'Phụ huynh',
+    );
+
+    let user = await this.em.findOne(
+      User,
+      { email },
+      { populate: ['userRoles', 'userRoles.role'] },
+    );
+
+    if (user) {
+      if (!user.isActive || user.deletedAt != null) return null;
+      const hasParentRole = user.userRoles?.some(
+        (ur) => ur.role?.name === AUTH_ROLE_NAMES.PARENT,
+      );
+      if (!hasParentRole) {
+        const ur = new UserRole();
+        ur.user = user;
+        ur.role = this.em.getReference(Role, parentRole.id);
+        this.em.persist(ur);
+        await this.em.flush();
+        user = await this.em.findOne(
+          User,
+          { email },
+          { populate: ['userRoles', 'userRoles.role'] },
+        );
+      }
+      if (!user?.userRoles?.length) return null;
+      return this.mapUserToPayload(user);
+    }
+
+    const password = await hash(randomBytes(16).toString('hex'), 10);
+    const newUserObj = new User();
+    newUserObj.email = email;
+    newUserObj.name = profile.name ?? null;
+    newUserObj.avatar = profile.image ?? null;
+    newUserObj.password = password;
+    newUserObj.isActive = true;
+    this.em.persist(newUserObj);
+    await this.em.flush();
+
+    const ur1 = new UserRole();
+    ur1.user = newUserObj;
+    ur1.role = this.em.getReference(Role, parentRole.id);
+    this.em.persist(ur1);
+    await this.em.flush();
+
+    const created = await this.em.findOne(
+      User,
+      { email },
+      { populate: ['userRoles', 'userRoles.role'] },
+    );
+    return created ? this.mapUserToPayload(created) : null;
+  }
+
   async loginWithGoogle(
     profile: GoogleProfileDto,
   ): Promise<AuthUserPayload | null> {
@@ -171,13 +233,13 @@ export class AuthService {
     if (user) {
       if (!user.isActive || user.deletedAt != null) return null;
       if (!user.userRoles?.length) {
-        const adminRole = await this.getOrCreateRole(
-          AUTH_ROLE_NAMES.ADMIN,
-          'Admin',
+        const parentRole = await this.getOrCreateRole(
+          AUTH_ROLE_NAMES.PARENT,
+          'Phụ huynh',
         );
         const ur = new UserRole();
         ur.user = user;
-        ur.role = this.em.getReference(Role, adminRole.id);
+        ur.role = this.em.getReference(Role, parentRole.id);
         this.em.persist(ur);
         await this.em.flush();
         user = await this.em.findOne(
@@ -190,7 +252,10 @@ export class AuthService {
       return this.mapUserToPayload(user);
     }
 
-    const userRole = await this.getOrCreateRole(AUTH_ROLE_NAMES.USER, 'User');
+    const parentRole = await this.getOrCreateRole(
+      AUTH_ROLE_NAMES.PARENT,
+      'Phụ huynh',
+    );
 
     const password = await hash(randomBytes(16).toString('hex'), 10);
     const newUserObj = new User();
@@ -204,17 +269,8 @@ export class AuthService {
 
     const ur1 = new UserRole();
     ur1.user = newUserObj;
-    ur1.role = this.em.getReference(Role, userRole.id);
+    ur1.role = this.em.getReference(Role, parentRole.id);
     this.em.persist(ur1);
-    await this.em.flush();
-    const adminRole = await this.getOrCreateRole(
-      AUTH_ROLE_NAMES.ADMIN,
-      'Admin',
-    );
-    const ur2 = new UserRole();
-    ur2.user = newUserObj;
-    ur2.role = this.em.getReference(Role, adminRole.id);
-    this.em.persist(ur2);
     await this.em.flush();
 
     const created = await this.em.findOne(

@@ -57,13 +57,12 @@ export function PostFormShell({
 
   return (
     <>
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-3">
+      <div className="grid grid-cols-1 items-start gap-3 sm:grid-cols-[auto_1fr_auto]">
+        <div className="flex flex-col gap-3">
           <Button
             type="button"
             variant="outline"
-            size="sm"
-            className="h-10 gap-2 rounded-lg"
+            className="w-fit"
             onClick={onBack}
           >
             <ArrowLeft className="size-4" />
@@ -80,7 +79,7 @@ export function PostFormShell({
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex justify-self-end gap-2">
           <Button
             type="button"
             variant="outline"

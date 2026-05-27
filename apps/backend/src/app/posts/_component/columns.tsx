@@ -111,8 +111,6 @@ export function getPostColumns({
           <Button
             type="button"
             variant="default"
-            size="sm"
-            className="h-8 gap-1 rounded-lg"
             onClick={() => navigateToView(row.original.id)}
           >
             <Eye className="size-3.5" />
@@ -121,8 +119,6 @@ export function getPostColumns({
           <Button
             type="button"
             variant="outline"
-            size="sm"
-            className="h-8 gap-1 rounded-lg"
             onClick={() => navigateToEdit(row.original.id)}
           >
             <Pencil className="size-3.5" />
@@ -130,9 +126,7 @@ export function getPostColumns({
           </Button>
           <Button
             type="button"
-            variant="outline"
-            size="sm"
-            className="h-8 gap-1 rounded-lg border-destructive/40 text-destructive hover:bg-destructive/10"
+            variant="destructive"
             onClick={() => setConfirmAction({ kind: "delete", row: row.original })}
           >
             <Trash2 className="size-3.5" />
@@ -259,9 +253,7 @@ export function getTrashColumns({
         <div className="flex flex-wrap gap-1">
           <Button
             type="button"
-            variant="outline"
-            size="sm"
-            className="h-8 gap-1 rounded-lg"
+            variant="default"
             onClick={() => setConfirmAction({ kind: "restore", row: row.original })}
           >
             <ArchiveRestore className="size-3.5" />
@@ -269,9 +261,7 @@ export function getTrashColumns({
           </Button>
           <Button
             type="button"
-            variant="outline"
-            size="sm"
-            className="h-8 gap-1 rounded-lg border-destructive/40 text-destructive hover:bg-destructive/10"
+            variant="destructive"
             onClick={() => setConfirmAction({ kind: "purge", row: row.original })}
           >
             <Trash2 className="size-3.5" />

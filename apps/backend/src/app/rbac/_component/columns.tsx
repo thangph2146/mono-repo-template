@@ -88,8 +88,6 @@ export function getRbacColumns(props: RbacColumnsProps): ColumnDef<RoleRow>[] {
                 <Button
                   type="button"
                   variant="outline"
-                  size="sm"
-                  className="h-8 gap-1 rounded-lg"
                   onClick={() => onEdit(role)}
                   disabled={!canManageRoles}
                 >
@@ -98,9 +96,7 @@ export function getRbacColumns(props: RbacColumnsProps): ColumnDef<RoleRow>[] {
                 </Button>
                 <Button
                   type="button"
-                  variant="outline"
-                  size="sm"
-                  className="h-8 gap-1 rounded-lg border-destructive/40 text-destructive hover:bg-destructive/10"
+                  variant="destructive"
                   onClick={() => onDelete(role)}
                   disabled={!canManageRoles}
                 >
@@ -112,8 +108,6 @@ export function getRbacColumns(props: RbacColumnsProps): ColumnDef<RoleRow>[] {
             {isSuperAdmin && (
               <Button
                 variant="ghost"
-                size="sm"
-                className="h-8 gap-1 rounded-lg text-muted-foreground"
                 disabled
               >
                 <Lock className="size-3.5" />

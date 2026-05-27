@@ -12,6 +12,7 @@ import {
   User,
   ImageIcon,
 } from "lucide-react";
+import { cn } from "@ui/lib/utils";
 import { PageSection } from "@ui/components/layout";
 import { Badge } from "@ui/components/badge";
 import { Button } from "@ui/components/button";
@@ -29,10 +30,10 @@ import {
   formatDateTime,
 } from "../_component";
 import { usePostDetailQuery } from "../_component/_query";
-import { TypographyH1 } from "@ui/components/typography";
 import {
   ADMIN_PAGE_TITLE_PRIMARY_CLASS,
 } from "@ui/lib/layout-shell";
+import { TypographyH2 } from "@ui/components/typography";
 
 function PostDetailInner() {
   const router = useRouter();
@@ -62,24 +63,25 @@ function PostDetailInner() {
 
   return (
     <PageSection max="full" className="min-w-0 space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => router.push("/posts")}
-          >
-            <ArrowLeft className="size-4" />
-            Quay lại
-          </Button>
-          <TypographyH1 className={ADMIN_PAGE_TITLE_PRIMARY_CLASS}>
-            {post.title}
-          </TypographyH1>
+      <div className="grid grid-cols-1 items-start gap-3 sm:grid-cols-[auto_1fr_auto]">
+        <div className="flex flex-col gap-3">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => router.push("/posts")}
+          className="w-fit"
+        >
+          <ArrowLeft className="size-4" />
+          Quay lại
+        </Button>
+        <TypographyH2 className={cn(ADMIN_PAGE_TITLE_PRIMARY_CLASS, "min-w-0 break-words")}>
+          {post.title}
+        </TypographyH2>
         </div>
         <Button
           type="button"
           variant="default"
-          className="gap-2 rounded-lg px-5 font-semibold"
+          className="gap-2 rounded-lg px-5 font-semibold justify-self-end"
           onClick={() => router.push(`/posts/${postId}/edit`)}
         >
           <Pencil/>

@@ -99,6 +99,7 @@ export function CategoriesTrashTable({
         {
           id: "bulk-category-restore",
           label: "Khôi phục đã chọn",
+          variant: "default",
           confirm: {
             title: "Khôi phục các danh mục đã chọn?",
             description: (rows) =>
@@ -111,8 +112,7 @@ export function CategoriesTrashTable({
         {
           id: "bulk-category-purge",
           label: "Xóa vĩnh viễn đã chọn",
-          variant: "outline",
-          className: "border-destructive/40 text-destructive",
+          variant: "destructive",
           confirm: {
             title: "Xóa vĩnh viễn các danh mục đã chọn?",
             description: (rows) =>

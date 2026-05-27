@@ -110,15 +110,14 @@ export function getCategoryColumns({
                   className="gap-1"
                   onClick={() => openEdit(c)}
                 >
-                  <Pencil className="mr-1 h-4 w-4" /> Sửa
+                  <Pencil className="size-4" /> Sửa
                 </Button>
                 <Button
-                  variant="outline"
-                  className="gap-1 border-destructive/40 text-destructive hover:bg-destructive/10"
+                  variant="destructive"
                   onClick={() => setConfirmAction({ kind: "delete", row: c })}
                   disabled={childCount > 0 || linkedPosts > 0}
                 >
-                  <Trash2 className="h-4 w-4" /> Xóa tạm
+                  <Trash2 className="size-4" /> Xóa tạm
                 </Button>
               </>
             )}
