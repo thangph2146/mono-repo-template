@@ -4,14 +4,23 @@ import { useMemo, useState } from "react"
 import { type ColumnDef } from "@tanstack/react-table"
 import { Loader2, ChevronDown, ChevronRight } from "lucide-react"
 import { Badge } from "@ui/components/badge"
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@ui/components/collapsible"
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@ui/components/collapsible"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@ui/components/select"
 import { cn } from "@ui/lib/utils"
 import { AdminDataTable } from "@/components/admin-data-table"
 import type { DetailedScore } from "@/types/student-scores"
 import { formatScore, formatGrade } from "./score-utils"
+import { ScrollArea } from "@ui/components/scroll-area"
 
 interface Props {
   scores?: DetailedScore[]
@@ -34,25 +43,25 @@ function SubjectTable({ subjects }: { subjects: DetailedScore[] }) {
       },
       {
         id: "mark10",
-        header: () => <span className="block text-center">Hệ 10</span>,
+        header: () => <div className="w-full text-center">Hệ 10</div>,
         enableColumnFilter: false,
         cell: ({ row }) => {
           const f = formatScore(row.original.mark10, "10")
-          return <span className={cn("block text-center tabular-nums", f.color)}>{f.text}</span>
+          return <div className={cn("w-full text-center tabular-nums", f.color)}>{f.text}</div>
         },
       },
       {
         id: "mark4",
-        header: () => <span className="block text-center">Hệ 4</span>,
+        header: () => <div className="w-full text-center">Hệ 4</div>,
         enableColumnFilter: false,
         cell: ({ row }) => {
           const f = formatScore(row.original.mark4, "4")
-          return <span className={cn("block text-center tabular-nums", f.color)}>{f.text}</span>
+          return <div className={cn("w-full text-center tabular-nums", f.color)}>{f.text}</div>
         },
       },
       {
         id: "markLetter",
-        header: () => <span className="block text-center">Điểm chữ</span>,
+        header: () => <div className="w-full text-center">Điểm chữ</div>,
         enableColumnFilter: false,
         cell: ({ row }) => {
           const g = formatGrade(row.original.markLetter)
@@ -67,8 +76,18 @@ function SubjectTable({ subjects }: { subjects: DetailedScore[] }) {
     []
   )
 
-  if (!subjects.length) return <p className="py-3 text-sm text-muted-foreground">Không có dữ liệu</p>
-  return <AdminDataTable data={subjects} columns={columns} emptyLabel="Không có dữ liệu" manualFiltering />
+  if (!subjects.length)
+    return (
+      <p className="py-3 text-sm text-muted-foreground">Không có dữ liệu</p>
+    )
+  return (
+    <AdminDataTable
+      data={subjects}
+      columns={columns}
+      emptyLabel="Không có dữ liệu"
+      manualFiltering
+    />
+  )
 }
 
 export const DetailedScoresList = ({ scores, isLoading }: Props) => {
@@ -87,7 +106,10 @@ export const DetailedScoresList = ({ scores, isLoading }: Props) => {
 
   const grouped = useMemo(() => {
     if (!scores) return {}
-    const filtered = filterYear === "all" ? scores : scores.filter((s) => s.yearStudy === filterYear)
+    const filtered =
+      filterYear === "all"
+        ? scores
+        : scores.filter((s) => s.yearStudy === filterYear)
     const map: Record<string, Record<string, DetailedScore[]>> = {}
     filtered.forEach((s) => {
       const y = s.yearStudy || "Khác"
@@ -114,71 +136,90 @@ export const DetailedScoresList = ({ scores, isLoading }: Props) => {
   }
 
   return (
-    <div className="space-y-3">
-      <Select value={filterYear} onValueChange={(v) => setFilterYear(v ?? "all")}>
-        <SelectTrigger className="w-44">
-          <SelectValue>{filterYear === "all" ? "Tất cả năm học" : filterYear}</SelectValue>
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">Tất cả năm học</SelectItem>
-          {years.map((y) => (
-            <SelectItem key={y} value={y}>
-              {y}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-      {Object.keys(grouped).length === 0 ? (
-        <div className="py-6 text-center text-sm text-muted-foreground">Không tìm thấy dữ liệu</div>
-      ) : (
-        Object.entries(grouped)
-          .sort(([a], [b]) => b.localeCompare(a))
-          .map(([year, terms]) => (
-            <div key={year}>
-              <div className="mb-1 text-sm font-semibold text-foreground">
-                Năm học {year}
+    <ScrollArea className="max-h-[50vh] space-y-3 overflow-y-auto">
+      <div className="space-y-3">
+        <Select
+          value={filterYear}
+          onValueChange={(v) => setFilterYear(v ?? "all")}
+        >
+          <SelectTrigger className="w-44">
+            <SelectValue>
+              {filterYear === "all" ? "Tất cả năm học" : filterYear}
+            </SelectValue>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Tất cả năm học</SelectItem>
+            {years.map((y) => (
+              <SelectItem key={y} value={y}>
+                {y}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        {Object.keys(grouped).length === 0 ? (
+          <div className="py-6 text-center text-sm text-muted-foreground">
+            Không tìm thấy dữ liệu
+          </div>
+        ) : (
+          Object.entries(grouped)
+            .sort(([a], [b]) => b.localeCompare(a))
+            .map(([year, terms]) => (
+              <div key={year}>
+                <div className="mb-1 text-sm font-semibold text-foreground">
+                  Năm học {year}
+                </div>
+                {Object.entries(terms)
+                  .sort(([a], [b]) => a.localeCompare(b))
+                  .map(([term, subjects]) => {
+                    const key = `${year}-${term}`
+                    const toggleTerm = () =>
+                      setOpenTerms((prev) => {
+                        const next = new Set(prev)
+                        if (next.has(key)) {
+                          next.delete(key)
+                        } else {
+                          next.add(key)
+                        }
+                        return next
+                      })
+                    return (
+                      <Collapsible
+                        key={key}
+                        open={openTerms.has(key)}
+                        onOpenChange={toggleTerm}
+                        className="mb-2"
+                      >
+                        <CollapsibleTrigger
+                          className={cn(
+                            "flex w-full items-center gap-2 rounded-md px-3 py-1.5 text-sm",
+                            openTerms.has(key)
+                              ? "rounded-t-md bg-primary text-primary-foreground"
+                              : "hover:bg-muted/80"
+                          )}
+                        >
+                          {openTerms.has(key) ? (
+                            <ChevronDown className="size-3.5 shrink-0" />
+                          ) : (
+                            <ChevronRight className="size-3.5 shrink-0" />
+                          )}
+                          <span>Học kỳ {term}</span>
+                          <Badge
+                            variant="secondary"
+                            className="ml-auto text-xs"
+                          >
+                            {subjects.length} môn
+                          </Badge>
+                        </CollapsibleTrigger>
+                        <CollapsibleContent className="px-1 pt-2">
+                          <SubjectTable subjects={subjects} />
+                        </CollapsibleContent>
+                      </Collapsible>
+                    )
+                  })}
               </div>
-              {Object.entries(terms)
-                .sort(([a], [b]) => a.localeCompare(b))
-                .map(([term, subjects]) => {
-                  const key = `${year}-${term}`
-                  const toggleTerm = () =>
-                    setOpenTerms((prev) => {
-                      const next = new Set(prev)
-                      if (next.has(key)) {
-                        next.delete(key)
-                      } else {
-                        next.add(key)
-                      }
-                      return next
-                    })
-                  return (
-                    <Collapsible
-                      key={key}
-                      open={openTerms.has(key)}
-                      onOpenChange={toggleTerm}
-                      className="mb-2"
-                    >
-                      <CollapsibleTrigger className={cn("flex w-full items-center gap-2 px-3 py-1.5 text-sm rounded-md", openTerms.has(key) ? "bg-primary text-primary-foreground rounded-t-md" : " hover:bg-muted/80")}>
-                        {openTerms.has(key) ? (
-                          <ChevronDown className="size-3.5 shrink-0" />
-                        ) : (
-                          <ChevronRight className="size-3.5 shrink-0" />
-                        )}
-                        <span>Học kỳ {term}</span>
-                        <Badge variant="secondary" className="ml-auto text-xs">
-                          {subjects.length} môn
-                        </Badge>
-                      </CollapsibleTrigger>
-                      <CollapsibleContent className="px-1 pt-2">
-                        <SubjectTable subjects={subjects} />
-                      </CollapsibleContent>
-                    </Collapsible>
-                  )
-                })}
-            </div>
-          ))
-      )}
-    </div>
+            ))
+        )}
+      </div>
+    </ScrollArea>
   )
 }

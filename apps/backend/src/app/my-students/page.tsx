@@ -51,6 +51,7 @@ import type {
   DetailedScore,
   YearAverage,
   TermAverage,
+  OverallAverage,
 } from "@/types/student-scores"
 
 interface ParentStudentRow {
@@ -112,6 +113,16 @@ const MOCK_TERM_AVERAGES: TermAverage[] = [
   { yearStudy: "2024-2025", termID: "2", orderTerm: 2, averageScore10: 6.3, averageScore4: 2.33, averageGatherScore10: 7.05, averageGatherScore4: 2.67, updateDate: "2025-06-15" },
   { yearStudy: "2025-2026", termID: "1", orderTerm: 1, averageScore10: 7.5, averageScore4: 2.9, averageGatherScore10: 7.45, averageGatherScore4: 2.85, updateDate: "2026-01-20" },
 ]
+
+const MOCK_OVERALL_AVERAGE: OverallAverage = {
+  averageScore10: 7.45,
+  averageScore4: 2.85,
+  averageGatherScore10: 7.45,
+  averageGatherScore4: 2.85,
+  isModified: false,
+  updateStaff: null,
+  updateDate: "2026-01-20",
+}
 
 function DevStudentCard({
   studentCode,
@@ -236,21 +247,42 @@ function EnhancedGradeDialog({
     retry: false,
   })
 
+  const {
+    data: overallAverage,
+  } = useQuery<OverallAverage>({
+    queryKey: ["student-averages", "overall", studentCode],
+    queryFn: async () => {
+      if (isDev) return MOCK_OVERALL_AVERAGE
+      const payload = await api.http.get<unknown>(
+        `/parent/my-students/averages/overall/${encodeURIComponent(studentCode)}`
+      )
+      const envelope = payload as { data?: OverallAverage }
+      return envelope.data ?? ({} as OverallAverage)
+    },
+    enabled: open,
+    staleTime: 5 * 60_000,
+    retry: false,
+  })
+
   const resolvedDetailed = isDev ? MOCK_DETAILED_SCORES : detailedScores
   const resolvedYear = isDev ? MOCK_YEAR_AVERAGES : yearAverages
   const resolvedTerm = isDev ? MOCK_TERM_AVERAGES : termAverages
+  const resolvedOverall = isDev ? MOCK_OVERALL_AVERAGE : overallAverage
 
-  const overallGpa = isDev ? 7.45 : null
-  const totalCredits = isDev ? 78 : null
-  const passedSubjects = isDev ? 10 : null
-  const totalSubjects = isDev ? 11 : null
+  const overallGpa = resolvedOverall?.averageGatherScore10 ?? resolvedOverall?.averageScore10 ?? null
+  const passedSubjects = resolvedDetailed?.filter(
+    (s) => s.mark10 != null && s.mark10 >= 5
+  ).length ?? null
+  const totalSubjects = resolvedDetailed?.length ?? null
 
   const statCards = [
     { label: "GPA tổng", value: overallGpa?.toFixed(2) ?? null, icon: Star, color: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-50 dark:bg-emerald-950/20", iconBg: "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400" },
-    { label: "Tín chỉ tích lũy", value: totalCredits ?? null, icon: BookCheck, color: "text-blue-600 dark:text-blue-400", bg: "bg-blue-50 dark:bg-blue-950/20", iconBg: "bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400" },
+    { label: "Tín chỉ tích lũy", value: null, icon: BookCheck, color: "text-blue-600 dark:text-blue-400", bg: "bg-blue-50 dark:bg-blue-950/20", iconBg: "bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400" },
     { label: "Môn đã đạt", value: passedSubjects != null ? `${passedSubjects}/${totalSubjects}` : null, icon: ScrollText, color: "text-purple-600 dark:text-purple-400", bg: "bg-purple-50 dark:bg-purple-950/20", iconBg: "bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400" },
     { label: "Xếp loại", value: overallGpa != null ? (overallGpa >= 8.0 ? "Giỏi" : overallGpa >= 6.5 ? "Khá" : overallGpa >= 5.0 ? "Trung bình" : "Yếu") : null, icon: Award, color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-50 dark:bg-amber-950/20", iconBg: "bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400" },
   ]
+
+  const showStats = overallGpa != null || passedSubjects != null
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -264,7 +296,7 @@ function EnhancedGradeDialog({
           )}
         </DialogHeader>
 
-        {(overallGpa != null || totalCredits != null) && (
+        {showStats && (
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             {statCards.map((s) => {
               const Icon = s.icon

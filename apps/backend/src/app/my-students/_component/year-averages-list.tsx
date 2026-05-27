@@ -24,38 +24,38 @@ export const YearAveragesList = ({ averages, isLoading }: Props) => {
       { accessorKey: "yearStudy", header: "Năm học", enableColumnFilter: false, cell: ({ row }) => <span className="font-medium">{row.original.yearStudy}</span> },
       {
         accessorKey: "averageScore10",
-        header: () => <span className="block text-center">Hệ 10</span>,
+        header: () => <div className="w-full text-center">Hệ 10</div>,
         enableColumnFilter: false,
         cell: ({ row }) => {
           const f = formatScore(row.original.averageScore10, "10")
-          return <span className={cn("block text-center tabular-nums", f.color)}>{f.text}</span>
+          return <div className={cn("w-full text-center tabular-nums", f.color)}>{f.text}</div>
         },
       },
       {
         accessorKey: "averageScore4",
-        header: () => <span className="block text-center">Hệ 4</span>,
+        header: () => <div className="w-full text-center">Hệ 4</div>,
         enableColumnFilter: false,
         cell: ({ row }) => {
           const f = formatScore(row.original.averageScore4, "4")
-          return <span className={cn("block text-center tabular-nums", f.color)}>{f.text}</span>
+          return <div className={cn("w-full text-center tabular-nums", f.color)}>{f.text}</div>
         },
       },
       {
         accessorKey: "averageGatherScore10",
-        header: () => <span className="block text-center">Tích lũy hệ 10</span>,
+        header: () => <div className="w-full text-center">Tích lũy hệ 10</div>,
         enableColumnFilter: false,
         cell: ({ row }) => {
           const f = formatScore(row.original.averageGatherScore10, "10")
-          return <span className={cn("block text-center tabular-nums", f.color)}>{f.text}</span>
+          return <div className={cn("w-full text-center tabular-nums", f.color)}>{f.text}</div>
         },
       },
       {
         accessorKey: "averageGatherScore4",
-        header: () => <span className="block text-center">Tích lũy hệ 4</span>,
+        header: () => <div className="w-full text-center">Tích lũy hệ 4</div>,
         enableColumnFilter: false,
         cell: ({ row }) => {
           const f = formatScore(row.original.averageGatherScore4, "4")
-          return <span className={cn("block text-center tabular-nums", f.color)}>{f.text}</span>
+          return <div className={cn("w-full text-center tabular-nums", f.color)}>{f.text}</div>
         },
       },
     ],
