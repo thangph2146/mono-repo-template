@@ -269,17 +269,24 @@ function EnhancedGradeDialog({
   const resolvedTerm = isDev ? MOCK_TERM_AVERAGES : termAverages
   const resolvedOverall = isDev ? MOCK_OVERALL_AVERAGE : overallAverage
 
-  const overallGpa = resolvedOverall?.averageGatherScore10 ?? resolvedOverall?.averageScore10 ?? null
+  const overallGpa = resolvedOverall?.averageGatherScore10 ?? resolvedOverall?.averageScore10 ?? resolvedOverall?.averageGatherScore4 ?? resolvedOverall?.averageScore4 ?? null
   const passedSubjects = resolvedDetailed?.filter(
     (s) => s.mark10 != null && s.mark10 >= 5
   ).length ?? null
   const totalSubjects = resolvedDetailed?.length ?? null
 
+  const isTenScale = resolvedOverall?.averageGatherScore10 != null || resolvedOverall?.averageScore10 != null
+  const rank = overallGpa != null
+    ? isTenScale
+      ? overallGpa >= 8.0 ? "Giỏi" : overallGpa >= 6.5 ? "Khá" : overallGpa >= 5.0 ? "Trung bình" : "Yếu"
+      : overallGpa >= 3.6 ? "Giỏi" : overallGpa >= 2.5 ? "Khá" : overallGpa >= 2.0 ? "Trung bình" : "Yếu"
+    : null
+
   const statCards = [
     { label: "GPA tổng", value: overallGpa?.toFixed(2) ?? null, icon: Star, color: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-50 dark:bg-emerald-950/20", iconBg: "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400" },
     { label: "Tín chỉ tích lũy", value: null, icon: BookCheck, color: "text-blue-600 dark:text-blue-400", bg: "bg-blue-50 dark:bg-blue-950/20", iconBg: "bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400" },
     { label: "Môn đã đạt", value: passedSubjects != null ? `${passedSubjects}/${totalSubjects}` : null, icon: ScrollText, color: "text-purple-600 dark:text-purple-400", bg: "bg-purple-50 dark:bg-purple-950/20", iconBg: "bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400" },
-    { label: "Xếp loại", value: overallGpa != null ? (overallGpa >= 8.0 ? "Giỏi" : overallGpa >= 6.5 ? "Khá" : overallGpa >= 5.0 ? "Trung bình" : "Yếu") : null, icon: Award, color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-50 dark:bg-amber-950/20", iconBg: "bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400" },
+    { label: "Xếp loại", value: rank, icon: Award, color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-50 dark:bg-amber-950/20", iconBg: "bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400" },
   ]
 
   const showStats = overallGpa != null || passedSubjects != null
