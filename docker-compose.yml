@@ -1,21 +1,22 @@
-# StoreSync: API + Postgres + 2 Next.js (storefront :3000, admin :3001).
+# StoreSync: API + MySQL + 2 Next.js (storefront :3000, admin :3001).
 # Trình duyệt trên máy host luôn gọi API qua cổng đã publish (localhost:3002),
 # không dùng hostname dịch vụ Docker (api) trong NEXT_PUBLIC_*.
 services:
-  postgres:
-    image: postgres:16-alpine
-    container_name: store-sync-postgres
+  mysql:
+    image: mysql:8.0
+    container_name: store-sync-mysql
     restart: unless-stopped
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-storesync}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-storesync}
-      POSTGRES_DB: ${POSTGRES_DB:-storesync}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-storesync}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-hub_parent}
+      MYSQL_USER: ${MYSQL_USER:-storesync}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-storesync}
     ports:
-      - "${POSTGRES_PORT:-5432}:5432"
+      - "${MYSQL_PORT:-3306}:3306"
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - mysql-data:/var/lib/mysql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-storesync} -d ${POSTGRES_DB:-storesync}"]
+      test: ["CMD-SHELL", "mysqladmin ping -u root -p${MYSQL_ROOT_PASSWORD:-storesync} | grep 'mysqld is alive' || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -32,13 +33,17 @@ services:
       NODE_ENV: production
       PORT: 3002
       SERVICE_NAME: "@api"
-      DATABASE_URL: postgresql://${POSTGRES_USER:-storesync}:${POSTGRES_PASSWORD:-storesync}@postgres:5432/${POSTGRES_DB:-storesync}
+      API_PREFIX: api
+      DB_TYPE: mysql
+      DATABASE_URL: mysql://root:${MYSQL_ROOT_PASSWORD:-storesync}@mysql:3306/${MYSQL_DATABASE:-hub_parent}
       DB_DEBUG: "false"
-      CORS_ORIGINS: http://localhost:3000,http://localhost:3001
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000,http://localhost:3001}
+      EXTERNAL_API_URL: ${EXTERNAL_API_URL:-}
+      BACKUP_IMPORT_SECRET: ${BACKUP_IMPORT_SECRET:-}
     ports:
       - "3002:3002"
     depends_on:
-      postgres:
+      mysql:
         condition: service_healthy
     healthcheck:
       test:
@@ -59,7 +64,7 @@ services:
       dockerfile: apps/backend/Dockerfile
       args:
         NEXT_PUBLIC_API_URL: http://localhost:3002/api
-        NEXT_PUBLIC_ADMIN_URL: ""
+        NEXT_PUBLIC_ADMIN_URL: http://localhost:3001
         NEXT_PUBLIC_BACKEND_BASE_PATH: /admin
         NEXT_PUBLIC_TRAILING_SLASH: "false"
     container_name: store-sync-backend
@@ -82,7 +87,7 @@ services:
       args:
         NEXT_PUBLIC_API_URL: http://localhost:3002/api
         NEXT_PUBLIC_ADMIN_URL: http://localhost:3001
-        NEXT_PUBLIC_SITE_URL: ""
+        NEXT_PUBLIC_SITE_URL: http://localhost:3000
     container_name: store-sync-frontend
     restart: unless-stopped
     environment:
@@ -101,4 +106,4 @@ networks:
     driver: bridge
 
 volumes:
-  postgres-data:
+  mysql-data:
