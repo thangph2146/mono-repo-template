@@ -133,7 +133,7 @@ export function EventFormShell({
           </div>
 
           <div>
-            <Card className="sticky top-4 border border-border/70 shadow-sm">
+            <Card className="sticky top-2 border border-border/70 shadow-sm">
               <Divider label="Thông tin sự kiện" />
               <CardHeader className="pb-2">
                 <CardTitle className="flex items-center gap-2 text-lg">
