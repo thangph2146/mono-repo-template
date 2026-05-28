@@ -282,7 +282,7 @@ export class UploadsService {
 
     const urlPath = serveBaseUrl
       ? `${serveBaseUrl}/${relativePath}`
-      : `/api/admin/uploads/serve/${relativePath}`;
+      : `/api/uploads/${relativePath}`;
 
     return { relativePath, fullPath, urlPath };
   }
@@ -310,7 +310,7 @@ export class UploadsService {
             const mimeType = ALLOWED_MIME[ext] || 'application/octet-stream';
             const url = serveBaseUrl
               ? `${serveBaseUrl}/${rel}`
-              : `/api/admin/uploads/serve/${rel}`;
+              : `/api/uploads/${rel}`;
             result.push({
               fileName: entry.name,
               originalName: entry.name,
@@ -600,7 +600,7 @@ export class UploadsService {
         .replace(/\\/g, '/');
       const existingUrl = serveBaseUrl
         ? `${serveBaseUrl}/${existingRelative}`
-        : `/api/admin/uploads/serve/${existingRelative}`;
+        : `/api/uploads/${existingRelative}`;
       return {
         fileName: existingFile,
         originalName: file.originalname,

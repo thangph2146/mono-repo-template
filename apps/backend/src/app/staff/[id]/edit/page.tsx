@@ -1,70 +1,85 @@
-"use client";
+"use client"
 
-import { useParams, useRouter } from "next/navigation";
-import { useEffect } from "react";
-import { useStaffForm, useStaffMutations } from "../../_component";
-import { StaffFormShell } from "../../_component/_form";
-import { useRbacCatalog, useStaffProfile } from "@/hooks/queries";
-import { useAuth } from "@/providers/auth-provider";
-import { AdminPageGuard } from "@/components/admin-page-guard";
-import { PageSection } from "@ui/components/layout";
-import { ADMIN_PAGE_TITLE_FORM_CLASS, ADMIN_PAGE_TITLE_ICON_SM_CLASS } from "@ui/lib/layout-shell";
-import { TypographyH1 } from "@ui/components/typography";
-import { Pencil } from "lucide-react";
-import { canUserAccess, PERMISSION_CODES } from "@workspace/api-client";
-import { Card, CardContent } from "@ui/components/card";
-import { api } from "@/lib/api";
+import { useParams, useRouter } from "next/navigation"
+import { useEffect } from "react"
+import { useStaffForm, useStaffMutations } from "../../_component"
+import { StaffFormShell } from "../../_component/_form"
+import { useRbacCatalog, useStaffProfile } from "@/hooks/queries"
+import { useAuth } from "@/providers/auth-provider"
+import { AdminPageGuard } from "@/components/admin-page-guard"
+import { PageSection } from "@ui/components/layout"
+import {
+  ADMIN_PAGE_TITLE_FORM_CLASS,
+  ADMIN_PAGE_TITLE_ICON_SM_CLASS,
+} from "@ui/lib/layout-shell"
+import { TypographyH1 } from "@ui/components/typography"
+import { ArrowLeft, Pencil } from "lucide-react"
+import { canUserAccess, PERMISSION_CODES } from "@workspace/api-client"
+import { Card, CardContent } from "@ui/components/card"
+import { api } from "@/lib/api"
+import { Button } from "@ui/components/button"
 
 function EditStaffPageInner() {
-  const params = useParams();
-  const router = useRouter();
-  const { user: session } = useAuth();
+  const params = useParams()
+  const router = useRouter()
+  const { user: session } = useAuth()
   const canManageUsers =
-    session != null && canUserAccess(session, PERMISSION_CODES.USERS_MANAGE);
-  const { updateMutation } = useStaffMutations({ api });
-  const { form, resetForm, populateForm, getPayload } = useStaffForm({ editingId: params.id as string });
+    session != null && canUserAccess(session, PERMISSION_CODES.USERS_MANAGE)
+  const { updateMutation } = useStaffMutations({ api })
+  const { form, resetForm, populateForm, getPayload } = useStaffForm({
+    editingId: params.id as string,
+  })
 
-  const userId = params.id as string;
+  const userId = params.id as string
 
-  const userQuery = useStaffProfile(userId);
+  const userQuery = useStaffProfile(userId)
   const rbacQuery = useRbacCatalog({
     enabled: Boolean(session) && canManageUsers,
-  });
+  })
 
-  const user = userQuery.data;
-  const roles = rbacQuery.data?.roles ?? [];
+  const user = userQuery.data
+  const roles = rbacQuery.data?.roles ?? []
 
   // Populate form when user data is loaded
   useEffect(() => {
     if (user) {
-      populateForm(user);
+      populateForm(user)
     }
-  }, [user, populateForm]);
+  }, [user, populateForm])
 
   const handleSubmit = async () => {
-    if (!user) return;
-    const isValid = await form.trigger();
+    if (!user) return
+    const isValid = await form.trigger()
     if (!isValid) {
-      return;
+      return
     }
 
-    const payload = getPayload();
+    const payload = getPayload()
     try {
-      await updateMutation.mutateAsync({ id: user.id, input: payload });
-      router.push(`/staff/${userId}`);
+      await updateMutation.mutateAsync({ id: user.id, input: payload })
+      router.push(`/staff/${userId}`)
     } catch {
       // Error handled by mutation
     }
-  };
+  }
 
   const handleCancel = () => {
-    resetForm();
-    router.push(`/staff/${userId}`);
-  };
+    resetForm()
+    router.push(`/staff/${userId}`)
+  }
 
   if (!session || !canManageUsers) {
     return (
-      <>
+      <PageSection max="full" className="min-w-0 space-y-6">
+        <div className="flex items-center justify-between">
+          <Button
+            variant="outline"
+            onClick={() => router.push(`/staff/${userId}`)}
+          >
+            <ArrowLeft className="size-4" aria-hidden />
+            Quay lại
+          </Button>
+        </div>
         <TypographyH1 className={ADMIN_PAGE_TITLE_FORM_CLASS}>
           <Pencil className={ADMIN_PAGE_TITLE_ICON_SM_CLASS} aria-hidden />
           Sửa nhân sự
@@ -74,22 +89,31 @@ function EditStaffPageInner() {
             <p className="text-muted-foreground">Không có quyền truy cập</p>
           </CardContent>
         </Card>
-      </>
-    );
+      </PageSection>
+    )
   }
 
   if (userQuery.isLoading || !user) {
     return (
       <PageSection max="full" className="min-w-0 space-y-6">
-        <TypographyH1 className={ADMIN_PAGE_TITLE_FORM_CLASS}>
-          <Pencil className={ADMIN_PAGE_TITLE_ICON_SM_CLASS} aria-hidden />
-          Sửa nhân sự
-        </TypographyH1>
+        <div className="flex items-center justify-between">
+          <Button
+            variant="outline"
+            onClick={() => router.push(`/staff/${userId}`)}
+          >
+            <ArrowLeft className="size-4" aria-hidden />
+            Quay lại
+          </Button>
+          <TypographyH1 className={ADMIN_PAGE_TITLE_FORM_CLASS}>
+            <Pencil className={ADMIN_PAGE_TITLE_ICON_SM_CLASS} aria-hidden />
+            Sửa nhân sự
+          </TypographyH1>
+        </div>
         <div className="py-12 text-center">
           <p className="text-muted-foreground">Đang tải...</p>
         </div>
       </PageSection>
-    );
+    )
   }
 
   return (
@@ -103,7 +127,7 @@ function EditStaffPageInner() {
         submitting={updateMutation.isPending}
       />
     </PageSection>
-  );
+  )
 }
 
 export default function EditStaffPage() {
@@ -111,5 +135,5 @@ export default function EditStaffPage() {
     <AdminPageGuard roles={["super_admin", "admin"]}>
       <EditStaffPageInner />
     </AdminPageGuard>
-  );
+  )
 }

@@ -38,6 +38,15 @@ export const ADMIN_ROUTES = {
   SYSTEM: 'admin/system',
   UNREAD_COUNTS: 'admin/unread-counts',
   PROXY_IMAGE: 'admin/proxy-image',
+  TRAINING_LEVELS: 'admin/training-levels',
+  LOCATIONS: 'admin/locations',
+  SPEAKERS: 'admin/speakers',
+  TRAINING_SYSTEMS: 'admin/training-systems',
+  COURSES: 'admin/courses',
+  ACADEMIC_YEARS: 'admin/academic-years',
+  MAJORS: 'admin/majors',
+  IMPORTED_USERS: 'admin/imported-users',
+  EVENT_TYPES: 'admin/event-types',
 } as const;
 
 export const PUBLIC_ROUTES = {

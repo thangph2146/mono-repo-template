@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import {
   Card,
@@ -16,7 +16,7 @@ import { Label } from "@ui/components/label";
 import { Textarea } from "@ui/components/textarea";
 import { Badge } from "@ui/components/badge";
 import Link from "next/link";
-import { KeyRound, Loader2, MapPin, Save, Shield, UserCircle } from "lucide-react";
+import { Camera, KeyRound, Loader2, MapPin, Save, Shield, UserCircle } from "lucide-react";
 import { cn } from "@ui/lib/utils";
 import {
   Table,
@@ -40,7 +40,7 @@ import {
   useUpdateStaffProfile,
 } from "@/hooks/queries";
 import { ApiError } from "@/lib/api";
-import { patchAdminSessionProfile } from "@/lib/auth-session";
+import { patchAdminSessionProfile, readAdminSession } from "@/lib/auth-session";
 import { PageSection } from "@ui/components/layout";
 import { AdminPageGuard } from "@/components/admin-page-guard";
 import { TypographyH1 } from "@ui/components/typography";
@@ -138,6 +138,9 @@ function AdminProfilePageInner() {
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
+  const [avatar, setAvatar] = useState("");
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const avatarInputRef = useRef<HTMLInputElement>(null);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -186,7 +189,43 @@ function AdminProfilePageInner() {
     setFullName(profile.fullName ?? "");
     setPhone(profile.phone ?? "");
     setAddress(profile.address ?? "");
+    setAvatar(profile.avatar ?? "");
   }, [profile]);
+
+  function initials(name: string): string {
+    const parts = name.trim().split(/\s+/).filter(Boolean);
+    if (parts.length === 0) return "?";
+    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+    return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
+  }
+
+  const handleUploadAvatar = async (file: File) => {
+    if (!userId) return;
+    setUploadingAvatar(true);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      fd.append("folderPath", "avatars");
+      const { DEFAULT_API_URL } = await import("@workspace/api-client");
+      const baseUrl = (process.env.NEXT_PUBLIC_API_URL ?? DEFAULT_API_URL).replace(/\/$/, "");
+      const uid = readAdminSession()?.id;
+      const res = await fetch(`${baseUrl}/admin/uploads`, {
+        method: "POST",
+        headers: uid ? { "X-User-Id": String(uid) } : {},
+        body: fd,
+      });
+      if (!res.ok) throw new Error("Upload thất bại");
+      const json = (await res.json()) as { data?: { url?: string } };
+      const url = json.data?.url;
+      if (!url) throw new Error("Không nhận được URL ảnh");
+      setAvatar(url);
+      toast.success("Đã tải ảnh đại diện");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Lỗi upload ảnh");
+    } finally {
+      setUploadingAvatar(false);
+    }
+  };
 
   const handleSaveProfile = async () => {
     if (!userId) return;
@@ -202,12 +241,14 @@ function AdminProfilePageInner() {
           fullName: name,
           phone: phone.trim() || undefined,
           address: address.trim() || undefined,
+          avatar: avatar.trim() || null,
         },
       });
       patchAdminSessionProfile({
         name: u.fullName,
         phone: u.phone,
         address: u.address,
+        image: u.avatar,
         updatedAt: u.updatedAt,
       });
       toast.success("Đã cập nhật hồ sơ");
@@ -283,17 +324,32 @@ function AdminProfilePageInner() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-5">
-              <div className="space-y-2">
-                <Label htmlFor="admin-email">Email</Label>
-                <Input
-                  id="admin-email"
-                  value={email}
-                  disabled
-                  className={cn(PROFILE_FIELD_CLASS, "bg-muted/35")}
-                />
-                <p className="text-xs leading-relaxed text-muted-foreground">
-                  Email đăng nhập đang được quản trị tập trung từ hệ thống và không chỉnh trực tiếp ở màn này.
-                </p>
+              <div className="flex items-start gap-4">
+                <div className="size-20 shrink-0">
+                  {avatar ? (
+                    <img
+                      src={avatar}
+                      alt="Avatar"
+                      className="size-20 rounded-full border-2 border-border/60 object-cover shadow-sm"
+                    />
+                  ) : (
+                    <div className="flex size-20 items-center justify-center rounded-full border-2 border-border/60 bg-muted text-xl font-bold text-muted-foreground">
+                      {fullName ? initials(fullName) : "?"}
+                    </div>
+                  )}
+                </div>
+                <div className="min-w-0 flex-1 space-y-2">
+                  <Label htmlFor="admin-email">Email</Label>
+                  <Input
+                    id="admin-email"
+                    value={email}
+                    disabled
+                    className={cn(PROFILE_FIELD_CLASS, "bg-muted/35")}
+                  />
+                  <p className="text-xs leading-relaxed text-muted-foreground">
+                    Email đăng nhập đang được quản trị tập trung từ hệ thống và không chỉnh trực tiếp ở màn này.
+                  </p>
+                </div>
               </div>
               <div className="space-y-2.5">
                 <p className="text-sm font-medium">Vai trò</p>
@@ -469,6 +525,51 @@ function AdminProfilePageInner() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
+              <div className="flex items-center gap-4">
+                <div className="relative size-20 shrink-0">
+                  {avatar ? (
+                    <img
+                      src={avatar}
+                      alt="Avatar"
+                      className="size-20 rounded-full border-2 border-border/60 object-cover shadow-sm"
+                    />
+                  ) : (
+                    <div className="flex size-20 items-center justify-center rounded-full border-2 border-border/60 bg-muted text-lg font-bold text-muted-foreground">
+                      {fullName ? initials(fullName) : "?"}
+                    </div>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => avatarInputRef.current?.click()}
+                    disabled={uploadingAvatar}
+                    className="absolute -bottom-1 -right-1 flex size-7 items-center justify-center rounded-full border border-border bg-background shadow-sm hover:bg-accent disabled:opacity-50"
+                    title="Tải ảnh đại diện"
+                  >
+                    <Camera className="size-3.5 text-muted-foreground" />
+                  </button>
+                  <input
+                    ref={avatarInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) void handleUploadAvatar(file);
+                    }}
+                  />
+                </div>
+                <div className="min-w-0 flex-1 space-y-1">
+                  <Label htmlFor="admin-avatar-url">URL ảnh đại diện</Label>
+                  <Input
+                    id="admin-avatar-url"
+                    value={avatar}
+                    onChange={(e) => setAvatar(e.target.value)}
+                    disabled={isLoading || !profile}
+                    placeholder="https://example.com/avatar.jpg"
+                    className={PROFILE_FIELD_CLASS}
+                  />
+                </div>
+              </div>
               <div className="space-y-2">
                 <Label htmlFor="admin-fullName">Họ và tên</Label>
                 <Input

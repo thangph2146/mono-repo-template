@@ -97,7 +97,7 @@ export function writeAdminSession(user: AuthUser): void {
 /** Sau khi cập nhật hồ sơ qua API — giữ nguyên permissions từ phiên đăng nhập. */
 export function patchAdminSessionProfile(
   fields: Partial<
-    Pick<AuthUser, "name" | "phone" | "address" | "updatedAt">
+    Pick<AuthUser, "name" | "phone" | "address" | "image" | "updatedAt">
   >,
 ): void {
   const prev = readAdminSession();

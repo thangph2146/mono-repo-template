@@ -11,7 +11,7 @@ type CreateStaffInput = Pick<
 
 type UpdateStaffInput = Pick<
   UpdateUserInput,
-  "fullName" | "password" | "isActive" | "roleCodes"
+  "fullName" | "password" | "isActive" | "roleCodes" | "avatar"
 >;
 
 export interface UseStaffMutationsProps {
@@ -49,6 +49,7 @@ export function useStaffMutations({ api: apiClient }: UseStaffMutationsProps) {
         isActive: input.isActive,
         password: input.password,
         roleCodes: input.roleCodes,
+        avatar: input.avatar,
       });
     },
     onSuccess: async (_data, variables) => {

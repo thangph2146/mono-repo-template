@@ -109,6 +109,7 @@ export function AdminShell({ children, classMain, isSidebar }: { children: React
   const { theme, setTheme } = useTheme();
   const { size, setSize } = useTextSize();
   const displayName = user?.name?.trim() || user?.email || "Người dùng HUB";
+  const avatarUrl = user?.image?.trim() || null;
   const onAuthRoute = isAuthPath(pathname);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
@@ -279,16 +280,24 @@ export function AdminShell({ children, classMain, isSidebar }: { children: React
                     </p>
                   </div>
                   <div className={HEADER_PROFILE_AVATAR}>
-                    {initials(displayName)}
+                    {avatarUrl ? (
+                      <img src={avatarUrl} alt="" className="size-full rounded-lg object-cover" />
+                    ) : (
+                      initials(displayName)
+                    )}
                   </div>
                   <ChevronDown className="hidden size-4 shrink-0 text-muted-foreground transition-transform duration-200 group-aria-expanded:rotate-180 sm:block" />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-72 p-2">
                   <div className="px-2 py-2">
                     <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-primary/20 bg-primary/10 text-sm font-bold text-primary">
-                        {initials(displayName)}
-                      </div>
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-primary/20 bg-primary/10 text-sm font-bold text-primary">
+                      {avatarUrl ? (
+                        <img src={avatarUrl} alt="" className="size-full rounded-lg object-cover" />
+                      ) : (
+                        initials(displayName)
+                      )}
+                    </div>
                       <div className="min-w-0">
                         <p className="truncate text-sm font-semibold text-foreground">
                           {displayName}

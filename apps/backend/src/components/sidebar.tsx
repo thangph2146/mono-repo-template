@@ -535,6 +535,7 @@ export function MobileSidebarPanel({ onNavigate }: { onNavigate: () => void }) {
   const { user, logout } = useAuth()
   const displayName = displayNameOf(user)
   const roleText = roleSummaryOf(user)
+  const avatarUrl = user?.image?.trim() || null
 
   return (
     <div className="flex h-full flex-col bg-primary text-white">
@@ -563,8 +564,12 @@ export function MobileSidebarPanel({ onNavigate }: { onNavigate: () => void }) {
             onClick={onNavigate}
             className="flex min-w-0 flex-1 items-center gap-3"
           >
-            <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-white/14 text-sm font-semibold text-white">
-              {initialsOf(displayName)}
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-white/14 text-sm font-semibold text-white overflow-hidden">
+              {avatarUrl ? (
+                <img src={avatarUrl} alt="" className="size-full object-cover" />
+              ) : (
+                initialsOf(displayName)
+              )}
             </div>
             <div className="min-w-0">
               <p className="truncate text-base font-semibold text-white">

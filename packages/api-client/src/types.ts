@@ -34,6 +34,7 @@ export interface User extends Omit<AuditFields, "id"> {
   fullName: string;
   phone?: string | null;
   address?: string | null;
+  avatar?: string | null;
   roles: UserRoleRef[];
   isActive: boolean;
   /** Thùng rác admin — optional vì API danh sách chính không trả bản ghi đã xóa. */
@@ -75,11 +76,12 @@ export type CreateUserInput = Omit<User, keyof AuditFields | 'roles'> & {
 
 export type UpdateUserInput = Partial<CreateUserInput>;
 
-/** Cập nhật hồ sơ đại lý (PUT /users/:id/profile) — không đổi email/mật khẩu/role. */
+/** Cập nhật hồ sơ (PUT /users/:id/profile) — không đổi email/mật khẩu/role. */
 export type UpdateProfileInput = {
   fullName?: string;
   phone?: string;
   address?: string;
+  avatar?: string | null;
 };
 
 export type ChangePasswordInput = {

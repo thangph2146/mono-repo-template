@@ -9,6 +9,7 @@ export const staffFormSchema = z.object({
   password: z.string().min(6, "Mật khẩu tối thiểu 6 ký tự").optional().or(z.literal("")),
   isActive: z.boolean(),
   roleCodes: z.array(z.string()).min(1, "Vui lòng chọn ít nhất một vai trò"),
+  avatar: z.string().optional(),
 });
 
 export type StaffFormValues = z.infer<typeof staffFormSchema>;
@@ -28,6 +29,7 @@ export function useStaffForm(options: UseStaffFormOptions = {}) {
       password: "",
       isActive: true,
       roleCodes: [],
+      avatar: "",
     },
     mode: "onChange",
   });
@@ -47,6 +49,7 @@ export function useStaffForm(options: UseStaffFormOptions = {}) {
     fullName: string;
     isActive: boolean;
     roles: { code: string }[];
+    avatar?: string | null;
   }) => {
     form.reset({
       email: user.email,
@@ -54,6 +57,7 @@ export function useStaffForm(options: UseStaffFormOptions = {}) {
       password: "",
       isActive: user.isActive,
       roleCodes: user.roles.map((r) => r.code),
+      avatar: user.avatar ?? "",
     });
   }, [form]);
 
@@ -72,6 +76,7 @@ export function useStaffForm(options: UseStaffFormOptions = {}) {
     password: string;
     isActive: boolean;
     roleCodes: string[];
+    avatar?: string | null;
 } => {
     const values = form.getValues();
     const payload: {
@@ -80,12 +85,14 @@ export function useStaffForm(options: UseStaffFormOptions = {}) {
       password: string;
       isActive: boolean;
       roleCodes: string[];
+      avatar?: string | null;
     } = {
       fullName: values.fullName.trim(),
       isActive: values.isActive,
       email: "",
       password: "",
       roleCodes: values.roleCodes,
+      avatar: values.avatar?.trim() || null,
     };
 
     if (!editingId) {

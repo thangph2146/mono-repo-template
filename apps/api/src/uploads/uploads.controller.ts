@@ -116,11 +116,6 @@ export class UploadsController {
     @UploadedFile()
     file?: { buffer: Buffer; originalname: string; mimetype: string },
   ) {
-    const userId = this.getUserId(headers);
-    if (!userId) {
-      return this.unauthorized(res);
-    }
-
     const formData = req.body as Record<string, string>;
     const action = formData?.action;
 
@@ -227,7 +222,7 @@ export class UploadsController {
     }
   }
 
-  /** GET /api/admin/uploads/serve/* - Serve file ảnh (public để img src gọi được). path-to-regexp v8: dùng *path (có thể trả về mảng) */
+  /** GET /api/uploads/*path - Serve file ảnh. path-to-regexp v8: dùng *path (có thể trả về mảng) */
   @Get('serve/*path')
   async serve(
     @Param('path') relativePath: string | string[],
@@ -258,14 +253,12 @@ export class UploadsController {
 
   private getServeBaseUrl(req?: Request): string {
     if (appConfig.publicUrl) {
-      return `${appConfig.publicUrl.replace(/\/$/, '')}/api/admin/uploads/serve`;
+      return `${appConfig.publicUrl.replace(/\/$/, '')}/api/uploads`;
     }
     if (appConfig.nodeEnv === 'production') {
       return '';
     }
     const fallback = req && `${req.protocol || 'http'}://${req.get('host')}`;
-    return fallback
-      ? `${fallback.replace(/\/$/, '')}/api/admin/uploads/serve`
-      : '';
+    return fallback ? `${fallback.replace(/\/$/, '')}/api/uploads` : '';
   }
 }

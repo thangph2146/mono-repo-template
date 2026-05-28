@@ -105,12 +105,7 @@ function openExternalUrlSafely(rawUrl: string): boolean {
 function buildHrefFromJsDownloadArg(jsArg: string): string {
   // jsArg is the inner string from javascript:download("...").
   // It might be a relativePath like `files/2026/04/02/foo.pdf`, or an absolute URL.
-  const firstSegment =
-    typeof window !== "undefined"
-      ? (window.location.pathname.split("/").filter(Boolean)[0] ?? "")
-      : ""
-  const serveBase =
-    firstSegment === "admin" ? "/api/admin/uploads/serve" : "/api/uploads/serve"
+  const serveBase = "/api/uploads"
 
   const arg = jsArg.trim()
   if (!arg) return "about:blank"
