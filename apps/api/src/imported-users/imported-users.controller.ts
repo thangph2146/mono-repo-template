@@ -26,10 +26,10 @@ import {
   createSuccessResponse,
   createErrorResponse,
 } from '../common/api-response';
-import { APP_HEADERS } from '../config/constants';
+import { APP_HEADERS, ADMIN_ROUTES } from '../config/constants';
 
 @ApiTags('Imported Users')
-@Controller('admin/imported-users')
+@Controller(ADMIN_ROUTES.IMPORTED_USERS)
 export class ImportedUsersController {
   private readonly logger = new Logger(ImportedUsersController.name);
 

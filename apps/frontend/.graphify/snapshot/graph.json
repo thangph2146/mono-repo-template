@@ -297,15 +297,6 @@
       "type": "directory"
     },
     {
-      "id": "dir_src_components_graphify",
-      "label": "graphify/",
-      "path": "src/components/graphify",
-      "color": "#ff9d00",
-      "size": 22,
-      "community": "src/components",
-      "type": "directory"
-    },
-    {
       "id": "dir_src_components_icons",
       "label": "icons/",
       "path": "src/components/icons",
@@ -357,6 +348,16 @@
       "id": "file_src_components_shared_post_content_renderer_tsx",
       "label": "post-content-renderer.tsx",
       "path": "src/components/shared/post-content-renderer.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/components/shared",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_components_shared_post_content_tsx",
+      "label": "post-content.tsx",
+      "path": "src/components/shared/post-content.tsx",
       "color": "#00ddff",
       "size": 10,
       "community": "src/components/shared",
@@ -1165,11 +1166,6 @@
     },
     {
       "source": "dir_src_components",
-      "target": "dir_src_components_graphify",
-      "relation": "contains"
-    },
-    {
-      "source": "dir_src_components",
       "target": "dir_src_components_icons",
       "relation": "contains"
     },
@@ -1196,6 +1192,11 @@
     {
       "source": "dir_src_components_shared",
       "target": "file_src_components_shared_post_content_renderer_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_components_shared",
+      "target": "file_src_components_shared_post_content_tsx",
       "relation": "contains"
     },
     {
@@ -1560,7 +1561,7 @@
     },
     {
       "source": "file_src_app__public__bai_viet__slug__page_tsx",
-      "target": "file_src_components_shared_post_content_renderer_tsx",
+      "target": "file_src_components_shared_post_content_tsx",
       "relation": "imports"
     },
     {

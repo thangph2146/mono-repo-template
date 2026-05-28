@@ -23,6 +23,7 @@ export { RbacApi } from './resources/rbac';
 export { ContactRequestsApi } from './resources/contact-requests';
 export { MyStudentsApi } from './resources/my-students';
 export { ParentStudentsApi } from './resources/parent-students';
+export { SystemApi } from './resources/system';
 export { StoreSyncSdk, createStoreSyncSdk, DEFAULT_API_URL } from './sdk';
 export {
   unwrapApiEnvelope,

@@ -26,10 +26,10 @@ import {
   createSuccessResponse,
   createErrorResponse,
 } from '../common/api-response';
-import { APP_HEADERS } from '../config/constants';
+import { APP_HEADERS, ADMIN_ROUTES } from '../config/constants';
 
 @ApiTags('Event Types')
-@Controller('admin/event-types')
+@Controller(ADMIN_ROUTES.EVENT_TYPES)
 export class EventTypesController {
   private readonly logger = new Logger(EventTypesController.name);
 

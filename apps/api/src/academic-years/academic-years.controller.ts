@@ -25,10 +25,10 @@ import {
   createSuccessResponse,
   createErrorResponse,
 } from '../common/api-response';
-import { APP_HEADERS } from '../config/constants';
+import { APP_HEADERS, ADMIN_ROUTES } from '../config/constants';
 
 @ApiTags('AcademicYears')
-@Controller('admin/academic-years')
+@Controller(ADMIN_ROUTES.ACADEMIC_YEARS)
 export class AcademicYearsController {
   constructor(private readonly service: AcademicYearsService) {}
 

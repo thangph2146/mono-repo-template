@@ -10,6 +10,45 @@
       "type": "directory"
     },
     {
+      "id": "dir_src_academic_years",
+      "label": "academic-years/",
+      "path": "src/academic-years",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_academic_years_academic_years_controller_ts",
+      "label": "academic-years.controller.ts",
+      "path": "src/academic-years/academic-years.controller.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/academic-years",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_academic_years_academic_years_module_ts",
+      "label": "academic-years.module.ts",
+      "path": "src/academic-years/academic-years.module.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/academic-years",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_academic_years_academic_years_service_ts",
+      "label": "academic-years.service.ts",
+      "path": "src/academic-years/academic-years.service.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/academic-years",
+      "type": "ts",
+      "client": false
+    },
+    {
       "id": "dir_src_accounts",
       "label": "accounts/",
       "path": "src/accounts",
@@ -32,6 +71,16 @@
       "id": "file_src_accounts_accounts_module_ts",
       "label": "accounts.module.ts",
       "path": "src/accounts/accounts.module.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/accounts",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_accounts_accounts_service_spec_ts",
+      "label": "accounts.service.spec.ts",
+      "path": "src/accounts/accounts.service.spec.ts",
       "color": "#00ff41",
       "size": 10,
       "community": "src/accounts",
@@ -71,6 +120,16 @@
       "id": "file_src_admission_results_admission_results_module_ts",
       "label": "admission-results.module.ts",
       "path": "src/admission-results/admission-results.module.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/admission-results",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_admission_results_admission_results_service_spec_ts",
+      "label": "admission-results.service.spec.ts",
+      "path": "src/admission-results/admission-results.service.spec.ts",
       "color": "#00ff41",
       "size": 10,
       "community": "src/admission-results",
@@ -127,6 +186,16 @@
       "client": false
     },
     {
+      "id": "file_src_auth_auth_service_spec_ts",
+      "label": "auth.service.spec.ts",
+      "path": "src/auth/auth.service.spec.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/auth",
+      "type": "ts",
+      "client": false
+    },
+    {
       "id": "file_src_auth_auth_service_ts",
       "label": "auth.service.ts",
       "path": "src/auth/auth.service.ts",
@@ -166,6 +235,16 @@
       "client": false
     },
     {
+      "id": "file_src_categories_categories_service_spec_ts",
+      "label": "categories.service.spec.ts",
+      "path": "src/categories/categories.service.spec.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/categories",
+      "type": "ts",
+      "client": false
+    },
+    {
       "id": "file_src_categories_categories_service_ts",
       "label": "categories.service.ts",
       "path": "src/categories/categories.service.ts",
@@ -198,6 +277,16 @@
       "id": "file_src_comments_comments_module_ts",
       "label": "comments.module.ts",
       "path": "src/comments/comments.module.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/comments",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_comments_comments_service_spec_ts",
+      "label": "comments.service.spec.ts",
+      "path": "src/comments/comments.service.spec.ts",
       "color": "#00ff41",
       "size": 10,
       "community": "src/comments",
@@ -382,12 +471,61 @@
       "client": false
     },
     {
+      "id": "file_src_contact_requests_contact_requests_service_spec_ts",
+      "label": "contact-requests.service.spec.ts",
+      "path": "src/contact-requests/contact-requests.service.spec.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/contact-requests",
+      "type": "ts",
+      "client": false
+    },
+    {
       "id": "file_src_contact_requests_contact_requests_service_ts",
       "label": "contact-requests.service.ts",
       "path": "src/contact-requests/contact-requests.service.ts",
       "color": "#00ff41",
       "size": 10,
       "community": "src/contact-requests",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_courses",
+      "label": "courses/",
+      "path": "src/courses",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_courses_courses_controller_ts",
+      "label": "courses.controller.ts",
+      "path": "src/courses/courses.controller.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/courses",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_courses_courses_module_ts",
+      "label": "courses.module.ts",
+      "path": "src/courses/courses.module.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/courses",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_courses_courses_service_ts",
+      "label": "courses.service.ts",
+      "path": "src/courses/courses.service.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/courses",
       "type": "ts",
       "client": false
     },
@@ -421,6 +559,16 @@
       "client": false
     },
     {
+      "id": "file_src_dashboard_dashboard_service_spec_ts",
+      "label": "dashboard.service.spec.ts",
+      "path": "src/dashboard/dashboard.service.spec.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/dashboard",
+      "type": "ts",
+      "client": false
+    },
+    {
       "id": "file_src_dashboard_dashboard_service_ts",
       "label": "dashboard.service.ts",
       "path": "src/dashboard/dashboard.service.ts",
@@ -438,6 +586,16 @@
       "size": 22,
       "community": "src",
       "type": "directory"
+    },
+    {
+      "id": "file_src_entities_academic_year_entity_ts",
+      "label": "academic-year.entity.ts",
+      "path": "src/entities/academic-year.entity.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/entities",
+      "type": "ts",
+      "client": false
     },
     {
       "id": "file_src_entities_account_entity_ts",
@@ -500,6 +658,26 @@
       "client": false
     },
     {
+      "id": "file_src_entities_course_entity_ts",
+      "label": "course.entity.ts",
+      "path": "src/entities/course.entity.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/entities",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_entities_event_type_entity_ts",
+      "label": "event-type.entity.ts",
+      "path": "src/entities/event-type.entity.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/entities",
+      "type": "ts",
+      "client": false
+    },
+    {
       "id": "file_src_entities_group_member_entity_ts",
       "label": "group-member.entity.ts",
       "path": "src/entities/group-member.entity.ts",
@@ -513,6 +691,36 @@
       "id": "file_src_entities_group_entity_ts",
       "label": "group.entity.ts",
       "path": "src/entities/group.entity.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/entities",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_entities_imported_user_entity_ts",
+      "label": "imported-user.entity.ts",
+      "path": "src/entities/imported-user.entity.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/entities",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_entities_location_entity_ts",
+      "label": "location.entity.ts",
+      "path": "src/entities/location.entity.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/entities",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_entities_major_entity_ts",
+      "label": "major.entity.ts",
+      "path": "src/entities/major.entity.ts",
       "color": "#00ff41",
       "size": 10,
       "community": "src/entities",
@@ -630,6 +838,16 @@
       "client": false
     },
     {
+      "id": "file_src_entities_speaker_entity_ts",
+      "label": "speaker.entity.ts",
+      "path": "src/entities/speaker.entity.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/entities",
+      "type": "ts",
+      "client": false
+    },
+    {
       "id": "file_src_entities_student_entity_ts",
       "label": "student.entity.ts",
       "path": "src/entities/student.entity.ts",
@@ -643,6 +861,26 @@
       "id": "file_src_entities_tag_entity_ts",
       "label": "tag.entity.ts",
       "path": "src/entities/tag.entity.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/entities",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_entities_training_level_entity_ts",
+      "label": "training-level.entity.ts",
+      "path": "src/entities/training-level.entity.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/entities",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_entities_training_system_entity_ts",
+      "label": "training-system.entity.ts",
+      "path": "src/entities/training-system.entity.ts",
       "color": "#00ff41",
       "size": 10,
       "community": "src/entities",
@@ -676,6 +914,45 @@
       "color": "#00ff41",
       "size": 10,
       "community": "src/entities",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_event_types",
+      "label": "event-types/",
+      "path": "src/event-types",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_event_types_event_types_controller_ts",
+      "label": "event-types.controller.ts",
+      "path": "src/event-types/event-types.controller.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/event-types",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_event_types_event_types_module_ts",
+      "label": "event-types.module.ts",
+      "path": "src/event-types/event-types.module.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/event-types",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_event_types_event_types_service_ts",
+      "label": "event-types.service.ts",
+      "path": "src/event-types/event-types.service.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/event-types",
       "type": "ts",
       "client": false
     },
@@ -719,6 +996,16 @@
       "client": false
     },
     {
+      "id": "file_src_groups_groups_service_spec_ts",
+      "label": "groups.service.spec.ts",
+      "path": "src/groups/groups.service.spec.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/groups",
+      "type": "ts",
+      "client": false
+    },
+    {
       "id": "file_src_groups_groups_service_ts",
       "label": "groups.service.ts",
       "path": "src/groups/groups.service.ts",
@@ -729,13 +1016,82 @@
       "client": false
     },
     {
-      "id": "dir_src_hero_slides",
-      "label": "hero-slides/",
-      "path": "src/hero-slides",
+      "id": "dir_src_imported_users",
+      "label": "imported-users/",
+      "path": "src/imported-users",
       "color": "#ff9d00",
       "size": 22,
       "community": "src",
       "type": "directory"
+    },
+    {
+      "id": "file_src_imported_users_imported_users_controller_ts",
+      "label": "imported-users.controller.ts",
+      "path": "src/imported-users/imported-users.controller.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/imported-users",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_imported_users_imported_users_module_ts",
+      "label": "imported-users.module.ts",
+      "path": "src/imported-users/imported-users.module.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/imported-users",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_imported_users_imported_users_service_ts",
+      "label": "imported-users.service.ts",
+      "path": "src/imported-users/imported-users.service.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/imported-users",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_locations",
+      "label": "locations/",
+      "path": "src/locations",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_locations_locations_controller_ts",
+      "label": "locations.controller.ts",
+      "path": "src/locations/locations.controller.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/locations",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_locations_locations_module_ts",
+      "label": "locations.module.ts",
+      "path": "src/locations/locations.module.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/locations",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_locations_locations_service_ts",
+      "label": "locations.service.ts",
+      "path": "src/locations/locations.service.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/locations",
+      "type": "ts",
+      "client": false
     },
     {
       "id": "file_src_main_ts",
@@ -744,6 +1100,45 @@
       "color": "#00ff41",
       "size": 10,
       "community": "src",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_majors",
+      "label": "majors/",
+      "path": "src/majors",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_majors_majors_controller_ts",
+      "label": "majors.controller.ts",
+      "path": "src/majors/majors.controller.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/majors",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_majors_majors_module_ts",
+      "label": "majors.module.ts",
+      "path": "src/majors/majors.module.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/majors",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_majors_majors_service_ts",
+      "label": "majors.service.ts",
+      "path": "src/majors/majors.service.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/majors",
       "type": "ts",
       "client": false
     },
@@ -924,6 +1319,16 @@
       "client": false
     },
     {
+      "id": "file_src_notifications_notifications_service_spec_ts",
+      "label": "notifications.service.spec.ts",
+      "path": "src/notifications/notifications.service.spec.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/notifications",
+      "type": "ts",
+      "client": false
+    },
+    {
       "id": "file_src_notifications_notifications_service_ts",
       "label": "notifications.service.ts",
       "path": "src/notifications/notifications.service.ts",
@@ -1034,6 +1439,16 @@
       "id": "file_src_posts_posts_module_ts",
       "label": "posts.module.ts",
       "path": "src/posts/posts.module.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/posts",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_posts_posts_service_spec_ts",
+      "label": "posts.service.spec.ts",
+      "path": "src/posts/posts.service.spec.ts",
       "color": "#00ff41",
       "size": 10,
       "community": "src/posts",
@@ -1171,6 +1586,16 @@
       "id": "file_src_roles_roles_module_ts",
       "label": "roles.module.ts",
       "path": "src/roles/roles.module.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/roles",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_roles_roles_service_spec_ts",
+      "label": "roles.service.spec.ts",
+      "path": "src/roles/roles.service.spec.ts",
       "color": "#00ff41",
       "size": 10,
       "community": "src/roles",
@@ -1353,6 +1778,16 @@
       "client": false
     },
     {
+      "id": "file_src_settings_settings_service_spec_ts",
+      "label": "settings.service.spec.ts",
+      "path": "src/settings/settings.service.spec.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/settings",
+      "type": "ts",
+      "client": false
+    },
+    {
       "id": "file_src_settings_settings_service_ts",
       "label": "settings.service.ts",
       "path": "src/settings/settings.service.ts",
@@ -1412,6 +1847,45 @@
       "client": false
     },
     {
+      "id": "dir_src_speakers",
+      "label": "speakers/",
+      "path": "src/speakers",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_speakers_speakers_controller_ts",
+      "label": "speakers.controller.ts",
+      "path": "src/speakers/speakers.controller.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/speakers",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_speakers_speakers_module_ts",
+      "label": "speakers.module.ts",
+      "path": "src/speakers/speakers.module.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/speakers",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_speakers_speakers_service_ts",
+      "label": "speakers.service.ts",
+      "path": "src/speakers/speakers.service.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/speakers",
+      "type": "ts",
+      "client": false
+    },
+    {
       "id": "dir_src_students",
       "label": "students/",
       "path": "src/students",
@@ -1434,6 +1908,16 @@
       "id": "file_src_students_students_module_ts",
       "label": "students.module.ts",
       "path": "src/students/students.module.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/students",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_students_students_service_spec_ts",
+      "label": "students.service.spec.ts",
+      "path": "src/students/students.service.spec.ts",
       "color": "#00ff41",
       "size": 10,
       "community": "src/students",
@@ -1529,12 +2013,100 @@
       "client": false
     },
     {
+      "id": "file_src_tags_tags_service_spec_ts",
+      "label": "tags.service.spec.ts",
+      "path": "src/tags/tags.service.spec.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/tags",
+      "type": "ts",
+      "client": false
+    },
+    {
       "id": "file_src_tags_tags_service_ts",
       "label": "tags.service.ts",
       "path": "src/tags/tags.service.ts",
       "color": "#00ff41",
       "size": 10,
       "community": "src/tags",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_training_levels",
+      "label": "training-levels/",
+      "path": "src/training-levels",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_training_levels_training_levels_controller_ts",
+      "label": "training-levels.controller.ts",
+      "path": "src/training-levels/training-levels.controller.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/training-levels",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_training_levels_training_levels_module_ts",
+      "label": "training-levels.module.ts",
+      "path": "src/training-levels/training-levels.module.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/training-levels",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_training_levels_training_levels_service_ts",
+      "label": "training-levels.service.ts",
+      "path": "src/training-levels/training-levels.service.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/training-levels",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "dir_src_training_systems",
+      "label": "training-systems/",
+      "path": "src/training-systems",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_training_systems_training_systems_controller_ts",
+      "label": "training-systems.controller.ts",
+      "path": "src/training-systems/training-systems.controller.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/training-systems",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_training_systems_training_systems_module_ts",
+      "label": "training-systems.module.ts",
+      "path": "src/training-systems/training-systems.module.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/training-systems",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_training_systems_training_systems_service_ts",
+      "label": "training-systems.service.ts",
+      "path": "src/training-systems/training-systems.service.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/training-systems",
       "type": "ts",
       "client": false
     },
@@ -1617,6 +2189,16 @@
       "client": false
     },
     {
+      "id": "file_src_users_users_service_spec_ts",
+      "label": "users.service.spec.ts",
+      "path": "src/users/users.service.spec.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/users",
+      "type": "ts",
+      "client": false
+    },
+    {
       "id": "file_src_users_users_service_ts",
       "label": "users.service.ts",
       "path": "src/users/users.service.ts",
@@ -1630,6 +2212,26 @@
   "links": [
     {
       "source": "dir_src",
+      "target": "dir_src_academic_years",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_academic_years",
+      "target": "file_src_academic_years_academic_years_controller_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_academic_years",
+      "target": "file_src_academic_years_academic_years_module_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_academic_years",
+      "target": "file_src_academic_years_academic_years_service_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
       "target": "dir_src_accounts",
       "relation": "contains"
     },
@@ -1641,6 +2243,11 @@
     {
       "source": "dir_src_accounts",
       "target": "file_src_accounts_accounts_module_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_accounts",
+      "target": "file_src_accounts_accounts_service_spec_ts",
       "relation": "contains"
     },
     {
@@ -1661,6 +2268,11 @@
     {
       "source": "dir_src_admission_results",
       "target": "file_src_admission_results_admission_results_module_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_admission_results",
+      "target": "file_src_admission_results_admission_results_service_spec_ts",
       "relation": "contains"
     },
     {
@@ -1690,6 +2302,11 @@
     },
     {
       "source": "dir_src_auth",
+      "target": "file_src_auth_auth_service_spec_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_auth",
       "target": "file_src_auth_auth_service_ts",
       "relation": "contains"
     },
@@ -1710,6 +2327,11 @@
     },
     {
       "source": "dir_src_categories",
+      "target": "file_src_categories_categories_service_spec_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_categories",
       "target": "file_src_categories_categories_service_ts",
       "relation": "contains"
     },
@@ -1726,6 +2348,11 @@
     {
       "source": "dir_src_comments",
       "target": "file_src_comments_comments_module_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_comments",
+      "target": "file_src_comments_comments_service_spec_ts",
       "relation": "contains"
     },
     {
@@ -1820,7 +2447,32 @@
     },
     {
       "source": "dir_src_contact_requests",
+      "target": "file_src_contact_requests_contact_requests_service_spec_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_contact_requests",
       "target": "file_src_contact_requests_contact_requests_service_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_courses",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_courses",
+      "target": "file_src_courses_courses_controller_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_courses",
+      "target": "file_src_courses_courses_module_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_courses",
+      "target": "file_src_courses_courses_service_ts",
       "relation": "contains"
     },
     {
@@ -1840,12 +2492,22 @@
     },
     {
       "source": "dir_src_dashboard",
+      "target": "file_src_dashboard_dashboard_service_spec_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_dashboard",
       "target": "file_src_dashboard_dashboard_service_ts",
       "relation": "contains"
     },
     {
       "source": "dir_src",
       "target": "dir_src_entities",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_entities",
+      "target": "file_src_entities_academic_year_entity_ts",
       "relation": "contains"
     },
     {
@@ -1880,12 +2542,37 @@
     },
     {
       "source": "dir_src_entities",
+      "target": "file_src_entities_course_entity_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_entities",
+      "target": "file_src_entities_event_type_entity_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_entities",
       "target": "file_src_entities_group_member_entity_ts",
       "relation": "contains"
     },
     {
       "source": "dir_src_entities",
       "target": "file_src_entities_group_entity_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_entities",
+      "target": "file_src_entities_imported_user_entity_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_entities",
+      "target": "file_src_entities_location_entity_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_entities",
+      "target": "file_src_entities_major_entity_ts",
       "relation": "contains"
     },
     {
@@ -1945,12 +2632,27 @@
     },
     {
       "source": "dir_src_entities",
+      "target": "file_src_entities_speaker_entity_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_entities",
       "target": "file_src_entities_student_entity_ts",
       "relation": "contains"
     },
     {
       "source": "dir_src_entities",
       "target": "file_src_entities_tag_entity_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_entities",
+      "target": "file_src_entities_training_level_entity_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_entities",
+      "target": "file_src_entities_training_system_entity_ts",
       "relation": "contains"
     },
     {
@@ -1966,6 +2668,26 @@
     {
       "source": "dir_src_entities",
       "target": "file_src_entities_verification_token_entity_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_event_types",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_event_types",
+      "target": "file_src_event_types_event_types_controller_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_event_types",
+      "target": "file_src_event_types_event_types_module_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_event_types",
+      "target": "file_src_event_types_event_types_service_ts",
       "relation": "contains"
     },
     {
@@ -1990,17 +2712,77 @@
     },
     {
       "source": "dir_src_groups",
+      "target": "file_src_groups_groups_service_spec_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_groups",
       "target": "file_src_groups_groups_service_ts",
       "relation": "contains"
     },
     {
       "source": "dir_src",
-      "target": "dir_src_hero_slides",
+      "target": "dir_src_imported_users",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_imported_users",
+      "target": "file_src_imported_users_imported_users_controller_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_imported_users",
+      "target": "file_src_imported_users_imported_users_module_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_imported_users",
+      "target": "file_src_imported_users_imported_users_service_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_locations",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_locations",
+      "target": "file_src_locations_locations_controller_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_locations",
+      "target": "file_src_locations_locations_module_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_locations",
+      "target": "file_src_locations_locations_service_ts",
       "relation": "contains"
     },
     {
       "source": "dir_src",
       "target": "file_src_main_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_majors",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_majors",
+      "target": "file_src_majors_majors_controller_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_majors",
+      "target": "file_src_majors_majors_module_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_majors",
+      "target": "file_src_majors_majors_service_ts",
       "relation": "contains"
     },
     {
@@ -2095,6 +2877,11 @@
     },
     {
       "source": "dir_src_notifications",
+      "target": "file_src_notifications_notifications_service_spec_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_notifications",
       "target": "file_src_notifications_notifications_service_ts",
       "relation": "contains"
     },
@@ -2151,6 +2938,11 @@
     {
       "source": "dir_src_posts",
       "target": "file_src_posts_posts_module_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_posts",
+      "target": "file_src_posts_posts_service_spec_ts",
       "relation": "contains"
     },
     {
@@ -2221,6 +3013,11 @@
     {
       "source": "dir_src_roles",
       "target": "file_src_roles_roles_module_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_roles",
+      "target": "file_src_roles_roles_service_spec_ts",
       "relation": "contains"
     },
     {
@@ -2315,6 +3112,11 @@
     },
     {
       "source": "dir_src_settings",
+      "target": "file_src_settings_settings_service_spec_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_settings",
       "target": "file_src_settings_settings_service_ts",
       "relation": "contains"
     },
@@ -2345,6 +3147,26 @@
     },
     {
       "source": "dir_src",
+      "target": "dir_src_speakers",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_speakers",
+      "target": "file_src_speakers_speakers_controller_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_speakers",
+      "target": "file_src_speakers_speakers_module_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_speakers",
+      "target": "file_src_speakers_speakers_service_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
       "target": "dir_src_students",
       "relation": "contains"
     },
@@ -2356,6 +3178,11 @@
     {
       "source": "dir_src_students",
       "target": "file_src_students_students_module_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_students",
+      "target": "file_src_students_students_service_spec_ts",
       "relation": "contains"
     },
     {
@@ -2405,7 +3232,52 @@
     },
     {
       "source": "dir_src_tags",
+      "target": "file_src_tags_tags_service_spec_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_tags",
       "target": "file_src_tags_tags_service_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_training_levels",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_training_levels",
+      "target": "file_src_training_levels_training_levels_controller_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_training_levels",
+      "target": "file_src_training_levels_training_levels_module_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_training_levels",
+      "target": "file_src_training_levels_training_levels_service_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src",
+      "target": "dir_src_training_systems",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_training_systems",
+      "target": "file_src_training_systems_training_systems_controller_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_training_systems",
+      "target": "file_src_training_systems_training_systems_module_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_training_systems",
+      "target": "file_src_training_systems_training_systems_service_ts",
       "relation": "contains"
     },
     {
@@ -2450,8 +3322,48 @@
     },
     {
       "source": "dir_src_users",
+      "target": "file_src_users_users_service_spec_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_users",
       "target": "file_src_users_users_service_ts",
       "relation": "contains"
+    },
+    {
+      "source": "file_src_academic_years_academic_years_controller_ts",
+      "target": "file_src_academic_years_academic_years_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_academic_years_academic_years_controller_ts",
+      "target": "file_src_common_api_response_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_academic_years_academic_years_controller_ts",
+      "target": "file_src_config_constants_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_academic_years_academic_years_module_ts",
+      "target": "file_src_academic_years_academic_years_controller_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_academic_years_academic_years_module_ts",
+      "target": "file_src_academic_years_academic_years_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_academic_years_academic_years_service_ts",
+      "target": "file_src_entities_academic_year_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_academic_years_academic_years_service_ts",
+      "target": "file_src_common_pagination_ts",
+      "relation": "imports"
     },
     {
       "source": "file_src_accounts_accounts_controller_ts",
@@ -2476,6 +3388,26 @@
     {
       "source": "file_src_accounts_accounts_module_ts",
       "target": "file_src_accounts_accounts_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_accounts_accounts_service_spec_ts",
+      "target": "file_src_accounts_accounts_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_accounts_accounts_service_spec_ts",
+      "target": "file_src_entities_user_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_accounts_accounts_service_spec_ts",
+      "target": "file_src_entities_user_role_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_accounts_accounts_service_spec_ts",
+      "target": "file_src_entities_role_entity_ts",
       "relation": "imports"
     },
     {
@@ -2531,6 +3463,16 @@
     {
       "source": "file_src_admission_results_admission_results_module_ts",
       "target": "file_src_admission_results_admission_results_controller_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_admission_results_admission_results_service_spec_ts",
+      "target": "file_src_admission_results_admission_results_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_admission_results_admission_results_service_spec_ts",
+      "target": "file_src_entities_admission_result_entity_ts",
       "relation": "imports"
     },
     {
@@ -2674,6 +3616,51 @@
       "relation": "imports"
     },
     {
+      "source": "file_src_app_module_ts",
+      "target": "file_src_academic_years_academic_years_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_module_ts",
+      "target": "file_src_courses_courses_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_module_ts",
+      "target": "file_src_event_types_event_types_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_module_ts",
+      "target": "file_src_imported_users_imported_users_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_module_ts",
+      "target": "file_src_locations_locations_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_module_ts",
+      "target": "file_src_majors_majors_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_module_ts",
+      "target": "file_src_speakers_speakers_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_module_ts",
+      "target": "file_src_training_levels_training_levels_module_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_module_ts",
+      "target": "file_src_training_systems_training_systems_module_ts",
+      "relation": "imports"
+    },
+    {
       "source": "file_src_auth_auth_admin_controller_ts",
       "target": "file_src_auth_auth_service_ts",
       "relation": "imports"
@@ -2696,6 +3683,26 @@
     {
       "source": "file_src_auth_auth_module_ts",
       "target": "file_src_auth_auth_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_auth_auth_service_spec_ts",
+      "target": "file_src_auth_auth_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_auth_auth_service_spec_ts",
+      "target": "file_src_entities_user_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_auth_auth_service_spec_ts",
+      "target": "file_src_entities_role_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_auth_auth_service_spec_ts",
+      "target": "file_src_entities_user_role_entity_ts",
       "relation": "imports"
     },
     {
@@ -2764,6 +3771,16 @@
       "relation": "imports"
     },
     {
+      "source": "file_src_categories_categories_service_spec_ts",
+      "target": "file_src_categories_categories_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_categories_categories_service_spec_ts",
+      "target": "file_src_entities_category_entity_ts",
+      "relation": "imports"
+    },
+    {
       "source": "file_src_categories_categories_service_ts",
       "target": "file_src_common_pagination_ts",
       "relation": "imports"
@@ -2821,6 +3838,16 @@
     {
       "source": "file_src_comments_comments_module_ts",
       "target": "file_src_comments_comments_controller_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_comments_comments_service_spec_ts",
+      "target": "file_src_comments_comments_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_comments_comments_service_spec_ts",
+      "target": "file_src_entities_comment_entity_ts",
       "relation": "imports"
     },
     {
@@ -2979,6 +4006,16 @@
       "relation": "imports"
     },
     {
+      "source": "file_src_contact_requests_contact_requests_service_spec_ts",
+      "target": "file_src_contact_requests_contact_requests_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_contact_requests_contact_requests_service_spec_ts",
+      "target": "file_src_entities_contact_request_entity_ts",
+      "relation": "imports"
+    },
+    {
       "source": "file_src_contact_requests_contact_requests_service_ts",
       "target": "file_src_entities_contact_request_entity_ts",
       "relation": "imports"
@@ -2996,6 +4033,41 @@
     {
       "source": "file_src_contact_requests_contact_requests_service_ts",
       "target": "file_src_common_date_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_courses_courses_controller_ts",
+      "target": "file_src_courses_courses_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_courses_courses_controller_ts",
+      "target": "file_src_common_api_response_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_courses_courses_controller_ts",
+      "target": "file_src_config_constants_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_courses_courses_module_ts",
+      "target": "file_src_courses_courses_controller_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_courses_courses_module_ts",
+      "target": "file_src_courses_courses_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_courses_courses_service_ts",
+      "target": "file_src_entities_course_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_courses_courses_service_ts",
+      "target": "file_src_common_pagination_ts",
       "relation": "imports"
     },
     {
@@ -3020,6 +4092,11 @@
     },
     {
       "source": "file_src_dashboard_dashboard_module_ts",
+      "target": "file_src_dashboard_dashboard_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_dashboard_dashboard_service_spec_ts",
       "target": "file_src_dashboard_dashboard_service_ts",
       "relation": "imports"
     },
@@ -3166,6 +4243,26 @@
     {
       "source": "file_src_entities_group_entity_ts",
       "target": "file_src_entities_user_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_imported_user_entity_ts",
+      "target": "file_src_entities_academic_year_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_imported_user_entity_ts",
+      "target": "file_src_entities_training_level_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_imported_user_entity_ts",
+      "target": "file_src_entities_training_system_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_entities_imported_user_entity_ts",
+      "target": "file_src_entities_major_entity_ts",
       "relation": "imports"
     },
     {
@@ -3399,6 +4496,41 @@
       "relation": "imports"
     },
     {
+      "source": "file_src_event_types_event_types_controller_ts",
+      "target": "file_src_event_types_event_types_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_event_types_event_types_controller_ts",
+      "target": "file_src_common_api_response_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_event_types_event_types_controller_ts",
+      "target": "file_src_config_constants_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_event_types_event_types_module_ts",
+      "target": "file_src_event_types_event_types_controller_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_event_types_event_types_module_ts",
+      "target": "file_src_event_types_event_types_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_event_types_event_types_service_ts",
+      "target": "file_src_entities_event_type_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_event_types_event_types_service_ts",
+      "target": "file_src_common_pagination_ts",
+      "relation": "imports"
+    },
+    {
       "source": "file_src_groups_groups_controller_ts",
       "target": "file_src_groups_groups_service_ts",
       "relation": "imports"
@@ -3454,6 +4586,21 @@
       "relation": "imports"
     },
     {
+      "source": "file_src_groups_groups_service_spec_ts",
+      "target": "file_src_groups_groups_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_groups_groups_service_spec_ts",
+      "target": "file_src_entities_group_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_groups_groups_service_spec_ts",
+      "target": "file_src_entities_group_member_entity_ts",
+      "relation": "imports"
+    },
+    {
       "source": "file_src_groups_groups_service_ts",
       "target": "file_src_entities_group_entity_ts",
       "relation": "imports"
@@ -3476,6 +4623,76 @@
     {
       "source": "file_src_groups_groups_service_ts",
       "target": "file_src_entities_user_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_imported_users_imported_users_controller_ts",
+      "target": "file_src_imported_users_imported_users_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_imported_users_imported_users_controller_ts",
+      "target": "file_src_common_api_response_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_imported_users_imported_users_controller_ts",
+      "target": "file_src_config_constants_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_imported_users_imported_users_module_ts",
+      "target": "file_src_imported_users_imported_users_controller_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_imported_users_imported_users_module_ts",
+      "target": "file_src_imported_users_imported_users_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_imported_users_imported_users_service_ts",
+      "target": "file_src_entities_imported_user_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_imported_users_imported_users_service_ts",
+      "target": "file_src_common_pagination_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_locations_locations_controller_ts",
+      "target": "file_src_locations_locations_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_locations_locations_controller_ts",
+      "target": "file_src_common_api_response_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_locations_locations_controller_ts",
+      "target": "file_src_config_constants_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_locations_locations_module_ts",
+      "target": "file_src_locations_locations_controller_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_locations_locations_module_ts",
+      "target": "file_src_locations_locations_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_locations_locations_service_ts",
+      "target": "file_src_entities_location_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_locations_locations_service_ts",
+      "target": "file_src_common_pagination_ts",
       "relation": "imports"
     },
     {
@@ -3506,6 +4723,41 @@
     {
       "source": "file_src_main_ts",
       "target": "file_src_common_api_access_middleware_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_majors_majors_controller_ts",
+      "target": "file_src_majors_majors_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_majors_majors_controller_ts",
+      "target": "file_src_common_api_response_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_majors_majors_controller_ts",
+      "target": "file_src_config_constants_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_majors_majors_module_ts",
+      "target": "file_src_majors_majors_controller_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_majors_majors_module_ts",
+      "target": "file_src_majors_majors_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_majors_majors_service_ts",
+      "target": "file_src_entities_major_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_majors_majors_service_ts",
+      "target": "file_src_common_pagination_ts",
       "relation": "imports"
     },
     {
@@ -3590,6 +4842,11 @@
     },
     {
       "source": "file_src_mikro_orm_orm_entities_ts",
+      "target": "file_src_entities_academic_year_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_mikro_orm_orm_entities_ts",
       "target": "file_src_entities_account_entity_ts",
       "relation": "imports"
     },
@@ -3615,12 +4872,37 @@
     },
     {
       "source": "file_src_mikro_orm_orm_entities_ts",
+      "target": "file_src_entities_course_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_mikro_orm_orm_entities_ts",
+      "target": "file_src_entities_event_type_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_mikro_orm_orm_entities_ts",
       "target": "file_src_entities_group_entity_ts",
       "relation": "imports"
     },
     {
       "source": "file_src_mikro_orm_orm_entities_ts",
       "target": "file_src_entities_group_member_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_mikro_orm_orm_entities_ts",
+      "target": "file_src_entities_imported_user_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_mikro_orm_orm_entities_ts",
+      "target": "file_src_entities_location_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_mikro_orm_orm_entities_ts",
+      "target": "file_src_entities_major_entity_ts",
       "relation": "imports"
     },
     {
@@ -3680,12 +4962,27 @@
     },
     {
       "source": "file_src_mikro_orm_orm_entities_ts",
+      "target": "file_src_entities_speaker_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_mikro_orm_orm_entities_ts",
       "target": "file_src_entities_student_entity_ts",
       "relation": "imports"
     },
     {
       "source": "file_src_mikro_orm_orm_entities_ts",
       "target": "file_src_entities_tag_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_mikro_orm_orm_entities_ts",
+      "target": "file_src_entities_training_level_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_mikro_orm_orm_entities_ts",
+      "target": "file_src_entities_training_system_entity_ts",
       "relation": "imports"
     },
     {
@@ -3726,6 +5023,16 @@
     {
       "source": "file_src_notifications_notifications_module_ts",
       "target": "file_src_notifications_notifications_controller_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_notifications_notifications_service_spec_ts",
+      "target": "file_src_notifications_notifications_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_notifications_notifications_service_spec_ts",
+      "target": "file_src_entities_notification_entity_ts",
       "relation": "imports"
     },
     {
@@ -3894,6 +5201,31 @@
       "relation": "imports"
     },
     {
+      "source": "file_src_posts_posts_service_spec_ts",
+      "target": "file_src_posts_posts_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_posts_posts_service_spec_ts",
+      "target": "file_src_entities_post_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_posts_posts_service_spec_ts",
+      "target": "file_src_entities_category_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_posts_posts_service_spec_ts",
+      "target": "file_src_entities_tag_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_posts_posts_service_spec_ts",
+      "target": "file_src_entities_user_entity_ts",
+      "relation": "imports"
+    },
+    {
       "source": "file_src_posts_posts_service_ts",
       "target": "file_src_common_resolve_relation_filters_ts",
       "relation": "imports"
@@ -4050,6 +5382,11 @@
     },
     {
       "source": "file_src_public_public_controller_ts",
+      "target": "file_src_auth_auth_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_public_public_controller_ts",
       "target": "file_src_users_users_service_ts",
       "relation": "imports"
     },
@@ -4161,6 +5498,16 @@
     {
       "source": "file_src_roles_roles_module_ts",
       "target": "file_src_roles_roles_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_roles_roles_service_spec_ts",
+      "target": "file_src_roles_roles_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_roles_roles_service_spec_ts",
+      "target": "file_src_entities_role_entity_ts",
       "relation": "imports"
     },
     {
@@ -4479,6 +5826,16 @@
       "relation": "imports"
     },
     {
+      "source": "file_src_settings_settings_service_spec_ts",
+      "target": "file_src_settings_settings_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_settings_settings_service_spec_ts",
+      "target": "file_src_entities_setting_entity_ts",
+      "relation": "imports"
+    },
+    {
       "source": "file_src_settings_settings_service_ts",
       "target": "file_src_entities_setting_entity_ts",
       "relation": "imports"
@@ -4529,6 +5886,41 @@
       "relation": "imports"
     },
     {
+      "source": "file_src_speakers_speakers_controller_ts",
+      "target": "file_src_speakers_speakers_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_speakers_speakers_controller_ts",
+      "target": "file_src_common_api_response_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_speakers_speakers_controller_ts",
+      "target": "file_src_config_constants_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_speakers_speakers_module_ts",
+      "target": "file_src_speakers_speakers_controller_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_speakers_speakers_module_ts",
+      "target": "file_src_speakers_speakers_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_speakers_speakers_service_ts",
+      "target": "file_src_entities_speaker_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_speakers_speakers_service_ts",
+      "target": "file_src_common_pagination_ts",
+      "relation": "imports"
+    },
+    {
       "source": "file_src_students_students_controller_ts",
       "target": "file_src_students_students_service_ts",
       "relation": "imports"
@@ -4571,6 +5963,21 @@
     {
       "source": "file_src_students_students_module_ts",
       "target": "file_src_students_students_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_students_students_service_spec_ts",
+      "target": "file_src_students_students_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_students_students_service_spec_ts",
+      "target": "file_src_entities_student_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_students_students_service_spec_ts",
+      "target": "file_src_entities_user_entity_ts",
       "relation": "imports"
     },
     {
@@ -4809,6 +6216,16 @@
       "relation": "imports"
     },
     {
+      "source": "file_src_tags_tags_service_spec_ts",
+      "target": "file_src_tags_tags_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_tags_tags_service_spec_ts",
+      "target": "file_src_entities_tag_entity_ts",
+      "relation": "imports"
+    },
+    {
       "source": "file_src_tags_tags_service_ts",
       "target": "file_src_entities_tag_entity_ts",
       "relation": "imports"
@@ -4826,6 +6243,76 @@
     {
       "source": "file_src_tags_tags_service_ts",
       "target": "file_src_common_get_options_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_training_levels_training_levels_controller_ts",
+      "target": "file_src_training_levels_training_levels_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_training_levels_training_levels_controller_ts",
+      "target": "file_src_common_api_response_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_training_levels_training_levels_controller_ts",
+      "target": "file_src_config_constants_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_training_levels_training_levels_module_ts",
+      "target": "file_src_training_levels_training_levels_controller_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_training_levels_training_levels_module_ts",
+      "target": "file_src_training_levels_training_levels_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_training_levels_training_levels_service_ts",
+      "target": "file_src_entities_training_level_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_training_levels_training_levels_service_ts",
+      "target": "file_src_common_pagination_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_training_systems_training_systems_controller_ts",
+      "target": "file_src_training_systems_training_systems_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_training_systems_training_systems_controller_ts",
+      "target": "file_src_common_api_response_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_training_systems_training_systems_controller_ts",
+      "target": "file_src_config_constants_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_training_systems_training_systems_module_ts",
+      "target": "file_src_training_systems_training_systems_controller_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_training_systems_training_systems_module_ts",
+      "target": "file_src_training_systems_training_systems_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_training_systems_training_systems_service_ts",
+      "target": "file_src_entities_training_system_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_training_systems_training_systems_service_ts",
+      "target": "file_src_common_pagination_ts",
       "relation": "imports"
     },
     {
@@ -4941,6 +6428,26 @@
     {
       "source": "file_src_users_users_module_ts",
       "target": "file_src_users_users_controller_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_users_users_service_spec_ts",
+      "target": "file_src_users_users_service_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_users_users_service_spec_ts",
+      "target": "file_src_entities_user_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_users_users_service_spec_ts",
+      "target": "file_src_entities_role_entity_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_users_users_service_spec_ts",
+      "target": "file_src_entities_user_role_entity_ts",
       "relation": "imports"
     },
     {

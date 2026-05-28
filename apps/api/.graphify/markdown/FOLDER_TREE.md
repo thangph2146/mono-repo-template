@@ -1,9 +1,10 @@
 # Cây thư mục — api (Graphify)
 
-> **Sinh tự động:** `2026-05-27T01:47:05.555Z` từ `snapshot/graph.json` (node `directory` / `route-group` dưới `src/`).
+> **Sinh tự động:** `2026-05-28T01:55:02.262Z` từ `snapshot/graph.json` (node `directory` / `route-group` dưới `src/`).
 
 ```text
 src/
+├── academic-years/
 ├── accounts/
 ├── admission-results/
 ├── auth/
@@ -12,10 +13,14 @@ src/
 ├── common/
 ├── config/
 ├── contact-requests/
+├── courses/
 ├── dashboard/
 ├── entities/
+├── event-types/
 ├── groups/
-├── hero-slides/
+├── imported-users/
+├── locations/
+├── majors/
 ├── messages/
 ├── migrations/
 ├── mikro-orm/
@@ -32,9 +37,12 @@ src/
 ├── sessions/
 ├── settings/
 ├── socket/
+├── speakers/
 ├── students/
 ├── system/
 ├── tags/
+├── training-levels/
+├── training-systems/
 ├── uploads/
 └── users/
 ```

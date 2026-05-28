@@ -222,7 +222,10 @@ export class UploadsController {
     }
   }
 
-  /** GET /api/uploads/*path - Serve file ảnh. path-to-regexp v8: dùng *path (có thể trả về mảng) */
+  /**
+   * GET /api/uploads/*path - Serve file ảnh. path-to-regexp v8: dùng *path (có thể trả về mảng)
+   * @deprecated Legacy route kept for backward compatibility. New URLs use PublicUploadsController at /api/uploads/*path
+   */
   @Get('serve/*path')
   async serve(
     @Param('path') relativePath: string | string[],

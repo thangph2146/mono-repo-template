@@ -25,10 +25,10 @@ import {
   createSuccessResponse,
   createErrorResponse,
 } from '../common/api-response';
-import { APP_HEADERS } from '../config/constants';
+import { APP_HEADERS, ADMIN_ROUTES } from '../config/constants';
 
 @ApiTags('Courses')
-@Controller('admin/courses')
+@Controller(ADMIN_ROUTES.COURSES)
 export class CoursesController {
   constructor(private readonly service: CoursesService) {}
 

@@ -1,6 +1,6 @@
 # Phụ thuộc workspace (`workspace:*`)
 
-> **Sinh tự động:** `2026-05-27T01:47:05.561Z` — quét `package.json` trong `packages/*` và `apps/*` (chỉ liên kết nội bộ monorepo).
+> **Sinh tự động:** `2026-05-28T01:55:02.269Z` — quét `package.json` trong `packages/*` và `apps/*` (chỉ liên kết nội bộ monorepo).
 
 ## `packages/*`
 
@@ -21,12 +21,10 @@
 |------------|---------------------|------|---------|
 | `@api` | `@workspace/eslint-config` | `workspace:*` | `apps/api/` |
 | `@backend` | `@thangph2146/lexical-editor` | `workspace:*` | `apps/backend/` |
-| `@backend` | `@ui` | `workspace:*` | `apps/backend/` |
 | `@backend` | `@workspace/api-client` | `workspace:*` | `apps/backend/` |
 | `@backend` | `@workspace/eslint-config` | `workspace:*` | `apps/backend/` |
 | `@backend` | `@workspace/query-client` | `workspace:*` | `apps/backend/` |
 | `@frontend` | `@thangph2146/lexical-editor` | `workspace:*` | `apps/frontend/` |
-| `@frontend` | `@ui` | `workspace:*` | `apps/frontend/` |
 | `@frontend` | `@workspace/api-client` | `workspace:*` | `apps/frontend/` |
 | `@frontend` | `@workspace/eslint-config` | `workspace:*` | `apps/frontend/` |
 | `@frontend` | `@workspace/query-client` | `workspace:*` | `apps/frontend/` |

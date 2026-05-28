@@ -23,16 +23,16 @@ export class MyStudentsApi {
   constructor(private readonly http: ApiClient) {}
 
   async list(): Promise<{ items: ParentStudent[] }> {
-    const payload = await getData<{ items: ParentStudent[] }>(this.http, "/admin/my-students");
+    const payload = await getData<{ items: ParentStudent[] }>(this.http, "/parent/my-students");
     return payload;
   }
 
   async add(input: AddStudentInput): Promise<ParentStudent> {
-    const payload = await postData<ParentStudent>(this.http, "/admin/my-students", input);
+    const payload = await postData<ParentStudent>(this.http, "/parent/my-students", input);
     return payload;
   }
 
   async remove(id: string | number): Promise<void> {
-    await deleteData<unknown>(this.http, `/admin/my-students/${id}`);
+    await deleteData<unknown>(this.http, `/parent/my-students/${id}`);
   }
 }

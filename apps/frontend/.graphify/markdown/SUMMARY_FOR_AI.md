@@ -2,8 +2,8 @@
 
 > Tự động sinh từ `../snapshot/context.json` — **đọc file này trước**; tránh mở toàn bộ JSON snapshot (nhúng source đầy đủ).
 
-- **projectRoot:** `C:/HUB/source/hub-parent-template/apps/frontend`
-- **context.generatedAt:** 2026-05-19T08:42:32.652Z
+- **projectRoot:** `D:/HUB/working/2026/hub-parrent-template/apps/frontend`
+- **context.generatedAt:** 2026-05-28T01:53:56.193Z
 
 ## Mục lục artefact Graphify
 
@@ -35,8 +35,8 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 - **Thống kê graph:** [`GRAPH_STATS.md`](GRAPH_STATS.md) — quy mô node/link, top file in/out-degree (điểm nóng import).
 
 ## Thống kê
-- **totalFiles:** 79
-- **clientComponents:** 21
+- **totalFiles:** 80
+- **clientComponents:** 22
 
 ## Trang (pages) (9)
 - `src/app/(public)/bai-viet/page.tsx`
@@ -69,7 +69,7 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 | `components.json` | config | — | — | — |
 | `next.config.ts` | config | — | — | — |
 | `package.json` | config | — | — | — |
-| `src/app/(public)/bai-viet/[slug]/page.tsx` | page | no |  | src/lib/dev-route-log.ts, src/lib/public-posts.ts, src/components/shared/post-content-renderer.tsx, src/components/shared/public-post-view-badge.tsx, src/lib/seo.ts |
+| `src/app/(public)/bai-viet/[slug]/page.tsx` | page | no |  | src/lib/dev-route-log.ts, src/lib/public-posts.ts, src/components/shared/post-content.tsx, src/components/shared/public-post-view-badge.tsx, src/lib/seo.ts |
 | `src/app/(public)/bai-viet/page.tsx` | page | no | metadata | src/lib/dev-route-log.ts, src/lib/public-posts.ts, src/lib/seo.ts |
 | `src/app/(public)/huong-dan-su-dung/guide-sections.tsx` | tsx | yes | GuideSections |  |
 | `src/app/(public)/huong-dan-su-dung/page.tsx` | page | no | metadata | src/lib/seo.ts, src/app/(public)/huong-dan-su-dung/guide-sections.tsx |
@@ -80,7 +80,7 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 | `src/app/(public)/register/page.tsx` | page | no | RegisterPage | src/features/auth/admin-bridge.ts |
 | `src/app/(public)/ve-chung-toi/page.tsx` | page | no | metadata, AboutPage | src/features/pages/about-page, src/lib/seo.ts |
 | `src/app/api/graphify/route.ts` | api-route | no |  |  |
-| `src/app/graph/layout.tsx` | layout | no | GraphLayout | src/app/graph/page.tsx |
+| `src/app/graph/layout.tsx` | layout | no | metadata, GraphLayout | src/app/graph/page.tsx |
 | `src/app/graph/loading.tsx` | loading | no | GraphLoading | src/components/shared/route-loading.tsx |
 | `src/app/graph/page.tsx` | page | yes | GraphPage |  |
 | `src/app/layout.tsx` | layout | no | metadata, RootLayout |  |
@@ -90,6 +90,7 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 | `src/components/shared/footer.tsx` | tsx | no | Footer | src/components/icons/logo.tsx |
 | `src/components/shared/header.tsx` | tsx | yes | Header | src/features/auth/admin-bridge.ts, src/components/icons/logo.tsx |
 | `src/components/shared/post-content-renderer.tsx` | tsx | yes | PostContentRenderer |  |
+| `src/components/shared/post-content.tsx` | tsx | yes | PostContent |  |
 | `src/components/shared/public-post-view-badge.tsx` | tsx | yes | PublicPostViewBadge |  |
 | `src/components/shared/route-loading.tsx` | tsx | no | RouteLoading |  |
 | `src/components/shared/scroll-to-top.tsx` | tsx | yes | ScrollToTop | src/lib/scroll.ts |

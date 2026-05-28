@@ -30,6 +30,7 @@ import { ScrollArea } from "@ui/components/scroll-area";
 import { useAuth } from "@/providers/auth-provider";
 import {
   canUserAccess,
+  DEFAULT_API_URL,
   PERMISSION_CODES,
 } from "@workspace/api-client";
 import { permissionLabelVi } from "@/lib/permission-labels";
@@ -40,7 +41,7 @@ import {
   useUpdateStaffProfile,
 } from "@/hooks/queries";
 import { ApiError } from "@/lib/api";
-import { patchAdminSessionProfile, readAdminSession } from "@/lib/auth-session";
+import { patchAdminSessionProfile } from "@/lib/auth-session";
 import { PageSection } from "@ui/components/layout";
 import { AdminPageGuard } from "@/components/admin-page-guard";
 import { TypographyH1 } from "@ui/components/typography";
@@ -206,12 +207,9 @@ function AdminProfilePageInner() {
       const fd = new FormData();
       fd.append("file", file);
       fd.append("folderPath", "avatars");
-      const { DEFAULT_API_URL } = await import("@workspace/api-client");
       const baseUrl = (process.env.NEXT_PUBLIC_API_URL ?? DEFAULT_API_URL).replace(/\/$/, "");
-      const uid = readAdminSession()?.id;
       const res = await fetch(`${baseUrl}/admin/uploads`, {
         method: "POST",
-        headers: uid ? { "X-User-Id": String(uid) } : {},
         body: fd,
       });
       if (!res.ok) throw new Error("Upload thất bại");

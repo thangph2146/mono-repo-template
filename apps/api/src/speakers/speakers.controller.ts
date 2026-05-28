@@ -18,10 +18,10 @@ import {
   createSuccessResponse,
   createErrorResponse,
 } from '../common/api-response';
-import { APP_HEADERS } from '../config/constants';
+import { APP_HEADERS, ADMIN_ROUTES } from '../config/constants';
 
 @ApiTags('Speakers')
-@Controller('admin/speakers')
+@Controller(ADMIN_ROUTES.SPEAKERS)
 export class SpeakersController {
   private readonly logger = new Logger(SpeakersController.name);
 

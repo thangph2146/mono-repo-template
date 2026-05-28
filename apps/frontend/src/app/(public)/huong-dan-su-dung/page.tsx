@@ -10,6 +10,7 @@ import {
 } from "@ui/lib/layout-shell"
 import { buildSeoMetadata } from "@/lib/seo"
 import { GuideSections } from "./guide-sections"
+import { DEFAULT_API_URL } from "@workspace/api-client"
 
 export const metadata: Metadata = buildSeoMetadata({
   title: "Hướng dẫn sử dụng",
@@ -66,7 +67,7 @@ function safeParseContent(raw: unknown): GuideSection["content"] {
 
 async function fetchGuides(): Promise<GuideSection[]> {
   const apiUrl = (
-    process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3002/api"
+    process.env.NEXT_PUBLIC_API_URL ?? DEFAULT_API_URL
   ).replace(/\/$/, "")
   try {
     const res = await fetch(

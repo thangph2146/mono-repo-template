@@ -1013,6 +1013,75 @@
       "client": true
     },
     {
+      "id": "dir_src_app_my_students__component",
+      "label": "_component/",
+      "path": "src/app/my-students/_component",
+      "color": "#ff9d00",
+      "size": 22,
+      "community": "src/app/my-students",
+      "type": "directory"
+    },
+    {
+      "id": "file_src_app_my_students__component_detailed_scores_list_tsx",
+      "label": "detailed-scores-list.tsx",
+      "path": "src/app/my-students/_component/detailed-scores-list.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/app/my-students/_component",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_app_my_students__component_index_ts",
+      "label": "index.ts",
+      "path": "src/app/my-students/_component/index.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/app/my-students/_component",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_app_my_students__component_score_utils_ts",
+      "label": "score-utils.ts",
+      "path": "src/app/my-students/_component/score-utils.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/app/my-students/_component",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_app_my_students__component_student_scores_section_tsx",
+      "label": "student-scores-section.tsx",
+      "path": "src/app/my-students/_component/student-scores-section.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/app/my-students/_component",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_app_my_students__component_term_averages_list_tsx",
+      "label": "term-averages-list.tsx",
+      "path": "src/app/my-students/_component/term-averages-list.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/app/my-students/_component",
+      "type": "tsx",
+      "client": true
+    },
+    {
+      "id": "file_src_app_my_students__component_year_averages_list_tsx",
+      "label": "year-averages-list.tsx",
+      "path": "src/app/my-students/_component/year-averages-list.tsx",
+      "color": "#00ddff",
+      "size": 10,
+      "community": "src/app/my-students/_component",
+      "type": "tsx",
+      "client": true
+    },
+    {
       "id": "file_src_app_page_tsx",
       "label": "page.tsx",
       "path": "src/app/page.tsx",
@@ -1799,11 +1868,11 @@
       "id": "file_src_app_staff__component__form_staff_form_shell_tsx",
       "label": "staff-form-shell.tsx",
       "path": "src/app/staff/_component/_form/staff-form-shell.tsx",
-      "color": "#00ff41",
+      "color": "#00ddff",
       "size": 10,
       "community": "src/app/staff/_component/_form",
       "type": "tsx",
-      "client": false
+      "client": true
     },
     {
       "id": "dir_src_app_staff__component__hooks",
@@ -2291,15 +2360,6 @@
       "client": true
     },
     {
-      "id": "dir_src_components_graphify",
-      "label": "graphify/",
-      "path": "src/components/graphify",
-      "color": "#ff9d00",
-      "size": 22,
-      "community": "src/components",
-      "type": "directory"
-    },
-    {
       "id": "file_src_components_scroll_to_top_tsx",
       "label": "scroll-to-top.tsx",
       "path": "src/components/scroll-to-top.tsx",
@@ -2657,6 +2717,26 @@
       "id": "file_src_types_dashboard_ts",
       "label": "dashboard.ts",
       "path": "src/types/dashboard.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/types",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_types_google_identity_d_ts",
+      "label": "google-identity.d.ts",
+      "path": "src/types/google-identity.d.ts",
+      "color": "#00ff41",
+      "size": 10,
+      "community": "src/types",
+      "type": "ts",
+      "client": false
+    },
+    {
+      "id": "file_src_types_student_scores_ts",
+      "label": "student-scores.ts",
+      "path": "src/types/student-scores.ts",
       "color": "#00ff41",
       "size": 10,
       "community": "src/types",
@@ -3192,6 +3272,41 @@
     {
       "source": "dir_src_app_my_students",
       "target": "file_src_app_my_students_page_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_my_students",
+      "target": "dir_src_app_my_students__component",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_my_students__component",
+      "target": "file_src_app_my_students__component_detailed_scores_list_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_my_students__component",
+      "target": "file_src_app_my_students__component_index_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_my_students__component",
+      "target": "file_src_app_my_students__component_score_utils_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_my_students__component",
+      "target": "file_src_app_my_students__component_student_scores_section_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_my_students__component",
+      "target": "file_src_app_my_students__component_term_averages_list_tsx",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_app_my_students__component",
+      "target": "file_src_app_my_students__component_year_averages_list_tsx",
       "relation": "contains"
     },
     {
@@ -3856,11 +3971,6 @@
     },
     {
       "source": "dir_src_components",
-      "target": "dir_src_components_graphify",
-      "relation": "contains"
-    },
-    {
-      "source": "dir_src_components",
       "target": "file_src_components_scroll_to_top_tsx",
       "relation": "contains"
     },
@@ -4042,6 +4152,16 @@
     {
       "source": "dir_src_types",
       "target": "file_src_types_dashboard_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_types",
+      "target": "file_src_types_google_identity_d_ts",
+      "relation": "contains"
+    },
+    {
+      "source": "dir_src_types",
+      "target": "file_src_types_student_scores_ts",
       "relation": "contains"
     },
     {
@@ -4520,6 +4640,16 @@
       "relation": "imports"
     },
     {
+      "source": "file_src_app_database_schema_page_tsx",
+      "target": "file_src_lib_api_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_graph_page_tsx",
+      "target": "file_src_components_admin_page_guard_tsx",
+      "relation": "imports"
+    },
+    {
       "source": "file_src_app_guides_new_page_tsx",
       "target": "file_src_components_admin_page_guard_tsx",
       "relation": "imports"
@@ -4792,6 +4922,106 @@
     {
       "source": "file_src_app_my_students_page_tsx",
       "target": "file_src_lib_api_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_my_students_page_tsx",
+      "target": "dir_src_app_my_students__component",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_my_students_page_tsx",
+      "target": "file_src_types_student_scores_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_my_students__component_detailed_scores_list_tsx",
+      "target": "dir_src_components_admin_data_table",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_my_students__component_detailed_scores_list_tsx",
+      "target": "file_src_types_student_scores_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_my_students__component_detailed_scores_list_tsx",
+      "target": "file_src_app_my_students__component_score_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_my_students__component_index_ts",
+      "target": "file_src_app_my_students__component_student_scores_section_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_my_students__component_index_ts",
+      "target": "file_src_app_my_students__component_detailed_scores_list_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_my_students__component_index_ts",
+      "target": "file_src_app_my_students__component_year_averages_list_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_my_students__component_index_ts",
+      "target": "file_src_app_my_students__component_term_averages_list_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_my_students__component_index_ts",
+      "target": "file_src_app_my_students__component_score_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_my_students__component_student_scores_section_tsx",
+      "target": "file_src_app_my_students__component_year_averages_list_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_my_students__component_student_scores_section_tsx",
+      "target": "file_src_app_my_students__component_term_averages_list_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_my_students__component_student_scores_section_tsx",
+      "target": "file_src_app_my_students__component_detailed_scores_list_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_my_students__component_student_scores_section_tsx",
+      "target": "file_src_types_student_scores_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_my_students__component_term_averages_list_tsx",
+      "target": "dir_src_components_admin_data_table",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_my_students__component_term_averages_list_tsx",
+      "target": "file_src_types_student_scores_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_my_students__component_term_averages_list_tsx",
+      "target": "file_src_app_my_students__component_score_utils_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_my_students__component_year_averages_list_tsx",
+      "target": "dir_src_components_admin_data_table",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_my_students__component_year_averages_list_tsx",
+      "target": "file_src_types_student_scores_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_my_students__component_year_averages_list_tsx",
+      "target": "file_src_app_my_students__component_score_utils_ts",
       "relation": "imports"
     },
     {
@@ -5225,6 +5455,16 @@
       "relation": "imports"
     },
     {
+      "source": "file_src_app_profile_page_tsx",
+      "target": "file_src_components_admin_page_guard_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_rbac_page_tsx",
+      "target": "file_src_components_admin_page_guard_tsx",
+      "relation": "imports"
+    },
+    {
       "source": "file_src_app_rbac_page_tsx",
       "target": "file_src_components_admin_confirm_action_dialog_tsx",
       "relation": "imports"
@@ -5425,6 +5665,16 @@
       "relation": "imports"
     },
     {
+      "source": "file_src_app_staff__id__page_tsx",
+      "target": "file_src_components_admin_data_table_admin_data_table_tsx",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_staff__id__page_tsx",
+      "target": "file_src_app_posts__component_types_ts",
+      "relation": "imports"
+    },
+    {
       "source": "file_src_app_staff__component_columns_tsx",
       "target": "file_src_app_staff__component_types_ts",
       "relation": "imports"
@@ -5497,6 +5747,11 @@
     {
       "source": "file_src_app_staff__component__form_staff_form_shell_tsx",
       "target": "file_src_app_staff__component__hooks_use_staff_form_ts",
+      "relation": "imports"
+    },
+    {
+      "source": "file_src_app_staff__component__form_staff_form_shell_tsx",
+      "target": "file_src_lib_auth_session_ts",
       "relation": "imports"
     },
     {

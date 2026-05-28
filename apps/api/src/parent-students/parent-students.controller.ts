@@ -32,9 +32,9 @@ import {
   createSuccessResponse,
   createErrorResponse,
 } from '../common/api-response';
-import { APP_HEADERS } from '../config/constants';
+import { APP_HEADERS, ADMIN_ROUTES, PUBLIC_ROUTES } from '../config/constants';
 
-@Controller('parent/my-students')
+@Controller(PUBLIC_ROUTES.PARENT_MY_STUDENTS)
 export class ParentStudentsPublicController {
   private readonly logger = new Logger(ParentStudentsPublicController.name);
 
@@ -445,7 +445,7 @@ export class ParentStudentsPublicController {
   }
 }
 
-@Controller('admin/parent-students')
+@Controller(ADMIN_ROUTES.PARENT_STUDENTS)
 export class ParentStudentsAdminController {
   private readonly logger = new Logger(ParentStudentsAdminController.name);
 

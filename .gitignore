@@ -40,3 +40,6 @@ npm-debug.log*
 **/.graphify/branch.json
 **/.graphify/manifest.json
 apps/api/eslint-report.json
+
+
+another-template

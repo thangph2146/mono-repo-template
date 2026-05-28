@@ -18,10 +18,10 @@ import {
   createSuccessResponse,
   createErrorResponse,
 } from '../common/api-response';
-import { APP_HEADERS } from '../config/constants';
+import { APP_HEADERS, ADMIN_ROUTES } from '../config/constants';
 
 @ApiTags('TrainingLevels')
-@Controller('admin/training-levels')
+@Controller(ADMIN_ROUTES.TRAINING_LEVELS)
 export class TrainingLevelsController {
   private readonly logger = new Logger(TrainingLevelsController.name);
 

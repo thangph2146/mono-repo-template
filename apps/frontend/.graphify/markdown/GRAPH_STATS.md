@@ -1,13 +1,13 @@
 # Thống kê graph — frontend (Graphify)
 
-> **Sinh tự động:** `2026-05-27T01:47:05.537Z` từ `../snapshot/graph.json` — giúp AI nắm **quy mô** và **điểm nóng import** mà không mở full graph.
+> **Sinh tự động:** `2026-05-28T01:55:02.237Z` từ `../snapshot/graph.json` — giúp AI nắm **quy mô** và **điểm nóng import** mà không mở full graph.
 
 ## Nodes theo `type`
 
 | type | Số |
 |------|-----|
-| `tsx` | 36 |
-| `directory` | 28 |
+| `tsx` | 37 |
+| `directory` | 27 |
 | `ts` | 25 |
 | `page` | 9 |
 | `layout` | 3 |

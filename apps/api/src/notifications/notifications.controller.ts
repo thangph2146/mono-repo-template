@@ -27,9 +27,9 @@ import {
   createSuccessResponse,
   createErrorResponse,
 } from '../common/api-response';
-import { APP_HEADERS } from '../config/constants';
+import { APP_HEADERS, ADMIN_ROUTES } from '../config/constants';
 
-@Controller('admin')
+@Controller(ADMIN_ROUTES.BASE)
 export class NotificationsController {
   private readonly logger = new Logger(NotificationsController.name);
 

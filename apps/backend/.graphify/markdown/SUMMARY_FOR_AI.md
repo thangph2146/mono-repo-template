@@ -2,8 +2,8 @@
 
 > Tự động sinh từ `../snapshot/context.json` — **đọc file này trước**; tránh mở toàn bộ JSON snapshot (nhúng source đầy đủ).
 
-- **projectRoot:** `C:/HUB/source/hub-parent-template/apps/backend`
-- **context.generatedAt:** 2026-05-19T16:08:23.295Z
+- **projectRoot:** `D:/HUB/working/2026/hub-parrent-template/apps/backend`
+- **context.generatedAt:** 2026-05-28T01:53:56.133Z
 
 ## Mục lục artefact Graphify
 
@@ -34,8 +34,8 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 - **Thống kê graph:** [`GRAPH_STATS.md`](GRAPH_STATS.md) — quy mô node/link, top file in/out-degree (điểm nóng import).
 
 ## Thống kê
-- **totalFiles:** 190
-- **clientComponents:** 79
+- **totalFiles:** 198
+- **clientComponents:** 84
 
 ## Trang (pages) (33)
 - `src/app/categories/new/page.tsx`
@@ -129,8 +129,8 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 | `src/app/contact-requests/_component/utils.ts` | ts | no | formatPhoneNumber, buildFilterQuery |  |
 | `src/app/contact-requests/page.tsx` | page | yes | ContactRequestsPage | src/components/admin-page-guard.tsx, src/hooks/queries.ts, src/lib/build-admin-filter-query.ts, src/hooks/use-debounced-value.ts, src/app/contact-requests/_component, src/app/contact-requests/_compone |
 | `src/app/data/page.tsx` | page | yes | DataBackupPage | src/lib/auth-session.ts, src/components/admin-page-guard.tsx |
-| `src/app/database-schema/page.tsx` | page | yes | DatabaseSchemaPage | src/components/admin-page-guard.tsx |
-| `src/app/graph/page.tsx` | page | yes | GraphPage |  |
+| `src/app/database-schema/page.tsx` | page | yes | DatabaseSchemaPage | src/components/admin-page-guard.tsx, src/lib/api.ts |
+| `src/app/graph/page.tsx` | page | yes | GraphPage | src/components/admin-page-guard.tsx |
 | `src/app/guides/[id]/edit/page.tsx` | page | yes | EditGuidePage | src/components/admin-page-guard.tsx, src/lib/api.ts, src/app/guides/_component |
 | `src/app/guides/[id]/page.tsx` | page | yes | GuideDetailPage | src/components/admin-page-guard.tsx, src/lib/api.ts, src/app/guides/_component |
 | `src/app/guides/_component/_alert-dialog/guides-confirm-dialog.tsx` | tsx | yes | GuidesConfirmDialogProps, GuidesConfirmDialog | src/components/admin-confirm-action-dialog.tsx, src/app/guides/_component/types.ts |
@@ -156,7 +156,13 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 | `src/app/layout.tsx` | layout | no | metadata, RootLayout | src/app/page.tsx, src/providers/query-provider.tsx, src/providers/auth-provider.tsx, src/components/admin-shell.tsx |
 | `src/app/loading.tsx` | loading | no | Loading |  |
 | `src/app/login/page.tsx` | page | no | AdminLoginPage | src/features/auth/sign-in-form.tsx |
-| `src/app/my-students/page.tsx` | page | yes | MyStudentsPage | src/providers/auth-provider.tsx, src/lib/api.ts |
+| `src/app/my-students/_component/detailed-scores-list.tsx` | tsx | yes | DetailedScoresList | src/components/admin-data-table, src/types/student-scores.ts, src/app/my-students/_component/score-utils.ts |
+| `src/app/my-students/_component/index.ts` | ts | no | StudentScoresSection, DetailedScoresList, YearAveragesList, TermAveragesList, formatScore, formatGrade | src/app/my-students/_component/student-scores-section.tsx, src/app/my-students/_component/detailed-scores-list.tsx, src/app/my-students/_component/year-averages-list.tsx, src/app/my-students/_componen |
+| `src/app/my-students/_component/score-utils.ts` | ts | no | formatScore, formatGrade |  |
+| `src/app/my-students/_component/student-scores-section.tsx` | tsx | yes | StudentScoresSection | src/app/my-students/_component/year-averages-list.tsx, src/app/my-students/_component/term-averages-list.tsx, src/app/my-students/_component/detailed-scores-list.tsx, src/types/student-scores.ts |
+| `src/app/my-students/_component/term-averages-list.tsx` | tsx | yes | TermAveragesList | src/components/admin-data-table, src/types/student-scores.ts, src/app/my-students/_component/score-utils.ts |
+| `src/app/my-students/_component/year-averages-list.tsx` | tsx | yes | YearAveragesList | src/components/admin-data-table, src/types/student-scores.ts, src/app/my-students/_component/score-utils.ts |
+| `src/app/my-students/page.tsx` | page | yes | MyStudentsPage | src/providers/auth-provider.tsx, src/lib/api.ts, src/app/my-students/_component, src/types/student-scores.ts |
 | `src/app/page.tsx` | page | yes | QUICK_LINKS, AdminDashboardPage | src/providers/auth-provider.tsx, src/lib/api.ts, src/types/dashboard.ts, src/components/dashboard-charts.tsx |
 | `src/app/parent-students/_component/_query/index.ts` | ts | no |  | src/app/parent-students/_component/_query/use-parent-students-queries.ts |
 | `src/app/parent-students/_component/_query/use-parent-students-queries.ts` | ts | yes | useReviewParentStudentMutation | src/lib/api.ts |
@@ -190,7 +196,7 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 | `src/app/posts/_component/utils.ts` | ts | no | createParagraphNode, createSerializedEditorState, getSeoStatus, buildPostsFilterQuery, isSerializedEditorState, fromLocalInputValue, toLocalInputValue, normalizeContentForEditor, slugify, formatDateTi | src/lib, src/app/posts/_component/types.ts |
 | `src/app/posts/new/page.tsx` | page | yes | NewPostPage | src/components/admin-page-guard.tsx, src/lib/api.ts, src/app/posts/_component, src/app/posts/_component/_query |
 | `src/app/posts/page.tsx` | page | yes | PostsPage | src/components/admin-page-guard.tsx, src/lib/api.ts, src/app/posts/_component/_table, src/app/posts/_component/_alert-dialog, src/app/posts/_component/_hooks, src/app/posts/_component/_query, src/hook |
-| `src/app/profile/page.tsx` | page | yes | AdminProfilePage | src/providers/auth-provider.tsx, src/lib/permission-labels.ts, src/hooks/queries.ts, src/lib/api.ts, src/lib/auth-session.ts |
+| `src/app/profile/page.tsx` | page | yes | AdminProfilePage | src/providers/auth-provider.tsx, src/lib/permission-labels.ts, src/hooks/queries.ts, src/lib/api.ts, src/lib/auth-session.ts, src/components/admin-page-guard.tsx |
 | `src/app/rbac/_component/_alert-dialog/role-dialog.tsx` | tsx | yes | RoleDialogProps, RoleDialog | src/app/rbac/_component/types.ts |
 | `src/app/rbac/_component/_query/index.ts` | ts | no |  | src/app/rbac/_component/_query/use-rbac-queries.ts |
 | `src/app/rbac/_component/_query/use-rbac-queries.ts` | ts | yes | rbacQueryKeys, useRbacCatalog, useCreateRoleMutation, useUpdateRoleMutation, useDeleteRoleMutation | src/lib/api.ts, src/app/rbac/_component/types.ts |
@@ -200,11 +206,11 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 | `src/app/register/page.tsx` | page | no | RegisterPage | src/features/auth/register-form.tsx |
 | `src/app/robots.ts` | ts | no | robots |  |
 | `src/app/staff/[id]/edit/page.tsx` | page | yes | EditStaffPage | src/app/staff/_component, src/app/staff/_component/_form, src/hooks/queries.ts, src/providers/auth-provider.tsx, src/components/admin-page-guard.tsx, src/lib/api.ts |
-| `src/app/staff/[id]/page.tsx` | page | yes | StaffDetailPage | src/hooks/queries.ts, src/providers/auth-provider.tsx, src/components/admin-page-guard.tsx, src/app/posts/_component/_query/use-posts-queries.ts, src/lib/api.ts |
+| `src/app/staff/[id]/page.tsx` | page | yes | StaffDetailPage | src/hooks/queries.ts, src/providers/auth-provider.tsx, src/components/admin-page-guard.tsx, src/app/posts/_component/_query/use-posts-queries.ts, src/lib/api.ts, src/components/admin-data-table/admin- |
 | `src/app/staff/_component/_alert-dialog/index.ts` | ts | no | StaffConfirmDialog, StaffBulkConfirmDialog | src/app/staff/_component/_alert-dialog/staff-confirm-dialog.tsx |
 | `src/app/staff/_component/_alert-dialog/staff-confirm-dialog.tsx` | tsx | no | StaffConfirmDialog, StaffBulkConfirmDialog | src/components/admin-confirm-action-dialog.tsx, src/app/staff/_component/types.ts |
 | `src/app/staff/_component/_form/index.ts` | ts | no | StaffFormShell | src/app/staff/_component/_form/staff-form-shell.tsx |
-| `src/app/staff/_component/_form/staff-form-shell.tsx` | tsx | no | StaffFormShellProps, StaffFormShell | src/app/staff/_component/_hooks/use-staff-form.ts |
+| `src/app/staff/_component/_form/staff-form-shell.tsx` | tsx | yes | StaffFormShellProps, StaffFormShell | src/app/staff/_component/_hooks/use-staff-form.ts, src/lib/auth-session.ts |
 | `src/app/staff/_component/_hooks/index.ts` | ts | no | useStaffForm, staffFormSchema | src/app/staff/_component/_hooks/use-staff-form.ts |
 | `src/app/staff/_component/_hooks/use-staff-form.ts` | ts | no | staffFormSchema, StaffFormValues, useStaffForm |  |
 | `src/app/staff/_component/_query/index.ts` | ts | no | useStaffMutations | src/app/staff/_component/_query/use-staff-queries.ts |
@@ -248,7 +254,7 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 | `src/components/scroll-to-top.tsx` | tsx | yes | ScrollToTop |  |
 | `src/components/sidebar.tsx` | tsx | yes | getVisibleMenuItems, SidebarNavLinks, MobileSidebarPanel, Sidebar | src/providers/auth-provider.tsx, src/lib/api.ts |
 | `src/features/auth/admin-bridge.ts` | ts | no | getAdminBaseUrl, buildAdminBridgeLoginUrl, getAdminLoginUrl |  |
-| `src/features/auth/auth-api.ts` | ts | no | AuthLoginPayload, RegisterRequestPayload, RegisterLeadPayload, DevLoginOption, loginWithEmail, loginWithDevelopmentUser, toAdminSessionUser, registerAccount, submitRegisterRequest |  |
+| `src/features/auth/auth-api.ts` | ts | no | AuthLoginPayload, RegisterRequestPayload, RegisterLeadPayload, DevLoginOption, loginWithEmail, loginWithGoogle, fetchGoogleOAuthConfig, loginWithDevelopmentUser, toAdminSessionUser, registerAccount, s |  |
 | `src/features/auth/index.ts` | ts | no | SignInForm, RegisterForm | src/features/auth/sign-in-form.tsx, src/features/auth/register-form.tsx |
 | `src/features/auth/register-form.tsx` | tsx | yes | RegisterForm | src/lib/auth-routes.ts, src/features/auth/auth-api.ts |
 | `src/features/auth/session.ts` | ts | no | StoreSessionPayload, toStoreSession, persistSession | src/features/auth/auth-api.ts |
@@ -276,6 +282,8 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 | `src/providers/query-provider.tsx` | tsx | yes | QueryProvider |  |
 | `src/proxy.ts` | ts | no | proxy, config |  |
 | `src/types/dashboard.ts` | ts | no | DashboardOverviewDto, DashboardMonthlyItemDto, DashboardCategoryItemDto, DashboardTopPostDto, DashboardStatsDto |  |
+| `src/types/google-identity.d.ts` | ts | no |  |  |
+| `src/types/student-scores.ts` | ts | no | YearAverage, TermAverage, OverallAverage, DetailedScore, StudentYearAveragesResponse, StudentTermAveragesResponse, StudentOverallAverageResponse, StudentScoresResponse |  |
 | `tsconfig.json` | config | — | — | — |
 ## File Markdown trong scope app
 

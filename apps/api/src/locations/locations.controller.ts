@@ -18,10 +18,10 @@ import {
   createSuccessResponse,
   createErrorResponse,
 } from '../common/api-response';
-import { APP_HEADERS } from '../config/constants';
+import { APP_HEADERS, ADMIN_ROUTES } from '../config/constants';
 
 @ApiTags('Locations')
-@Controller('admin/locations')
+@Controller(ADMIN_ROUTES.LOCATIONS)
 export class LocationsController {
   private readonly logger = new Logger(LocationsController.name);
 
