@@ -31,6 +31,11 @@ export { TrainingSystemsApi } from './resources/training-systems';
 export { MajorsApi } from './resources/majors';
 export { CoursesApi } from './resources/courses';
 export { AcademicYearsApi } from './resources/academic-years';
+export { EventsApi } from './resources/events';
+export { CamerasApi } from './resources/cameras';
+export { TemplatesApi } from './resources/templates';
+export { ScreensApi } from './resources/screens';
+export { DepartmentsApi } from './resources/departments';
 export { StoreSyncSdk, createStoreSyncSdk, DEFAULT_API_URL } from './sdk';
 export {
   unwrapApiEnvelope,

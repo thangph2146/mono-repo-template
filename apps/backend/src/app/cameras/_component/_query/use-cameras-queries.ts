@@ -1,0 +1,6 @@
+import { useQuery } from "@tanstack/react-query";
+import type { StoreSyncSdk } from "@workspace/api-client";
+import type { CameraDetail, CameraRow } from "../types";
+export function useCameraDetailQuery(api: StoreSyncSdk, id: string) { return useQuery({ queryKey: ["cameras", "detail", id], queryFn: () => api.cameras.get<CameraDetail>(id), enabled: !!id }); }
+export function useCamerasListQuery(api: StoreSyncSdk, enabled: boolean) { return useQuery({ queryKey: ["cameras", "list"], queryFn: async () => { const items: CameraRow[] = []; let page = 1, total = Infinity; while (items.length < total) { const r = await api.cameras.list<CameraRow>({ page, limit: 100, status: "active" }); items.push(...r.items); total = r.total; if (!r.items.length) break; page++; } return items; }, enabled }); }
+export function useCamerasTrashQuery({ api, trashPage, trashPageSize, debouncedTrashQ, enabled }: { api: StoreSyncSdk; trashPage: number; trashPageSize: number; debouncedTrashQ: string; enabled: boolean; }) { return useQuery({ queryKey: ["cameras", "trash", trashPage, trashPageSize, debouncedTrashQ], enabled, queryFn: () => api.cameras.list<CameraRow>({ page: trashPage, limit: trashPageSize, search: debouncedTrashQ.trim() || undefined, status: "deleted" }) }); }

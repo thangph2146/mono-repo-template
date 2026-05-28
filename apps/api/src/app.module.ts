@@ -34,6 +34,11 @@ import { MajorsModule } from './majors/majors.module';
 import { SpeakersModule } from './speakers/speakers.module';
 import { TrainingLevelsModule } from './training-levels/training-levels.module';
 import { TrainingSystemsModule } from './training-systems/training-systems.module';
+import { EventsModule } from './events/events.module';
+import { CamerasModule } from './cameras/cameras.module';
+import { TemplatesModule } from './templates/templates.module';
+import { ScreensModule } from './screens/screens.module';
+import { DepartmentsModule } from './departments/departments.module';
 
 @Module({
   imports: [
@@ -76,6 +81,11 @@ import { TrainingSystemsModule } from './training-systems/training-systems.modul
     SpeakersModule,
     TrainingLevelsModule,
     TrainingSystemsModule,
+    EventsModule,
+    CamerasModule,
+    TemplatesModule,
+    ScreensModule,
+    DepartmentsModule,
   ],
   providers: [
     {

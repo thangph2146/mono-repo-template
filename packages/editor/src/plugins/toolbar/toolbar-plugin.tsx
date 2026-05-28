@@ -47,7 +47,6 @@ export function ToolbarPlugin({
       (_payload, newEditor) => {
         setActiveEditor(newEditor)
 
-        // Detect block type from selection
         newEditor.getEditorState().read(() => {
           const selection = $getSelection()
           if ($isRangeSelection(selection)) {
@@ -72,7 +71,6 @@ export function ToolbarPlugin({
 
               const elementType = element.getType()
 
-              // Check block type
               if ($isListNode(element)) {
                 setBlockType(elementType)
               } else if ($isCodeNode(element)) {
@@ -96,6 +94,8 @@ export function ToolbarPlugin({
     )
   }, [editor])
 
+  const topValue = stickyTop ?? Math.round(headerHeight)
+
   return (
     <ToolbarContext
       activeEditor={activeEditor}
@@ -110,7 +110,9 @@ export function ToolbarPlugin({
         className={cn("editor-toolbar", className)}
         style={{
           ...style,
-          top: stickyTop ?? Math.round(headerHeight),
+          position: "sticky",
+          top: topValue,
+          zIndex: 50,
         }}
       >
         {children({ blockType })}

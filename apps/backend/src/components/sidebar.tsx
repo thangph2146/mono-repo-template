@@ -27,6 +27,10 @@ import {
   Building2,
   Library,
   CalendarDays,
+  CalendarPlus,
+  Camera,
+  LayoutTemplate,
+  Monitor,
   type LucideIcon,
 } from "lucide-react"
 import { Button } from "@ui/components/button"
@@ -110,7 +114,7 @@ const menuTree: MenuTreeItem[] = [
   },
   {
     type: "group",
-    label: "Quản lý Danh mục",
+    label: "Quản lý Danh mục & Tag",
     icon: FolderTree,
     children: [
       {
@@ -122,7 +126,7 @@ const menuTree: MenuTreeItem[] = [
       },
       {
         href: "/tags",
-        label: "Thẻ",
+        label: "Tags",
         icon: Tags,
         permission: null,
         anyPermission: [
@@ -178,18 +182,55 @@ const menuTree: MenuTreeItem[] = [
   },
   {
     type: "group",
-    label: "Quản lý Sự kiện",
-    icon: Database,
+    label: "Quản lý Check-in",
+    icon: CalendarPlus,
     children: [
+      {
+        href: "/events",
+        label: "Sự kiện",
+        icon: CalendarPlus,
+        permission: null,
+        anyPermission: [PERMISSION_CODES.EVENTS_VIEW, PERMISSION_CODES.EVENTS_MANAGE],
+        adminOnly: true,
+      },
+      {
+        href: "/cameras",
+        label: "Camera",
+        icon: Camera,
+        permission: null,
+        anyPermission: [PERMISSION_CODES.CAMERAS_VIEW, PERMISSION_CODES.CAMERAS_MANAGE],
+        adminOnly: true,
+      },
+      {
+        href: "/templates",
+        label: "Mẫu hiển thị",
+        icon: LayoutTemplate,
+        permission: null,
+        anyPermission: [PERMISSION_CODES.TEMPLATES_VIEW, PERMISSION_CODES.TEMPLATES_MANAGE],
+        adminOnly: true,
+      },
+      {
+        href: "/screens",
+        label: "Màn hình",
+        icon: Monitor,
+        permission: null,
+        anyPermission: [PERMISSION_CODES.SCREENS_VIEW, PERMISSION_CODES.SCREENS_MANAGE],
+        adminOnly: true,
+      },
+      {
+        href: "/departments",
+        label: "Phòng khoa",
+        icon: Building2,
+        permission: null,
+        anyPermission: [PERMISSION_CODES.DEPARTMENTS_VIEW, PERMISSION_CODES.DEPARTMENTS_MANAGE],
+        adminOnly: true,
+      },
       {
         href: "/speakers",
         label: "Diễn giả",
         icon: Mic,
         permission: null,
-        anyPermission: [
-          PERMISSION_CODES.SPEAKERS_VIEW,
-          PERMISSION_CODES.SPEAKERS_MANAGE,
-        ],
+        anyPermission: [PERMISSION_CODES.SPEAKERS_VIEW, PERMISSION_CODES.SPEAKERS_MANAGE],
         adminOnly: true,
       },
       {
@@ -197,10 +238,7 @@ const menuTree: MenuTreeItem[] = [
         label: "Địa điểm",
         icon: MapPin,
         permission: null,
-        anyPermission: [
-          PERMISSION_CODES.LOCATIONS_VIEW,
-          PERMISSION_CODES.LOCATIONS_MANAGE,
-        ],
+        anyPermission: [PERMISSION_CODES.LOCATIONS_VIEW, PERMISSION_CODES.LOCATIONS_MANAGE],
         adminOnly: true,
       },
     ],

@@ -16,6 +16,11 @@ import { TrainingSystemsApi } from './resources/training-systems';
 import { MajorsApi } from './resources/majors';
 import { CoursesApi } from './resources/courses';
 import { AcademicYearsApi } from './resources/academic-years';
+import { EventsApi } from './resources/events';
+import { CamerasApi } from './resources/cameras';
+import { TemplatesApi } from './resources/templates';
+import { ScreensApi } from './resources/screens';
+import { DepartmentsApi } from './resources/departments';
 import type { HealthStatus } from './types';
 
 /**
@@ -50,6 +55,11 @@ export class StoreSyncSdk {
   readonly majors: MajorsApi;
   readonly courses: CoursesApi;
   readonly academicYears: AcademicYearsApi;
+  readonly events: EventsApi;
+  readonly cameras: CamerasApi;
+  readonly templates: TemplatesApi;
+  readonly screens: ScreensApi;
+  readonly departments: DepartmentsApi;
 
   constructor(options: ApiClientOptions) {
     this.http = new ApiClient(options);
@@ -70,6 +80,11 @@ export class StoreSyncSdk {
     this.majors = new MajorsApi(this.http);
     this.courses = new CoursesApi(this.http);
     this.academicYears = new AcademicYearsApi(this.http);
+    this.events = new EventsApi(this.http);
+    this.cameras = new CamerasApi(this.http);
+    this.templates = new TemplatesApi(this.http);
+    this.screens = new ScreensApi(this.http);
+    this.departments = new DepartmentsApi(this.http);
   }
 
   health(): Promise<HealthStatus> {

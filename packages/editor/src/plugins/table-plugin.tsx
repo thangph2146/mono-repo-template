@@ -117,11 +117,15 @@ export function TablePlugin({
     return editor.registerCommand<InsertTableCommandPayload>(
       INSERT_NEW_TABLE_COMMAND,
       ({ columns, rows, includeHeaders }) => {
+        const cols = Number(columns)
+        const containerWidth = getEditorContainerWidth(editor)
+        const colWidth = Math.max(80, Math.floor(containerWidth / cols))
         const tableNode = $createTableNodeWithDimensions(
           Number(rows),
-          Number(columns),
+          cols,
           includeHeaders
         )
+        tableNode.setStyle("width: 100%").setColWidths(Array(cols).fill(colWidth))
         $insertNodes([tableNode])
         return true
       },
@@ -136,6 +140,17 @@ export function TablePlugin({
  * Plugin chỉ đăng ký INSERT_NEW_TABLE_COMMAND để Insert Table tạo đúng node bảng.
  * Dùng thay cho TablePlugin đầy đủ khi không cần cellEditorConfig.
  */
+function getEditorContainerWidth(editor: LexicalEditor): number {
+  try {
+    const rootEl = editor.getRootElement()
+    if (rootEl?.parentElement) {
+      const w = rootEl.parentElement.clientWidth
+      if (w > 0) return w
+    }
+  } catch {}
+  return 600
+}
+
 export function InsertTableCommandPlugin(): JSX.Element | null {
   const [editor] = useLexicalComposerContext()
 
@@ -148,6 +163,8 @@ export function InsertTableCommandPlugin(): JSX.Element | null {
         const rows = Number(payload.rows) || 3
         const cols = Number(payload.columns) || 3
         const includeHeaders = payload.includeHeaders ?? false
+        const containerWidth = getEditorContainerWidth(editor)
+        const colWidth = Math.max(80, Math.floor(containerWidth / cols))
         editor.update(
           () => {
             const root = $getRoot()
@@ -156,6 +173,7 @@ export function InsertTableCommandPlugin(): JSX.Element | null {
               cols,
               includeHeaders
             )
+            tableNode.setStyle("width: 100%").setColWidths(Array(cols).fill(colWidth))
             try {
               const selection = $getSelection()
               let targetBlock: ReturnType<typeof root.getFirstChild> = null

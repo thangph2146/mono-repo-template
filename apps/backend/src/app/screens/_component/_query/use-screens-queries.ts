@@ -1,0 +1,6 @@
+import { useQuery } from "@tanstack/react-query";
+import type { StoreSyncSdk } from "@workspace/api-client";
+import type { ScreenDetail, ScreenRow } from "../types";
+export function useScreenDetailQuery(api: StoreSyncSdk, id: string) { return useQuery({ queryKey: ["screens", "detail", id], queryFn: () => api.screens.get<ScreenDetail>(id), enabled: !!id }); }
+export function useScreensListQuery(api: StoreSyncSdk, enabled: boolean) { return useQuery({ queryKey: ["screens", "list"], queryFn: async () => { const items: ScreenRow[] = []; let page = 1, total = Infinity; while (items.length < total) { const r = await api.screens.list<ScreenRow>({ page, limit: 100, status: "active" }); items.push(...r.items); total = r.total; if (!r.items.length) break; page++; } return items; }, enabled }); }
+export function useScreensTrashQuery({ api, trashPage, trashPageSize, debouncedTrashQ, enabled }: { api: StoreSyncSdk; trashPage: number; trashPageSize: number; debouncedTrashQ: string; enabled: boolean; }) { return useQuery({ queryKey: ["screens", "trash", trashPage, trashPageSize, debouncedTrashQ], enabled, queryFn: () => api.screens.list<ScreenRow>({ page: trashPage, limit: trashPageSize, search: debouncedTrashQ.trim() || undefined, status: "deleted" }) }); }

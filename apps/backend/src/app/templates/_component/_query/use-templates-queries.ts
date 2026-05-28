@@ -1,0 +1,6 @@
+import { useQuery } from "@tanstack/react-query";
+import type { StoreSyncSdk } from "@workspace/api-client";
+import type { TemplateDetail, TemplateRow } from "../types";
+export function useTemplateDetailQuery(api: StoreSyncSdk, id: string) { return useQuery({ queryKey: ["templates", "detail", id], queryFn: () => api.templates.get<TemplateDetail>(id), enabled: !!id }); }
+export function useTemplatesListQuery(api: StoreSyncSdk, enabled: boolean) { return useQuery({ queryKey: ["templates", "list"], queryFn: async () => { const items: TemplateRow[] = []; let page = 1, total = Infinity; while (items.length < total) { const r = await api.templates.list<TemplateRow>({ page, limit: 100, status: "active" }); items.push(...r.items); total = r.total; if (!r.items.length) break; page++; } return items; }, enabled }); }
+export function useTemplatesTrashQuery({ api, trashPage, trashPageSize, debouncedTrashQ, enabled }: { api: StoreSyncSdk; trashPage: number; trashPageSize: number; debouncedTrashQ: string; enabled: boolean; }) { return useQuery({ queryKey: ["templates", "trash", trashPage, trashPageSize, debouncedTrashQ], enabled, queryFn: () => api.templates.list<TemplateRow>({ page: trashPage, limit: trashPageSize, search: debouncedTrashQ.trim() || undefined, status: "deleted" }) }); }

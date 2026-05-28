@@ -103,7 +103,7 @@ export function TableActionsToolbarPlugin() {
         <IconSize size="sm">
           <TableProperties />
         </IconSize>
-        Bảng
+        Table
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>

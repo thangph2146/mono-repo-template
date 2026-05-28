@@ -82,7 +82,6 @@ import { HistoryToolbarPlugin } from "../plugins/toolbar/history-toolbar-plugin"
 import { LinkToolbarPlugin } from "../plugins/toolbar/link-toolbar-plugin"
 import { SubSuperToolbarPlugin } from "../plugins/toolbar/subsuper-toolbar-plugin"
 import { TableActionsToolbarPlugin } from "../plugins/toolbar/table-actions-toolbar-plugin"
-import { TableWidthToolbarPlugin } from "../plugins/toolbar/table-width-toolbar-plugin"
 import { ToolbarPlugin } from "../plugins/toolbar/toolbar-plugin"
 import { TypingPerfPlugin } from "../plugins/typing-pref-plugin"
 import { Separator } from "../ui/separator"
@@ -195,9 +194,7 @@ export function Plugins({
                     className="editor-toolbar-separator"
                   />
                   <div className="editor-toolbar-group">
-                    <ClearFormattingToolbarPlugin />
                     <TableActionsToolbarPlugin />
-                    <TableWidthToolbarPlugin />
                   </div>
                   <Separator
                     orientation="vertical"

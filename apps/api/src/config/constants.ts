@@ -45,6 +45,15 @@ export const ADMIN_ROUTES = {
   ACADEMIC_YEARS: 'admin/academic-years',
   MAJORS: 'admin/majors',
   IMPORTED_USERS: 'admin/imported-users',
+  EVENTS: 'admin/events',
+  CAMERAS: 'admin/cameras',
+  TEMPLATES: 'admin/templates',
+  SCREENS: 'admin/screens',
+  DEPARTMENTS: 'admin/departments',
+  EVENT_REGISTRATIONS: 'admin/event-registrations',
+  EVENT_CHECKINS: 'admin/event-checkins',
+  EVENT_SPEAKERS: 'admin/event-speakers',
+  FACE_DATA: 'admin/face-data',
 } as const;
 
 export const PUBLIC_ROUTES = {
