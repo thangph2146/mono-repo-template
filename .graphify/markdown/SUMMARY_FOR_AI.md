@@ -1,6 +1,6 @@
 # Hub parent template — bản đồ monorepo cho AI (Graphify)
 
-> **Sinh tự động:** `2026-05-28T01:55:02.273Z` — chỉ mục dẫn đường; chi tiết module nằm ở từng app/package bên dưới.
+> **Sinh tự động:** `2026-05-28T07:28:31.208Z` — chỉ mục dẫn đường; chi tiết module nằm ở từng app/package bên dưới.
 
 ## Chỉ dẫn theo chủ đề (đọc trước khi mở sâu)
 
@@ -59,8 +59,8 @@ Bảng dưới giúp agent mở **đúng file Graphify** trước khi đào `sna
 | App | Files trong context | generatedAt (context) | SUMMARY |
 |-----|--------------------|------------------------|---------|
 | `frontend` | 80 | 2026-05-28T01:53:56.193Z | [`apps/frontend/.graphify/markdown/SUMMARY_FOR_AI.md`](apps/frontend/.graphify/markdown/SUMMARY_FOR_AI.md) |
-| `backend` | 198 | 2026-05-28T01:53:56.133Z | [`apps/backend/.graphify/markdown/SUMMARY_FOR_AI.md`](apps/backend/.graphify/markdown/SUMMARY_FOR_AI.md) |
-| `api` | 182 | 2026-05-28T01:53:50.077Z | [`apps/api/.graphify/markdown/SUMMARY_FOR_AI.md`](apps/api/.graphify/markdown/SUMMARY_FOR_AI.md) |
+| `backend` | 320 | 2026-05-28T07:09:41.317Z | [`apps/backend/.graphify/markdown/SUMMARY_FOR_AI.md`](apps/backend/.graphify/markdown/SUMMARY_FOR_AI.md) |
+| `api` | 178 | 2026-05-28T07:28:26.736Z | [`apps/api/.graphify/markdown/SUMMARY_FOR_AI.md`](apps/api/.graphify/markdown/SUMMARY_FOR_AI.md) |
 
 ## Artefact từ `snapshot/graph.json` / package scan (`pnpm graphify:ai-summary`)
 

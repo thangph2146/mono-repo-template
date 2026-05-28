@@ -2,6 +2,8 @@ import { Entity, ManyToOne, OneToMany, Property } from '@mikro-orm/core';
 import { BaseEntity } from './base.entity';
 import { PostCategory } from './post-category.entity';
 
+export type CategoryType = 'post' | 'event';
+
 @Entity({ tableName: 'categories' })
 export class Category extends BaseEntity {
   @Property({ unique: true })
@@ -12,6 +14,9 @@ export class Category extends BaseEntity {
 
   @Property({ type: 'text', nullable: true })
   description?: string | null;
+
+  @Property({ default: 'post' })
+  type!: CategoryType;
 
   @Property({ onCreate: () => new Date() })
   createdAt!: Date;

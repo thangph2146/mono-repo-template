@@ -20,6 +20,7 @@ export interface CategoryRowDto {
   parentId: string | null;
   parentName?: string | null;
   description: string | null;
+  type: string;
   createdAt: string;
   updatedAt: string;
   deletedAt: string | null;
@@ -51,6 +52,7 @@ export interface ListCategoriesParams {
   limit: number;
   search?: string;
   status?: 'active' | 'deleted' | 'all';
+  type?: 'post' | 'event';
   filters?: Record<string, string>;
 }
 
@@ -82,6 +84,7 @@ function mapRow(r: CategoryWithParent): CategoryRowDto {
     parentId: r.parent?.id ?? null,
     parentName: r.parent?.name ?? null,
     description: r.description ?? null,
+    type: r.type,
     createdAt: toIsoString(r.createdAt) ?? new Date(0).toISOString(),
     updatedAt: toIsoString(r.updatedAt) ?? new Date(0).toISOString(),
     deletedAt: toIsoString(r.deletedAt),
@@ -98,6 +101,10 @@ function buildWhere(params: ListCategoriesParams): Record<string, unknown> {
     where.deletedAt = { $ne: null };
   } else if (status === 'active') {
     where.deletedAt = null;
+  }
+
+  if (params.type) {
+    where.type = params.type;
   }
 
   if (params.search?.trim()) {
@@ -318,11 +325,13 @@ export class CategoriesService {
     slug: string;
     description?: string | null;
     parentId?: string | null;
+    type?: 'post' | 'event';
   }): Promise<CategoryRowDto> {
     const entity = new Category();
     entity.name = data.name;
     entity.slug = data.slug;
     entity.description = data.description ?? null;
+    entity.type = data.type ?? 'post';
     entity.parent = data.parentId
       ? this.em.getReference(Category, data.parentId)
       : null;
@@ -344,6 +353,7 @@ export class CategoriesService {
       slug?: string;
       description?: string | null;
       parentId?: string | null;
+      type?: 'post' | 'event';
     },
   ): Promise<CategoryRowDto | null> {
     const existing = await this.em.findOne(Category, { id });
@@ -353,6 +363,7 @@ export class CategoriesService {
     if (data.slug != null) existing.slug = data.slug;
     if (data.description !== undefined)
       existing.description = data.description ?? null;
+    if (data.type !== undefined) existing.type = data.type;
     if (data.parentId !== undefined) {
       existing.parent = data.parentId
         ? this.em.getReference(Category, data.parentId)

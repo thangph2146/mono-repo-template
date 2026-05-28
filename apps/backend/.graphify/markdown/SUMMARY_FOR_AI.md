@@ -3,7 +3,7 @@
 > Tự động sinh từ `../snapshot/context.json` — **đọc file này trước**; tránh mở toàn bộ JSON snapshot (nhúng source đầy đủ).
 
 - **projectRoot:** `D:/HUB/working/2026/hub-parrent-template/apps/backend`
-- **context.generatedAt:** 2026-05-28T01:53:56.133Z
+- **context.generatedAt:** 2026-05-28T07:09:41.317Z
 
 ## Mục lục artefact Graphify
 
@@ -34,10 +34,14 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 - **Thống kê graph:** [`GRAPH_STATS.md`](GRAPH_STATS.md) — quy mô node/link, top file in/out-degree (điểm nóng import).
 
 ## Thống kê
-- **totalFiles:** 198
-- **clientComponents:** 84
+- **totalFiles:** 320
+- **clientComponents:** 147
 
-## Trang (pages) (33)
+## Trang (pages) (61)
+- `src/app/academic-years/new/page.tsx`
+- `src/app/academic-years/page.tsx`
+- `src/app/academic-years/[id]/edit/page.tsx`
+- `src/app/academic-years/[id]/page.tsx`
 - `src/app/categories/new/page.tsx`
 - `src/app/categories/page.tsx`
 - `src/app/categories/[id]/edit/page.tsx`
@@ -45,6 +49,10 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 - `src/app/contact-requests/page.tsx`
 - `src/app/contact-requests/[id]/edit/page.tsx`
 - `src/app/contact-requests/[id]/page.tsx`
+- `src/app/courses/new/page.tsx`
+- `src/app/courses/page.tsx`
+- `src/app/courses/[id]/edit/page.tsx`
+- `src/app/courses/[id]/page.tsx`
 - `src/app/data/page.tsx`
 - `src/app/database-schema/page.tsx`
 - `src/app/graph/page.tsx`
@@ -52,7 +60,15 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 - `src/app/guides/page.tsx`
 - `src/app/guides/[id]/edit/page.tsx`
 - `src/app/guides/[id]/page.tsx`
+- `src/app/locations/new/page.tsx`
+- `src/app/locations/page.tsx`
+- `src/app/locations/[id]/edit/page.tsx`
+- `src/app/locations/[id]/page.tsx`
 - `src/app/login/page.tsx`
+- `src/app/majors/new/page.tsx`
+- `src/app/majors/page.tsx`
+- `src/app/majors/[id]/edit/page.tsx`
+- `src/app/majors/[id]/page.tsx`
 - `src/app/my-students/page.tsx`
 - `src/app/page.tsx`
 - `src/app/parent-students/page.tsx`
@@ -63,6 +79,10 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 - `src/app/profile/page.tsx`
 - `src/app/rbac/page.tsx`
 - `src/app/register/page.tsx`
+- `src/app/speakers/new/page.tsx`
+- `src/app/speakers/page.tsx`
+- `src/app/speakers/[id]/edit/page.tsx`
+- `src/app/speakers/[id]/page.tsx`
 - `src/app/staff/new/page.tsx`
 - `src/app/staff/page.tsx`
 - `src/app/staff/[id]/edit/page.tsx`
@@ -71,6 +91,14 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 - `src/app/tags/page.tsx`
 - `src/app/tags/[id]/edit/page.tsx`
 - `src/app/tags/[id]/page.tsx`
+- `src/app/training-levels/new/page.tsx`
+- `src/app/training-levels/page.tsx`
+- `src/app/training-levels/[id]/edit/page.tsx`
+- `src/app/training-levels/[id]/page.tsx`
+- `src/app/training-systems/new/page.tsx`
+- `src/app/training-systems/page.tsx`
+- `src/app/training-systems/[id]/edit/page.tsx`
+- `src/app/training-systems/[id]/page.tsx`
 
 ## Layout (1)
 - `src/app/layout.tsx`
@@ -90,6 +118,23 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 | `components.json` | config | — | — | — |
 | `next.config.ts` | config | — | — | — |
 | `package.json` | config | — | — | — |
+| `src/app/academic-years/[id]/edit/page.tsx` | page | yes | EditAcademicYearPage | src/components/admin-page-guard.tsx, src/lib/api.ts, src/app/academic-years/_component |
+| `src/app/academic-years/[id]/page.tsx` | page | yes | AcademicYearDetailPage | src/components/admin-page-guard.tsx, src/lib/api.ts, src/app/academic-years/_component |
+| `src/app/academic-years/_component/_alert-dialog/academic-years-confirm-dialog.tsx` | tsx | yes | AcademicYearsConfirmDialogProps, AcademicYearsConfirmDialog | src/components/admin-confirm-action-dialog.tsx, src/app/academic-years/_component/types.ts |
+| `src/app/academic-years/_component/_alert-dialog/index.ts` | ts | no | AcademicYearsConfirmDialog | src/app/academic-years/_component/_alert-dialog/academic-years-confirm-dialog.tsx |
+| `src/app/academic-years/_component/_form/academic-year-form-shell.tsx` | tsx | yes | AcademicYearFormShellProps, AcademicYearFormShell | src/app/academic-years/_component/types.ts |
+| `src/app/academic-years/_component/_form/index.ts` | ts | no | AcademicYearFormShell | src/app/academic-years/_component/_form/academic-year-form-shell.tsx |
+| `src/app/academic-years/_component/_hooks/index.ts` | ts | no | useColumnFiltersChange, useClearListFilters, useClearTrashFilters, buildAcademicYearPayload, useAcademicYearForm, useHandleConfirmAction, useConfirmAction | src/hooks/use-table-filters.ts, src/app/academic-years/_component/_hooks/use-academic-years-actions.ts |
+| `src/app/academic-years/_component/_hooks/use-academic-years-actions.ts` | ts | no | buildAcademicYearPayload, useAcademicYearForm, useHandleConfirmAction, useConfirmAction | src/app/academic-years/_component/types.ts |
+| `src/app/academic-years/_component/_query/index.ts` | ts | no | useAcademicYearDetailQuery, useAcademicYearsListQuery, UseTrashQueryProps, useAcademicYearsTrashQuery | src/app/academic-years/_component/types.ts |
+| `src/app/academic-years/_component/_table/academic-years-table.tsx` | tsx | yes | AcademicYearsTableProps, AcademicYearsTable | src/components/admin-data-table, src/app/academic-years/_component/types.ts |
+| `src/app/academic-years/_component/_table/academic-years-trash-table.tsx` | tsx | yes | AcademicYearsTrashTableProps, AcademicYearsTrashTable | src/components/admin-data-table, src/components/admin-table-pagination-footer.tsx, src/app/academic-years/_component/types.ts |
+| `src/app/academic-years/_component/_table/index.ts` | ts | no | AcademicYearsTable, AcademicYearsTrashTable | src/app/academic-years/_component/_table/academic-years-table.tsx, src/app/academic-years/_component/_table/academic-years-trash-table.tsx |
+| `src/app/academic-years/_component/columns.tsx` | tsx | yes | getAcademicYearColumns, getTrashColumns | src/app/academic-years/_component/types.ts |
+| `src/app/academic-years/_component/index.ts` | ts | no | academicYearFormSchema, getAcademicYearColumns, getTrashColumns, useAcademicYearDetailQuery, useAcademicYearsListQuery, useAcademicYearsTrashQuery, useColumnFiltersChange, useClearListFilters, useClea | src/app/academic-years/_component/types.ts, src/app/academic-years/_component/columns.tsx, src/app/academic-years/_component/_query, src/app/academic-years/_component/_hooks, src/app/academic-years/_c |
+| `src/app/academic-years/_component/types.ts` | ts | no | AcademicYearRow, AcademicYearConfirmAction, academicYearFormSchema, AcademicYearFormValues, AcademicYearDetail |  |
+| `src/app/academic-years/new/page.tsx` | page | yes | NewAcademicYearPage | src/components/admin-page-guard.tsx, src/lib/api.ts, src/app/academic-years/_component |
+| `src/app/academic-years/page.tsx` | page | yes | AcademicYearsPage | src/hooks/use-debounced-value.ts, src/providers/auth-provider.tsx, src/components/admin-page-guard.tsx, src/lib/api.ts, src/app/academic-years/_component |
 | `src/app/api/graphify/route.ts` | api-route | no |  |  |
 | `src/app/categories/[id]/edit/page.tsx` | page | yes | EditCategoryPage | src/components/admin-page-guard.tsx, src/lib/api.ts, src/app/categories/_component |
 | `src/app/categories/[id]/page.tsx` | page | yes | CategoryDetailPage | src/components/admin-page-guard.tsx, src/lib/api.ts, src/app/categories/_component |
@@ -128,6 +173,24 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 | `src/app/contact-requests/_component/types.ts` | ts | no | CONTACT_REQUEST_STATUSES, CONTACT_REQUEST_STATUS_LABELS |  |
 | `src/app/contact-requests/_component/utils.ts` | ts | no | formatPhoneNumber, buildFilterQuery |  |
 | `src/app/contact-requests/page.tsx` | page | yes | ContactRequestsPage | src/components/admin-page-guard.tsx, src/hooks/queries.ts, src/lib/build-admin-filter-query.ts, src/hooks/use-debounced-value.ts, src/app/contact-requests/_component, src/app/contact-requests/_compone |
+| `src/app/courses/[id]/edit/page.tsx` | page | yes | EditCoursePage | src/components/admin-page-guard.tsx, src/lib/api.ts, src/app/courses/_component |
+| `src/app/courses/[id]/page.tsx` | page | yes | CourseDetailPage | src/components/admin-page-guard.tsx, src/lib/api.ts, src/app/courses/_component |
+| `src/app/courses/_component/_alert-dialog/courses-confirm-dialog.tsx` | tsx | yes | CoursesConfirmDialogProps, CoursesConfirmDialog | src/components/admin-confirm-action-dialog.tsx, src/app/courses/_component/types.ts |
+| `src/app/courses/_component/_alert-dialog/index.ts` | ts | no | CoursesConfirmDialog | src/app/courses/_component/_alert-dialog/courses-confirm-dialog.tsx |
+| `src/app/courses/_component/_form/courses-form-shell.tsx` | tsx | yes | CourseFormShellProps, CourseFormShell | src/app/courses/_component/types.ts |
+| `src/app/courses/_component/_form/index.ts` | ts | no | CourseFormShell | src/app/courses/_component/_form/courses-form-shell.tsx |
+| `src/app/courses/_component/_hooks/index.ts` | ts | no | useColumnFiltersChange, useClearListFilters, useClearTrashFilters, buildCoursePayload, useCourseForm, useHandleConfirmAction, useConfirmAction | src/hooks/use-table-filters.ts, src/app/courses/_component/_hooks/use-courses-actions.ts |
+| `src/app/courses/_component/_hooks/use-courses-actions.ts` | ts | no | buildCoursePayload, useCourseForm, useHandleConfirmAction, useConfirmAction | src/app/courses/_component/types.ts |
+| `src/app/courses/_component/_query/index.ts` | ts | no | useCourseDetailQuery, useCoursesListQuery, useCoursesTrashQuery | src/app/courses/_component/_query/use-courses-queries.ts |
+| `src/app/courses/_component/_query/use-courses-queries.ts` | ts | no | useCourseDetailQuery, useCoursesListQuery, UseTrashQueryProps, useCoursesTrashQuery | src/app/courses/_component/types.ts |
+| `src/app/courses/_component/_table/courses-table.tsx` | tsx | yes | CoursesTableProps, CoursesTable | src/components/admin-data-table, src/app/courses/_component/types.ts |
+| `src/app/courses/_component/_table/courses-trash-table.tsx` | tsx | yes | CoursesTrashTableProps, CoursesTrashTable | src/components/admin-data-table, src/components/admin-table-pagination-footer.tsx, src/app/courses/_component/types.ts |
+| `src/app/courses/_component/_table/index.ts` | ts | no | CoursesTable, CoursesTrashTable | src/app/courses/_component/_table/courses-table.tsx, src/app/courses/_component/_table/courses-trash-table.tsx |
+| `src/app/courses/_component/columns.tsx` | tsx | yes | getCourseColumns, getTrashColumns | src/app/courses/_component/types.ts |
+| `src/app/courses/_component/index.ts` | ts | no | courseFormSchema, getCourseColumns, getTrashColumns, useCourseDetailQuery, useCoursesListQuery, useCoursesTrashQuery, useColumnFiltersChange, useClearListFilters, useClearTrashFilters, buildCoursePayl | src/app/courses/_component/types.ts, src/app/courses/_component/columns.tsx, src/app/courses/_component/_query, src/app/courses/_component/_hooks, src/app/courses/_component/_form, src/app/courses/_co |
+| `src/app/courses/_component/types.ts` | ts | no | CourseRow, CourseConfirmAction, courseFormSchema, CourseFormValues, CourseDetail |  |
+| `src/app/courses/new/page.tsx` | page | yes | NewCoursePage | src/components/admin-page-guard.tsx, src/lib/api.ts, src/app/courses/_component |
+| `src/app/courses/page.tsx` | page | yes | CoursesPage | src/hooks/use-debounced-value.ts, src/providers/auth-provider.tsx, src/components/admin-page-guard.tsx, src/lib/api.ts, src/app/courses/_component |
 | `src/app/data/page.tsx` | page | yes | DataBackupPage | src/lib/auth-session.ts, src/components/admin-page-guard.tsx |
 | `src/app/database-schema/page.tsx` | page | yes | DatabaseSchemaPage | src/components/admin-page-guard.tsx, src/lib/api.ts |
 | `src/app/graph/page.tsx` | page | yes | GraphPage | src/components/admin-page-guard.tsx |
@@ -155,7 +218,42 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 | `src/app/guides/page.tsx` | page | yes | GuidesPage | src/components/admin-page-guard.tsx, src/lib/api.ts, src/app/guides/_component |
 | `src/app/layout.tsx` | layout | no | metadata, RootLayout | src/app/page.tsx, src/providers/query-provider.tsx, src/providers/auth-provider.tsx, src/components/admin-shell.tsx |
 | `src/app/loading.tsx` | loading | no | Loading |  |
+| `src/app/locations/[id]/edit/page.tsx` | page | yes | EditLocationPage | src/components/admin-page-guard.tsx, src/lib/api.ts, src/app/locations/_component |
+| `src/app/locations/[id]/page.tsx` | page | yes | LocationDetailPage | src/components/admin-page-guard.tsx, src/lib/api.ts, src/app/locations/_component |
+| `src/app/locations/_component/_alert-dialog/index.ts` | ts | no | LocationsConfirmDialog | src/app/locations/_component/_alert-dialog/locations-confirm-dialog.tsx |
+| `src/app/locations/_component/_alert-dialog/locations-confirm-dialog.tsx` | tsx | yes | LocationsConfirmDialogProps, LocationsConfirmDialog | src/components/admin-confirm-action-dialog.tsx, src/app/locations/_component/types.ts |
+| `src/app/locations/_component/_form/index.ts` | ts | no | LocationFormShell | src/app/locations/_component/_form/location-form-shell.tsx |
+| `src/app/locations/_component/_form/location-form-shell.tsx` | tsx | yes | LocationFormShellProps, LocationFormShell | src/app/locations/_component/types.ts |
+| `src/app/locations/_component/_hooks/index.ts` | ts | no | useColumnFiltersChange, useClearListFilters, useClearTrashFilters, buildLocationPayload, useLocationForm, useHandleConfirmAction, useConfirmAction | src/hooks/use-table-filters.ts, src/app/locations/_component/_hooks/use-locations-actions.ts |
+| `src/app/locations/_component/_hooks/use-locations-actions.ts` | ts | no | buildLocationPayload, useLocationForm, useHandleConfirmAction, useConfirmAction | src/app/locations/_component/types.ts |
+| `src/app/locations/_component/_query/index.ts` | ts | no | useLocationDetailQuery, useLocationsListQuery, useLocationsTrashQuery | src/app/locations/_component/_query/use-locations-queries.ts |
+| `src/app/locations/_component/_query/use-locations-queries.ts` | ts | no | useLocationDetailQuery, useLocationsListQuery, UseTrashQueryProps, useLocationsTrashQuery | src/app/locations/_component/types.ts |
+| `src/app/locations/_component/_table/index.ts` | ts | no | LocationsTable, LocationsTrashTable | src/app/locations/_component/_table/locations-table.tsx, src/app/locations/_component/_table/locations-trash-table.tsx |
+| `src/app/locations/_component/_table/locations-table.tsx` | tsx | yes | LocationsTableProps, LocationsTable | src/components/admin-data-table, src/app/locations/_component/types.ts |
+| `src/app/locations/_component/_table/locations-trash-table.tsx` | tsx | yes | LocationsTrashTableProps, LocationsTrashTable | src/components/admin-data-table, src/components/admin-table-pagination-footer.tsx, src/app/locations/_component/types.ts |
+| `src/app/locations/_component/columns.tsx` | tsx | yes | getLocationColumns, getTrashColumns | src/app/locations/_component/types.ts |
+| `src/app/locations/_component/index.ts` | ts | no | locationFormSchema, getLocationColumns, getTrashColumns, useLocationDetailQuery, useLocationsListQuery, useLocationsTrashQuery, useColumnFiltersChange, useClearListFilters, useClearTrashFilters, build | src/app/locations/_component/types.ts, src/app/locations/_component/columns.tsx, src/app/locations/_component/_query, src/app/locations/_component/_hooks, src/app/locations/_component/_form, src/app/l |
+| `src/app/locations/_component/types.ts` | ts | no | LocationRow, LocationConfirmAction, locationFormSchema, LocationFormValues, LocationDetail |  |
+| `src/app/locations/new/page.tsx` | page | yes | NewLocationPage | src/components/admin-page-guard.tsx, src/lib/api.ts, src/app/locations/_component |
+| `src/app/locations/page.tsx` | page | yes | LocationsPage | src/hooks/use-debounced-value.ts, src/providers/auth-provider.tsx, src/components/admin-page-guard.tsx, src/lib/api.ts, src/app/locations/_component |
 | `src/app/login/page.tsx` | page | no | AdminLoginPage | src/features/auth/sign-in-form.tsx |
+| `src/app/majors/[id]/edit/page.tsx` | page | yes | EditMajorPage | src/components/admin-page-guard.tsx, src/lib/api.ts, src/app/majors/_component |
+| `src/app/majors/[id]/page.tsx` | page | yes | MajorDetailPage | src/components/admin-page-guard.tsx, src/lib/api.ts, src/app/majors/_component |
+| `src/app/majors/_component/_alert-dialog/index.ts` | ts | no | MajorsConfirmDialog | src/app/majors/_component/_alert-dialog/majors-confirm-dialog.tsx |
+| `src/app/majors/_component/_alert-dialog/majors-confirm-dialog.tsx` | tsx | yes | MajorsConfirmDialogProps, MajorsConfirmDialog | src/components/admin-confirm-action-dialog.tsx, src/app/majors/_component/types.ts |
+| `src/app/majors/_component/_form/index.ts` | ts | no | MajorsFormShell | src/app/majors/_component/_form/majors-form-shell.tsx |
+| `src/app/majors/_component/_form/majors-form-shell.tsx` | tsx | yes | MajorsFormShellProps, MajorsFormShell | src/app/majors/_component/types.ts |
+| `src/app/majors/_component/_hooks/index.ts` | ts | no | useColumnFiltersChange, useClearListFilters, useClearTrashFilters, buildMajorPayload, useMajorForm, useHandleConfirmAction, useConfirmAction | src/hooks/use-table-filters.ts, src/app/majors/_component/_hooks/use-majors-actions.ts |
+| `src/app/majors/_component/_hooks/use-majors-actions.ts` | ts | no | buildMajorPayload, useMajorForm, useHandleConfirmAction, useConfirmAction | src/app/majors/_component/types.ts |
+| `src/app/majors/_component/_query/index.ts` | ts | no | useMajorDetailQuery, useMajorsListQuery, UseTrashQueryProps, useMajorsTrashQuery | src/app/majors/_component/types.ts |
+| `src/app/majors/_component/_table/index.ts` | ts | no | MajorsTable, MajorsTrashTable | src/app/majors/_component/_table/majors-table.tsx, src/app/majors/_component/_table/majors-trash-table.tsx |
+| `src/app/majors/_component/_table/majors-table.tsx` | tsx | yes | MajorsTableProps, MajorsTable | src/components/admin-data-table, src/app/majors/_component/types.ts |
+| `src/app/majors/_component/_table/majors-trash-table.tsx` | tsx | yes | MajorsTrashTableProps, MajorsTrashTable | src/components/admin-data-table, src/components/admin-table-pagination-footer.tsx, src/app/majors/_component/types.ts |
+| `src/app/majors/_component/columns.tsx` | tsx | yes | getMajorColumns, getTrashColumns | src/app/majors/_component/types.ts |
+| `src/app/majors/_component/index.ts` | ts | no | majorFormSchema, getMajorColumns, getTrashColumns, useMajorDetailQuery, useMajorsListQuery, useMajorsTrashQuery, useColumnFiltersChange, useClearListFilters, useClearTrashFilters, buildMajorPayload, u | src/app/majors/_component/types.ts, src/app/majors/_component/columns.tsx, src/app/majors/_component/_query, src/app/majors/_component/_hooks, src/app/majors/_component/_form, src/app/majors/_componen |
+| `src/app/majors/_component/types.ts` | ts | no | MajorRow, MajorConfirmAction, majorFormSchema, MajorFormValues, MajorDetail |  |
+| `src/app/majors/new/page.tsx` | page | yes | NewMajorPage | src/components/admin-page-guard.tsx, src/lib/api.ts, src/app/majors/_component |
+| `src/app/majors/page.tsx` | page | yes | MajorsPage | src/hooks/use-debounced-value.ts, src/providers/auth-provider.tsx, src/components/admin-page-guard.tsx, src/lib/api.ts, src/app/majors/_component |
 | `src/app/my-students/_component/detailed-scores-list.tsx` | tsx | yes | DetailedScoresList | src/components/admin-data-table, src/types/student-scores.ts, src/app/my-students/_component/score-utils.ts |
 | `src/app/my-students/_component/index.ts` | ts | no | StudentScoresSection, DetailedScoresList, YearAveragesList, TermAveragesList, formatScore, formatGrade | src/app/my-students/_component/student-scores-section.tsx, src/app/my-students/_component/detailed-scores-list.tsx, src/app/my-students/_component/year-averages-list.tsx, src/app/my-students/_componen |
 | `src/app/my-students/_component/score-utils.ts` | ts | no | formatScore, formatGrade |  |
@@ -205,6 +303,24 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 | `src/app/rbac/_component/types.ts` | ts | no | PERMISSION_GROUPS, CreateRoleInput, UpdateRoleInput |  |
 | `src/app/register/page.tsx` | page | no | RegisterPage | src/features/auth/register-form.tsx |
 | `src/app/robots.ts` | ts | no | robots |  |
+| `src/app/speakers/[id]/edit/page.tsx` | page | yes | EditSpeakerPage | src/components/admin-page-guard.tsx, src/lib/api.ts, src/app/speakers/_component |
+| `src/app/speakers/[id]/page.tsx` | page | yes | SpeakerDetailPage | src/components/admin-page-guard.tsx, src/lib/api.ts, src/app/speakers/_component |
+| `src/app/speakers/_component/_alert-dialog/index.ts` | ts | no | SpeakersConfirmDialog | src/app/speakers/_component/_alert-dialog/speakers-confirm-dialog.tsx |
+| `src/app/speakers/_component/_alert-dialog/speakers-confirm-dialog.tsx` | tsx | yes | SpeakersConfirmDialogProps, SpeakersConfirmDialog | src/components/admin-confirm-action-dialog.tsx, src/app/speakers/_component/types.ts |
+| `src/app/speakers/_component/_form/index.ts` | ts | no | SpeakerFormShell | src/app/speakers/_component/_form/speaker-form-shell.tsx |
+| `src/app/speakers/_component/_form/speaker-form-shell.tsx` | tsx | yes | SpeakerFormShellProps, SpeakerFormShell | src/app/speakers/_component/types.ts |
+| `src/app/speakers/_component/_hooks/index.ts` | ts | no | useColumnFiltersChange, useClearListFilters, useClearTrashFilters, buildSpeakerPayload, useSpeakerForm, useHandleConfirmAction, useConfirmAction | src/hooks/use-table-filters.ts, src/app/speakers/_component/_hooks/use-speakers-actions.ts |
+| `src/app/speakers/_component/_hooks/use-speakers-actions.ts` | ts | no | buildSpeakerPayload, useSpeakerForm, useHandleConfirmAction, useConfirmAction | src/app/speakers/_component/types.ts |
+| `src/app/speakers/_component/_query/index.ts` | ts | no | useSpeakerDetailQuery, useSpeakersListQuery, useSpeakersTrashQuery | src/app/speakers/_component/_query/use-speakers-queries.ts |
+| `src/app/speakers/_component/_query/use-speakers-queries.ts` | ts | no | useSpeakerDetailQuery, useSpeakersListQuery, UseTrashQueryProps, useSpeakersTrashQuery | src/app/speakers/_component/types.ts |
+| `src/app/speakers/_component/_table/index.ts` | ts | no | SpeakersTable, SpeakersTrashTable | src/app/speakers/_component/_table/speakers-table.tsx, src/app/speakers/_component/_table/speakers-trash-table.tsx |
+| `src/app/speakers/_component/_table/speakers-table.tsx` | tsx | yes | SpeakersTableProps, SpeakersTable | src/components/admin-data-table, src/app/speakers/_component/types.ts |
+| `src/app/speakers/_component/_table/speakers-trash-table.tsx` | tsx | yes | SpeakersTrashTableProps, SpeakersTrashTable | src/components/admin-data-table, src/components/admin-table-pagination-footer.tsx, src/app/speakers/_component/types.ts |
+| `src/app/speakers/_component/columns.tsx` | tsx | yes | getSpeakerColumns, getTrashColumns | src/app/speakers/_component/types.ts |
+| `src/app/speakers/_component/index.ts` | ts | no | speakerFormSchema, getSpeakerColumns, getTrashColumns, useSpeakerDetailQuery, useSpeakersListQuery, useSpeakersTrashQuery, useColumnFiltersChange, useClearListFilters, useClearTrashFilters, buildSpeak | src/app/speakers/_component/types.ts, src/app/speakers/_component/columns.tsx, src/app/speakers/_component/_query, src/app/speakers/_component/_hooks, src/app/speakers/_component/_form, src/app/speake |
+| `src/app/speakers/_component/types.ts` | ts | no | SpeakerRow, SpeakerConfirmAction, speakerFormSchema, SpeakerFormValues, SpeakerDetail |  |
+| `src/app/speakers/new/page.tsx` | page | yes | NewSpeakerPage | src/components/admin-page-guard.tsx, src/lib/api.ts, src/app/speakers/_component |
+| `src/app/speakers/page.tsx` | page | yes | SpeakersPage | src/hooks/use-debounced-value.ts, src/providers/auth-provider.tsx, src/components/admin-page-guard.tsx, src/lib/api.ts, src/app/speakers/_component |
 | `src/app/staff/[id]/edit/page.tsx` | page | yes | EditStaffPage | src/app/staff/_component, src/app/staff/_component/_form, src/hooks/queries.ts, src/providers/auth-provider.tsx, src/components/admin-page-guard.tsx, src/lib/api.ts |
 | `src/app/staff/[id]/page.tsx` | page | yes | StaffDetailPage | src/hooks/queries.ts, src/providers/auth-provider.tsx, src/components/admin-page-guard.tsx, src/app/posts/_component/_query/use-posts-queries.ts, src/lib/api.ts, src/components/admin-data-table/admin- |
 | `src/app/staff/_component/_alert-dialog/index.ts` | ts | no | StaffConfirmDialog, StaffBulkConfirmDialog | src/app/staff/_component/_alert-dialog/staff-confirm-dialog.tsx |
@@ -242,6 +358,40 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 | `src/app/tags/_component/utils.ts` | ts | no | formatDateTime, humanizeSlug, sortTagsByName, buildTagTree, buildTagsFilterQuery, toFilterQuery, slugify, unwrapEnvelope, normalizePaged | src/lib, src/app/tags/_component/types.ts, src/lib/api.ts |
 | `src/app/tags/new/page.tsx` | page | yes | NewTagPage | src/components/admin-page-guard.tsx, src/lib/api.ts, src/app/tags/_component |
 | `src/app/tags/page.tsx` | page | yes | TagsPage | src/hooks/use-debounced-value.ts, src/providers/auth-provider.tsx, src/components/admin-page-guard.tsx, src/lib/api.ts, src/app/tags/_component |
+| `src/app/training-levels/[id]/edit/page.tsx` | page | yes | EditTrainingLevelPage | src/components/admin-page-guard.tsx, src/lib/api.ts, src/app/training-levels/_component |
+| `src/app/training-levels/[id]/page.tsx` | page | yes | TrainingLevelDetailPage | src/components/admin-page-guard.tsx, src/lib/api.ts, src/app/training-levels/_component |
+| `src/app/training-levels/_component/_alert-dialog/index.ts` | ts | no | TrainingLevelsConfirmDialog | src/app/training-levels/_component/_alert-dialog/training-levels-confirm-dialog.tsx |
+| `src/app/training-levels/_component/_alert-dialog/training-levels-confirm-dialog.tsx` | tsx | yes | TrainingLevelsConfirmDialogProps, TrainingLevelsConfirmDialog | src/components/admin-confirm-action-dialog.tsx, src/app/training-levels/_component/types.ts |
+| `src/app/training-levels/_component/_form/index.ts` | ts | no | TrainingLevelFormShell | src/app/training-levels/_component/_form/training-level-form-shell.tsx |
+| `src/app/training-levels/_component/_form/training-level-form-shell.tsx` | tsx | yes | TrainingLevelFormShellProps, TrainingLevelFormShell | src/app/training-levels/_component/types.ts |
+| `src/app/training-levels/_component/_hooks/index.ts` | ts | no | useColumnFiltersChange, useClearListFilters, useClearTrashFilters, buildTrainingLevelPayload, useTrainingLevelForm, useHandleConfirmAction, useConfirmAction | src/hooks/use-table-filters.ts, src/app/training-levels/_component/_hooks/use-training-levels-actions.ts |
+| `src/app/training-levels/_component/_hooks/use-training-levels-actions.ts` | ts | no | buildTrainingLevelPayload, useTrainingLevelForm, useHandleConfirmAction, useConfirmAction | src/app/training-levels/_component/types.ts |
+| `src/app/training-levels/_component/_query/index.ts` | ts | no | useTrainingLevelDetailQuery, useTrainingLevelsListQuery, UseTrashQueryProps, useTrainingLevelsTrashQuery | src/app/training-levels/_component/types.ts |
+| `src/app/training-levels/_component/_table/index.ts` | ts | no | TrainingLevelsTable, TrainingLevelsTrashTable | src/app/training-levels/_component/_table/training-levels-table.tsx, src/app/training-levels/_component/_table/training-levels-trash-table.tsx |
+| `src/app/training-levels/_component/_table/training-levels-table.tsx` | tsx | yes | TrainingLevelsTableProps, TrainingLevelsTable | src/components/admin-data-table, src/app/training-levels/_component/types.ts |
+| `src/app/training-levels/_component/_table/training-levels-trash-table.tsx` | tsx | yes | TrainingLevelsTrashTableProps, TrainingLevelsTrashTable | src/components/admin-data-table, src/components/admin-table-pagination-footer.tsx, src/app/training-levels/_component/types.ts |
+| `src/app/training-levels/_component/columns.tsx` | tsx | yes | getTrainingLevelColumns, getTrashColumns | src/app/training-levels/_component/types.ts |
+| `src/app/training-levels/_component/index.ts` | ts | no | entityFormSchema, getTrainingLevelColumns, getTrashColumns, useTrainingLevelDetailQuery, useTrainingLevelsListQuery, useTrainingLevelsTrashQuery, useColumnFiltersChange, useClearListFilters, useClearT | src/app/training-levels/_component/types.ts, src/app/training-levels/_component/columns.tsx, src/app/training-levels/_component/_query, src/app/training-levels/_component/_hooks, src/app/training-leve |
+| `src/app/training-levels/_component/types.ts` | ts | no | TrainingLevelRow, TrainingLevelConfirmAction, entityFormSchema, TrainingLevelFormValues, TrainingLevelDetail |  |
+| `src/app/training-levels/new/page.tsx` | page | yes | NewTrainingLevelPage | src/components/admin-page-guard.tsx, src/lib/api.ts, src/app/training-levels/_component |
+| `src/app/training-levels/page.tsx` | page | yes | TrainingLevelsPage | src/hooks/use-debounced-value.ts, src/providers/auth-provider.tsx, src/components/admin-page-guard.tsx, src/lib/api.ts, src/app/training-levels/_component |
+| `src/app/training-systems/[id]/edit/page.tsx` | page | yes | EditTrainingSystemPage | src/components/admin-page-guard.tsx, src/lib/api.ts, src/app/training-systems/_component |
+| `src/app/training-systems/[id]/page.tsx` | page | yes | TrainingSystemDetailPage | src/components/admin-page-guard.tsx, src/lib/api.ts, src/app/training-systems/_component |
+| `src/app/training-systems/_component/_alert-dialog/index.ts` | ts | no | TrainingSystemsConfirmDialog | src/app/training-systems/_component/_alert-dialog/training-systems-confirm-dialog.tsx |
+| `src/app/training-systems/_component/_alert-dialog/training-systems-confirm-dialog.tsx` | tsx | yes | TrainingSystemsConfirmDialogProps, TrainingSystemsConfirmDialog | src/components/admin-confirm-action-dialog.tsx, src/app/training-systems/_component/types.ts |
+| `src/app/training-systems/_component/_form/index.ts` | ts | no | TrainingSystemFormShell | src/app/training-systems/_component/_form/training-system-form-shell.tsx |
+| `src/app/training-systems/_component/_form/training-system-form-shell.tsx` | tsx | yes | TrainingSystemFormShellProps, TrainingSystemFormShell | src/app/training-systems/_component/types.ts |
+| `src/app/training-systems/_component/_hooks/index.ts` | ts | no | useColumnFiltersChange, useClearListFilters, useClearTrashFilters, buildTrainingSystemPayload, useTrainingSystemForm, useHandleConfirmAction, useConfirmAction | src/hooks/use-table-filters.ts, src/app/training-systems/_component/_hooks/use-training-systems-actions.ts |
+| `src/app/training-systems/_component/_hooks/use-training-systems-actions.ts` | ts | no | buildTrainingSystemPayload, useTrainingSystemForm, useHandleConfirmAction, useConfirmAction | src/app/training-systems/_component/types.ts |
+| `src/app/training-systems/_component/_query/index.ts` | ts | no | useTrainingSystemDetailQuery, useTrainingSystemsListQuery, UseTrashQueryProps, useTrainingSystemsTrashQuery | src/app/training-systems/_component/types.ts |
+| `src/app/training-systems/_component/_table/index.ts` | ts | no | TrainingSystemsTable, TrainingSystemsTrashTable | src/app/training-systems/_component/_table/training-systems-table.tsx, src/app/training-systems/_component/_table/training-systems-trash-table.tsx |
+| `src/app/training-systems/_component/_table/training-systems-table.tsx` | tsx | yes | TrainingSystemsTableProps, TrainingSystemsTable | src/components/admin-data-table, src/app/training-systems/_component/types.ts |
+| `src/app/training-systems/_component/_table/training-systems-trash-table.tsx` | tsx | yes | TrainingSystemsTrashTableProps, TrainingSystemsTrashTable | src/components/admin-data-table, src/components/admin-table-pagination-footer.tsx, src/app/training-systems/_component/types.ts |
+| `src/app/training-systems/_component/columns.tsx` | tsx | yes | getTrainingSystemColumns, getTrashColumns | src/app/training-systems/_component/types.ts |
+| `src/app/training-systems/_component/index.ts` | ts | no | entityFormSchema, getTrainingSystemColumns, getTrashColumns, useTrainingSystemDetailQuery, useTrainingSystemsListQuery, useTrainingSystemsTrashQuery, useColumnFiltersChange, useClearListFilters, useCl | src/app/training-systems/_component/types.ts, src/app/training-systems/_component/columns.tsx, src/app/training-systems/_component/_query, src/app/training-systems/_component/_hooks, src/app/training- |
+| `src/app/training-systems/_component/types.ts` | ts | no | TrainingSystemRow, TrainingSystemConfirmAction, entityFormSchema, TrainingSystemFormValues, TrainingSystemDetail |  |
+| `src/app/training-systems/new/page.tsx` | page | yes | NewTrainingSystemPage | src/components/admin-page-guard.tsx, src/lib/api.ts, src/app/training-systems/_component |
+| `src/app/training-systems/page.tsx` | page | yes | TrainingSystemsPage | src/hooks/use-debounced-value.ts, src/providers/auth-provider.tsx, src/components/admin-page-guard.tsx, src/lib/api.ts, src/app/training-systems/_component |
 | `src/components/admin-confirm-action-dialog.tsx` | tsx | yes | AdminConfirmActionDialog |  |
 | `src/components/admin-data-table/index.ts` | ts | no | AdminDataTable | src/components/admin-data-table/admin-data-table.tsx |
 | `src/components/admin-data-table/table-meta.ts` | ts | no |  |  |

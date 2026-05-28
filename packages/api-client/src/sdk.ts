@@ -9,6 +9,13 @@ import { ContactRequestsApi } from './resources/contact-requests';
 import { MyStudentsApi } from './resources/my-students';
 import { ParentStudentsApi } from './resources/parent-students';
 import { SystemApi } from './resources/system';
+import { SpeakersApi } from './resources/speakers';
+import { LocationsApi } from './resources/locations';
+import { TrainingLevelsApi } from './resources/training-levels';
+import { TrainingSystemsApi } from './resources/training-systems';
+import { MajorsApi } from './resources/majors';
+import { CoursesApi } from './resources/courses';
+import { AcademicYearsApi } from './resources/academic-years';
 import type { HealthStatus } from './types';
 
 /**
@@ -36,6 +43,13 @@ export class StoreSyncSdk {
   readonly myStudents: MyStudentsApi;
   readonly parentStudents: ParentStudentsApi;
   readonly system: SystemApi;
+  readonly speakers: SpeakersApi;
+  readonly locations: LocationsApi;
+  readonly trainingLevels: TrainingLevelsApi;
+  readonly trainingSystems: TrainingSystemsApi;
+  readonly majors: MajorsApi;
+  readonly courses: CoursesApi;
+  readonly academicYears: AcademicYearsApi;
 
   constructor(options: ApiClientOptions) {
     this.http = new ApiClient(options);
@@ -49,6 +63,13 @@ export class StoreSyncSdk {
     this.myStudents = new MyStudentsApi(this.http);
     this.parentStudents = new ParentStudentsApi(this.http);
     this.system = new SystemApi(this.http);
+    this.speakers = new SpeakersApi(this.http);
+    this.locations = new LocationsApi(this.http);
+    this.trainingLevels = new TrainingLevelsApi(this.http);
+    this.trainingSystems = new TrainingSystemsApi(this.http);
+    this.majors = new MajorsApi(this.http);
+    this.courses = new CoursesApi(this.http);
+    this.academicYears = new AcademicYearsApi(this.http);
   }
 
   health(): Promise<HealthStatus> {

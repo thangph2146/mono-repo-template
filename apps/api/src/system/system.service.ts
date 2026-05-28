@@ -9,29 +9,19 @@ import {
 import { hashSync } from 'bcryptjs';
 import * as ExcelJS from 'exceljs';
 
-import { Account } from '../entities/account.entity';
-import { AdmissionResult } from '../entities/admission-result.entity';
 import { Category } from '../entities/category.entity';
 import { Comment } from '../entities/comment.entity';
 import { ContactRequest } from '../entities/contact-request.entity';
-import { GroupMember } from '../entities/group-member.entity';
-import { Group } from '../entities/group.entity';
-import { MessageRead } from '../entities/message-read.entity';
 import { Message } from '../entities/message.entity';
 import { Notification } from '../entities/notification.entity';
 import { PageContent } from '../entities/page-content.entity';
-import { ParentStudent } from '../entities/parent-student.entity';
 import { PostCategory } from '../entities/post-category.entity';
 import { PostTag } from '../entities/post-tag.entity';
 import { Post } from '../entities/post.entity';
 import { Role } from '../entities/role.entity';
-import { Session } from '../entities/session.entity';
-import { Setting } from '../entities/setting.entity';
 import { Student } from '../entities/student.entity';
-import { Tag } from '../entities/tag.entity';
 import { UserRole } from '../entities/user-role.entity';
 import { User } from '../entities/user.entity';
-import { VerificationToken } from '../entities/verification-token.entity';
 import { ormEntities } from '../mikro-orm/orm-entities';
 import {
   runSuperadminBootstrap,
@@ -72,32 +62,6 @@ function getImportUserFallbackPasswordHash(): string {
   return importUserFallbackPasswordHash;
 }
 
-const entityByModelName: Record<string, EntityName<any>> = {
-  admissionResult: AdmissionResult,
-  verificationToken: VerificationToken,
-  pageContent: PageContent,
-  setting: Setting,
-  messageRead: MessageRead,
-  groupMember: GroupMember,
-  postCategory: PostCategory,
-  postTag: PostTag,
-  comment: Comment,
-  notification: Notification,
-  contactRequest: ContactRequest,
-  account: Account,
-  session: Session,
-  userRole: UserRole,
-  parentStudent: ParentStudent,
-  message: Message,
-  post: Post,
-  student: Student,
-  category: Category,
-  tag: Tag,
-  group: Group,
-  user: User,
-  role: Role,
-};
-
 /** Khớp tên model export (`postCategory`) với tên class entity (`PostCategory`). */
 function entityClassToExportModelName(entity: EntityName<any>): string {
   const name =
@@ -108,6 +72,20 @@ function entityClassToExportModelName(entity: EntityName<any>): string {
         : String(entity as unknown as string);
   return name.charAt(0).toLowerCase() + name.slice(1);
 }
+
+/** Tự động xây dựng entityByModelName từ ormEntities — không cần maintain thủ công. */
+function buildEntityByModelName(): Record<string, EntityName<any>> {
+  const map: Record<string, EntityName<any>> = {};
+  for (const E of ormEntities) {
+    map[entityClassToExportModelName(E)] = E;
+  }
+  return map;
+}
+
+const entityByModelName: Record<
+  string,
+  EntityName<any>
+> = buildEntityByModelName();
 
 function getErrorMessage(error: unknown): string {
   if (error instanceof Error) return error.message;
@@ -300,34 +278,24 @@ function parseExcelCellValue(value: unknown): unknown {
 export class SystemService {
   private readonly logger = new Logger(SystemService.name);
 
-  private readonly modelOrder = [
-    'admissionResult',
-    'verificationToken',
-    'pageContent',
-    'setting',
-    'messageRead',
-    'groupMember',
-    'postCategory',
-    'postTag',
-    'comment',
-    'notification',
-    'contactRequest',
-    'account',
-    'session',
-    'userRole',
-    'parentStudent',
-    'message',
-    'post',
-    'student',
-    'category',
-    'tag',
-    'group',
-    'user',
-    'role',
-  ];
+  /** model names được sort alphabetically; user/role/userRole luôn ở cuối vì có special import handler. */
+  private readonly modelOrder: string[];
 
   constructor(private readonly em: EntityManager) {
-    this.assertExportRegistryCoversOrmEntities();
+    this.modelOrder = this.buildModelOrder();
+  }
+
+  private buildModelOrder(): string[] {
+    const all = Object.keys(entityByModelName);
+    const last = new Set(['user', 'role', 'userRole']);
+    const first = new Set([
+      'admissionResult',
+      'verificationToken',
+      'postCategory',
+      'postTag',
+    ]);
+    const middle = all.filter((m) => !first.has(m) && !last.has(m)).sort();
+    return [...first, ...middle, ...last];
   }
 
   private getWorkbookSheetName(modelName: string): string {
@@ -514,27 +482,6 @@ export class SystemService {
     }
 
     return this.importData(data, targetModel, skipClear);
-  }
-
-  /** Tránh lệch bảng: mọi entity trong ORM phải có trong entityByModelName và ngược lại. */
-  private assertExportRegistryCoversOrmEntities(): void {
-    const mapped = new Set(Object.keys(entityByModelName));
-    for (const E of ormEntities) {
-      const m = entityClassToExportModelName(E);
-      if (!entityByModelName[m]) {
-        this.logger.error(
-          `Cấu hình export thiếu model "${m}" cho ${E.name} — bổ sung entityByModelName + modelOrder.`,
-        );
-      }
-    }
-    for (const m of mapped) {
-      const ok = ormEntities.some((E) => entityClassToExportModelName(E) === m);
-      if (!ok) {
-        this.logger.warn(
-          `entityByModelName có "${m}" nhưng không có trong ormEntities — kiểm tra lại.`,
-        );
-      }
-    }
   }
 
   /** Bỏ pivot trỏ tới post/category không tồn tại (tránh lỗi FK / file export lệch). */

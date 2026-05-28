@@ -668,16 +668,6 @@
       "client": false
     },
     {
-      "id": "file_src_entities_event_type_entity_ts",
-      "label": "event-type.entity.ts",
-      "path": "src/entities/event-type.entity.ts",
-      "color": "#00ff41",
-      "size": 10,
-      "community": "src/entities",
-      "type": "ts",
-      "client": false
-    },
-    {
       "id": "file_src_entities_group_member_entity_ts",
       "label": "group-member.entity.ts",
       "path": "src/entities/group-member.entity.ts",
@@ -914,45 +904,6 @@
       "color": "#00ff41",
       "size": 10,
       "community": "src/entities",
-      "type": "ts",
-      "client": false
-    },
-    {
-      "id": "dir_src_event_types",
-      "label": "event-types/",
-      "path": "src/event-types",
-      "color": "#ff9d00",
-      "size": 22,
-      "community": "src",
-      "type": "directory"
-    },
-    {
-      "id": "file_src_event_types_event_types_controller_ts",
-      "label": "event-types.controller.ts",
-      "path": "src/event-types/event-types.controller.ts",
-      "color": "#00ff41",
-      "size": 10,
-      "community": "src/event-types",
-      "type": "ts",
-      "client": false
-    },
-    {
-      "id": "file_src_event_types_event_types_module_ts",
-      "label": "event-types.module.ts",
-      "path": "src/event-types/event-types.module.ts",
-      "color": "#00ff41",
-      "size": 10,
-      "community": "src/event-types",
-      "type": "ts",
-      "client": false
-    },
-    {
-      "id": "file_src_event_types_event_types_service_ts",
-      "label": "event-types.service.ts",
-      "path": "src/event-types/event-types.service.ts",
-      "color": "#00ff41",
-      "size": 10,
-      "community": "src/event-types",
       "type": "ts",
       "client": false
     },
@@ -2547,11 +2498,6 @@
     },
     {
       "source": "dir_src_entities",
-      "target": "file_src_entities_event_type_entity_ts",
-      "relation": "contains"
-    },
-    {
-      "source": "dir_src_entities",
       "target": "file_src_entities_group_member_entity_ts",
       "relation": "contains"
     },
@@ -2668,26 +2614,6 @@
     {
       "source": "dir_src_entities",
       "target": "file_src_entities_verification_token_entity_ts",
-      "relation": "contains"
-    },
-    {
-      "source": "dir_src",
-      "target": "dir_src_event_types",
-      "relation": "contains"
-    },
-    {
-      "source": "dir_src_event_types",
-      "target": "file_src_event_types_event_types_controller_ts",
-      "relation": "contains"
-    },
-    {
-      "source": "dir_src_event_types",
-      "target": "file_src_event_types_event_types_module_ts",
-      "relation": "contains"
-    },
-    {
-      "source": "dir_src_event_types",
-      "target": "file_src_event_types_event_types_service_ts",
       "relation": "contains"
     },
     {
@@ -3627,11 +3553,6 @@
     },
     {
       "source": "file_src_app_module_ts",
-      "target": "file_src_event_types_event_types_module_ts",
-      "relation": "imports"
-    },
-    {
-      "source": "file_src_app_module_ts",
       "target": "file_src_imported_users_imported_users_module_ts",
       "relation": "imports"
     },
@@ -4496,41 +4417,6 @@
       "relation": "imports"
     },
     {
-      "source": "file_src_event_types_event_types_controller_ts",
-      "target": "file_src_event_types_event_types_service_ts",
-      "relation": "imports"
-    },
-    {
-      "source": "file_src_event_types_event_types_controller_ts",
-      "target": "file_src_common_api_response_ts",
-      "relation": "imports"
-    },
-    {
-      "source": "file_src_event_types_event_types_controller_ts",
-      "target": "file_src_config_constants_ts",
-      "relation": "imports"
-    },
-    {
-      "source": "file_src_event_types_event_types_module_ts",
-      "target": "file_src_event_types_event_types_controller_ts",
-      "relation": "imports"
-    },
-    {
-      "source": "file_src_event_types_event_types_module_ts",
-      "target": "file_src_event_types_event_types_service_ts",
-      "relation": "imports"
-    },
-    {
-      "source": "file_src_event_types_event_types_service_ts",
-      "target": "file_src_entities_event_type_entity_ts",
-      "relation": "imports"
-    },
-    {
-      "source": "file_src_event_types_event_types_service_ts",
-      "target": "file_src_common_pagination_ts",
-      "relation": "imports"
-    },
-    {
       "source": "file_src_groups_groups_controller_ts",
       "target": "file_src_groups_groups_service_ts",
       "relation": "imports"
@@ -4873,11 +4759,6 @@
     {
       "source": "file_src_mikro_orm_orm_entities_ts",
       "target": "file_src_entities_course_entity_ts",
-      "relation": "imports"
-    },
-    {
-      "source": "file_src_mikro_orm_orm_entities_ts",
-      "target": "file_src_entities_event_type_entity_ts",
       "relation": "imports"
     },
     {
@@ -6042,16 +5923,6 @@
     },
     {
       "source": "file_src_system_system_service_ts",
-      "target": "file_src_entities_account_entity_ts",
-      "relation": "imports"
-    },
-    {
-      "source": "file_src_system_system_service_ts",
-      "target": "file_src_entities_admission_result_entity_ts",
-      "relation": "imports"
-    },
-    {
-      "source": "file_src_system_system_service_ts",
       "target": "file_src_entities_category_entity_ts",
       "relation": "imports"
     },
@@ -6067,21 +5938,6 @@
     },
     {
       "source": "file_src_system_system_service_ts",
-      "target": "file_src_entities_group_member_entity_ts",
-      "relation": "imports"
-    },
-    {
-      "source": "file_src_system_system_service_ts",
-      "target": "file_src_entities_group_entity_ts",
-      "relation": "imports"
-    },
-    {
-      "source": "file_src_system_system_service_ts",
-      "target": "file_src_entities_message_read_entity_ts",
-      "relation": "imports"
-    },
-    {
-      "source": "file_src_system_system_service_ts",
       "target": "file_src_entities_message_entity_ts",
       "relation": "imports"
     },
@@ -6093,11 +5949,6 @@
     {
       "source": "file_src_system_system_service_ts",
       "target": "file_src_entities_page_content_entity_ts",
-      "relation": "imports"
-    },
-    {
-      "source": "file_src_system_system_service_ts",
-      "target": "file_src_entities_parent_student_entity_ts",
       "relation": "imports"
     },
     {
@@ -6122,22 +5973,7 @@
     },
     {
       "source": "file_src_system_system_service_ts",
-      "target": "file_src_entities_session_entity_ts",
-      "relation": "imports"
-    },
-    {
-      "source": "file_src_system_system_service_ts",
-      "target": "file_src_entities_setting_entity_ts",
-      "relation": "imports"
-    },
-    {
-      "source": "file_src_system_system_service_ts",
       "target": "file_src_entities_student_entity_ts",
-      "relation": "imports"
-    },
-    {
-      "source": "file_src_system_system_service_ts",
-      "target": "file_src_entities_tag_entity_ts",
       "relation": "imports"
     },
     {
@@ -6148,11 +5984,6 @@
     {
       "source": "file_src_system_system_service_ts",
       "target": "file_src_entities_user_entity_ts",
-      "relation": "imports"
-    },
-    {
-      "source": "file_src_system_system_service_ts",
-      "target": "file_src_entities_verification_token_entity_ts",
       "relation": "imports"
     },
     {

@@ -21,6 +21,12 @@ import {
   BookOpen,
   Network,
   TableProperties,
+  Mic,
+  MapPin,
+  Layers,
+  Building2,
+  Library,
+  CalendarDays,
   type LucideIcon,
 } from "lucide-react"
 import { Button } from "@ui/components/button"
@@ -104,23 +110,9 @@ const menuTree: MenuTreeItem[] = [
   },
   {
     type: "group",
-    label: "Quản lý Truyền thông",
+    label: "Quản lý Danh mục",
     icon: FolderTree,
     children: [
-      {
-        href: "/guides",
-        label: "Hướng dẫn sử dụng",
-        icon: BookOpen,
-        permission: PERMISSION_CODES.PAGE_CONTENTS_VIEW,
-        adminOnly: true,
-      },
-      {
-        href: "/posts",
-        label: "Bài viết",
-        icon: FileText,
-        permission: null,
-        adminOnly: true,
-      },
       {
         href: "/categories",
         label: "Danh mục",
@@ -143,6 +135,27 @@ const menuTree: MenuTreeItem[] = [
   },
   {
     type: "group",
+    label: "Quản lý Truyền thông",
+    icon: FolderTree,
+    children: [
+      {
+        href: "/guides",
+        label: "Hướng dẫn sử dụng",
+        icon: BookOpen,
+        permission: PERMISSION_CODES.PAGE_CONTENTS_VIEW,
+        adminOnly: true,
+      },
+      {
+        href: "/posts",
+        label: "Bài viết",
+        icon: FileText,
+        permission: null,
+        adminOnly: true,
+      }
+    ],
+  },
+  {
+    type: "group",
     label: "quản lý HRM",
     icon: Users,
     children: [
@@ -159,6 +172,97 @@ const menuTree: MenuTreeItem[] = [
         label: "Phân quyền",
         icon: ShieldCheck,
         permission: PERMISSION_CODES.RBAC_READ,
+        adminOnly: true,
+      },
+    ],
+  },
+  {
+    type: "group",
+    label: "Quản lý Sự kiện",
+    icon: Database,
+    children: [
+      {
+        href: "/speakers",
+        label: "Diễn giả",
+        icon: Mic,
+        permission: null,
+        anyPermission: [
+          PERMISSION_CODES.SPEAKERS_VIEW,
+          PERMISSION_CODES.SPEAKERS_MANAGE,
+        ],
+        adminOnly: true,
+      },
+      {
+        href: "/locations",
+        label: "Địa điểm",
+        icon: MapPin,
+        permission: null,
+        anyPermission: [
+          PERMISSION_CODES.LOCATIONS_VIEW,
+          PERMISSION_CODES.LOCATIONS_MANAGE,
+        ],
+        adminOnly: true,
+      },
+    ],
+  },
+  {
+    type: "group",
+    label: "Quản lý Đào tạo",
+    icon: Database,
+    children: [
+      {
+        href: "/training-levels",
+        label: "Bậc học",
+        icon: Layers,
+        permission: null,
+        anyPermission: [
+          PERMISSION_CODES.TRAINING_LEVELS_VIEW,
+          PERMISSION_CODES.TRAINING_LEVELS_MANAGE,
+        ],
+        adminOnly: true,
+      },
+      {
+        href: "/training-systems",
+        label: "Hệ đào tạo",
+        icon: Building2,
+        permission: null,
+        anyPermission: [
+          PERMISSION_CODES.TRAINING_SYSTEMS_VIEW,
+          PERMISSION_CODES.TRAINING_SYSTEMS_MANAGE,
+        ],
+        adminOnly: true,
+      },
+      {
+        href: "/majors",
+        label: "Ngành học",
+        icon: BookOpen,
+        permission: null,
+        anyPermission: [
+          PERMISSION_CODES.MAJORS_VIEW,
+          PERMISSION_CODES.MAJORS_MANAGE,
+        ],
+        adminOnly: true,
+      },
+      {
+        href: "/courses",
+        label: "Khóa học",
+        icon: Library,
+        permission: null,
+        anyPermission: [
+          PERMISSION_CODES.COURSES_VIEW,
+          PERMISSION_CODES.COURSES_MANAGE,
+        ],
+        adminOnly: true,
+      },
+      {
+        href: "/academic-years",
+        label: "Niên khóa",
+        icon: CalendarDays,
+        permission: null,
+        anyPermission: [
+          PERMISSION_CODES.ACADEMIC_YEARS_VIEW,
+          PERMISSION_CODES.ACADEMIC_YEARS_MANAGE,
+        ],
         adminOnly: true,
       },
     ],
@@ -283,13 +387,13 @@ function SidebarLeafLink({
         collapsed
           ? "justify-center px-2 py-3"
           : nested
-            ? "gap-3 px-3 py-1.5"
-            : "gap-3 px-3 py-1.5",
+            ? "gap-3 px-3 py-1"
+            : "gap-3 px-3 py-1",
         isActive
           ? nested
-            ? "bg-white/10 text-white"
-            : "bg-[#3658B7] text-white shadow-[0_10px_24px_rgba(12,22,63,0.28)]"
-          : "text-white/88 hover:bg-white/8 hover:text-white"
+            ? "bg-white/20 text-white"
+            : "bg-white/20 text-white"
+          : "text-white/88 hover:bg-white/20 hover:text-white"
       )}
     >
       {isActive && !collapsed ? (
@@ -305,12 +409,7 @@ function SidebarLeafLink({
       <span
         className={cn(
           "flex shrink-0 items-center justify-center rounded-lg transition-all duration-200",
-          collapsed ? "size-9" : nested ? "size-8" : "size-8",
-          isActive
-            ? nested
-              ? "bg-white/10 text-white"
-              : "bg-white/12 text-white"
-            : "text-white/78 group-hover:text-white"
+          collapsed ? "size-9" : nested ? "size-8" : "size-8"
         )}
       >
         <Icon
@@ -439,16 +538,13 @@ function TreeNav({
               className={cn(
                 "group flex w-full items-center gap-3 rounded-lg px-3 py-1.5 text-left transition-all duration-200",
                 groupActive
-                  ? "mb-1 bg-white/6 text-white"
+                  ? "mb-1 bg-white/20 text-white"
                   : "text-white/90 hover:bg-white/7 hover:text-white"
               )}
             >
               <span
                 className={cn(
-                  "flex size-8 shrink-0 items-center justify-center rounded-lg",
-                  groupActive
-                    ? "bg-white/10 text-white"
-                    : "text-white/78 group-hover:text-white"
+                  "flex size-8 shrink-0 items-center justify-center rounded-lg"
                 )}
               >
                 <item.icon className="size-[1.1rem]" />
@@ -564,9 +660,13 @@ export function MobileSidebarPanel({ onNavigate }: { onNavigate: () => void }) {
             onClick={onNavigate}
             className="flex min-w-0 flex-1 items-center gap-3"
           >
-            <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-white/14 text-sm font-semibold text-white overflow-hidden">
+            <div className="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-white/14 text-sm font-semibold text-white">
               {avatarUrl ? (
-                <img src={avatarUrl} alt="" className="size-full object-cover" />
+                <img
+                  src={avatarUrl}
+                  alt=""
+                  className="size-full object-cover"
+                />
               ) : (
                 initialsOf(displayName)
               )}

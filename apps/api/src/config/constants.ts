@@ -45,7 +45,6 @@ export const ADMIN_ROUTES = {
   ACADEMIC_YEARS: 'admin/academic-years',
   MAJORS: 'admin/majors',
   IMPORTED_USERS: 'admin/imported-users',
-  EVENT_TYPES: 'admin/event-types',
 } as const;
 
 export const PUBLIC_ROUTES = {

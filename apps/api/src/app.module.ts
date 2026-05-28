@@ -28,7 +28,6 @@ import { SystemModule } from './system/system.module';
 import { ParentStudentsModule } from './parent-students/parent-students.module';
 import { AcademicYearsModule } from './academic-years/academic-years.module';
 import { CoursesModule } from './courses/courses.module';
-import { EventTypesModule } from './event-types/event-types.module';
 import { ImportedUsersModule } from './imported-users/imported-users.module';
 import { LocationsModule } from './locations/locations.module';
 import { MajorsModule } from './majors/majors.module';
@@ -71,7 +70,6 @@ import { TrainingSystemsModule } from './training-systems/training-systems.modul
     ParentStudentsModule,
     AcademicYearsModule,
     CoursesModule,
-    EventTypesModule,
     ImportedUsersModule,
     LocationsModule,
     MajorsModule,

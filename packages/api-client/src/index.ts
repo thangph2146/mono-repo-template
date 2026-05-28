@@ -24,6 +24,13 @@ export { ContactRequestsApi } from './resources/contact-requests';
 export { MyStudentsApi } from './resources/my-students';
 export { ParentStudentsApi } from './resources/parent-students';
 export { SystemApi } from './resources/system';
+export { SpeakersApi } from './resources/speakers';
+export { LocationsApi } from './resources/locations';
+export { TrainingLevelsApi } from './resources/training-levels';
+export { TrainingSystemsApi } from './resources/training-systems';
+export { MajorsApi } from './resources/majors';
+export { CoursesApi } from './resources/courses';
+export { AcademicYearsApi } from './resources/academic-years';
 export { StoreSyncSdk, createStoreSyncSdk, DEFAULT_API_URL } from './sdk';
 export {
   unwrapApiEnvelope,

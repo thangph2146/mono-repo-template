@@ -3,7 +3,7 @@
 > Tự động sinh từ `../snapshot/context.json` — **đọc file này trước**; tránh mở toàn bộ JSON snapshot (nhúng source đầy đủ).
 
 - **projectRoot:** `D:/HUB/working/2026/hub-parrent-template/apps/api`
-- **context.generatedAt:** 2026-05-28T01:53:50.077Z
+- **context.generatedAt:** 2026-05-28T07:28:26.736Z
 
 ## Mục lục artefact Graphify
 
@@ -35,7 +35,7 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 - **Phụ thuộc chéo giữa domain API:** [`API_DOMAIN_IMPORTS.md`](API_DOMAIN_IMPORTS.md) — domain `src/<tên>` nào import domain nào (cạnh `imports` trong graph).
 
 ## Thống kê
-- **totalFiles:** 182
+- **totalFiles:** 178
 - **clientComponents:** 0
 
 ## Góc hệ thống (@api) — đường dẫn gợi ý
@@ -51,7 +51,7 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 
 > **DB:** entity `src/entities/`, migration `src/migrations/` — xem thêm bảng *Module map* và `docs/hub-parent/MICROSERVICE_SYSTEM_MAP.md` (MikroORM).
 
-## Nest — module (35)
+## Nest — module (34)
 - `src/academic-years/academic-years.module.ts`
 - `src/accounts/accounts.module.ts`
 - `src/admission-results/admission-results.module.ts`
@@ -62,7 +62,6 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 - `src/contact-requests/contact-requests.module.ts`
 - `src/courses/courses.module.ts`
 - `src/dashboard/dashboard.module.ts`
-- `src/event-types/event-types.module.ts`
 - `src/groups/groups.module.ts`
 - `src/imported-users/imported-users.module.ts`
 - `src/locations/locations.module.ts`
@@ -88,7 +87,7 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 - `src/uploads/uploads.module.ts`
 - `src/users/users.module.ts`
 
-## Nest — controller (34)
+## Nest — controller (33)
 - `src/academic-years/academic-years.controller.ts`
 - `src/accounts/accounts.controller.ts`
 - `src/admission-results/admission-results.controller.ts`
@@ -98,7 +97,6 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 - `src/contact-requests/contact-requests.controller.ts`
 - `src/courses/courses.controller.ts`
 - `src/dashboard/dashboard.controller.ts`
-- `src/event-types/event-types.controller.ts`
 - `src/groups/groups.controller.ts`
 - `src/imported-users/imported-users.controller.ts`
 - `src/locations/locations.controller.ts`
@@ -124,7 +122,7 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 - `src/uploads/uploads.controller.ts`
 - `src/users/users.controller.ts`
 
-## Entities (33)
+## Entities (32)
 - `src/entities/academic-year.entity.ts`
 - `src/entities/account.entity.ts`
 - `src/entities/admission-result.entity.ts`
@@ -133,7 +131,6 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 - `src/entities/comment.entity.ts`
 - `src/entities/contact-request.entity.ts`
 - `src/entities/course.entity.ts`
-- `src/entities/event-type.entity.ts`
 - `src/entities/group-member.entity.ts`
 - `src/entities/group.entity.ts`
 - `src/entities/imported-user.entity.ts`
@@ -223,11 +220,10 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 | `src/entities/account.entity.ts` | ts | no | Account | src/entities/base.entity.ts, src/entities/user.entity.ts |
 | `src/entities/admission-result.entity.ts` | ts | no | AdmissionResult | src/entities/base.entity.ts |
 | `src/entities/base.entity.ts` | ts | no |  |  |
-| `src/entities/category.entity.ts` | ts | no | Category | src/entities/base.entity.ts, src/entities/post-category.entity.ts |
+| `src/entities/category.entity.ts` | ts | no | CategoryType, Category | src/entities/base.entity.ts, src/entities/post-category.entity.ts |
 | `src/entities/comment.entity.ts` | ts | no | Comment | src/entities/base.entity.ts, src/entities/post.entity.ts, src/entities/user.entity.ts |
 | `src/entities/contact-request.entity.ts` | ts | no | ContactStatus, ContactPriority, ContactRequest | src/entities/base.entity.ts, src/entities/user.entity.ts |
 | `src/entities/course.entity.ts` | ts | no | Course |  |
-| `src/entities/event-type.entity.ts` | ts | no | EventType |  |
 | `src/entities/group-member.entity.ts` | ts | no | GroupRole, GroupMember | src/entities/base.entity.ts, src/entities/group.entity.ts, src/entities/user.entity.ts |
 | `src/entities/group.entity.ts` | ts | no | Group | src/entities/base.entity.ts, src/entities/group-member.entity.ts, src/entities/message.entity.ts, src/entities/user.entity.ts |
 | `src/entities/imported-user.entity.ts` | ts | no | ImportedUser | src/entities/academic-year.entity.ts, src/entities/training-level.entity.ts, src/entities/training-system.entity.ts, src/entities/major.entity.ts |
@@ -252,9 +248,6 @@ App **không** import chéo source `apps/*`; giao tiếp qua **HTTP** + `@worksp
 | `src/entities/user-role.entity.ts` | ts | no | UserRole | src/entities/base.entity.ts, src/entities/role.entity.ts, src/entities/user.entity.ts |
 | `src/entities/user.entity.ts` | ts | no | User | src/entities/base.entity.ts, src/entities/account.entity.ts, src/entities/comment.entity.ts, src/entities/contact-request.entity.ts, src/entities/group-member.entity.ts, src/entities/group.entity.ts,  |
 | `src/entities/verification-token.entity.ts` | ts | no | VerificationToken |  |
-| `src/event-types/event-types.controller.ts` | ts | no | EventTypesController | src/event-types/event-types.service.ts, src/common/api-response.ts, src/config/constants.ts |
-| `src/event-types/event-types.module.ts` | ts | no | EventTypesModule | src/event-types/event-types.controller.ts, src/event-types/event-types.service.ts |
-| `src/event-types/event-types.service.ts` | ts | no | EventTypeRowDto, ListEventTypesParams, ListEventTypesResult, EventTypesService | src/entities/event-type.entity.ts, src/common/pagination.ts |
 | `src/groups/groups.controller.ts` | ts | no | GroupsController | src/groups/groups.service.ts, src/notifications/notifications.service.ts, src/entities/notification.entity.ts, src/socket/socket.gateway.ts, src/common/api-response.ts, src/config/constants.ts, src/co |
 | `src/groups/groups.module.ts` | ts | no | GroupsModule | src/notifications/notifications.module.ts, src/socket/socket.module.ts, src/groups/groups.controller.ts, src/groups/groups.service.ts |
 | `src/groups/groups.service.spec.ts` | ts | no |  | src/groups/groups.service.ts, src/entities/group.entity.ts, src/entities/group-member.entity.ts |

@@ -116,6 +116,11 @@ export class CategoriesController {
     required: false,
     enum: ['active', 'deleted', 'all'],
   })
+  @ApiQuery({
+    name: 'type',
+    required: false,
+    enum: ['post', 'event'],
+  })
   @ApiResponse({
     status: 200,
     description: 'Categories retrieved successfully',
@@ -128,10 +133,11 @@ export class CategoriesController {
     @Query('limit') limit?: string,
     @Query('search') search?: string,
     @Query('status') status?: string,
+    @Query('type') type?: string,
     @Query() query?: Record<string, string>,
   ) {
     this.logger.log(
-      `list page=${page ?? 1} limit=${limit ?? 10} status=${status ?? 'active'}`,
+      `list page=${page ?? 1} limit=${limit ?? 10} status=${status ?? 'active'} type=${type ?? 'all'}`,
     );
     const userId = this.getUserId(headers);
     if (!userId) {
@@ -145,11 +151,13 @@ export class CategoriesController {
         if (m && value) filters[m[1]] = value;
       }
     }
+    const parsedType = type === 'post' || type === 'event' ? type : undefined;
     const result = await this.categoriesService.list({
       page: Math.max(1, parseInt(String(page), 10) || 1),
       limit: Math.min(1000, Math.max(1, parseInt(String(limit), 10) || 10)),
       search: search?.trim(),
       status: this.parseListStatus(status),
+      type: parsedType,
       filters: Object.keys(filters).length ? filters : undefined,
     });
     const { statusCode, body } = createSuccessResponse({
@@ -233,6 +241,7 @@ export class CategoriesController {
       slug?: string;
       description?: string | null;
       parentId?: string | null;
+      type?: 'post' | 'event';
     },
   ) {
     this.logger.log('create');
@@ -253,6 +262,8 @@ export class CategoriesController {
       description: body.description ?? null,
       parentId:
         body.parentId === '' || body.parentId == null ? null : body.parentId,
+      type:
+        body.type === 'post' || body.type === 'event' ? body.type : undefined,
     });
     if (userId) {
       this.logActivity(
@@ -290,6 +301,7 @@ export class CategoriesController {
       slug?: string;
       description?: string | null;
       parentId?: string | null;
+      type?: 'post' | 'event';
     },
   ) {
     this.logger.log(`update id=${id}`);
@@ -302,6 +314,8 @@ export class CategoriesController {
       slug: body?.slug?.trim(),
       description: body?.description ?? undefined,
       parentId: body?.parentId === '' ? null : (body?.parentId ?? undefined),
+      type:
+        body.type === 'post' || body.type === 'event' ? body.type : undefined,
     });
     if (!updated) {
       const { statusCode, body: errBody } = createErrorResponse(

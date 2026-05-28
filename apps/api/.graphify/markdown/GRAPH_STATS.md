@@ -1,21 +1,21 @@
 # Thống kê graph — api (Graphify)
 
-> **Sinh tự động:** `2026-05-28T01:55:02.262Z` từ `../snapshot/graph.json` — giúp AI nắm **quy mô** và **điểm nóng import** mà không mở full graph.
+> **Sinh tự động:** `2026-05-28T07:28:31.201Z` từ `../snapshot/graph.json` — giúp AI nắm **quy mô** và **điểm nóng import** mà không mở full graph.
 
 ## Nodes theo `type`
 
 | type | Số |
 |------|-----|
-| `ts` | 181 |
-| `directory` | 42 |
+| `ts` | 177 |
+| `directory` | 41 |
 | `json` | 2 |
 
 ## Links theo `relation`
 
 | relation | Số |
 |----------|-----|
-| `imports` | 630 |
-| `contains` | 224 |
+| `imports` | 611 |
+| `contains` | 219 |
 
 ## Top file theo số cạnh `imports` đi ra (out-degree)
 
@@ -23,10 +23,10 @@ Các file `src/...` import nhiều target nhất (thường là module barrel, s
 
 | File | Số cạnh imports |
 |------|-----------------|
-| `src/app.module.ts` | 34 |
-| `src/mikro-orm/orm-entities.ts` | 32 |
-| `src/system/system.service.ts` | 26 |
+| `src/app.module.ts` | 33 |
+| `src/mikro-orm/orm-entities.ts` | 31 |
 | `src/seed-full-export.ts` | 24 |
+| `src/system/system.service.ts` | 16 |
 | `src/common/resolve-relation-filters.ts` | 13 |
 | `src/entities/user.entity.ts` | 13 |
 | `src/dashboard/dashboard.service.ts` | 12 |
@@ -50,11 +50,11 @@ File được nhiều nguồn import tới (tiện ích dùng chung, entity, typ
 
 | File | Số lần bị import |
 |------|------------------|
-| `src/config/constants.ts` | 40 |
+| `src/config/constants.ts` | 39 |
 | `src/entities/user.entity.ts` | 37 |
-| `src/common/api-response.ts` | 33 |
-| `src/common/pagination.ts` | 21 |
+| `src/common/api-response.ts` | 32 |
 | `src/entities/notification.entity.ts` | 21 |
+| `src/common/pagination.ts` | 20 |
 | `src/entities/base.entity.ts` | 20 |
 | `src/entities/role.entity.ts` | 17 |
 | `src/entities/user-role.entity.ts` | 15 |
@@ -64,7 +64,7 @@ File được nhiều nguồn import tới (tiện ích dùng chung, entity, typ
 | `src/entities/category.entity.ts` | 12 |
 | `src/entities/message.entity.ts` | 12 |
 | `src/entities/post.entity.ts` | 12 |
-| `src/entities/tag.entity.ts` | 11 |
+| `src/entities/contact-request.entity.ts` | 10 |
 
 ## Làm mới
 
