@@ -756,7 +756,7 @@ export function AdminDataTable<TData>({
                     onClick={header.column.getToggleSortingHandler()}
                   >
                     {header.isPlaceholder ? null : (
-                      <div className="flex flex-col items-center justify-center  gap-1 h-full">
+                      <div className="flex flex-col items-start justify-center  gap-1 h-full">
                         <span className="flex items-center gap-1">
                           {flexRender(
                             header.column.columnDef.header,
