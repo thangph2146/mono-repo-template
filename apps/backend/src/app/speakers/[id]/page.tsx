@@ -19,7 +19,7 @@ import {
 import { PageSection } from "@ui/components/layout"
 import { Badge } from "@ui/components/badge"
 import { Button } from "@ui/components/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@ui/components/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@ui/components/card"
 import { AdminPageGuard } from "@/components/admin-page-guard"
 import { useAuth } from "@/providers/auth-provider"
 import { PERMISSION_CODES, canUserAccess } from "@workspace/api-client"
@@ -108,143 +108,132 @@ function SpeakerDetailInner() {
         </div>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[300px_minmax(0,1fr)]">
-        <div className="space-y-6">
-          <Card className="overflow-hidden border border-border/70 pt-0 shadow-sm">
-            <div className="flex flex-col items-center bg-gradient-to-b from-primary/10 via-primary/5 to-background px-6 pt-8 pb-6 text-center">
+      <Card className="border border-border/70 shadow-sm">
+        <CardHeader className="pb-2">
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <User className="size-5 text-primary" />
+            Thông tin diễn giả
+          </CardTitle>
+          <CardDescription>
+            Thông tin cơ bản của diễn giả.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex gap-6">
+            <div className="aspect-[3/4] w-40 shrink-0 sm:w-48">
               {entity.avatar ? (
                 <img
                   src={entity.avatar}
                   alt={entity.name}
-                  className="size-28 rounded-full border-4 border-background object-cover shadow-lg"
+                  className="h-full w-full rounded-lg ring-2 ring-primary/20 object-cover shadow-xl"
                 />
               ) : (
-                <div className="flex size-28 items-center justify-center rounded-full border-4 border-background bg-muted text-3xl font-bold text-muted-foreground shadow-lg">
+                <div className="flex h-full w-full items-center justify-center rounded-lg ring-2 ring-primary/20 bg-muted text-3xl font-bold text-muted-foreground shadow-xl">
                   {initials(entity.name)}
                 </div>
               )}
-              <TypographyH1 className="mt-4 text-xl leading-tight font-bold">
-                {entity.name}
-              </TypographyH1>
-              {entity.title && (
-                <p className="mt-0.5 text-sm text-muted-foreground">
-                  {entity.title}
-                </p>
-              )}
-              {entity.organization && (
-                <div className="mt-1.5 flex items-center gap-1.5 text-xs text-muted-foreground/70">
-                  <Building2 className="size-3.5" />
-                  {entity.organization}
+            </div>
+            <div className="flex w-full flex-col gap-4">
+              <div>
+                <TypographyH1 className="text-2xl font-bold">
+                  {entity.name}
+                </TypographyH1>
+                <div className="mt-2">
+                  {entity.status === 1 ? (
+                    <Badge variant="default" className="rounded-full px-3 py-0.5 shadow-sm">
+                      Hoạt động
+                    </Badge>
+                  ) : (
+                    <Badge variant="outline" className="rounded-full px-3 py-0.5">
+                      Khóa
+                    </Badge>
+                  )}
+                </div>
+              </div>
+
+              <hr className="border-border/40" />
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-1">
+                  <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <Mail className="size-3.5" />
+                    Email
+                  </p>
+                  <p className="text-sm font-medium">
+                    {entity.email || "—"}
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <Phone className="size-3.5" />
+                    Số điện thoại
+                  </p>
+                  <p className="text-sm font-medium">
+                    {entity.phone || "—"}
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-1">
+                  <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <Briefcase className="size-3.5" />
+                    Chức danh
+                  </p>
+                  <p className="text-sm font-medium">
+                    {entity.title || "—"}
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <Building2 className="size-3.5" />
+                    Tổ chức
+                  </p>
+                  <p className="text-sm font-medium">
+                    {entity.organization || "—"}
+                  </p>
+                </div>
+              </div>
+
+              {entity.bio && (
+                <div className="space-y-1">
+                  <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <FileText className="size-3.5" />
+                    Tiểu sử
+                  </p>
+                  <p className="text-sm leading-relaxed whitespace-pre-wrap text-foreground/90 bg-muted/20 rounded-lg border border-border/40 p-3">
+                    {entity.bio}
+                  </p>
                 </div>
               )}
-              <div className="mt-4">
-                {entity.status === 1 ? (
-                  <Badge variant="default" className="rounded-full px-4 py-1">
-                    Hoạt động
-                  </Badge>
-                ) : (
-                  <Badge variant="outline" className="rounded-full px-4 py-1">
-                    Khóa
-                  </Badge>
-                )}
+
+              <hr className="border-dashed border-border/40" />
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-1">
+                  <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <Calendar className="size-3.5" />
+                    Ngày tạo
+                  </p>
+                  <p className="text-sm font-medium">
+                    {formatDateTime(entity.createdAt)}
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <Clock className="size-3.5" />
+                    Cập nhật
+                  </p>
+                  <p className="text-sm font-medium">
+                    {formatDateTime(entity.updatedAt)}
+                  </p>
+                </div>
               </div>
             </div>
-            <CardContent className="space-y-4 pt-5">
-              <div>
-                <p className="flex items-center gap-1.5 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-                  <Calendar className="size-3" />
-                  Ngày tạo
-                </p>
-                <p className="mt-1 text-sm font-medium">
-                  {formatDateTime(entity.createdAt)}
-                </p>
-              </div>
-              <div>
-                <p className="flex items-center gap-1.5 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-                  <Clock className="size-3" />
-                  Cập nhật
-                </p>
-                <p className="mt-1 text-sm font-medium">
-                  {formatDateTime(entity.updatedAt)}
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+          </div>
+        </CardContent>
+      </Card>
 
-        <div className="min-w-0 space-y-6">
-          {entity.bio && (
-            <Card className="border border-border/70 shadow-sm">
-              <CardHeader className="pb-2">
-                <CardTitle className="flex items-center gap-2 text-lg">
-                  <FileText className="size-5 text-primary" />
-                  Tiểu sử
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm leading-relaxed whitespace-pre-wrap text-foreground">
-                  {entity.bio}
-                </p>
-              </CardContent>
-            </Card>
-          )}
-
-          <Card className="border border-border/70 shadow-sm">
-            <CardHeader className="pb-2">
-              <CardTitle className="flex items-center gap-2 text-lg">
-                <User className="size-5 text-primary" />
-                Thông tin liên hệ
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="divide-y divide-border/60">
-                <div className="flex items-center gap-4 py-3">
-                  <div className="flex size-9 items-center justify-center rounded-lg bg-primary/10">
-                    <Mail className="size-4 text-primary" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-xs text-muted-foreground">Email</p>
-                    <p className="truncate text-sm font-medium">
-                      {entity.email || "—"}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4 py-3">
-                  <div className="flex size-9 items-center justify-center rounded-lg bg-primary/10">
-                    <Phone className="size-4 text-primary" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-xs text-muted-foreground">
-                      Số điện thoại
-                    </p>
-                    <p className="text-sm font-medium">{entity.phone || "—"}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4 py-3">
-                  <div className="flex size-9 items-center justify-center rounded-lg bg-primary/10">
-                    <Briefcase className="size-4 text-primary" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-xs text-muted-foreground">Chức danh</p>
-                    <p className="text-sm font-medium">{entity.title || "—"}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4 py-3">
-                  <div className="flex size-9 items-center justify-center rounded-lg bg-primary/10">
-                    <Building2 className="size-4 text-primary" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-xs text-muted-foreground">Tổ chức</p>
-                    <p className="text-sm font-medium">
-                      {entity.organization || "—"}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
     </PageSection>
   )
 }
