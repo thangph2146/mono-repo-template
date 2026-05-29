@@ -326,7 +326,7 @@ export function AdminDataTable<TData>({
       ),
       enableSorting: false,
       enableColumnFilter: false,
-      meta: { disableColumnFilter: true, className: "sticky left-0 bg-background z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]" } satisfies ColumnMeta,
+      meta: { disableColumnFilter: true, className: "sticky left-0 z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]" } satisfies ColumnMeta,
       size: 44,
     }),
     [],
@@ -739,24 +739,24 @@ export function AdminDataTable<TData>({
         </div>
       )}
 
-      <div className="rounded-lg border border-border bg-card overflow-hidden">
-        <div className="overflow-x-auto pt-2">
+      <div className="rounded-lg border border-border overflow-hidden pt-0">
+        <div className="overflow-x-auto">
         <Table className="text-sm min-w-[640px] sm:min-w-0">
-          <TableHeader>
+          <TableHeader className="bg-primary text-primary-foreground">
             {headerGroups.map((hg) => (
               <TableRow key={hg.id} className="hover:bg-transparent">
                 {hg.headers.map((header) => (
                   <TableHead
                     key={header.id}
                     className={cn(
-                      "align-top font-semibold whitespace-normal",
+                      "bg-primary text-primary-foreground align-top font-semibold whitespace-normal",
                       header.column.getCanSort() && "cursor-pointer select-none",
                       (header.column.columnDef.meta as ColumnMeta | undefined)?.className
                     )}
                     onClick={header.column.getToggleSortingHandler()}
                   >
                     {header.isPlaceholder ? null : (
-                      <div className="flex flex-col gap-1 py-1">
+                      <div className="flex flex-col items-center justify-center  gap-1 h-full">
                         <span className="flex items-center gap-1">
                           {flexRender(
                             header.column.columnDef.header,
@@ -791,9 +791,8 @@ export function AdminDataTable<TData>({
                   key={row.id}
                   data-depth={row.depth}
                   className={cn(
-                    row.depth > 0 && "bg-muted/10",
-                    row.depth > 1 && "bg-muted/20",
-                    row.depth === 0 && row.index % 2 === 1 && "bg-muted/20",
+                    "hover:bg-primary/10",
+                    row.index % 2 === 1 && "bg-primary/10",
                     getRowClassName?.(row),
                   )}
                   style={{
@@ -818,7 +817,9 @@ export function AdminDataTable<TData>({
                         key={cell.id}
                         className={cn(
                           "whitespace-normal align-middle max-w-[min(420px,40vw)]",
-                          (cell.column.columnDef.meta as ColumnMeta | undefined)?.className
+                          (cell.column.columnDef.meta as ColumnMeta | undefined)?.className,
+                          row.getIsSelected() && "!bg-primary/15",
+                          cell.column.id === "_select" && !row.getIsSelected() && "hover:!bg-primary/10",
                         )}
                         style={{
                           paddingLeft:

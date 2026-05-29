@@ -184,7 +184,7 @@ const menuTree: MenuTreeItem[] = [
   },
   {
     type: "group",
-    label: "Check-in",
+    label: "Sự kiện & Check-in",
     icon: CalendarPlus,
     children: [
       {

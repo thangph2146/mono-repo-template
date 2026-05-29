@@ -27,7 +27,6 @@ export function getContactRequestColumns(props: ContactRequestColumnsProps): Col
       header: "Tên",
       meta: {
         filterPlaceholder: "Lọc tên…",
-        className: "sticky left-0 bg-background z-10 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]",
       } as ColumnDef<ContactRequest>['meta'],
       size: 200,
       cell: ({ row }) => (
