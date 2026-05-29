@@ -271,10 +271,23 @@ export default function RbacPage() {
   const permissionCatalog = useRbacCatalog({
     enabled: Boolean(session) && canReadRbac,
   })
-  const permissions = useMemo(
-    () => permissionCatalog.data?.permissions ?? [],
-    [permissionCatalog.data?.permissions]
-  )
+  const permissions = useMemo(() => {
+    const result: RbacPermission[] = []
+    let idx = 0
+    for (const value of Object.values(PERMISSION_CODES)) {
+      if (typeof value !== "string") continue
+      if (value === PERMISSION_CODES.ALL) continue
+      if (value.includes(".")) continue
+      idx++
+      result.push({
+        id: idx,
+        code: value,
+        name: permissionLabelVi(value),
+        description: null,
+      })
+    }
+    return result.sort((a, b) => a.code.localeCompare(b.code))
+  }, [])
 
   const [tab, setTab] = useState<"list" | "trash">("list")
   const [page, setPage] = useState(1)
@@ -289,6 +302,7 @@ export default function RbacPage() {
     useState<RowSelectionState>({})
   const [dialogOpen, setDialogOpen] = useState(false)
   const [permissionSearch, setPermissionSearch] = useState("")
+  const [showSelectedOnly, setShowSelectedOnly] = useState(false)
   const [form, setForm] = useState<RoleFormState>(EMPTY_FORM)
   const [deleteTarget, setDeleteTarget] = useState<RoleRow | null>(null)
   const [restoreTarget, setRestoreTarget] = useState<RoleRow | null>(null)
@@ -450,18 +464,25 @@ export default function RbacPage() {
 
   const visiblePermissions = useMemo(() => {
     const q = permissionSearch.trim().toLowerCase()
-    if (!q) return permissions
-    return permissions.filter((permission) =>
-      [
-        permission.code,
-        permissionLabelVi(permission.code),
-        permission.description ?? "",
-      ]
-        .join(" ")
-        .toLowerCase()
-        .includes(q)
-    )
-  }, [permissionSearch, permissions])
+    let filtered = permissions
+    if (showSelectedOnly) {
+      const selected = new Set(form.permissions)
+      filtered = filtered.filter((p) => selected.has(p.code))
+    }
+    if (q) {
+      filtered = filtered.filter((permission) =>
+        [
+          permission.code,
+          permissionLabelVi(permission.code),
+          permission.description ?? "",
+        ]
+          .join(" ")
+          .toLowerCase()
+          .includes(q)
+      )
+    }
+    return filtered
+  }, [permissionSearch, permissions, showSelectedOnly, form.permissions])
 
   const permissionGroups = useMemo(() => {
     const buckets = new Map<string, RbacPermission[]>()
@@ -483,6 +504,7 @@ export default function RbacPage() {
   const openCreateDialog = () => {
     setForm(EMPTY_FORM)
     setPermissionSearch("")
+    setShowSelectedOnly(false)
     setDialogOpen(true)
   }
 
@@ -496,6 +518,7 @@ export default function RbacPage() {
       permissions: role.permissions,
     })
     setPermissionSearch("")
+    setShowSelectedOnly(false)
     setDialogOpen(true)
   }
 
@@ -861,7 +884,9 @@ export default function RbacPage() {
         </Tabs>
 
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogContent className={ADMIN_DIALOG_CONTENT_LG_CLASS}>
+          <DialogContent
+            className={`${ADMIN_DIALOG_CONTENT_LG_CLASS} sm:max-w-7xl`}
+          >
             <DialogHeader>
               <DialogTitle>
                 {form.id ? "Cập nhật role" : "Tạo role mới"}
@@ -900,34 +925,35 @@ export default function RbacPage() {
                   />
                 </div>
               </div>
-
-              <div className="space-y-2">
-                <Label>Mô tả</Label>
-                <Textarea
-                  value={form.description}
-                  onChange={(event) =>
-                    setForm((current) => ({
-                      ...current,
-                      description: event.target.value,
-                    }))
-                  }
-                  placeholder="Mô tả rõ vai trò này phục vụ bộ phận nào..."
-                />
-              </div>
-
-              <div className="flex items-center justify-between rounded-lg border border-border px-4 py-3">
-                <div>
-                  <div className="text-sm font-semibold">Kích hoạt ngay</div>
-                  <TypographyPSmallMuted>
-                    Nếu tắt, role tạo ra ở trạng thái không hoạt động.
-                  </TypographyPSmallMuted>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label>Mô tả</Label>
+                  <Textarea
+                    value={form.description}
+                    onChange={(event) =>
+                      setForm((current) => ({
+                        ...current,
+                        description: event.target.value,
+                      }))
+                    }
+                    placeholder="Mô tả rõ vai trò này phục vụ bộ phận nào..."
+                  />
                 </div>
-                <Switch
-                  checked={form.isActive}
-                  onCheckedChange={(checked) =>
-                    setForm((current) => ({ ...current, isActive: checked }))
-                  }
-                />
+
+                <div className="flex items-center justify-between rounded-lg border border-border px-4 py-3">
+                  <div>
+                    <div className="text-sm font-semibold">Kích hoạt ngay</div>
+                    <TypographyPSmallMuted>
+                      Nếu tắt, role tạo ra ở trạng thái không hoạt động.
+                    </TypographyPSmallMuted>
+                  </div>
+                  <Switch
+                    checked={form.isActive}
+                    onCheckedChange={(checked) =>
+                      setForm((current) => ({ ...current, isActive: checked }))
+                    }
+                  />
+                </div>
               </div>
 
               <div className="space-y-2">
@@ -984,16 +1010,27 @@ export default function RbacPage() {
               </div>
 
               <div className="space-y-2">
-                <Label>
-                  Permission ({form.permissions.length}/{permissions.length})
-                </Label>
+                <div className="flex items-center justify-between gap-2">
+                  <Label className="mb-0">
+                    Permission ({form.permissions.length}/{permissions.length})
+                  </Label>
+                  <Button
+                    type="button"
+                    variant={showSelectedOnly ? "default" : "outline"}
+                    size="sm"
+                    className="h-7 rounded-lg text-xs"
+                    onClick={() => setShowSelectedOnly((prev) => !prev)}
+                  >
+                    {showSelectedOnly ? "Hiện tất cả" : "Chỉ đã chọn"}
+                  </Button>
+                </div>
                 <Input
                   value={permissionSearch}
                   onChange={(event) => setPermissionSearch(event.target.value)}
                   placeholder="Tìm permission..."
                 />
-                <ScrollArea className="h-[220px] rounded-lg border border-border/60 bg-muted/10">
-                  <div className="space-y-4 p-3">
+                <ScrollArea className="h-[420px] rounded-lg border border-border/60 bg-muted/10">
+                  <div className="space-y-3 p-3">
                     {permissionGroups.length === 0 ? (
                       <p className="py-8 text-center text-sm text-muted-foreground">
                         Không có permission khớp tìm kiếm.
@@ -1003,66 +1040,112 @@ export default function RbacPage() {
                         const selectedInGroup = group.items.filter((p) =>
                           form.permissions.includes(p.code)
                         ).length
+                        const pct =
+                          group.items.length > 0
+                            ? Math.round(
+                                (selectedInGroup / group.items.length) * 100
+                              )
+                            : 0
                         return (
                           <section
                             key={group.key}
-                            className="overflow-hidden rounded-lg border border-border/50 bg-background/70 shadow-sm"
+                            className="overflow-hidden rounded-lg border border-border/50 bg-card shadow-sm"
                             aria-labelledby={`perm-group-${group.key}`}
                           >
                             <header
                               id={`perm-group-${group.key}`}
                               className="flex items-center justify-between gap-3 border-b border-border/50 bg-muted/25 px-3 py-2"
                             >
-                              <div className="min-w-0">
-                                <p className="truncate font-mono text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
-                                  {group.key}
-                                </p>
-                                <p className="truncate text-sm font-semibold text-foreground">
-                                  {group.label}
-                                </p>
+                              <div className="flex min-w-0 items-center gap-2">
+                                <Checkbox
+                                  checked={
+                                    selectedInGroup === group.items.length &&
+                                    group.items.length > 0
+                                  }
+                                  onCheckedChange={(checked) => {
+                                    const codes = group.items.map((p) => p.code)
+                                    setForm((current) => ({
+                                      ...current,
+                                      permissions:
+                                        checked === true
+                                          ? [
+                                              ...new Set([
+                                                ...current.permissions,
+                                                ...codes,
+                                              ]),
+                                            ]
+                                          : current.permissions.filter(
+                                              (p) => !codes.includes(p)
+                                            ),
+                                    }))
+                                  }}
+                                />
+                                <div className="min-w-0">
+                                  <p className="truncate font-mono text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
+                                    {group.key}
+                                  </p>
+                                  <p className="truncate text-sm font-semibold text-foreground">
+                                    {group.label}
+                                  </p>
+                                </div>
                               </div>
-                              <span className="shrink-0 rounded-md border border-border/60 bg-background/90 px-2 py-0.5 text-xs text-muted-foreground tabular-nums">
-                                {selectedInGroup}/{group.items.length}
-                              </span>
-                            </header>
-                            <div className="grid gap-2 p-2 sm:grid-cols-2">
-                              {group.items.map((permission) => (
-                                <label
-                                  key={permission.code}
-                                  className="flex items-start gap-2 rounded-lg border border-border/60 bg-background/90 p-2"
-                                >
-                                  <Checkbox
-                                    checked={form.permissions.includes(
-                                      permission.code
-                                    )}
-                                    onCheckedChange={(checked) =>
-                                      setForm((current) => ({
-                                        ...current,
-                                        permissions:
-                                          checked === true
-                                            ? [
-                                                ...new Set([
-                                                  ...current.permissions,
-                                                  permission.code,
-                                                ]),
-                                              ]
-                                            : current.permissions.filter(
-                                                (item) =>
-                                                  item !== permission.code
-                                              ),
-                                      }))
-                                    }
+                              <div className="flex shrink-0 items-center gap-2">
+                                <div className="hidden h-1.5 w-16 overflow-hidden rounded-full bg-muted-foreground/20 sm:block">
+                                  <div
+                                    className="h-full rounded-full bg-primary transition-all"
+                                    style={{ width: `${pct}%` }}
                                   />
-                                  <span className="min-w-0">
-                                    <span className="block text-sm font-medium">
-                                      {permissionLabelVi(permission.code)}
+                                </div>
+                                <span className="rounded-md border border-border/60 bg-background/90 px-2 py-0.5 text-xs text-muted-foreground tabular-nums">
+                                  {selectedInGroup}/{group.items.length}
+                                </span>
+                              </div>
+                            </header>
+                            <div className="grid gap-1.5 p-2 sm:grid-cols-2 lg:grid-cols-3">
+                              {group.items.map((permission) => {
+                                const isSelected = form.permissions.includes(
+                                  permission.code
+                                )
+                                return (
+                                  <label
+                                    key={permission.code}
+                                    className={`flex cursor-pointer items-center gap-2 rounded-md border px-2.5 py-1.5 transition-colors ${
+                                      isSelected
+                                        ? "border-primary/40 bg-primary/5"
+                                        : "border-border/60 bg-background/90 hover:border-border hover:bg-muted/30"
+                                    }`}
+                                  >
+                                    <Checkbox
+                                      checked={isSelected}
+                                      onCheckedChange={(checked) =>
+                                        setForm((current) => ({
+                                          ...current,
+                                          permissions:
+                                            checked === true
+                                              ? [
+                                                  ...new Set([
+                                                    ...current.permissions,
+                                                    permission.code,
+                                                  ]),
+                                                ]
+                                              : current.permissions.filter(
+                                                  (item) =>
+                                                    item !== permission.code
+                                                ),
+                                        }))
+                                      }
+                                    />
+                                    <span className="min-w-0 leading-tight">
+                                      <span className="block text-sm font-medium">
+                                        {permissionLabelVi(permission.code)}
+                                      </span>
+                                      <span className="block truncate font-mono text-[11px] text-muted-foreground">
+                                        {permission.code}
+                                      </span>
                                     </span>
-                                    <span className="block font-mono text-xs text-muted-foreground">
-                                      {permission.code}
-                                    </span>
-                                  </span>
-                                </label>
-                              ))}
+                                  </label>
+                                )
+                              })}
                             </div>
                           </section>
                         )

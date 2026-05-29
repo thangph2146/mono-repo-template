@@ -51,6 +51,22 @@ const RESOURCE_LABEL_VI: Record<string, string> = {
   messages: "tin nhắn",
   uploads: "tệp tải lên",
   roles: "vai trò",
+  speakers: "diễn giả",
+  locations: "địa điểm",
+  training_levels: "trình độ đào tạo",
+  training_systems: "hệ đào tạo",
+  majors: "ngành học",
+  courses: "khóa học",
+  academic_years: "năm học",
+  events: "sự kiện",
+  cameras: "camera",
+  templates: "mẫu giao diện",
+  screens: "màn hình",
+  departments: "phòng ban",
+  event_registrations: "đăng ký sự kiện",
+  event_checkins: "check-in sự kiện",
+  event_speakers: "diễn giả sự kiện",
+  face_data: "dữ liệu khuôn mặt",
 }
 
 const ACTION_LABEL_VI: Record<string, string> = {

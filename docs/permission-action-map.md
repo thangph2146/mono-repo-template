@@ -378,49 +378,49 @@ Frontend `PERMISSION_CODES` cần:
 | Page | PageGuard | Toolbar Add | Per-row Sửa | Per-row Xóa | Export | Bulk Actions | Trash Tab/Row | Detail Edit btn |
 |---|---|---|---|---|---|---|---|---|
 | **posts** | `permission=posts:view` | ✅ `posts:create` | ✅ `posts:update` | ✅ `posts:delete` | ✅ `posts:export` | ✅ `posts:delete` | ✅ `posts:restore` | ✅ `posts:update` |
-| **academic-years** | `roles=[...]` | ✅ `canWrite` | 🟡 | 🟡 | N/A | 🟡 | 🟡 | 🟡 |
-| **courses** | `roles=[...]` | ✅ `canWrite` | 🟡 | 🟡 | N/A | 🟡 | 🟡 | 🟡 |
-| **departments** | `roles=[...]` | ✅ `canWrite` | 🟡 | 🟡 | N/A | 🟡 | 🟡 | 🟡 |
-| **events** | `roles=[...]` | ✅ `canWrite` | 🟡 | 🟡 | N/A | 🟡 | 🟡 | 🟡 |
-| **locations** | `roles=[...]` | ✅ `canWrite` | 🟡 | 🟡 | N/A | 🟡 | 🟡 | 🟡 |
-| **majors** | `roles=[...]` | ✅ `canWrite` | 🟡 | 🟡 | N/A | 🟡 | 🟡 | 🟡 |
-| **speakers** | `roles=[...]` | ✅ `canWrite` | 🟡 | 🟡 | N/A | 🟡 | 🟡 | 🟡 |
-| **training-levels** | `roles=[...]` | ✅ `canWrite` | 🟡 | 🟡 | N/A | 🟡 | 🟡 | 🟡 |
-| **training-systems** | `roles=[...]` | ✅ `canWrite` | 🟡 | 🟡 | N/A | 🟡 | 🟡 | 🟡 |
-| **templates** | `roles=[...]` | ✅ `canWrite` | 🟡 | 🟡 | N/A | 🟡 | 🟡 | 🟡 |
-| **screens** | `roles=[...]` | ✅ `canWrite` | 🟡 | 🟡 | N/A | 🟡 | 🟡 | 🟡 |
-| **cameras** | `roles=[...]` | ✅ `canWrite` | 🟡 | 🟡 | N/A | 🟡 | 🟡 | 🟡 |
-| **categories** | `roles=[...]` | ✅ `canWrite` | ✅ `canWrite` | ✅ `canWrite` | N/A | ⬜ | ✅ `canWrite` | 🟡 |
-| **tags** | `roles=[...]` | ✅ `canWrite` | 🟡 | 🟡 | N/A | 🟡 | ✅ `canWrite` | 🟡 |
-| **contact-requests** | `roles=[...]` | N/A | 🟡 | 🟡 | N/A | 🟡 | 🟡 | 🟡 |
-| **guides** | `permission=page_contents:view` | 🟡 | 🟡 | 🟡 | N/A | N/A | N/A | 🟡 |
-| **staff** | `roles=[...]` | 🟡 | 🟡 | 🟡 | N/A | 🟡 | 🟡 | ✅ `USERS_MANAGE` |
-| **my-students** | ❌ không có guard | 🟡 | N/A | 🟡 | N/A | N/A | N/A | N/A |
-| **parent-students** | `roles=[...]` | N/A | N/A | N/A | N/A | 🟡 | N/A | N/A |
-| **data** | `roles=[...]` | N/A | N/A | N/A | 🟡 | N/A | N/A | N/A |
-| **dashboard** | không có guard | N/A | N/A | N/A | N/A | N/A | N/A | 🟡 (quick links) |
+| **academic-years** | `roles=[...]` | ✅ `canWrite` | ✅ `canWrite` | ✅ `canWrite` | N/A | ✅ `canWrite` | ✅ `canWrite` | ✅ `ACADEMIC_YEARS_UPDATE` |
+| **courses** | `roles=[...]` | ✅ `canWrite` | ✅ `canWrite` | ✅ `canWrite` | N/A | ✅ `canWrite` | ✅ `canWrite` | ✅ `COURSES_UPDATE` |
+| **departments** | `roles=[...]` | ✅ `canWrite` | ✅ `canWrite` | ✅ `canWrite` | N/A | ✅ `canWrite` | ✅ `canWrite` | ✅ `DEPARTMENTS_UPDATE` |
+| **events** | `roles=[...]` | ✅ `canWrite` | ✅ `canWrite` | ✅ `canWrite` | N/A | ✅ `canWrite` | ✅ `canWrite` | ✅ `EVENTS_UPDATE` |
+| **locations** | `roles=[...]` | ✅ `canWrite` | ✅ `canWrite` | ✅ `canWrite` | N/A | ✅ `canWrite` | ✅ `canWrite` | ✅ `LOCATIONS_UPDATE` |
+| **majors** | `roles=[...]` | ✅ `canWrite` | ✅ `canWrite` | ✅ `canWrite` | N/A | ✅ `canWrite` | ✅ `canWrite` | ✅ `MAJORS_UPDATE` |
+| **speakers** | `roles=[...]` | ✅ `canWrite` | ✅ `canWrite` | ✅ `canWrite` | N/A | ✅ `canWrite` | ✅ `canWrite` | ✅ `SPEAKERS_UPDATE` |
+| **training-levels** | `roles=[...]` | ✅ `canWrite` | ✅ `canWrite` | ✅ `canWrite` | N/A | ✅ `canWrite` | ✅ `canWrite` | ✅ `TRAINING_LEVELS_UPDATE` |
+| **training-systems** | `roles=[...]` | ✅ `canWrite` | ✅ `canWrite` | ✅ `canWrite` | N/A | ✅ `canWrite` | ✅ `canWrite` | ✅ `TRAINING_SYSTEMS_UPDATE` |
+| **templates** | `roles=[...]` | ✅ `canWrite` | ✅ `canWrite` | ✅ `canWrite` | N/A | ✅ `canWrite` | ✅ `canWrite` | ✅ `TEMPLATES_UPDATE` |
+| **screens** | `roles=[...]` | ✅ `canWrite` | ✅ `canWrite` | ✅ `canWrite` | N/A | ✅ `canWrite` | ✅ `canWrite` | ✅ `SCREENS_UPDATE` |
+| **cameras** | `roles=[...]` | ✅ `canWrite` | ✅ `canWrite` | ✅ `canWrite` | N/A | ✅ `canWrite` | ✅ `canWrite` | ✅ `CAMERAS_UPDATE` |
+| **categories** | `roles=[...]` | ✅ `canWrite` | ✅ `canWrite` | ✅ `canWrite` | N/A | ✅ `canWrite` | ✅ `canWrite` | ✅ `CATEGORIES_UPDATE` |
+| **tags** | `roles=[...]` | ✅ `canWrite` | ✅ `canWrite` | ✅ `canWrite` | N/A | ✅ `canWrite` | ✅ `canWrite` | ✅ `TAGS_UPDATE` |
+| **contact-requests** | `roles=[...]` | N/A | ✅ `CONTACT_REQUESTS_UPDATE` | ✅ `CONTACT_REQUESTS_DELETE` | N/A | ✅ `CONTACT_REQUESTS_DELETE` | ✅ `CONTACT_REQUESTS_RESTORE` | ✅ `CONTACT_REQUESTS_UPDATE` |
+| **guides** | `permission=page_contents:view` | ✅ `PAGE_CONTENTS_CREATE` | ✅ `PAGE_CONTENTS_UPDATE` | ✅ `PAGE_CONTENTS_DELETE` | N/A | N/A | N/A | ✅ `PAGE_CONTENTS_UPDATE` |
+| **staff** | `roles=[...]` | 🟡 `users:create` | 🟡 `users:update` | 🟡 `users:delete` | N/A | 🟡 | 🟡 | ✅ `USERS_MANAGE` |
+| **my-students** | ❌ không có guard | ✅ `STUDENTS_CREATE` | N/A | ✅ `STUDENTS_DELETE` | N/A | N/A | N/A | N/A |
+| **parent-students** | `roles=[...]` | N/A | N/A | N/A | N/A | ✅ `STUDENTS_UPDATE` | N/A | N/A |
+| **data** | `roles=[...]` | N/A | N/A | N/A | ✅ `settings:export` | N/A | N/A | N/A |
+| **dashboard** | không có guard | N/A | N/A | N/A | N/A | N/A | N/A | ✅ (quick links gated) |
 
 ### Detail / New / Edit Pages
 
 | Page | Chỉnh sửa button | Form submit (new) | Form submit (edit) |
 |---|---|---|---|
 | **posts** | ✅ `posts:update` | ✅ role-gated | ✅ role-gated |
-| **academic-years** | 🟡 | ⬜ | ⬜ |
-| **courses** | 🟡 | ⬜ | ⬜ |
-| **departments** | 🟡 | ⬜ | ⬜ |
-| **events** | 🟡 | ⬜ | ⬜ |
-| **locations** | 🟡 | ⬜ | ⬜ |
-| **majors** | 🟡 | ⬜ | ⬜ |
-| **speakers** | 🟡 | ⬜ | ⬜ |
-| **training-levels** | 🟡 | ⬜ | ⬜ |
-| **training-systems** | 🟡 | ⬜ | ⬜ |
-| **templates** | 🟡 | ⬜ | ⬜ |
-| **screens** | 🟡 | ⬜ | ⬜ |
-| **cameras** | 🟡 | ⬜ | ⬜ |
-| **categories** | 🟡 | ⬜ | ⬜ |
-| **tags** | 🟡 | ⬜ | ⬜ |
-| **contact-requests** | 🟡 | ⬜ | ⬜ |
-| **guides** | 🟡 | ✅ `page_contents:create` | ✅ `page_contents:update` |
+| **academic-years** | ✅ `ACADEMIC_YEARS_UPDATE` | ⬜ | ⬜ |
+| **courses** | ✅ `COURSES_UPDATE` | ⬜ | ⬜ |
+| **departments** | ✅ `DEPARTMENTS_UPDATE` | ⬜ | ⬜ |
+| **events** | ✅ `EVENTS_UPDATE` | ⬜ | ⬜ |
+| **locations** | ✅ `LOCATIONS_UPDATE` | ⬜ | ⬜ |
+| **majors** | ✅ `MAJORS_UPDATE` | ⬜ | ⬜ |
+| **speakers** | ✅ `SPEAKERS_UPDATE` | ⬜ | ⬜ |
+| **training-levels** | ✅ `TRAINING_LEVELS_UPDATE` | ⬜ | ⬜ |
+| **training-systems** | ✅ `TRAINING_SYSTEMS_UPDATE` | ⬜ | ⬜ |
+| **templates** | ✅ `TEMPLATES_UPDATE` | ⬜ | ⬜ |
+| **screens** | ✅ `SCREENS_UPDATE` | ⬜ | ⬜ |
+| **cameras** | ✅ `CAMERAS_UPDATE` | ⬜ | ⬜ |
+| **categories** | ✅ `CATEGORIES_UPDATE` | ⬜ | ⬜ |
+| **tags** | ✅ `TAGS_UPDATE` | ⬜ | ⬜ |
+| **contact-requests** | ✅ `CONTACT_REQUESTS_UPDATE` | ⬜ | ⬜ |
+| **guides** | ✅ `PAGE_CONTENTS_UPDATE` | ✅ `page_contents:create` | ✅ `page_contents:update` |
 | **staff** | ✅ `USERS_MANAGE` | ✅ `USERS_MANAGE` | ✅ `USERS_MANAGE` |
 
 ### Ghi chú

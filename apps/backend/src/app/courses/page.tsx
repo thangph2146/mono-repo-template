@@ -145,7 +145,7 @@ function CoursesPageInner() {
       setConfirmAction,
       canWrite,
     }),
-    [setConfirmAction, router],
+    [setConfirmAction, router, canWrite],
   );
 
   const trashColumns = useMemo<ColumnDef<CourseRow>[]>(
