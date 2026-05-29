@@ -11,6 +11,8 @@ import { Button } from "@ui/components/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@ui/components/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@ui/components/tabs";
 import { AdminPageGuard } from "@/components/admin-page-guard";
+import { useAuth } from "@/providers/auth-provider";
+import { PERMISSION_CODES, canUserAccess } from "@workspace/api-client";
 import { api } from "@/lib/api";
 import { useEventDetailQuery, useEventRegistrationsQuery, useEventCheckinsQuery, useEventSpeakersQuery } from "../_component";
 import { TypographyH1 } from "@ui/components/typography";
@@ -24,6 +26,8 @@ function EventDetailInner() {
   const router = useRouter();
   const params = useParams();
   const id = params.id as string;
+  const { user } = useAuth();
+  const canUpdate = user ? canUserAccess(user, PERMISSION_CODES.EVENTS_UPDATE) : false;
   const { data: entity, isLoading, isError } = useEventDetailQuery(api, id);
 
   useEffect(() => { if (isError) { toast.error("Không tải được sự kiện"); router.push("/events"); } }, [isError, router]);
@@ -43,9 +47,11 @@ function EventDetailInner() {
             <p className={ADMIN_PAGE_SUBTITLE_CLASS}>Sự kiện</p>
           </div>
         </div>
+        {canUpdate && (
         <Button type="button" variant="default" className="gap-2 rounded-lg px-5 font-semibold" onClick={() => router.push(`/events/${id}/edit`)}>
           <Pencil className="size-4" /> Chỉnh sửa
         </Button>
+        )}
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3 my-6">

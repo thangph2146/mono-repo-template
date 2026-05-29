@@ -87,6 +87,7 @@ const menuTree: MenuTreeItem[] = [
         label: "Sinh viên",
         icon: GraduationCap,
         permission: null,
+        anyPermission: [PERMISSION_CODES.STUDENTS_VIEW_OWN],
         roleGuard: "parent",
       },
       {
@@ -95,7 +96,6 @@ const menuTree: MenuTreeItem[] = [
         icon: UserCheck,
         permission: null,
         anyPermission: [PERMISSION_CODES.USERS_MANAGE],
-        adminOnly: true,
       },
       {
         href: "/contact-requests",
@@ -108,7 +108,6 @@ const menuTree: MenuTreeItem[] = [
           PERMISSION_CODES.CONTACT_REQUESTS_ASSIGN,
         ],
         permission: null,
-        adminOnly: true,
       },
     ],
   },
@@ -121,8 +120,11 @@ const menuTree: MenuTreeItem[] = [
         href: "/categories",
         label: "Danh mục",
         icon: FolderOpen,
+        anyPermission: [
+          PERMISSION_CODES.CATEGORIES_VIEW,
+          PERMISSION_CODES.CATEGORIES_CREATE,
+        ],
         permission: null,
-        adminOnly: true,
       },
       {
         href: "/tags",
@@ -133,7 +135,6 @@ const menuTree: MenuTreeItem[] = [
           PERMISSION_CODES.TAGS_VIEW,
           PERMISSION_CODES.TAGS_MANAGE,
         ],
-        adminOnly: true,
       },
     ],
   },
@@ -147,14 +148,13 @@ const menuTree: MenuTreeItem[] = [
         label: "Hướng dẫn sử dụng",
         icon: BookOpen,
         permission: PERMISSION_CODES.PAGE_CONTENTS_VIEW,
-        adminOnly: true,
       },
       {
         href: "/posts",
         label: "Bài viết",
         icon: FileText,
+        anyPermission: [PERMISSION_CODES.POSTS_VIEW],
         permission: null,
-        adminOnly: true,
       }
     ],
   },
@@ -169,14 +169,12 @@ const menuTree: MenuTreeItem[] = [
         icon: Users,
         permission: null,
         anyPermission: [PERMISSION_CODES.USERS_MANAGE],
-        adminOnly: true,
       },
       {
         href: "/rbac",
         label: "Phân quyền",
         icon: ShieldCheck,
-        permission: PERMISSION_CODES.RBAC_READ,
-        adminOnly: true,
+        permission: PERMISSION_CODES.ROLES_VIEW,
       },
     ],
   },
@@ -191,7 +189,6 @@ const menuTree: MenuTreeItem[] = [
         icon: CalendarPlus,
         permission: null,
         anyPermission: [PERMISSION_CODES.EVENTS_VIEW, PERMISSION_CODES.EVENTS_MANAGE],
-        adminOnly: true,
       },
       {
         href: "/cameras",
@@ -199,7 +196,6 @@ const menuTree: MenuTreeItem[] = [
         icon: Camera,
         permission: null,
         anyPermission: [PERMISSION_CODES.CAMERAS_VIEW, PERMISSION_CODES.CAMERAS_MANAGE],
-        adminOnly: true,
       },
       {
         href: "/templates",
@@ -207,7 +203,6 @@ const menuTree: MenuTreeItem[] = [
         icon: LayoutTemplate,
         permission: null,
         anyPermission: [PERMISSION_CODES.TEMPLATES_VIEW, PERMISSION_CODES.TEMPLATES_MANAGE],
-        adminOnly: true,
       },
       {
         href: "/screens",
@@ -215,7 +210,6 @@ const menuTree: MenuTreeItem[] = [
         icon: Monitor,
         permission: null,
         anyPermission: [PERMISSION_CODES.SCREENS_VIEW, PERMISSION_CODES.SCREENS_MANAGE],
-        adminOnly: true,
       },
       {
         href: "/departments",
@@ -223,7 +217,6 @@ const menuTree: MenuTreeItem[] = [
         icon: Building2,
         permission: null,
         anyPermission: [PERMISSION_CODES.DEPARTMENTS_VIEW, PERMISSION_CODES.DEPARTMENTS_MANAGE],
-        adminOnly: true,
       },
       {
         href: "/speakers",
@@ -231,7 +224,6 @@ const menuTree: MenuTreeItem[] = [
         icon: Mic,
         permission: null,
         anyPermission: [PERMISSION_CODES.SPEAKERS_VIEW, PERMISSION_CODES.SPEAKERS_MANAGE],
-        adminOnly: true,
       },
       {
         href: "/locations",
@@ -239,7 +231,6 @@ const menuTree: MenuTreeItem[] = [
         icon: MapPin,
         permission: null,
         anyPermission: [PERMISSION_CODES.LOCATIONS_VIEW, PERMISSION_CODES.LOCATIONS_MANAGE],
-        adminOnly: true,
       },
     ],
   },
@@ -257,7 +248,6 @@ const menuTree: MenuTreeItem[] = [
           PERMISSION_CODES.TRAINING_LEVELS_VIEW,
           PERMISSION_CODES.TRAINING_LEVELS_MANAGE,
         ],
-        adminOnly: true,
       },
       {
         href: "/training-systems",
@@ -268,7 +258,6 @@ const menuTree: MenuTreeItem[] = [
           PERMISSION_CODES.TRAINING_SYSTEMS_VIEW,
           PERMISSION_CODES.TRAINING_SYSTEMS_MANAGE,
         ],
-        adminOnly: true,
       },
       {
         href: "/majors",
@@ -279,7 +268,6 @@ const menuTree: MenuTreeItem[] = [
           PERMISSION_CODES.MAJORS_VIEW,
           PERMISSION_CODES.MAJORS_MANAGE,
         ],
-        adminOnly: true,
       },
       {
         href: "/courses",
@@ -290,7 +278,6 @@ const menuTree: MenuTreeItem[] = [
           PERMISSION_CODES.COURSES_VIEW,
           PERMISSION_CODES.COURSES_MANAGE,
         ],
-        adminOnly: true,
       },
       {
         href: "/academic-years",
@@ -301,7 +288,6 @@ const menuTree: MenuTreeItem[] = [
           PERMISSION_CODES.ACADEMIC_YEARS_VIEW,
           PERMISSION_CODES.ACADEMIC_YEARS_MANAGE,
         ],
-        adminOnly: true,
       },
     ],
   },
@@ -314,8 +300,7 @@ const menuTree: MenuTreeItem[] = [
         href: "/data",
         label: "Sao lưu dữ liệu",
         icon: Database,
-        permission: PERMISSION_CODES.DATA_MAINTENANCE,
-        adminOnly: true,
+        permission: PERMISSION_CODES.SETTINGS_MANAGE,
       },
 
       {
@@ -351,7 +336,9 @@ function canSeeLeaf(user: AuthUser | null, item: MenuLeaf): boolean {
   if (isSuperUser(user)) return true
   // roleGuard: chỉ role cụ thể này mới thấy (ví dụ: "parent" cho /my-students)
   if (item.roleGuard) {
-    return user.roles?.some((r) => r.name === item.roleGuard) ?? false
+    const matched = user.roles?.some((r) => r.name === item.roleGuard) ?? false
+    if (matched) return true
+    // fall through to check anyPermission/permission in case another role also qualifies
   }
   // adminOnly: ẩn với tất cả role không phải super_admin/admin
   if (item.adminOnly) return false

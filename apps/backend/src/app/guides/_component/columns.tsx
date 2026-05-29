@@ -11,12 +11,14 @@ export interface GuideColumnsProps {
   onView: (row: GuideGroup) => void
   onEdit: (row: GuideGroup) => void
   onDelete: (row: GuideGroup) => void
+  canWrite: boolean
 }
 
 export function getGuidesColumns({
   onView,
   onEdit,
   onDelete,
+  canWrite,
 }: GuideColumnsProps): ColumnDef<GuideGroup>[] {
   return [
     {
@@ -100,20 +102,24 @@ export function getGuidesColumns({
             >
               <Eye className="size-4" aria-hidden /> xem
             </Button>
-            <Button
-              variant="outline"
-              onClick={() => onEdit(data)}
-              aria-label="Sửa"
-            >
-              <Pencil className="size-4" aria-hidden /> sửa
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={() => onDelete(data)}
-              aria-label="Xóa"
-            >
-              <Trash2 className="size-4" aria-hidden /> xóa
-            </Button>
+            {canWrite && (
+              <Button
+                variant="outline"
+                onClick={() => onEdit(data)}
+                aria-label="Sửa"
+              >
+                <Pencil className="size-4" aria-hidden /> sửa
+              </Button>
+            )}
+            {canWrite && (
+              <Button
+                variant="destructive"
+                onClick={() => onDelete(data)}
+                aria-label="Xóa"
+              >
+                <Trash2 className="size-4" aria-hidden /> xóa
+              </Button>
+            )}
           </div>
         )
       },

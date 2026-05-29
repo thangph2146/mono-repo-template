@@ -4,6 +4,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useContactRequestDetail } from "@/hooks/queries";
 import { PageSection } from "@ui/components/layout";
 import { AdminPageGuard } from "@/components/admin-page-guard";
+import { useAuth } from "@/providers/auth-provider";
 import {
   ADMIN_PAGE_TITLE_PRIMARY_CLASS,
   ADMIN_PAGE_TITLE_ICON_CLASS,
@@ -30,7 +31,7 @@ import {
 import { Button } from "@ui/components/button";
 import { Badge } from "@ui/components/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@ui/components/card";
-import { formatDateTime } from "@workspace/api-client";
+import { formatDateTime, PERMISSION_CODES, canUserAccess } from "@workspace/api-client";
 import type { ContactRequest } from "../_component/types";
 import { CONTACT_REQUEST_STATUS_LABELS } from "../_component/types";
 import { formatPhoneNumber } from "../_component/utils";
@@ -40,6 +41,8 @@ function ContactRequestDetailPageInner() {
   const params = useParams();
   const router = useRouter();
   const contactId = params.id as string;
+  const { user } = useAuth();
+  const canUpdate = user ? canUserAccess(user, PERMISSION_CODES.CONTACT_REQUESTS_UPDATE) : false;
 
   const contactQuery = useContactRequestDetail(contactId);
   const contact = contactQuery.data as ContactRequest | undefined;
@@ -141,6 +144,7 @@ function ContactRequestDetailPageInner() {
           Chi tiết yêu cầu liên hệ
         </TypographyH1>
         <div className="flex gap-2">
+          {canUpdate && (
           <Button
             type="button"
             variant="outline"
@@ -151,6 +155,7 @@ function ContactRequestDetailPageInner() {
             <Pencil className="size-4" aria-hidden />
             Chỉnh sửa
           </Button>
+          )}
         </div>
       </div>
 

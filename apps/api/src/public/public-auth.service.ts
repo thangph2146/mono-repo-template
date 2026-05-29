@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { EntityManager } from '@mikro-orm/core';
 import { Role } from '../entities/role.entity';
+import { Setting } from '../entities/setting.entity';
 import { User } from '../entities/user.entity';
 import { AuthService } from '../auth/auth.service';
 import { UsersService } from '../users/users.service';
@@ -14,6 +15,17 @@ export interface CreatePublicRegisterDto {
   address?: string;
 }
 
+async function getDefaultNewUserRole(
+  em: EntityManager,
+): Promise<{ name: string; displayName: string }> {
+  const setting = await em.findOne(Setting, { key: 'default_new_user_role' });
+  if (setting?.value && typeof setting.value === 'string') {
+    const roleName = setting.value.trim().toLowerCase();
+    if (roleName) return { name: roleName, displayName: roleName };
+  }
+  return { name: AUTH_ROLE_NAMES.PARENT, displayName: 'Phụ huynh' };
+}
+
 @Injectable()
 export class PublicAuthService {
   constructor(
@@ -22,14 +34,15 @@ export class PublicAuthService {
     private readonly authService: AuthService,
   ) {}
 
-  private async ensureDefaultParentRole(): Promise<Role> {
-    let role = await this.em.findOne(Role, { name: AUTH_ROLE_NAMES.PARENT });
+  private async ensureDefaultRole(): Promise<Role> {
+    const defaultRoleCfg = await getDefaultNewUserRole(this.em);
+    let role = await this.em.findOne(Role, { name: defaultRoleCfg.name });
     if (role) return role;
 
     role = new Role();
-    role.name = AUTH_ROLE_NAMES.PARENT;
-    role.displayName = 'Phụ huynh';
-    role.description = 'Tài khoản phụ huynh đăng ký công khai';
+    role.name = defaultRoleCfg.name;
+    role.displayName = defaultRoleCfg.displayName;
+    role.description = `Tài khoản ${defaultRoleCfg.displayName.toLowerCase()} đăng ký công khai`;
     role.permissions = null;
     role.isActive = true;
     this.em.persist(role);
@@ -57,7 +70,7 @@ export class PublicAuthService {
       );
     }
 
-    const parentRole = await this.ensureDefaultParentRole();
+    const defaultRole = await this.ensureDefaultRole();
     const created = await this.usersService.create({
       email,
       name: fullName,
@@ -65,7 +78,7 @@ export class PublicAuthService {
       phone: dto.phone?.trim() || null,
       address: dto.address?.trim() || null,
       isActive: true,
-      roleIds: [parentRole.id],
+      roleIds: [defaultRole.id],
     });
 
     const payload = await this.authService.getAuthPayloadByUserId(created.id);

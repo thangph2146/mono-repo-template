@@ -1,33 +1,38 @@
-"use client";
+"use client"
 
-import type { ColumnDef, ColumnFiltersState, OnChangeFn, RowSelectionState } from "@tanstack/react-table";
-import { Button } from "@ui/components/button";
-import { AdminDataTable } from "@/components/admin-data-table";
-import { AdminTablePaginationFooter } from "@/components/admin-table-pagination-footer";
-import { FilterX, RefreshCw } from "lucide-react";
-import type { SpeakerRow } from "../types";
+import type {
+  ColumnDef,
+  ColumnFiltersState,
+  OnChangeFn,
+  RowSelectionState,
+} from "@tanstack/react-table"
+import { Button } from "@ui/components/button"
+import { AdminDataTable } from "@/components/admin-data-table"
+import { AdminTablePaginationFooter } from "@/components/admin-table-pagination-footer"
+import { FilterX, RefreshCw } from "lucide-react"
+import type { SpeakerRow } from "../types"
 
 export interface SpeakersTrashTableProps {
-  data: SpeakerRow[];
-  columns: ColumnDef<SpeakerRow>[];
-  isLoading: boolean;
-  columnFilters: ColumnFiltersState;
-  onColumnFiltersChange: OnChangeFn<ColumnFiltersState>;
-  globalFilter: string;
-  onGlobalFilterChange: OnChangeFn<string>;
-  selectedRowIds: RowSelectionState;
-  onSelectedRowIdsChange: OnChangeFn<RowSelectionState>;
-  page: number;
-  pageSize: number;
-  total: number;
-  onPageChange: (page: number) => void;
-  onPageSizeChange: (size: number) => void;
-  onRefresh: () => void;
-  onClearFilters: () => void;
-  onBulkRestore: (rows: SpeakerRow[]) => Promise<void>;
-  onBulkPurge: (rows: SpeakerRow[]) => Promise<void>;
-  isFetching?: boolean;
-  manualFiltering?: boolean;
+  data: SpeakerRow[]
+  columns: ColumnDef<SpeakerRow>[]
+  isLoading: boolean
+  columnFilters: ColumnFiltersState
+  onColumnFiltersChange: OnChangeFn<ColumnFiltersState>
+  globalFilter: string
+  onGlobalFilterChange: OnChangeFn<string>
+  selectedRowIds: RowSelectionState
+  onSelectedRowIdsChange: OnChangeFn<RowSelectionState>
+  page: number
+  pageSize: number
+  total: number
+  onPageChange: (page: number) => void
+  onPageSizeChange: (size: number) => void
+  onRefresh: () => void
+  onClearFilters: () => void
+  onBulkRestore: (rows: SpeakerRow[]) => Promise<void>
+  onBulkPurge: (rows: SpeakerRow[]) => Promise<void>
+  isFetching?: boolean
+  manualFiltering?: boolean
 }
 
 export function SpeakersTrashTable({
@@ -68,8 +73,17 @@ export function SpeakersTrashTable({
       globalFilterPlaceholder="Tìm trong thùng rác..."
       filterToolbarExtra={
         <div className="flex flex-wrap items-center gap-2">
-          <Button type="button" variant="outline" onClick={() => { void onRefresh(); }}>
-            <RefreshCw className={isFetching ? "size-4 animate-spin" : "size-4"} aria-hidden />
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => {
+              void onRefresh()
+            }}
+          >
+            <RefreshCw
+              className={isFetching ? "size-4 animate-spin" : "size-4"}
+              aria-hidden
+            />
             Làm mới
           </Button>
           <Button type="button" variant="destructive" onClick={onClearFilters}>
@@ -122,5 +136,5 @@ export function SpeakersTrashTable({
         />
       }
     />
-  );
+  )
 }

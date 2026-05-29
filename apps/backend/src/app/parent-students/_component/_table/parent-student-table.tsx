@@ -31,6 +31,7 @@ export interface ParentStudentTableProps {
   onClearFilters: () => void
   onBulkApprove: (rows: ParentStudent[]) => Promise<void>
   onBulkReject: (rows: ParentStudent[]) => Promise<void>
+  canApprove: boolean
   isFetching?: boolean
 }
 
@@ -53,6 +54,7 @@ export function ParentStudentTable({
   onClearFilters,
   onBulkApprove,
   onBulkReject,
+  canApprove,
   isFetching,
 }: ParentStudentTableProps) {
   return (
@@ -93,31 +95,35 @@ export function ParentStudentTable({
       selectedRowIds={selectedRowIds}
       onSelectedRowIdsChange={onSelectedRowIdsChange}
       bulkActions={[
-        {
-          id: "bulk-parent-student-approve",
-          label: "Duyệt đã chọn",
-          variant: "default",
-          confirm: {
-            title: "Duyệt các yêu cầu đã chọn?",
-            description: (rows) =>
-              `Bạn đã chọn ${rows.length} yêu cầu. Các yêu cầu sẽ được duyệt và phụ huynh sẽ được xem bảng điểm.`,
-            confirmLabel: "Duyệt",
-          },
-          onAction: onBulkApprove,
-        },
-        {
-          id: "bulk-parent-student-reject",
-          label: "Từ chối đã chọn",
-          variant: "destructive",
-          confirm: {
-            title: "Từ chối các yêu cầu đã chọn?",
-            description: (rows) =>
-              `Bạn đã chọn ${rows.length} yêu cầu. Các yêu cầu sẽ bị từ chối và phụ huynh sẽ thấy thông báo.`,
-            confirmLabel: "Từ chối",
-            destructive: true,
-          },
-          onAction: onBulkReject,
-        },
+        ...(canApprove
+          ? [
+              {
+                id: "bulk-parent-student-approve" as const,
+                label: "Duyệt đã chọn",
+                variant: "default" as const,
+                confirm: {
+                  title: "Duyệt các yêu cầu đã chọn?",
+                  description: (rows: ParentStudent[]) =>
+                    `Bạn đã chọn ${rows.length} yêu cầu. Các yêu cầu sẽ được duyệt và phụ huynh sẽ được xem bảng điểm.`,
+                  confirmLabel: "Duyệt",
+                },
+                onAction: onBulkApprove,
+              },
+              {
+                id: "bulk-parent-student-reject" as const,
+                label: "Từ chối đã chọn",
+                variant: "destructive" as const,
+                confirm: {
+                  title: "Từ chối các yêu cầu đã chọn?",
+                  description: (rows: ParentStudent[]) =>
+                    `Bạn đã chọn ${rows.length} yêu cầu. Các yêu cầu sẽ bị từ chối và phụ huynh sẽ thấy thông báo.`,
+                  confirmLabel: "Từ chối",
+                  destructive: true,
+                },
+                onAction: onBulkReject,
+              },
+            ]
+          : []),
       ]}
       footer={
         <AdminTablePaginationFooter

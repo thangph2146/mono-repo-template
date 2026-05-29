@@ -88,6 +88,8 @@ interface ContactRequestTableProps {
   onEdit: (contact: ContactRequest) => void;
   onDelete: (contact: ContactRequest) => void;
   busy: boolean;
+  canUpdate?: boolean;
+  canDelete?: boolean;
   onBulkDelete: (ids: string[]) => void;
   onClearFilters: () => void;
 }
@@ -111,11 +113,13 @@ export function ContactRequestTable(props: ContactRequestTableProps) {
     onEdit,
     onDelete,
     busy,
+    canUpdate,
+    canDelete,
     onBulkDelete,
     onClearFilters,
   } = props;
 
-  const columns = getContactRequestColumns({ onView, onEdit, onDelete, busy });
+  const columns = getContactRequestColumns({ onView, onEdit, onDelete, busy, canUpdate, canDelete });
 
   const handleCsvExport = () => {
     const { headers, rows } = buildCustomExportData(data);
@@ -158,16 +162,20 @@ export function ContactRequestTable(props: ContactRequestTableProps) {
       selectedRowIds={selectedRowIds}
       onSelectedRowIdsChange={onSelectedRowIdsChange}
       bulkActions={[
-        {
-          id: "bulk-contact-delete",
-          label: "Xóa tạm đã chọn",
-          variant: "destructive",
-          onAction: async (rows) => {
-            const ids = rows.map((c) => String(c.id));
-            if (!ids.length) return;
-            await onBulkDelete(ids);
-          },
-        },
+        ...(canDelete
+          ? [
+              {
+                id: "bulk-contact-delete" as const,
+                label: "Xóa tạm đã chọn",
+                variant: "destructive" as const,
+                onAction: async (rows: ContactRequest[]) => {
+                  const ids = rows.map((c) => String(c.id));
+                  if (!ids.length) return;
+                  await onBulkDelete(ids);
+                },
+              },
+            ]
+          : []),
       ]}
       filterToolbarExtra={
         <div className="flex flex-wrap items-end gap-2">

@@ -1,27 +1,32 @@
-"use client";
+"use client"
 
-import type { ColumnDef, ColumnFiltersState, OnChangeFn, RowSelectionState } from "@tanstack/react-table";
-import { Button } from "@ui/components/button";
-import { AdminDataTable } from "@/components/admin-data-table";
-import { RefreshCw, FilterX } from "lucide-react";
-import type { SpeakerRow } from "../types";
+import type {
+  ColumnDef,
+  ColumnFiltersState,
+  OnChangeFn,
+  RowSelectionState,
+} from "@tanstack/react-table"
+import { Button } from "@ui/components/button"
+import { AdminDataTable } from "@/components/admin-data-table"
+import { RefreshCw, FilterX } from "lucide-react"
+import type { SpeakerRow } from "../types"
 
 export interface SpeakersTableProps {
-  data: SpeakerRow[];
-  columns: ColumnDef<SpeakerRow>[];
-  isLoading: boolean;
-  columnFilters: ColumnFiltersState;
-  onColumnFiltersChange: OnChangeFn<ColumnFiltersState>;
-  globalFilter: string;
-  onGlobalFilterChange: OnChangeFn<string>;
-  selectedRowIds: RowSelectionState;
-  onSelectedRowIdsChange: OnChangeFn<RowSelectionState>;
-  total: number;
-  onRefresh: () => void;
-  onClearFilters: () => void;
-  onBulkDelete: (rows: SpeakerRow[]) => Promise<void>;
-  isFetching?: boolean;
-  manualFiltering?: boolean;
+  data: SpeakerRow[]
+  columns: ColumnDef<SpeakerRow>[]
+  isLoading: boolean
+  columnFilters: ColumnFiltersState
+  onColumnFiltersChange: OnChangeFn<ColumnFiltersState>
+  globalFilter: string
+  onGlobalFilterChange: OnChangeFn<string>
+  selectedRowIds: RowSelectionState
+  onSelectedRowIdsChange: OnChangeFn<RowSelectionState>
+  total: number
+  onRefresh: () => void
+  onClearFilters: () => void
+  onBulkDelete: (rows: SpeakerRow[]) => Promise<void>
+  isFetching?: boolean
+  manualFiltering?: boolean
 }
 
 export function SpeakersTable({
@@ -57,8 +62,17 @@ export function SpeakersTable({
       globalFilterPlaceholder="Tìm theo tên..."
       filterToolbarExtra={
         <div className="flex flex-wrap items-center gap-2">
-          <Button type="button" variant="outline" onClick={() => { void onRefresh(); }}>
-            <RefreshCw className={isFetching ? "size-4 animate-spin" : "size-4"} aria-hidden />
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => {
+              void onRefresh()
+            }}
+          >
+            <RefreshCw
+              className={isFetching ? "size-4 animate-spin" : "size-4"}
+              aria-hidden
+            />
             Làm mới
           </Button>
           <Button type="button" variant="outline" onClick={onClearFilters}>
@@ -94,5 +108,5 @@ export function SpeakersTable({
         </div>
       }
     />
-  );
+  )
 }

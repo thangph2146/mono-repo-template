@@ -25,6 +25,7 @@
     "@thangph2146/lexical-editor": "workspace:*",
     "@types/three": "^0.184.0",
     "@workspace/api-client": "workspace:*",
+    "@workspace/logger": "workspace:*",
     "@workspace/query-client": "workspace:*",
     "chart.js": "^4.5.1",
     "class-variance-authority": "^0.7.1",

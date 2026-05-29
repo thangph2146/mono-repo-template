@@ -93,7 +93,7 @@ export type AdminDataTableBulkAction<TData> = {
   /** Hiển thị dialog xác nhận trước khi thực hiện */
   confirm?: boolean | {
     title: string;
-    description?: string | ((selectedRows: TData[]) => string);
+    description?: string | ((selectedRows: TData[]) => ReactNode);
     confirmLabel?: string;
     destructive?: boolean;
   };
@@ -652,7 +652,7 @@ export function AdminDataTable<TData>({
                     placeholder={globalFilterPlaceholder}
                     value={globalFilter}
                     onChange={(e) => setGlobalFilter(e.target.value)}
-                    className="bg-background rounded-lg w-full"
+                    className="w-full"
                   />
                 </div>
               ) : null}
@@ -666,8 +666,6 @@ export function AdminDataTable<TData>({
                       <Button
                         type="button"
                         variant="outline"
-                        size="sm"
-                        className="h-9 gap-1.5 rounded-lg"
                         disabled={data.length === 0}
                         onClick={handleCsvExport}
                         title="CSV: cột phân tách bằng ; + UTF-16 LE (Excel VN)"
@@ -678,8 +676,6 @@ export function AdminDataTable<TData>({
                       <Button
                         type="button"
                         variant="outline"
-                        size="sm"
-                        className="h-9 gap-1.5 rounded-lg"
                         disabled={data.length === 0}
                         onClick={handleXlsxExport}
                         title="Excel: cột rộng theo nội dung, Unicode chuẩn"

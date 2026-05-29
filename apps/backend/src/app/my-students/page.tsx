@@ -45,6 +45,7 @@ import {
   ADMIN_PAGE_SUBTITLE_CLASS,
 } from "@ui/lib/layout-shell"
 import { useAuth } from "@/providers/auth-provider"
+import { canUserAccess, PERMISSION_CODES } from "@workspace/api-client"
 import { api } from "@/lib/api"
 import { StudentScoresSection } from "./_component"
 import type {
@@ -481,6 +482,8 @@ function AddStudentDialog({
 
 export default function MyStudentsPage() {
   const { user } = useAuth()
+  const canCreate = user ? canUserAccess(user, PERMISSION_CODES.STUDENTS_CREATE) : false
+  const canDelete = user ? canUserAccess(user, PERMISSION_CODES.STUDENTS_DELETE) : false
   const queryClient = useQueryClient()
   const [addOpen, setAddOpen] = useState(false)
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
@@ -526,10 +529,12 @@ export default function MyStudentsPage() {
             . Quản lý liên kết sinh viên và theo dõi kết quả học tập.
           </p>
         </div>
-        <Button onClick={() => setAddOpen(true)} className="shrink-0 gap-2">
-          <Plus className="size-4" />
-          Thêm sinh viên
-        </Button>
+        {canCreate && (
+          <Button onClick={() => setAddOpen(true)} className="shrink-0 gap-2">
+            <Plus className="size-4" />
+            Thêm sinh viên
+          </Button>
+        )}
       </div>
 
       {isLoading && (
@@ -561,14 +566,16 @@ export default function MyStudentsPage() {
                 viên.
               </p>
             </div>
-            <Button
-              onClick={() => setAddOpen(true)}
-              size="sm"
-              className="mt-1 gap-2"
-            >
-              <Plus className="size-4" />
-              Thêm sinh viên
-            </Button>
+            {canCreate && (
+              <Button
+                onClick={() => setAddOpen(true)}
+                size="sm"
+                className="mt-1 gap-2"
+              >
+                <Plus className="size-4" />
+                Thêm sinh viên
+              </Button>
+            )}
           </CardContent>
         </Card>
       )}
@@ -654,7 +661,7 @@ export default function MyStudentsPage() {
                     </div>
                   )}
 
-                  {(s.status === "pending" || s.status === "rejected") && (
+                  {(s.status === "pending" || s.status === "rejected") && canDelete && (
                     <Button
                       variant="ghost"
                       size="sm"

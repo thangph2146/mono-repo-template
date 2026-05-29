@@ -16,6 +16,8 @@ import {
   ADMIN_PAGE_TITLE_ICON_CLASS,
   ADMIN_PAGE_SUBTITLE_CLASS,
 } from "@ui/lib/layout-shell";
+import { canUserAccess, PERMISSION_CODES } from "@workspace/api-client";
+import { useAuth } from "@/providers/auth-provider";
 import { AdminConfirmActionDialog } from "@/components/admin-confirm-action-dialog";
 import { AdminPageGuard } from "@/components/admin-page-guard";
 import { buildAdminFilterQuery, COMMON_FILTER_MAPPINGS } from "@/lib";
@@ -41,6 +43,8 @@ type ConfirmAction =
   | { kind: "reject"; row: ParentStudent };
 
 function AdminParentStudentsPageInner() {
+  const { user } = useAuth();
+  const canApprove = user ? canUserAccess(user, PERMISSION_CODES.STUDENTS_UPDATE) || canUserAccess(user, PERMISSION_CODES.STUDENTS_MANAGE) : false;
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
   const [globalFilter, setGlobalFilter] = useState("");
@@ -115,8 +119,9 @@ function AdminParentStudentsPageInner() {
       getParentStudentsColumns({
         onApprove: (row) => setConfirmAction({ kind: "approve", row }),
         onReject: (row) => setConfirmAction({ kind: "reject", row }),
+        canApprove,
       }),
-    [],
+    [canApprove],
   );
 
   return (
@@ -175,6 +180,7 @@ function AdminParentStudentsPageInner() {
             });
           }
         }}
+        canApprove={canApprove}
         isFetching={isFetching}
       />
 

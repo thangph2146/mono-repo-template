@@ -336,7 +336,6 @@ function StaffPageInner() {
               <Button
                 type="button"
                 variant="outline"
-                className="border-outline-variant flex h-11 items-center gap-2 rounded-lg px-4 font-semibold hover:bg-muted"
                 onClick={() => void usersQuery.refetch()}
               >
                 <RefreshCw
@@ -348,7 +347,6 @@ function StaffPageInner() {
               <Button
                 type="button"
                 onClick={() => router.push("/staff/new")}
-                className="flex h-11 items-center gap-2 rounded-lg px-5 font-bold shadow-md"
                 disabled={busy || roles.length === 0}
               >
                 <UserPlus className="size-4" aria-hidden />

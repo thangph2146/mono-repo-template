@@ -8,6 +8,7 @@ import {
 } from '../common/get-options';
 import { safeIsoString, safeIsoStringNow } from '../common/date-utils';
 import { Role } from '../entities/role.entity';
+import { Setting } from '../entities/setting.entity';
 import { UserRole } from '../entities/user-role.entity';
 import { User } from '../entities/user.entity';
 
@@ -272,7 +273,16 @@ export class UsersService {
       }
       await this.em.flush();
     } else {
-      const defaultRole = await this.em.findOne(Role, { name: 'user' });
+      const setting = await this.em.findOne(Setting, {
+        key: 'default_new_user_role',
+      });
+      const defaultRoleName =
+        setting?.value && typeof setting.value === 'string'
+          ? setting.value.trim().toLowerCase() || 'user'
+          : 'user';
+      const defaultRole = await this.em.findOne(Role, {
+        name: defaultRoleName,
+      });
 
       if (defaultRole) {
         const userRole = new UserRole();

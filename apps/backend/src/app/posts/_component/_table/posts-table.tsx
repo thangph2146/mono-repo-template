@@ -31,6 +31,8 @@ export interface PostsTableProps {
   onClearFilters: () => void
   onBulkDelete: (rows: PostListRow[]) => Promise<void>
   isFetching?: boolean
+  canExport?: boolean
+  canDelete?: boolean
 }
 
 export function PostsTable({
@@ -52,6 +54,8 @@ export function PostsTable({
   onClearFilters,
   onBulkDelete,
   isFetching,
+  canExport,
+  canDelete,
 }: PostsTableProps) {
   return (
     <AdminDataTable<PostListRow>
@@ -87,11 +91,11 @@ export function PostsTable({
           </Button>
         </div>
       }
-      csvExport={{ fileName: "bai-viet-dang-hoat-dong.csv" }}
-      rowSelectionEnabled
+      csvExport={canExport ? { fileName: "bai-viet-dang-hoat-dong.csv" } : undefined}
+      rowSelectionEnabled={!!canDelete}
       selectedRowIds={selectedRowIds}
       onSelectedRowIdsChange={onSelectedRowIdsChange}
-      bulkActions={[
+      bulkActions={canDelete ? [
         {
           id: "bulk-post-delete",
           label: "Xóa tạm đã chọn",
@@ -105,7 +109,7 @@ export function PostsTable({
           },
           onAction: onBulkDelete,
         },
-      ]}
+      ] : []}
       footer={
         <AdminTablePaginationFooter
           page={page}

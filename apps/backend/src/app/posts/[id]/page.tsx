@@ -22,7 +22,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@ui/components/card";
+import { useAuth } from "@/providers/auth-provider";
 import { AdminPageGuard } from "@/components/admin-page-guard";
+import { PERMISSION_CODES, canUserAccess } from "@workspace/api-client";
 import { api } from "@/lib/api";
 import { LexicalEditor } from "@thangph2146/lexical-editor";
 import {
@@ -39,6 +41,8 @@ function PostDetailInner() {
   const router = useRouter();
   const params = useParams();
   const postId = params.id as string;
+  const { user } = useAuth();
+  const canUpdate = user ? canUserAccess(user, PERMISSION_CODES.POSTS_UPDATE) : false;
 
   const { data: post, isLoading, error } = usePostDetailQuery(api, postId);
 
@@ -78,15 +82,17 @@ function PostDetailInner() {
           {post.title}
         </TypographyH2>
         </div>
-        <Button
-          type="button"
-          variant="default"
-          className="gap-2 rounded-lg px-5 font-semibold justify-self-end"
-          onClick={() => router.push(`/posts/${postId}/edit`)}
-        >
-          <Pencil/>
-          Chỉnh sửa
-        </Button>
+        {canUpdate && (
+          <Button
+            type="button"
+            variant="default"
+            className="gap-2 rounded-lg px-5 font-semibold justify-self-end"
+            onClick={() => router.push(`/posts/${postId}/edit`)}
+          >
+            <Pencil/>
+            Chỉnh sửa
+          </Button>
+        )}
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3 my-6">
@@ -216,7 +222,7 @@ function PostDetailInner() {
 
 export default function PostDetailPage() {
   return (
-    <AdminPageGuard roles={["super_admin", "admin", "manager"]}>
+    <AdminPageGuard permission={PERMISSION_CODES.POSTS_VIEW}>
       <PostDetailInner />
     </AdminPageGuard>
   );

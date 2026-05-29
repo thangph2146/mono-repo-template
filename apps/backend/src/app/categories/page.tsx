@@ -203,8 +203,9 @@ function CategoriesPageInner() {
         setConfirmAction,
         formatDateTime,
         categoryTreeOptions,
+        canWrite: canWriteCategories,
       }),
-    [setConfirmAction, categoryTreeOptions],
+    [setConfirmAction, categoryTreeOptions, canWriteCategories],
   );
 
   return (
@@ -231,7 +232,6 @@ function CategoriesPageInner() {
           <Button
             type="button"
             variant="outline"
-            className="border-outline-variant flex h-12 items-center gap-2 rounded-lg px-4 font-semibold hover:bg-muted"
             onClick={() => {
               void categoriesQuery.refetch();
               void trashQuery.refetch();
@@ -250,7 +250,6 @@ function CategoriesPageInner() {
             <Button
               type="button"
               onClick={() => router.push("/categories/new")}
-              className="flex h-12 items-center gap-2 rounded-lg px-6 font-bold shadow-md"
             >
               <Plus className="size-5" aria-hidden /> Thêm danh mục
             </Button>

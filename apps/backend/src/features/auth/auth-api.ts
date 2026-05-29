@@ -1,5 +1,10 @@
 import type { AuthUser } from "@workspace/api-client";
-import { DEFAULT_API_URL } from "@workspace/api-client";
+import {
+  DEFAULT_API_URL,
+  printDevApiCall,
+  formatDevResponsePayload,
+  buildDevLogResponseJson,
+} from "@workspace/api-client";
 
 type ApiEnvelope<T> = {
   success: boolean;
@@ -85,13 +90,14 @@ function buildApiUrl(pathname: string) {
   return `${getApiBaseUrl()}${pathname.startsWith("/") ? pathname : `/${pathname}`}`;
 }
 
-async function postApi<TResponse, TBody>(pathname: string, body: TBody) {
+async function postApi<TResponse, TBody>(
+  pathname: string,
+  body: TBody,
+  formatAuth?: (data: TResponse) => string,
+) {
   const url = buildApiUrl(pathname);
   const isDev = process.env.NODE_ENV === "development";
-
-  if (isDev) {
-    console.log(`[frontend][api] POST ${url}`);
-  }
+  const startTime = isDev ? performance.now() : 0;
 
   const response = await fetch(url, {
     method: "POST",
@@ -113,19 +119,29 @@ async function postApi<TResponse, TBody>(pathname: string, body: TBody) {
   }
 
   if (isDev) {
-    console.log(`[frontend][api] ${response.status} ${pathname}`);
+    const ms = performance.now() - startTime;
+    printDevApiCall({
+      tag: "HUB_ADMIN",
+      method: "POST",
+      path: pathname,
+      status: response.status,
+      ms,
+      authSuffix: formatAuth ? formatAuth(payload.data) : "",
+      respSummary: formatDevResponsePayload(response.status, payload, response.ok),
+      responseJson: buildDevLogResponseJson(pathname, response.ok, payload),
+    });
   }
 
   return payload.data;
 }
 
-async function getApi<TResponse>(pathname: string) {
+async function getApi<TResponse>(
+  pathname: string,
+  formatAuth?: (data: TResponse) => string,
+) {
   const url = buildApiUrl(pathname);
   const isDev = process.env.NODE_ENV === "development";
-
-  if (isDev) {
-    console.log(`[frontend][api] GET ${url}`);
-  }
+  const startTime = isDev ? performance.now() : 0;
 
   const response = await fetch(url, {
     method: "GET",
@@ -145,23 +161,35 @@ async function getApi<TResponse>(pathname: string) {
   }
 
   if (isDev) {
-    console.log(`[frontend][api] ${response.status} ${pathname}`);
+    const ms = performance.now() - startTime;
+    printDevApiCall({
+      tag: "HUB_ADMIN",
+      method: "GET",
+      path: pathname,
+      status: response.status,
+      ms,
+      authSuffix: formatAuth ? formatAuth(payload.data) : "",
+      respSummary: formatDevResponsePayload(response.status, payload, response.ok),
+      responseJson: buildDevLogResponseJson(pathname, response.ok, payload),
+    });
   }
 
   return payload.data;
 }
 
-export function loginWithEmail(body: { email: string; password: string }) {
+export async function loginWithEmail(body: { email: string; password: string }) {
   return postApi<AuthLoginPayload, { email: string; password: string }>(
     "/auth/admin/login",
     body,
+    (user) => `ctx=user id=${user.id} email=${user.email} roles=[${user.roles.map((r) => r.name).join(",")}]`,
   );
 }
 
-export function loginWithGoogle(credential: string) {
+export async function loginWithGoogle(credential: string) {
   return postApi<AuthLoginPayload, { credential: string }>(
     "/auth/admin/google",
     { credential },
+    (user) => `ctx=user id=${user.id} email=${user.email} roles=[${user.roles.map((r) => r.name).join(",")}]`,
   );
 }
 
@@ -169,10 +197,11 @@ export function fetchGoogleOAuthConfig() {
   return getApi<{ clientId: string }>("/auth/admin/google/config");
 }
 
-export function loginWithDevelopmentUser(body: { userId: string }) {
+export async function loginWithDevelopmentUser(body: { userId: string }) {
   return postApi<AuthLoginPayload, { userId: string }>(
     "/auth/admin/dev-login",
     body,
+    (user) => `ctx=user id=${user.id} email=${user.email} roles=[${user.roles.map((r) => r.name).join(",")}]`,
   );
 }
 

@@ -14,10 +14,12 @@ export interface ContactRequestColumnsProps {
   onEdit: (contact: ContactRequest) => void;
   onDelete: (contact: ContactRequest) => void;
   busy: boolean;
+  canUpdate?: boolean;
+  canDelete?: boolean;
 }
 
 export function getContactRequestColumns(props: ContactRequestColumnsProps): ColumnDef<ContactRequest>[] {
-  const { onView, onEdit, onDelete, busy } = props;
+  const { onView, onEdit, onDelete, busy, canUpdate, canDelete } = props;
 
   return [
     {
@@ -239,24 +241,28 @@ export function getContactRequestColumns(props: ContactRequestColumnsProps): Col
               <Eye className="size-3.5" aria-hidden />
               Xem
             </Button>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onEdit(contact)}
-              disabled={busy}
-            >
-              <Pencil className="size-3.5" aria-hidden />
-              Sửa
-            </Button>
-            <Button
-              type="button"
-              variant="destructive"
-              onClick={() => onDelete(contact)}
-              disabled={busy}
-            >
-              <Trash2 className="size-3.5" aria-hidden />
-              Xóa tạm
-            </Button>
+            {canUpdate && (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => onEdit(contact)}
+                disabled={busy}
+              >
+                <Pencil className="size-3.5" aria-hidden />
+                Sửa
+              </Button>
+            )}
+            {canDelete && (
+              <Button
+                type="button"
+                variant="destructive"
+                onClick={() => onDelete(contact)}
+                disabled={busy}
+              >
+                <Trash2 className="size-3.5" aria-hidden />
+                Xóa tạm
+              </Button>
+            )}
           </div>
         );
       },
@@ -268,8 +274,10 @@ export function getTrashColumns(props: {
   onRestore: (contact: ContactRequest) => void;
   onPurge: (contact: ContactRequest) => void;
   busy: boolean;
+  canRestore?: boolean;
+  canDelete?: boolean;
 }): ColumnDef<ContactRequest>[] {
-  const { onRestore, onPurge, busy } = props;
+  const { onRestore, onPurge, busy, canRestore, canDelete } = props;
 
   return [
     {
@@ -323,24 +331,28 @@ export function getTrashColumns(props: {
       meta: { disableColumnFilter: true },
       cell: ({ row }) => (
         <div className="flex flex-wrap gap-1 sticky right-0 bg-background">
-          <Button
-            type="button"
-            variant="default"
-            onClick={() => onRestore(row.original)}
-            disabled={busy}
-          >
-            <ArchiveRestore className="size-3.5" aria-hidden />
-            Khôi phục
-          </Button>
-          <Button
-            type="button"
-            variant="destructive"
-            onClick={() => onPurge(row.original)}
-            disabled={busy}
-          >
-            <Trash2 className="size-3.5" aria-hidden />
-            Xóa hẳn
-          </Button>
+          {canRestore && (
+            <Button
+              type="button"
+              variant="default"
+              onClick={() => onRestore(row.original)}
+              disabled={busy}
+            >
+              <ArchiveRestore className="size-3.5" aria-hidden />
+              Khôi phục
+            </Button>
+          )}
+          {canDelete && (
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={() => onPurge(row.original)}
+              disabled={busy}
+            >
+              <Trash2 className="size-3.5" aria-hidden />
+              Xóa hẳn
+            </Button>
+          )}
         </div>
       ),
     },

@@ -179,16 +179,18 @@ function TagsPageInner() {
         openDetail: (row) => router.push(`/tags/${row.id}`),
         openEdit: (row) => router.push(`/tags/${row.id}/edit`),
         setConfirmAction,
+        canWrite: canWriteTags,
       }),
-    [setConfirmAction, router],
+    [setConfirmAction, router, canWriteTags],
   );
 
   const trashColumns = useMemo<ColumnDef<TagTreeRow>[]>(
     () =>
       getTrashColumns({
         setConfirmAction,
+        canWrite: canWriteTags,
       }),
-    [setConfirmAction],
+    [setConfirmAction, canWriteTags],
   );
 
   return (

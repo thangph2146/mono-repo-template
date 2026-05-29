@@ -55,7 +55,7 @@ function looksLikeAuthUser(o: Record<string, unknown>): boolean {
   );
 }
 
-function summarizeAuthUser(o: Record<string, unknown>): string {
+export function summarizeAuthUser(o: Record<string, unknown>): string {
   const roles = (o.roles as { name?: string; displayName?: string }[])
     .map((r) => r?.name)
     .filter(Boolean)

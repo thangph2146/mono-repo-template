@@ -14,6 +14,8 @@ export function getPostColumns({
   categoryTreeOptions,
   tagsOptions,
   formatDateTime,
+  canUpdate,
+  canDelete,
 }: {
   navigateToEdit: (id: string) => void;
   navigateToView: (id: string) => void;
@@ -21,6 +23,8 @@ export function getPostColumns({
   categoryTreeOptions: CategoryTreeOption[];
   tagsOptions: TaxonomyOption[];
   formatDateTime: (date: string) => string;
+  canUpdate: boolean;
+  canDelete: boolean;
 }): ColumnDef<PostListRow>[] {
   return [
     {
@@ -116,22 +120,26 @@ export function getPostColumns({
             <Eye className="size-3.5" />
             Xem
           </Button>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => navigateToEdit(row.original.id)}
-          >
-            <Pencil className="size-3.5" />
-            Sửa
-          </Button>
-          <Button
-            type="button"
-            variant="destructive"
-            onClick={() => setConfirmAction({ kind: "delete", row: row.original })}
-          >
-            <Trash2 className="size-3.5" />
-            Xóa tạm
-          </Button>
+          {canUpdate && (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => navigateToEdit(row.original.id)}
+            >
+              <Pencil className="size-3.5" />
+              Sửa
+            </Button>
+          )}
+          {canDelete && (
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={() => setConfirmAction({ kind: "delete", row: row.original })}
+            >
+              <Trash2 className="size-3.5" />
+              Xóa tạm
+            </Button>
+          )}
         </div>
       ),
     },
@@ -143,11 +151,15 @@ export function getTrashColumns({
   formatDateTime,
   categoryTreeOptions,
   tagsOptions,
+  canRestore,
+  canDelete,
 }: {
   setConfirmAction: (action: { kind: "delete" | "restore" | "purge"; row: PostListRow }) => void;
   formatDateTime: (date: string) => string;
   categoryTreeOptions: CategoryTreeOption[];
   tagsOptions: TaxonomyOption[];
+  canRestore: boolean;
+  canDelete: boolean;
 }): ColumnDef<PostListRow>[] {
   return [
     {
@@ -251,22 +263,26 @@ export function getTrashColumns({
       enableColumnFilter: false,
       cell: ({ row }) => (
         <div className="flex flex-wrap gap-1">
-          <Button
-            type="button"
-            variant="default"
-            onClick={() => setConfirmAction({ kind: "restore", row: row.original })}
-          >
-            <ArchiveRestore className="size-3.5" />
-            Khôi phục
-          </Button>
-          <Button
-            type="button"
-            variant="destructive"
-            onClick={() => setConfirmAction({ kind: "purge", row: row.original })}
-          >
-            <Trash2 className="size-3.5" />
-            Xóa hẳn
-          </Button>
+          {canRestore && (
+            <Button
+              type="button"
+              variant="default"
+              onClick={() => setConfirmAction({ kind: "restore", row: row.original })}
+            >
+              <ArchiveRestore className="size-3.5" />
+              Khôi phục
+            </Button>
+          )}
+          {canDelete && (
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={() => setConfirmAction({ kind: "purge", row: row.original })}
+            >
+              <Trash2 className="size-3.5" />
+              Xóa hẳn
+            </Button>
+          )}
         </div>
       ),
     },

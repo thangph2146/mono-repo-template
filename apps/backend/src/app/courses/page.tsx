@@ -143,13 +143,14 @@ function CoursesPageInner() {
       openDetail: (row) => router.push(`/courses/${row.id}`),
       openEdit: (row) => router.push(`/courses/${row.id}/edit`),
       setConfirmAction,
+      canWrite,
     }),
     [setConfirmAction, router],
   );
 
   const trashColumns = useMemo<ColumnDef<CourseRow>[]>(
-    () => getTrashColumns({ setConfirmAction }),
-    [setConfirmAction],
+    () => getTrashColumns({ setConfirmAction, canWrite }),
+    [setConfirmAction, canWrite],
   );
 
   return (
@@ -173,7 +174,6 @@ function CoursesPageInner() {
           <Button
             type="button"
             variant="outline"
-            className="border-outline-variant flex h-12 items-center gap-2 rounded-lg px-4 font-semibold hover:bg-muted"
             onClick={() => { void listQuery.refetch(); void trashQuery.refetch(); }}
           >
             <RefreshCw

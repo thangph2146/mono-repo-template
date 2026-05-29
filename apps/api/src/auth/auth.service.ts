@@ -7,6 +7,7 @@ import { AUTH_ROLE_NAMES } from '../config/constants';
 import { User } from '../entities/user.entity';
 import { Role } from '../entities/role.entity';
 import { UserRole } from '../entities/user-role.entity';
+import { Setting } from '../entities/setting.entity';
 
 export interface LoginDto {
   email: string;
@@ -82,6 +83,20 @@ export class AuthService {
     return { id: role.id };
   }
 
+  private async getDefaultNewUserRole(): Promise<{
+    name: string;
+    displayName: string;
+  }> {
+    const setting = await this.em.findOne(Setting, {
+      key: 'default_new_user_role',
+    });
+    if (setting?.value && typeof setting.value === 'string') {
+      const roleName = setting.value.trim().toLowerCase();
+      if (roleName) return { name: roleName, displayName: roleName };
+    }
+    return { name: AUTH_ROLE_NAMES.PARENT, displayName: 'Phụ huynh' };
+  }
+
   private mapUserToPayload(user: User): AuthUserPayload {
     const activeUserRoles = (user.userRoles || []).filter(
       (ur) => ur.role && ur.role.deletedAt == null,
@@ -91,7 +106,22 @@ export class AuthService {
       if (raw == null) return [];
       if (Array.isArray(raw))
         return raw.filter((p): p is string => typeof p === 'string');
-      if (typeof raw === 'string') return [raw];
+      if (typeof raw === 'string') {
+        const trimmed = raw.trim();
+        if (
+          (trimmed.startsWith('[') && trimmed.endsWith(']')) ||
+          (trimmed.startsWith('{') && trimmed.endsWith('}'))
+        ) {
+          try {
+            const parsed = JSON.parse(trimmed);
+            if (Array.isArray(parsed))
+              return parsed.filter((p): p is string => typeof p === 'string');
+          } catch {
+            // not a JSON string
+          }
+        }
+        return [raw];
+      }
       return [];
     });
     const roles = activeUserRoles.map((ur) => ({
@@ -162,9 +192,10 @@ export class AuthService {
     const email = profile.email?.trim()?.toLowerCase();
     if (!email) return null;
 
+    const defaultRole = await this.getDefaultNewUserRole();
     const parentRole = await this.getOrCreateRole(
-      AUTH_ROLE_NAMES.PARENT,
-      'Phụ huynh',
+      defaultRole.name,
+      defaultRole.displayName,
     );
 
     let user = await this.em.findOne(
@@ -175,10 +206,8 @@ export class AuthService {
 
     if (user) {
       if (!user.isActive || user.deletedAt != null) return null;
-      const hasParentRole = user.userRoles?.some(
-        (ur) => ur.role?.name === AUTH_ROLE_NAMES.PARENT,
-      );
-      if (!hasParentRole) {
+      const hasAnyRole = (user.userRoles?.length ?? 0) > 0;
+      if (!hasAnyRole) {
         const ur = new UserRole();
         ur.user = user;
         ur.role = this.em.getReference(Role, parentRole.id);
@@ -224,6 +253,7 @@ export class AuthService {
     const email = profile.email?.trim()?.toLowerCase();
     if (!email) return null;
 
+    const defaultRole = await this.getDefaultNewUserRole();
     let user = await this.em.findOne(
       User,
       { email },
@@ -233,13 +263,13 @@ export class AuthService {
     if (user) {
       if (!user.isActive || user.deletedAt != null) return null;
       if (!user.userRoles?.length) {
-        const parentRole = await this.getOrCreateRole(
-          AUTH_ROLE_NAMES.PARENT,
-          'Phụ huynh',
+        const role = await this.getOrCreateRole(
+          defaultRole.name,
+          defaultRole.displayName,
         );
         const ur = new UserRole();
         ur.user = user;
-        ur.role = this.em.getReference(Role, parentRole.id);
+        ur.role = this.em.getReference(Role, role.id);
         this.em.persist(ur);
         await this.em.flush();
         user = await this.em.findOne(
@@ -252,9 +282,9 @@ export class AuthService {
       return this.mapUserToPayload(user);
     }
 
-    const parentRole = await this.getOrCreateRole(
-      AUTH_ROLE_NAMES.PARENT,
-      'Phụ huynh',
+    const role = await this.getOrCreateRole(
+      defaultRole.name,
+      defaultRole.displayName,
     );
 
     const password = await hash(randomBytes(16).toString('hex'), 10);
@@ -269,7 +299,7 @@ export class AuthService {
 
     const ur1 = new UserRole();
     ur1.user = newUserObj;
-    ur1.role = this.em.getReference(Role, parentRole.id);
+    ur1.role = this.em.getReference(Role, role.id);
     this.em.persist(ur1);
     await this.em.flush();
 

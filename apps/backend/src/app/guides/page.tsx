@@ -13,6 +13,8 @@ import {
 } from "@ui/lib/layout-shell";
 import { AdminPageGuard } from "@/components/admin-page-guard";
 import { api } from "@/lib/api";
+import { canUserAccess, PERMISSION_CODES } from "@workspace/api-client";
+import { useAuth } from "@/providers/auth-provider";
 import { useRouter } from "next/navigation";
 import {
   useGuidesQuery,
@@ -25,6 +27,8 @@ import {
 } from "./_component";
 
 function GuidesPageInner() {
+  const { user } = useAuth();
+  const canWrite = user ? canUserAccess(user, PERMISSION_CODES.PAGE_CONTENTS_MANAGE) || canUserAccess(user, PERMISSION_CODES.PAGE_CONTENTS_CREATE) || canUserAccess(user, PERMISSION_CODES.PAGE_CONTENTS_UPDATE) : false;
   const router = useRouter();
   const [globalFilter, setGlobalFilter] = useState("");
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -49,8 +53,9 @@ function GuidesPageInner() {
         onView: (row) => router.push(`/guides/${row.id}`),
         onEdit: (row) => router.push(`/guides/${row.id}/edit`),
         onDelete: (row) => setConfirmAction({ kind: "delete", row }),
+        canWrite,
       }),
-    [router],
+    [router, canWrite],
   );
 
   const handleConfirmAction = async () => {
@@ -80,10 +85,12 @@ function GuidesPageInner() {
           </p>
         </div>
         <div className="flex shrink-0 items-center gap-2">
-          <Button onClick={() => router.push("/guides/new")} className="gap-2">
-            <Plus className="size-4" />
-            Thêm nhóm
-          </Button>
+          {canWrite && (
+            <Button onClick={() => router.push("/guides/new")} className="gap-2">
+              <Plus className="size-4" />
+              Thêm nhóm
+            </Button>
+          )}
         </div>
       </div>
 

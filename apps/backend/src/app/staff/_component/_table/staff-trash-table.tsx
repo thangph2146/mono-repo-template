@@ -1,33 +1,37 @@
-import type { ColumnFiltersState, OnChangeFn, RowSelectionState } from "@tanstack/react-table";
-import { FilterX, RefreshCw } from "lucide-react";
-import { Button } from "@ui/components/button";
-import { cn } from "@ui/lib/utils";
-import { AdminDataTable } from "@/components/admin-data-table";
-import { AdminTablePaginationFooter } from "@/components/admin-table-pagination-footer";
-import { getTrashColumns } from "../columns";
-import type { StaffRow } from "../types";
+import type {
+  ColumnFiltersState,
+  OnChangeFn,
+  RowSelectionState,
+} from "@tanstack/react-table"
+import { FilterX, RefreshCw } from "lucide-react"
+import { Button } from "@ui/components/button"
+import { cn } from "@ui/lib/utils"
+import { AdminDataTable } from "@/components/admin-data-table"
+import { AdminTablePaginationFooter } from "@/components/admin-table-pagination-footer"
+import { getTrashColumns } from "../columns"
+import type { StaffRow } from "../types"
 
 interface StaffTrashTableProps {
-  data: StaffRow[];
-  isLoading: boolean;
-  total: number;
-  page: number;
-  pageSize: number;
-  onPageChange: (page: number) => void;
-  onPageSizeChange: (pageSize: number) => void;
-  columnFilters: ColumnFiltersState;
-  onColumnFiltersChange: OnChangeFn<ColumnFiltersState>;
-  globalFilter: string;
-  onGlobalFilterChange: OnChangeFn<string>;
-  selectedRowIds: RowSelectionState;
-  onSelectedRowIdsChange: OnChangeFn<RowSelectionState>;
-  onRestore: (user: StaffRow) => void;
-  onPurge: (user: StaffRow) => void;
-  busy: boolean;
-  onBulkRestore: (ids: string[]) => void;
-  onBulkPurge: (ids: string[]) => void;
-  onClearFilters: () => void;
-  onRefresh: () => void;
+  data: StaffRow[]
+  isLoading: boolean
+  total: number
+  page: number
+  pageSize: number
+  onPageChange: (page: number) => void
+  onPageSizeChange: (pageSize: number) => void
+  columnFilters: ColumnFiltersState
+  onColumnFiltersChange: OnChangeFn<ColumnFiltersState>
+  globalFilter: string
+  onGlobalFilterChange: OnChangeFn<string>
+  selectedRowIds: RowSelectionState
+  onSelectedRowIdsChange: OnChangeFn<RowSelectionState>
+  onRestore: (user: StaffRow) => void
+  onPurge: (user: StaffRow) => void
+  busy: boolean
+  onBulkRestore: (ids: string[]) => void
+  onBulkPurge: (ids: string[]) => void
+  onClearFilters: () => void
+  onRefresh: () => void
 }
 
 export function StaffTrashTable(props: StaffTrashTableProps) {
@@ -52,9 +56,9 @@ export function StaffTrashTable(props: StaffTrashTableProps) {
     onBulkPurge,
     onClearFilters,
     onRefresh,
-  } = props;
+  } = props
 
-  const columns = getTrashColumns({ onRestore, onPurge, busy });
+  const columns = getTrashColumns({ onRestore, onPurge, busy })
 
   const paginationFooter = (
     <AdminTablePaginationFooter
@@ -67,7 +71,7 @@ export function StaffTrashTable(props: StaffTrashTableProps) {
       emptySummary="Thùng rác trống hoặc không khớp tìm kiếm."
       itemLabel="tài khoản"
     />
-  );
+  )
 
   return (
     <AdminDataTable<StaffRow>
@@ -92,9 +96,9 @@ export function StaffTrashTable(props: StaffTrashTableProps) {
           label: "Khôi phục đã chọn",
           variant: "outline",
           onAction: async (rows) => {
-            const ids = rows.map((u) => String(u.id));
-            if (!ids.length) return;
-            await onBulkRestore(ids);
+            const ids = rows.map((u) => String(u.id))
+            if (!ids.length) return
+            await onBulkRestore(ids)
           },
         },
         {
@@ -102,9 +106,9 @@ export function StaffTrashTable(props: StaffTrashTableProps) {
           label: "Xóa vĩnh viễn đã chọn",
           variant: "destructive",
           onAction: async (rows) => {
-            const ids = rows.map((u) => String(u.id));
-            if (!ids.length) return;
-            await onBulkPurge(ids);
+            const ids = rows.map((u) => String(u.id))
+            if (!ids.length) return
+            await onBulkPurge(ids)
           },
         },
       ]}
@@ -121,11 +125,7 @@ export function StaffTrashTable(props: StaffTrashTableProps) {
             />
             Làm mới
           </Button>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={onClearFilters}
-          >
+          <Button type="button" variant="outline" onClick={onClearFilters}>
             <FilterX className="size-4" aria-hidden />
             Xóa bộ lọc
           </Button>
@@ -134,5 +134,5 @@ export function StaffTrashTable(props: StaffTrashTableProps) {
       csvExport={{ fileName: "nhan-su-thung-rac.csv" }}
       footer={paginationFooter}
     />
-  );
+  )
 }

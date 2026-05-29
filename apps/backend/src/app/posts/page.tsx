@@ -18,7 +18,9 @@ import {
   RefreshCw,
   Plus,
 } from "lucide-react";
+import { useAuth } from "@/providers/auth-provider";
 import { AdminPageGuard } from "@/components/admin-page-guard";
+import { PERMISSION_CODES, canUserAccess } from "@workspace/api-client";
 import { api } from "@/lib/api";
 import { PostsTable, PostsTrashTable } from "./_component/_table";
 import { PostsConfirmDialog } from "./_component/_alert-dialog";
@@ -62,6 +64,12 @@ import { TypographyH1 } from "@ui/components/typography";
 function PostsPageInner() {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const { user } = useAuth();
+  const canCreate = user ? canUserAccess(user, PERMISSION_CODES.POSTS_CREATE) : false;
+  const canUpdate = user ? canUserAccess(user, PERMISSION_CODES.POSTS_UPDATE) : false;
+  const canDelete = user ? canUserAccess(user, PERMISSION_CODES.POSTS_DELETE) : false;
+  const canRestore = user ? canUserAccess(user, PERMISSION_CODES.POSTS_RESTORE) : false;
+  const canExport = user ? canUserAccess(user, PERMISSION_CODES.POSTS_EXPORT) : false;
 
   const invalidateAll = async () => {
     await queryClient.invalidateQueries({ queryKey: ["media", "posts"] });
@@ -167,8 +175,10 @@ function PostsPageInner() {
         categoryTreeOptions,
         tagsOptions: tagsQuery.data ?? [],
         formatDateTime,
+        canUpdate,
+        canDelete,
       }),
-    [navigateToEdit, navigateToView, tagsQuery.data, categoryTreeOptions],
+    [navigateToEdit, navigateToView, tagsQuery.data, categoryTreeOptions, canUpdate, canDelete],
   );
 
   const trashColumns = useMemo<ColumnDef<PostListRow>[]>(
@@ -178,8 +188,10 @@ function PostsPageInner() {
         formatDateTime,
         categoryTreeOptions,
         tagsOptions: tagsQuery.data ?? [],
+        canRestore,
+        canDelete,
       }),
-    [setConfirmAction, categoryTreeOptions, tagsQuery.data],
+    [setConfirmAction, categoryTreeOptions, tagsQuery.data, canRestore, canDelete],
   );
 
   return (
@@ -198,7 +210,6 @@ function PostsPageInner() {
           <Button
             type="button"
             variant="outline"
-            className="flex h-12 items-center gap-2 rounded-lg border-outline-variant px-4 font-semibold hover:bg-muted"
             onClick={() => {
               void postsQuery.refetch();
               void trashQuery.refetch();
@@ -213,14 +224,15 @@ function PostsPageInner() {
             />
             Làm mới
           </Button>
-          <Button
-            type="button"
-            className="flex h-12 items-center gap-2 rounded-lg px-6 font-bold shadow-md"
-            onClick={() => router.push("/posts/new")}
-          >
-            <Plus className="size-5" />
-            Thêm bài viết
-          </Button>
+          {canCreate && (
+            <Button
+              type="button"
+              onClick={() => router.push("/posts/new")}
+            >
+              <Plus className="size-5" />
+              Thêm bài viết
+            </Button>
+          )}
         </div>
       </div>
 
@@ -229,14 +241,16 @@ function PostsPageInner() {
           <TabsTrigger value="list" className="rounded-lg px-4 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
             Danh sách
           </TabsTrigger>
-          <TabsTrigger value="trash" className="rounded-lg px-4 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-            Thùng rác
-            {(trashQuery.data?.total ?? 0) > 0 ? (
-              <Badge variant="secondary" className="ml-2 px-1.5 py-0 text-[10px] tabular-nums">
-                {trashQuery.data?.total}
-              </Badge>
-            ) : null}
-          </TabsTrigger>
+          {canRestore && (
+            <TabsTrigger value="trash" className="rounded-lg px-4 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              Thùng rác
+              {(trashQuery.data?.total ?? 0) > 0 ? (
+                <Badge variant="secondary" className="ml-2 px-1.5 py-0 text-[10px] tabular-nums">
+                  {trashQuery.data?.total}
+                </Badge>
+              ) : null}
+            </TabsTrigger>
+          )}
         </TabsList>
 
         <TabsContent value="list" className="mt-4 space-y-4">
@@ -276,6 +290,8 @@ function PostsPageInner() {
               toast.success(`Đã đưa ${ids.length} bài viết vào thùng rác`);
             }}
             isFetching={postsQuery.isFetching}
+            canExport={canExport}
+            canDelete={canDelete}
           />
         </TabsContent>
 
@@ -310,6 +326,9 @@ function PostsPageInner() {
               toast.success(`Đã xóa vĩnh viễn ${ids.length} bài viết`);
             }}
             isFetching={trashQuery.isFetching}
+            canExport={canExport}
+            canRestore={canRestore}
+            canDelete={canDelete}
           />
         </TabsContent>
       </Tabs>
@@ -333,7 +352,7 @@ function PostsPageInner() {
 
 export default function PostsPage() {
   return (
-    <AdminPageGuard roles={["super_admin", "admin", "manager"]}>
+    <AdminPageGuard permission={PERMISSION_CODES.POSTS_VIEW}>
       <PostsPageInner />
     </AdminPageGuard>
   );

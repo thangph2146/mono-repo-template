@@ -10,10 +10,11 @@ import { PARENT_STUDENT_STATUS_COLORS } from "./types";
 export interface ParentStudentsColumnsProps {
   onApprove: (row: ParentStudent) => void;
   onReject: (row: ParentStudent) => void;
+  canApprove: boolean;
 }
 
 export function getParentStudentsColumns(props: ParentStudentsColumnsProps): ColumnDef<ParentStudent>[] {
-  const { onApprove, onReject } = props;
+  const { onApprove, onReject, canApprove } = props;
 
   return [
     {
@@ -126,21 +127,25 @@ export function getParentStudentsColumns(props: ParentStudentsColumnsProps): Col
       enableColumnFilter: false,
       cell: ({ row }) => (
         <div className="flex items-center gap-2">
-          <Button
-            size="sm"
-            variant="default"
-            onClick={() => onApprove(row.original)}
-          >
-            <CheckCircle2 className="size-3.5" />
-            Duyệt
-          </Button>
-          <Button
-            variant="destructive"
-            onClick={() => onReject(row.original)}
-          >
-            <XCircle className="size-3.5" />
-            Từ chối
-          </Button>
+          {canApprove && (
+            <Button
+              size="sm"
+              variant="default"
+              onClick={() => onApprove(row.original)}
+            >
+              <CheckCircle2 className="size-3.5" />
+              Duyệt
+            </Button>
+          )}
+          {canApprove && (
+            <Button
+              variant="destructive"
+              onClick={() => onReject(row.original)}
+            >
+              <XCircle className="size-3.5" />
+              Từ chối
+            </Button>
+          )}
         </div>
       ),
     },

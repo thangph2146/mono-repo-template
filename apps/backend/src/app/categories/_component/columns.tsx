@@ -132,10 +132,12 @@ export function getTrashColumns({
   setConfirmAction,
   formatDateTime,
   categoryTreeOptions,
+  canWrite,
 }: {
   setConfirmAction: (action: { kind: "delete" | "restore" | "purge"; row: CategoryRow }) => void;
   formatDateTime: (date: string) => string;
   categoryTreeOptions: CategoryTreeOption[];
+  canWrite: boolean;
 }): ColumnDef<CategoryRow>[] {
   return [
     {
@@ -205,22 +207,26 @@ export function getTrashColumns({
       meta: { disableColumnFilter: true },
       cell: ({ row }) => (
         <div className="flex flex-wrap justify-end gap-1">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => setConfirmAction({ kind: "restore", row: row.original })}
-          >
-            <ArchiveRestore className="size-3.5" />
-            Khôi phục
-          </Button>
-          <Button
-            type="button"
-            variant="default"
-            onClick={() => setConfirmAction({ kind: "purge", row: row.original })}
-          >
-            <Trash2 className="size-3.5" />
-            Xóa hẳn
-          </Button>
+          {canWrite && (
+            <>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setConfirmAction({ kind: "restore", row: row.original })}
+              >
+                <ArchiveRestore className="size-3.5" />
+                Khôi phục
+              </Button>
+              <Button
+                type="button"
+                variant="default"
+                onClick={() => setConfirmAction({ kind: "purge", row: row.original })}
+              >
+                <Trash2 className="size-3.5" />
+                Xóa hẳn
+              </Button>
+            </>
+          )}
         </div>
       ),
     },

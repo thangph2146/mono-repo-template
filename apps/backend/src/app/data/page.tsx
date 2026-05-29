@@ -25,7 +25,8 @@ import { ADMIN_PAGE_TITLE_DOCUMENT_CLASS } from "@ui/lib/layout-shell";
 import { cn } from "@ui/lib/utils";
 import { readAdminSession } from "@/lib/auth-session";
 import { AdminPageGuard } from "@/components/admin-page-guard";
-import { DEFAULT_API_URL } from "@workspace/api-client";
+import { DEFAULT_API_URL, canUserAccess, PERMISSION_CODES } from "@workspace/api-client";
+import { useAuth } from "@/providers/auth-provider";
 import {
   Database,
   Download,
@@ -50,6 +51,9 @@ type ApiEnvelope<T> = {
 };
 
 function DataBackupPageInner() {
+  const { user } = useAuth();
+  const canExport = user ? canUserAccess(user, PERMISSION_CODES.SETTINGS_EXPORT) || canUserAccess(user, PERMISSION_CODES.SETTINGS_MANAGE) : false;
+  const canImport = user ? canUserAccess(user, PERMISSION_CODES.SETTINGS_IMPORT) || canUserAccess(user, PERMISSION_CODES.SETTINGS_MANAGE) : false;
   const [exporting, setExporting] = useState<"json" | "excel" | null>(null);
   const [importing, setImporting] = useState<"json" | "excel" | null>(null);
 
@@ -342,24 +346,26 @@ function DataBackupPageInner() {
                   Phù hợp import lại qua `POST /api/admin/system/import`.
                 </li>
               </ul>
-              <Button
-                type="button"
-                className="h-11 w-full gap-2 text-base font-semibold"
-                disabled={exportBusy}
-                onClick={() => void exportJson()}
-              >
-                {exporting === "json" ? (
-                  <>
-                    <Loader2 className="size-5 animate-spin" />
-                    Đang tạo file…
-                  </>
-                ) : (
-                  <>
-                    <Download className="size-5" />
-                    Xuất JSON
-                  </>
-                )}
-              </Button>
+              {canExport && (
+                <Button
+                  type="button"
+                  className="h-11 w-full gap-2 text-base font-semibold"
+                  disabled={exportBusy}
+                  onClick={() => void exportJson()}
+                >
+                  {exporting === "json" ? (
+                    <>
+                      <Loader2 className="size-5 animate-spin" />
+                      Đang tạo file…
+                    </>
+                  ) : (
+                    <>
+                      <Download className="size-5" />
+                      Xuất JSON
+                    </>
+                  )}
+                </Button>
+              )}
             </CardContent>
           </Card>
 
@@ -395,25 +401,27 @@ function DataBackupPageInner() {
                   Mỗi bảng hiện tại của hệ thống được tách thành sheet tương ứng.
                 </li>
               </ul>
-              <Button
-                type="button"
-                variant="default"
-                className="h-11 w-full gap-2 text-base font-semibold"
-                disabled={exportBusy}
-                onClick={() => void exportExcel()}
-              >
-                {exporting === "excel" ? (
-                  <>
-                    <Loader2 className="size-5 animate-spin" />
-                    Đang tạo workbook…
-                  </>
-                ) : (
-                  <>
-                    <Download className="size-5" />
-                    Xuất Excel
-                  </>
-                )}
-              </Button>
+              {canExport && (
+                <Button
+                  type="button"
+                  variant="default"
+                  className="h-11 w-full gap-2 text-base font-semibold"
+                  disabled={exportBusy}
+                  onClick={() => void exportExcel()}
+                >
+                  {exporting === "excel" ? (
+                    <>
+                      <Loader2 className="size-5 animate-spin" />
+                      Đang tạo workbook…
+                    </>
+                  ) : (
+                    <>
+                      <Download className="size-5" />
+                      Xuất Excel
+                    </>
+                  )}
+                </Button>
+              )}
             </CardContent>
           </Card>
         </div>
@@ -433,58 +441,62 @@ function DataBackupPageInner() {
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-6 sm:grid-cols-2">
-          <div className="space-y-2 rounded-lg border border-border bg-card p-4">
-            <Label className="flex items-center gap-2 text-base font-medium">
-              <FileJson className="size-4 text-sky-600" />
-              Import JSON
-            </Label>
-            <p className="text-muted-foreground text-xs">
-              Chọn file <code className="rounded bg-muted px-1">.json</code> đã xuất từ hệ thống.
-            </p>
-            <Input
-              type="file"
-              accept="application/json,.json"
-              disabled={importing !== null}
-              className="cursor-pointer file:mr-2 file:rounded-md file:border-0 file:bg-primary/10 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-primary hover:file:bg-primary/15"
-              onChange={(e) =>
-                void importJsonFile(e.target.files?.[0] ?? null).finally(() => {
-                  e.target.value = "";
-                })
-              }
-            />
-            {importing === "json" && (
-              <p className="text-muted-foreground flex items-center gap-2 text-sm">
-                <Loader2 className="size-4 animate-spin" />
-                Đang import…
+          {canImport && (
+            <div className="space-y-2 rounded-lg border border-border bg-card p-4">
+              <Label className="flex items-center gap-2 text-base font-medium">
+                <FileJson className="size-4 text-sky-600" />
+                Import JSON
+              </Label>
+              <p className="text-muted-foreground text-xs">
+                Chọn file <code className="rounded bg-muted px-1">.json</code> đã xuất từ hệ thống.
               </p>
-            )}
-          </div>
-          <div className="space-y-2 rounded-lg border border-border bg-card p-4">
-            <Label className="flex items-center gap-2 text-base font-medium">
-              <FileSpreadsheet className="size-4 text-emerald-600" />
-              Import Excel
-            </Label>
-            <p className="text-muted-foreground text-xs">
-              Chọn file <code className="rounded bg-muted px-1">.xlsx</code> do hệ thống export ra để import lại.
-            </p>
-            <Input
-              type="file"
-              accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-              disabled={importing !== null}
-              className="cursor-pointer file:mr-2 file:rounded-md file:border-0 file:bg-primary/10 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-primary hover:file:bg-primary/15"
-              onChange={(e) =>
-                void importExcelFile(e.target.files?.[0] ?? null).finally(() => {
-                  e.target.value = "";
-                })
-              }
-            />
-            {importing === "excel" && (
-              <p className="text-muted-foreground flex items-center gap-2 text-sm">
-                <Loader2 className="size-4 animate-spin" />
-                Đang import…
+              <Input
+                type="file"
+                accept="application/json,.json"
+                disabled={importing !== null}
+                className="cursor-pointer file:mr-2 file:rounded-md file:border-0 file:bg-primary/10 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-primary hover:file:bg-primary/15"
+                onChange={(e) =>
+                  void importJsonFile(e.target.files?.[0] ?? null).finally(() => {
+                    e.target.value = "";
+                  })
+                }
+              />
+              {importing === "json" && (
+                <p className="text-muted-foreground flex items-center gap-2 text-sm">
+                  <Loader2 className="size-4 animate-spin" />
+                  Đang import…
+                </p>
+              )}
+            </div>
+          )}
+          {canImport && (
+            <div className="space-y-2 rounded-lg border border-border bg-card p-4">
+              <Label className="flex items-center gap-2 text-base font-medium">
+                <FileSpreadsheet className="size-4 text-emerald-600" />
+                Import Excel
+              </Label>
+              <p className="text-muted-foreground text-xs">
+                Chọn file <code className="rounded bg-muted px-1">.xlsx</code> do hệ thống export ra để import lại.
               </p>
-            )}
-          </div>
+              <Input
+                type="file"
+                accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                disabled={importing !== null}
+                className="cursor-pointer file:mr-2 file:rounded-md file:border-0 file:bg-primary/10 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-primary hover:file:bg-primary/15"
+                onChange={(e) =>
+                  void importExcelFile(e.target.files?.[0] ?? null).finally(() => {
+                    e.target.value = "";
+                  })
+                }
+              />
+              {importing === "excel" && (
+                <p className="text-muted-foreground flex items-center gap-2 text-sm">
+                  <Loader2 className="size-4 animate-spin" />
+                  Đang import…
+                </p>
+              )}
+            </div>
+          )}
         </CardContent>
       </Card>
     </PageSection>

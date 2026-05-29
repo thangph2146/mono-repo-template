@@ -1,26 +1,31 @@
-"use client";
+"use client"
 
-import type { ColumnDef, ColumnFiltersState, OnChangeFn, RowSelectionState } from "@tanstack/react-table";
-import { Button } from "@ui/components/button";
-import { AdminDataTable } from "@/components/admin-data-table";
-import { RefreshCw, FilterX } from "lucide-react";
-import type { AcademicYearRow } from "../types";
+import type {
+  ColumnDef,
+  ColumnFiltersState,
+  OnChangeFn,
+  RowSelectionState,
+} from "@tanstack/react-table"
+import { Button } from "@ui/components/button"
+import { AdminDataTable } from "@/components/admin-data-table"
+import { RefreshCw, FilterX } from "lucide-react"
+import type { AcademicYearRow } from "../types"
 
 export interface AcademicYearsTableProps {
-  data: AcademicYearRow[];
-  columns: ColumnDef<AcademicYearRow>[];
-  isLoading: boolean;
-  columnFilters: ColumnFiltersState;
-  onColumnFiltersChange: OnChangeFn<ColumnFiltersState>;
-  globalFilter: string;
-  onGlobalFilterChange: OnChangeFn<string>;
-  selectedRowIds: RowSelectionState;
-  onSelectedRowIdsChange: OnChangeFn<RowSelectionState>;
-  total: number;
-  onRefresh: () => void;
-  onClearFilters: () => void;
-  onBulkDelete: (rows: AcademicYearRow[]) => Promise<void>;
-  isFetching?: boolean;
+  data: AcademicYearRow[]
+  columns: ColumnDef<AcademicYearRow>[]
+  isLoading: boolean
+  columnFilters: ColumnFiltersState
+  onColumnFiltersChange: OnChangeFn<ColumnFiltersState>
+  globalFilter: string
+  onGlobalFilterChange: OnChangeFn<string>
+  selectedRowIds: RowSelectionState
+  onSelectedRowIdsChange: OnChangeFn<RowSelectionState>
+  total: number
+  onRefresh: () => void
+  onClearFilters: () => void
+  onBulkDelete: (rows: AcademicYearRow[]) => Promise<void>
+  isFetching?: boolean
 }
 
 export function AcademicYearsTable({
@@ -55,8 +60,17 @@ export function AcademicYearsTable({
       globalFilterPlaceholder="Tìm theo tên..."
       filterToolbarExtra={
         <div className="flex flex-wrap items-center gap-2">
-          <Button type="button" variant="outline" onClick={() => { void onRefresh(); }}>
-            <RefreshCw className={isFetching ? "size-4 animate-spin" : "size-4"} aria-hidden />
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => {
+              void onRefresh()
+            }}
+          >
+            <RefreshCw
+              className={isFetching ? "size-4 animate-spin" : "size-4"}
+              aria-hidden
+            />
             Làm mới
           </Button>
           <Button type="button" variant="destructive" onClick={onClearFilters}>
@@ -92,5 +106,5 @@ export function AcademicYearsTable({
         </div>
       }
     />
-  );
+  )
 }

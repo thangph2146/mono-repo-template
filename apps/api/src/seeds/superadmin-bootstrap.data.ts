@@ -267,6 +267,23 @@ export const SUPERADMIN_ROLES_DATA = [
     permissions: null,
     isActive: true,
   },
+  {
+    id: 'cmy000000000student0000001',
+    name: 'student',
+    displayName: 'Sinh viên',
+    description:
+      'Tài khoản sinh viên — xem thông tin cá nhân, thông báo và bài viết',
+    permissions: [
+      'dashboard:view',
+      'students:view_own',
+      'notifications:view_own',
+      'messages:view_own',
+      'posts:view',
+      'accounts:view',
+      'accounts:update',
+    ],
+    isActive: true,
+  },
 ];
 
 // User data
@@ -333,6 +350,18 @@ export const SUPERADMIN_USERS_DATA = [
     address: null,
     isActive: true,
   },
+  {
+    id: 'cmy000000000studentuser0001',
+    email: 'student@hub.edu.vn',
+    name: 'Nguyễn Văn A',
+    password: DEV_LOGIN_PASSWORD_HASH,
+    bio: null,
+    avatar: null,
+    emailVerified: null,
+    phone: '0123456789',
+    address: 'Khu phố 6, Thủ Đức, TP.HCM',
+    isActive: true,
+  },
 ];
 
 // UserRole data
@@ -361,5 +390,10 @@ export const SUPERADMIN_USER_ROLES_DATA = [
     id: 'cmnzozi2t009nyrj8gj2phwnf',
     userId: 'cmnzoz4oi009hyrj8fto16kbz',
     roleId: 'cmmylgrxq004wldj8uofhzeen',
+  },
+  {
+    id: 'cmy000000000studentrolelink1',
+    userId: 'cmy000000000studentuser0001',
+    roleId: 'cmy000000000student0000001',
   },
 ];

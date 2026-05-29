@@ -9,6 +9,8 @@ import { Badge } from "@ui/components/badge";
 import { Button } from "@ui/components/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@ui/components/card";
 import { AdminPageGuard } from "@/components/admin-page-guard";
+import { useAuth } from "@/providers/auth-provider";
+import { PERMISSION_CODES, canUserAccess } from "@workspace/api-client";
 import { api } from "@/lib/api";
 import { useDepartmentDetailQuery } from "../_component";
 import { TypographyH1 } from "@ui/components/typography";
@@ -27,6 +29,8 @@ function DepartmentDetailInner() {
   const router = useRouter();
   const params = useParams();
   const id = params.id as string;
+  const { user } = useAuth();
+  const canUpdate = user ? canUserAccess(user, PERMISSION_CODES.DEPARTMENTS_UPDATE) : false;
 
   const { data: entity, isLoading, isError } = useDepartmentDetailQuery(api, id);
 
@@ -66,6 +70,7 @@ function DepartmentDetailInner() {
             </p>
           </div>
         </div>
+        {canUpdate && (
         <Button
           type="button"
           variant="default"
@@ -75,6 +80,7 @@ function DepartmentDetailInner() {
           <Pencil className="size-4" />
           Chỉnh sửa
         </Button>
+        )}
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3 my-6">

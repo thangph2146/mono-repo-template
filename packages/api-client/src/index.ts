@@ -13,6 +13,13 @@ export {
   type PermissionCode,
 } from './permissions';
 export { ApiClient, ApiError } from './client';
+export {
+  summarizeAuthUser,
+  printDevApiCall,
+  formatDevRequestBody,
+  formatDevResponsePayload,
+  buildDevLogResponseJson,
+} from './dev-log-format';
 export type { ApiClientOptions, RequestOptions } from './client';
 export { UsersApi } from './resources/users';
 export { PostsApi } from './resources/posts';

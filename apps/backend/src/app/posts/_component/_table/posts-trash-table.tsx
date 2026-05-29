@@ -32,6 +32,9 @@ export interface PostsTrashTableProps {
   onBulkRestore: (rows: PostListRow[]) => Promise<void>
   onBulkPurge: (rows: PostListRow[]) => Promise<void>
   isFetching?: boolean
+  canExport?: boolean
+  canRestore?: boolean
+  canDelete?: boolean
 }
 
 export function PostsTrashTable({
@@ -54,6 +57,9 @@ export function PostsTrashTable({
   onBulkRestore,
   onBulkPurge,
   isFetching,
+  canExport,
+  canRestore,
+  canDelete,
 }: PostsTrashTableProps) {
   return (
     <AdminDataTable<PostListRow>
@@ -89,37 +95,45 @@ export function PostsTrashTable({
           </Button>
         </div>
       }
-      csvExport={{ fileName: "bai-viet-thung-rac.csv" }}
-      rowSelectionEnabled
+      csvExport={canExport ? { fileName: "bai-viet-thung-rac.csv" } : undefined}
+      rowSelectionEnabled={!!canRestore || !!canDelete}
       selectedRowIds={selectedRowIds}
       onSelectedRowIdsChange={onSelectedRowIdsChange}
       bulkActions={[
-        {
-          id: "bulk-post-restore",
-          label: "Khôi phục đã chọn",
-          variant: "default",
-          confirm: {
-            title: "Khôi phục các bài viết đã chọn?",
-            description: (rows) =>
-              `Bạn đã chọn ${rows.length} bài viết. Các bài viết sẽ được khôi phục về danh sách đang hoạt động.`,
-            confirmLabel: "Khôi phục",
-            destructive: false,
-          },
-          onAction: onBulkRestore,
-        },
-        {
-          id: "bulk-post-purge",
-          label: "Xóa vĩnh viễn đã chọn",
-          variant: "destructive",
-          confirm: {
-            title: "Xóa vĩnh viễn các bài viết đã chọn?",
-            description: (rows) =>
-              `Bạn đã chọn ${rows.length} bài viết. Hành động này không thể hoàn tác!`,
-            confirmLabel: "Xóa vĩnh viễn",
-            destructive: true,
-          },
-          onAction: onBulkPurge,
-        },
+        ...(canRestore
+          ? [
+              {
+                id: "bulk-post-restore" as const,
+                label: "Khôi phục đã chọn",
+                variant: "default" as const,
+                confirm: {
+                  title: "Khôi phục các bài viết đã chọn?",
+                  description: (rows: PostListRow[]) =>
+                    `Bạn đã chọn ${rows.length} bài viết. Các bài viết sẽ được khôi phục về danh sách đang hoạt động.`,
+                  confirmLabel: "Khôi phục",
+                  destructive: false,
+                },
+                onAction: onBulkRestore,
+              },
+            ]
+          : []),
+        ...(canDelete
+          ? [
+              {
+                id: "bulk-post-purge" as const,
+                label: "Xóa vĩnh viễn đã chọn",
+                variant: "destructive" as const,
+                confirm: {
+                  title: "Xóa vĩnh viễn các bài viết đã chọn?",
+                  description: (rows: PostListRow[]) =>
+                    `Bạn đã chọn ${rows.length} bài viết. Hành động này không thể hoàn tác!`,
+                  confirmLabel: "Xóa vĩnh viễn",
+                  destructive: true,
+                },
+                onAction: onBulkPurge,
+              },
+            ]
+          : []),
       ]}
       footer={
         <AdminTablePaginationFooter

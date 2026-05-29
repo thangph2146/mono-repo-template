@@ -13,6 +13,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@ui/components/tabs"
 import { PageSection } from "@ui/components/layout"
 import { AdminPageGuard } from "@/components/admin-page-guard"
 import { useContactRequests } from "@/hooks/queries"
+import { canUserAccess, PERMISSION_CODES } from "@workspace/api-client"
+import { useAuth } from "@/providers/auth-provider"
 import {
   buildAdminFilterQuery,
   COMMON_FILTER_MAPPINGS,
@@ -42,6 +44,10 @@ import { TypographyH1 } from "@ui/components/typography"
 import { cn } from "@ui/lib/utils"
 
 function ContactRequestsPageInner() {
+  const { user } = useAuth();
+  const canUpdate = user ? canUserAccess(user, PERMISSION_CODES.CONTACT_REQUESTS_UPDATE) : false;
+  const canDelete = user ? canUserAccess(user, PERMISSION_CODES.CONTACT_REQUESTS_DELETE) : false;
+  const canRestore = user ? canUserAccess(user, PERMISSION_CODES.CONTACT_REQUESTS_RESTORE) : false;
   const router = useRouter()
 
   const [tab, setTab] = useState<"list" | "trash">("list")
@@ -294,6 +300,8 @@ function ContactRequestsPageInner() {
             onEdit={handleEdit}
             onDelete={handleDelete}
             busy={busy}
+            canUpdate={canUpdate}
+            canDelete={canDelete}
             onBulkDelete={handleBulkDelete}
             onClearFilters={handleClearListFilters}
           />
@@ -317,6 +325,8 @@ function ContactRequestsPageInner() {
             onRestore={handleRestore}
             onPurge={handlePurge}
             busy={busy}
+            canRestore={canRestore}
+            canDelete={canDelete}
             onBulkRestore={handleBulkRestore}
             onBulkPurge={handleBulkPurge}
             onClearFilters={handleClearTrashFilters}

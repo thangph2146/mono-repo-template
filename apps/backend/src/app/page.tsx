@@ -23,7 +23,7 @@ import {
   ADMIN_PAGE_TITLE_ICON_CLASS,
   ADMIN_PAGE_TITLE_PRIMARY_CLASS,
 } from "@ui/lib/layout-shell"
-import { PERMISSION_CODES } from "@workspace/api-client"
+import { canUserAccess, PERMISSION_CODES } from "@workspace/api-client"
 import { useAuth } from "@/providers/auth-provider"
 import { api } from "@/lib/api"
 import type { DashboardStatsDto, DashboardOverviewDto } from "@/types/dashboard"
@@ -250,6 +250,46 @@ export default function AdminDashboardPage() {
           )}
         </div>
       </div>
+
+      {/* Quick links */}
+      {(() => {
+        const visible = QUICK_LINKS.filter(
+          (item) => !item.permission || (user && canUserAccess(user, item.permission))
+        )
+        if (visible.length === 0) return null
+        return (
+          <div>
+            <div className="mb-3 flex items-center gap-2 text-sm font-semibold tracking-wide text-muted-foreground uppercase">
+              <TrendingUp className="size-4" aria-hidden />
+              Truy cập nhanh
+            </div>
+            <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+              {visible.map((item) => {
+                const Icon = item.icon
+                return (
+                  <Link key={item.href} href={item.href} className="group block">
+                    <Card className="transition-all duration-200 group-hover:border-primary/30 hover:-translate-y-px hover:shadow-md">
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium text-muted-foreground">
+                          {item.label}
+                        </CardTitle>
+                        <div className="flex size-8 items-center justify-center rounded-lg bg-muted/50">
+                          <Icon className="size-4" />
+                        </div>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-xs text-muted-foreground">
+                          {item.description}
+                        </p>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                )
+              })}
+            </div>
+          </div>
+        )
+      })()}
 
       {/* Charts */}
       {data && (data.monthlyData?.length ?? 0) > 0 && (

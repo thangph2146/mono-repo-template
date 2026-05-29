@@ -21,6 +21,8 @@ import { Badge } from "@ui/components/badge"
 import { Button } from "@ui/components/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@ui/components/card"
 import { AdminPageGuard } from "@/components/admin-page-guard"
+import { useAuth } from "@/providers/auth-provider"
+import { PERMISSION_CODES, canUserAccess } from "@workspace/api-client"
 import { api } from "@/lib/api"
 import { useSpeakerDetailQuery } from "../_component"
 import { TypographyH1, TypographyH2 } from "@ui/components/typography"
@@ -46,6 +48,8 @@ function SpeakerDetailInner() {
   const router = useRouter()
   const params = useParams()
   const id = params.id as string
+  const { user } = useAuth()
+  const canUpdate = user ? canUserAccess(user, PERMISSION_CODES.SPEAKERS_UPDATE) : false
 
   const { data: entity, isLoading, isError } = useSpeakerDetailQuery(api, id)
 
@@ -91,6 +95,7 @@ function SpeakerDetailInner() {
             </p>
           </div>
           </div>
+          {canUpdate && (
           <Button
             type="button"
             variant="default"
@@ -99,6 +104,7 @@ function SpeakerDetailInner() {
             <Pencil className="size-4" />
             Chỉnh sửa
           </Button>
+          )}
         </div>
       </div>
 

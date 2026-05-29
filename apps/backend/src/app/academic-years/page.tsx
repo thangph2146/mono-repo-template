@@ -139,13 +139,14 @@ function AcademicYearsPageInner() {
       openDetail: (row) => router.push(`/academic-years/${row.id}`),
       openEdit: (row) => router.push(`/academic-years/${row.id}/edit`),
       setConfirmAction,
+      canWrite,
     }),
-    [setConfirmAction, router],
+    [setConfirmAction, router, canWrite],
   );
 
   const trashColumns = useMemo<ColumnDef<AcademicYearRow>[]>(
-    () => getTrashColumns({ setConfirmAction }),
-    [setConfirmAction],
+    () => getTrashColumns({ setConfirmAction, canWrite }),
+    [setConfirmAction, canWrite],
   );
 
   return (
@@ -169,7 +170,6 @@ function AcademicYearsPageInner() {
           <Button
             type="button"
             variant="outline"
-            className="border-outline-variant flex h-12 items-center gap-2 rounded-lg px-4 font-semibold hover:bg-muted"
             onClick={() => { void listQuery.refetch(); void trashQuery.refetch(); }}
           >
             <RefreshCw
@@ -182,7 +182,6 @@ function AcademicYearsPageInner() {
             <Button
               type="button"
               onClick={() => router.push("/academic-years/new")}
-              className="flex h-12 items-center gap-2 rounded-lg px-6 font-bold shadow-md"
             >
               <Plus className="size-5" aria-hidden /> Thêm niên khóa
             </Button>

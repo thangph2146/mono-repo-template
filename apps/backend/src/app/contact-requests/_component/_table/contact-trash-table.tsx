@@ -75,6 +75,8 @@ interface ContactRequestTrashTableProps {
   onRestore: (contact: ContactRequest) => void;
   onPurge: (contact: ContactRequest) => void;
   busy: boolean;
+  canRestore?: boolean;
+  canDelete?: boolean;
   onBulkRestore: (ids: string[]) => void;
   onBulkPurge: (ids: string[]) => void;
   onClearFilters: () => void;
@@ -98,12 +100,14 @@ export function ContactRequestTrashTable(props: ContactRequestTrashTableProps) {
     onRestore,
     onPurge,
     busy,
+    canRestore,
+    canDelete,
     onBulkRestore,
     onBulkPurge,
     onClearFilters,
   } = props;
 
-  const columns = getTrashColumns({ onRestore, onPurge, busy });
+  const columns = getTrashColumns({ onRestore, onPurge, busy, canRestore, canDelete });
 
   const handleCsvExport = () => {
     const { headers, rows } = buildCustomExportData(data);
@@ -146,26 +150,34 @@ export function ContactRequestTrashTable(props: ContactRequestTrashTableProps) {
       selectedRowIds={selectedRowIds}
       onSelectedRowIdsChange={onSelectedRowIdsChange}
       bulkActions={[
-        {
-          id: "bulk-contact-restore",
-          label: "Khôi phục đã chọn",
-          variant: "default",
-          onAction: async (rows) => {
-            const ids = rows.map((c) => String(c.id));
-            if (!ids.length) return;
-            await onBulkRestore(ids);
-          },
-        },
-        {
-          id: "bulk-contact-purge",
-          label: "Xóa hẳn đã chọn",
-          variant: "destructive",
-          onAction: async (rows) => {
-            const ids = rows.map((c) => String(c.id));
-            if (!ids.length) return;
-            await onBulkPurge(ids);
-          },
-        },
+        ...(canRestore
+          ? [
+              {
+                id: "bulk-contact-restore" as const,
+                label: "Khôi phục đã chọn",
+                variant: "default" as const,
+                onAction: async (rows: ContactRequest[]) => {
+                  const ids = rows.map((c) => String(c.id));
+                  if (!ids.length) return;
+                  await onBulkRestore(ids);
+                },
+              },
+            ]
+          : []),
+        ...(canDelete
+          ? [
+              {
+                id: "bulk-contact-purge" as const,
+                label: "Xóa hẳn đã chọn",
+                variant: "destructive" as const,
+                onAction: async (rows: ContactRequest[]) => {
+                  const ids = rows.map((c) => String(c.id));
+                  if (!ids.length) return;
+                  await onBulkPurge(ids);
+                },
+              },
+            ]
+          : []),
       ]}
       filterToolbarExtra={
         <div className="flex flex-wrap items-end gap-2">

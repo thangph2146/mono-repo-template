@@ -19,11 +19,12 @@ function formatDate(value: string | null | undefined): string {
 }
 
 export function getEventColumns({
-  openDetail, openEdit, setConfirmAction,
+  openDetail, openEdit, setConfirmAction, canWrite,
 }: {
   openDetail: (row: EventRow) => void;
   openEdit: (row: EventRow) => void;
   setConfirmAction: (action: EventConfirmAction) => void;
+  canWrite: boolean;
 }): ColumnDef<EventRow>[] {
   return [
     {
@@ -132,12 +133,16 @@ export function getEventColumns({
           <Button type="button" variant="default" onClick={() => openDetail(row.original)}>
             <Eye className="size-3.5" /> Xem
           </Button>
-          <Button type="button" variant="outline" onClick={() => openEdit(row.original)}>
-            <Pencil className="size-3.5" /> Sửa
-          </Button>
-          <Button type="button" variant="destructive" onClick={() => setConfirmAction({ kind: "delete", row: row.original })}>
-            <Trash2 className="size-3.5" /> Xóa tạm
-          </Button>
+          {canWrite && (
+            <Button type="button" variant="outline" onClick={() => openEdit(row.original)}>
+              <Pencil className="size-3.5" /> Sửa
+            </Button>
+          )}
+          {canWrite && (
+            <Button type="button" variant="destructive" onClick={() => setConfirmAction({ kind: "delete", row: row.original })}>
+              <Trash2 className="size-3.5" /> Xóa tạm
+            </Button>
+          )}
         </div>
       ),
     },
@@ -146,8 +151,10 @@ export function getEventColumns({
 
 export function getTrashColumns({
   setConfirmAction,
+  canWrite,
 }: {
   setConfirmAction: (action: EventConfirmAction) => void;
+  canWrite: boolean;
 }): ColumnDef<EventRow>[] {
   return [
     { accessorKey: "title", header: "Sự kiện", enableColumnFilter: false },
@@ -175,12 +182,16 @@ export function getTrashColumns({
       enableColumnFilter: false,
       cell: ({ row }) => (
         <div className="flex flex-wrap gap-1">
-          <Button type="button" variant="outline" onClick={() => setConfirmAction({ kind: "restore", row: row.original })}>
-            <ArchiveRestore className="size-3.5" /> Khôi phục
-          </Button>
-          <Button type="button" variant="destructive" onClick={() => setConfirmAction({ kind: "purge", row: row.original })}>
-            <Trash2 className="size-3.5" /> Xóa vĩnh viễn
-          </Button>
+          {canWrite && (
+            <Button type="button" variant="outline" onClick={() => setConfirmAction({ kind: "restore", row: row.original })}>
+              <ArchiveRestore className="size-3.5" /> Khôi phục
+            </Button>
+          )}
+          {canWrite && (
+            <Button type="button" variant="destructive" onClick={() => setConfirmAction({ kind: "purge", row: row.original })}>
+              <Trash2 className="size-3.5" /> Xóa vĩnh viễn
+            </Button>
+          )}
         </div>
       ),
     },

@@ -150,6 +150,10 @@ function AdminProfilePageInner() {
     [profile?.roles, sessionUser?.roles],
   );
   const email = profile?.email ?? sessionUser?.email ?? "";
+  const isStudent = roles.some(
+    (r) => getRoleCode(r).trim().toLowerCase() === "student",
+  );
+  const canChangeAvatar = !isStudent || !avatar;
   const permissionCodes = normalizePermissionCodes(sessionUser?.permissions ?? []);
   const permissionRows = useMemo(() => {
     const assignedRoleCodes = new Set(
@@ -539,7 +543,7 @@ function AdminProfilePageInner() {
                   <button
                     type="button"
                     onClick={() => avatarInputRef.current?.click()}
-                    disabled={uploadingAvatar}
+                    disabled={uploadingAvatar || !canChangeAvatar}
                     className="absolute -bottom-1 -right-1 flex size-7 items-center justify-center rounded-full border border-border bg-background shadow-sm hover:bg-accent disabled:opacity-50"
                     title="Tải ảnh đại diện"
                   >
@@ -555,6 +559,7 @@ function AdminProfilePageInner() {
                       if (file) void handleUploadAvatar(file);
                     }}
                   />
+                 
                 </div>
                 <div className="min-w-0 flex-1 space-y-1">
                   <Label htmlFor="admin-avatar-url">URL ảnh đại diện</Label>
@@ -562,10 +567,15 @@ function AdminProfilePageInner() {
                     id="admin-avatar-url"
                     value={avatar}
                     onChange={(e) => setAvatar(e.target.value)}
-                    disabled={isLoading || !profile}
+                    disabled={isLoading || !profile || !canChangeAvatar}
                     placeholder="https://example.com/avatar.jpg"
                     className={PROFILE_FIELD_CLASS}
                   />
+                   {isStudent && avatar && (
+                    <p className="mt-2 text-xs text-muted-foreground">
+                      Bạn chỉ được tải ảnh đại diện một lần.
+                    </p>
+                  )}
                 </div>
               </div>
               <div className="space-y-2">
