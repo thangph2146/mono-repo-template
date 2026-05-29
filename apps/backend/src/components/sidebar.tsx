@@ -1,10 +1,12 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { useQuery } from "@tanstack/react-query"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import {
   ShieldCheck,
+  Cog,
   Database,
   LayoutDashboard,
   Tags,
@@ -46,6 +48,7 @@ import {
   type PermissionCode,
 } from "@workspace/api-client"
 import { useAuth } from "@/providers/auth-provider"
+import { api } from "@/lib/api"
 import type { AuthUser } from "@/lib/api"
 
 type MenuLeaf = {
@@ -297,6 +300,12 @@ const menuTree: MenuTreeItem[] = [
     icon: Database,
     children: [
       {
+        href: "/settings",
+        label: "Cài đặt chung",
+        icon: Cog,
+        permission: PERMISSION_CODES.SETTINGS_MANAGE,
+      },
+      {
         href: "/data",
         label: "Sao lưu dữ liệu",
         icon: Database,
@@ -366,6 +375,40 @@ export function getVisibleMenuItems(user: AuthUser | null): MenuTreeItem[] {
     acc.push({ ...item, children })
     return acc
   }, [])
+}
+
+function useSiteConfig() {
+  const { data } = useQuery({
+    queryKey: ["settings", "site-config"],
+    queryFn: async () => {
+      const [nameRes, descRes] = await Promise.all([
+        api.http.get("/admin/settings/site_name"),
+        api.http.get("/admin/settings/site_description"),
+      ])
+      const extract = (res: unknown, fallback: string): string => {
+        const e = res as { data?: { value?: unknown }; value?: unknown }
+        const raw = e.data?.value ?? e.value
+        if (typeof raw === "string") {
+          try {
+            const parsed = JSON.parse(raw)
+            return typeof parsed === "string" ? parsed : raw
+          } catch {
+            return raw
+          }
+        }
+        return fallback
+      }
+      return {
+        siteName: extract(nameRes, "HUB Parent"),
+        siteDescription: extract(descRes, "Quản trị hệ thống"),
+      }
+    },
+    staleTime: 5 * 60 * 1000,
+  })
+  return {
+    siteName: data?.siteName ?? "HUB Parent",
+    siteDescription: data?.siteDescription ?? "Quản trị hệ thống",
+  }
 }
 
 function displayNameOf(user: AuthUser | null): string {
@@ -654,6 +697,7 @@ export function SidebarNavLinks({
 /** Menu dạng drawer cho màn hình nhỏ (Sheet). */
 export function MobileSidebarPanel({ onNavigate }: { onNavigate: () => void }) {
   const { user, logout } = useAuth()
+  const { siteName, siteDescription } = useSiteConfig()
   const displayName = displayNameOf(user)
   const roleText = roleSummaryOf(user)
   const avatarUrl = user?.image?.trim() || null
@@ -671,9 +715,9 @@ export function MobileSidebarPanel({ onNavigate }: { onNavigate: () => void }) {
           </div>
           <div className="min-w-0">
             <p className="truncate font-heading text-xl font-bold tracking-tight text-white">
-              HUB Parent
+              {siteName}
             </p>
-            <p className="truncate text-sm text-white/72">Quản trị hệ thống</p>
+            <p className="truncate text-sm text-white/72">{siteDescription}</p>
           </div>
         </Link>
       </div>
@@ -729,6 +773,7 @@ type SidebarProps = {
 
 export function Sidebar({ collapsed }: SidebarProps) {
   const { logout } = useAuth()
+  const { siteName, siteDescription } = useSiteConfig()
 
   return (
     <aside
@@ -759,10 +804,10 @@ export function Sidebar({ collapsed }: SidebarProps) {
           {!collapsed && (
             <div className="min-w-0">
               <p className="truncate font-heading text-[1.7rem] font-bold tracking-tight text-white">
-                HUB Parent
+                {siteName}
               </p>
               <p className="truncate text-sm text-white/72">
-                Quản trị hệ thống
+                {siteDescription}
               </p>
             </div>
           )}

@@ -6,11 +6,9 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import {
   AlertCircle,
   ArchiveRestore,
-  Cog,
   Loader2,
   Plus,
   RefreshCw,
-  Save,
   Shield,
   Trash2,
 } from "lucide-react"
@@ -19,7 +17,6 @@ import { Badge } from "@ui/components/badge"
 import { Button } from "@ui/components/button"
 import {
   Card,
-  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
@@ -413,34 +410,6 @@ export default function RbacPage() {
     onSuccess: invalidateRoles,
   })
 
-  const defaultRoleQuery = useQuery({
-    queryKey: ["settings", "default_new_user_role"],
-    queryFn: async (): Promise<string> => {
-      const res = await api.http.get("/admin/settings/default_new_user_role")
-      const envelope = res as { data?: { value?: string }; value?: string }
-      if (envelope.data?.value && typeof envelope.data.value === "string")
-        return envelope.data.value
-      if (envelope.value && typeof envelope.value === "string")
-        return envelope.value
-      return "parent"
-    },
-    enabled: Boolean(session) && canReadRbac,
-  })
-  const [pendingDefaultRole, setPendingDefaultRole] = useState<string | null>(
-    null
-  )
-  const defaultRoleMutation = useMutation({
-    mutationFn: async (roleCode: string) =>
-      api.http.put(`/admin/settings/default_new_user_role`, {
-        value: roleCode,
-      }),
-    onSuccess: () => {
-      void defaultRoleQuery.refetch()
-      toast.success("Đã cập nhật role mặc định cho tài khoản mới")
-    },
-    onError: () => toast.error("Không lưu được cài đặt"),
-  })
-
   const listItems = useMemo(
     () => listQuery.data?.items ?? [],
     [listQuery.data?.items]
@@ -692,63 +661,6 @@ export default function RbacPage() {
             ) : null}
           </div>
         </div>
-
-        <Card className="border border-border/70 bg-card/95 shadow-sm">
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2 text-base font-semibold">
-              <Cog className="size-4 text-muted-foreground" />
-              Cài đặt
-            </CardTitle>
-            <CardDescription>
-              Role mặc định gán cho tài khoản mới lần đầu đăng nhập (kể cả
-              Google).
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-end gap-3">
-              <div className="min-w-[14rem] space-y-1">
-                <Label htmlFor="default-new-user-role">Role mặc định</Label>
-                <select
-                  id="default-new-user-role"
-                  value={
-                    pendingDefaultRole ?? defaultRoleQuery.data ?? "parent"
-                  }
-                  onChange={(e) => setPendingDefaultRole(e.target.value)}
-                  className="flex h-9 w-full rounded-lg border border-input bg-transparent px-2.5 py-1 text-sm"
-                >
-                  {listItems
-                    .filter((role) => !isSuperAdminRoleCode(role.code))
-                    .map((role) => (
-                      <option key={role.id} value={role.code}>
-                        {role.name}
-                      </option>
-                    ))}
-                </select>
-              </div>
-              <Button
-                type="button"
-                size="sm"
-                className="h-9 rounded-lg"
-                disabled={
-                  !pendingDefaultRole ||
-                  pendingDefaultRole === defaultRoleQuery.data ||
-                  defaultRoleMutation.isPending
-                }
-                onClick={() => {
-                  if (pendingDefaultRole)
-                    void defaultRoleMutation.mutateAsync(pendingDefaultRole)
-                }}
-              >
-                {defaultRoleMutation.isPending ? (
-                  <Loader2 className="size-3.5 animate-spin" />
-                ) : (
-                  <Save className="size-3.5" />
-                )}
-                Lưu
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
 
         <Tabs
           value={tab}
