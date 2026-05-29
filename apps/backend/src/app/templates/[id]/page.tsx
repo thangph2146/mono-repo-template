@@ -12,9 +12,13 @@ import { api } from "@/lib/api";
 import { useTemplateDetailQuery } from "../_component";
 import { TypographyH1 } from "@ui/components/typography";
 import { ADMIN_PAGE_SUBTITLE_CLASS, ADMIN_PAGE_TITLE_PRIMARY_CLASS } from "@ui/lib/layout-shell";
+import { useAuth } from "@/providers/auth-provider";
+import { canUserAccess, PERMISSION_CODES } from "@workspace/api-client";
 function fmt(v: string | null | undefined): string { if (!v) return "—"; const d = new Date(v); return Number.isNaN(d.getTime()) ? "—" : d.toLocaleString("vi-VN"); }
 function DetailInner() {
   const router = useRouter(), params = useParams(), id = params.id as string;
+  const { user } = useAuth();
+  const canUpdate = user ? canUserAccess(user, PERMISSION_CODES.TEMPLATES_UPDATE) : false;
   const { data: e, isLoading, isError } = useTemplateDetailQuery(api, id);
   useEffect(() => { if (isError) { toast.error("Không tải được mẫu"); router.push("/templates"); } }, [isError, router]);
   if (isLoading) return <PageSection max="full" className="min-w-0 flex items-center justify-center py-24"><Loader2 className="size-8 animate-spin text-muted-foreground" /></PageSection>;
@@ -22,7 +26,7 @@ function DetailInner() {
   return (<PageSection max="full" className="min-w-0 space-y-6">
     <div className="flex flex-wrap items-center justify-between gap-3">
       <div className="flex items-center gap-3"><Button variant="outline" className="gap-1" onClick={() => router.push("/templates")}><ArrowLeft className="size-4" /> Quay lại</Button><div><TypographyH1 className={ADMIN_PAGE_TITLE_PRIMARY_CLASS}>{e.name}</TypographyH1><p className={ADMIN_PAGE_SUBTITLE_CLASS}>Mẫu hiển thị</p></div></div>
-      <Button variant="default" className="gap-2 rounded-lg px-5 font-semibold" onClick={() => router.push(`/templates/${id}/edit`)}><Pencil className="size-4" /> Chỉnh sửa</Button>
+      {canUpdate && <Button variant="default" className="gap-2 rounded-lg px-5 font-semibold" onClick={() => router.push(`/templates/${id}/edit`)}><Pencil className="size-4" /> Chỉnh sửa</Button>}
     </div>
     <div className="grid gap-6 lg:grid-cols-3 my-6">
       <div className="space-y-6 lg:col-span-2">
