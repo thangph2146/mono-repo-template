@@ -31,6 +31,7 @@ import {
   CalendarDays,
   CalendarPlus,
   Camera,
+  Search,
   LayoutTemplate,
   Monitor,
   type LucideIcon,
@@ -82,7 +83,7 @@ const menuTree: MenuTreeItem[] = [
   },
   {
     type: "group",
-    label: "Quản lý Sinh viên",
+    label: "Sinh viên",
     icon: FolderTree,
     children: [
       {
@@ -116,7 +117,7 @@ const menuTree: MenuTreeItem[] = [
   },
   {
     type: "group",
-    label: "Quản lý Danh mục & Tag",
+    label: "Danh mục & Tag",
     icon: FolderTree,
     children: [
       {
@@ -143,7 +144,7 @@ const menuTree: MenuTreeItem[] = [
   },
   {
     type: "group",
-    label: "Quản lý Truyền thông",
+    label: "Truyền thông",
     icon: FolderTree,
     children: [
       {
@@ -163,7 +164,7 @@ const menuTree: MenuTreeItem[] = [
   },
   {
     type: "group",
-    label: "quản lý HRM",
+    label: "HRM",
     icon: Users,
     children: [
       {
@@ -183,7 +184,7 @@ const menuTree: MenuTreeItem[] = [
   },
   {
     type: "group",
-    label: "Quản lý Check-in",
+    label: "Check-in",
     icon: CalendarPlus,
     children: [
       {
@@ -239,7 +240,7 @@ const menuTree: MenuTreeItem[] = [
   },
   {
     type: "group",
-    label: "Quản lý Đào tạo",
+    label: "Đào tạo",
     icon: Database,
     children: [
       {
@@ -304,6 +305,16 @@ const menuTree: MenuTreeItem[] = [
         label: "Cài đặt chung",
         icon: Cog,
         permission: PERMISSION_CODES.SETTINGS_MANAGE,
+      },
+      {
+        href: "/seo-metas",
+        label: "SEO Metadata",
+        icon: Search,
+        permission: null,
+        anyPermission: [
+          PERMISSION_CODES.SEO_METAS_VIEW,
+          PERMISSION_CODES.SEO_METAS_MANAGE,
+        ],
       },
       {
         href: "/data",

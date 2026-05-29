@@ -91,7 +91,7 @@ export class AuthService {
       key: 'default_new_user_role',
     });
     if (setting?.value && typeof setting.value === 'string') {
-      const roleName = setting.value.trim().toLowerCase();
+      const roleName = setting.value.trim().toLowerCase().replace(/^"|"$/g, '');
       if (roleName) return { name: roleName, displayName: roleName };
     }
     return { name: AUTH_ROLE_NAMES.PARENT, displayName: 'Phụ huynh' };
@@ -227,7 +227,7 @@ export class AuthService {
     const newUserObj = new User();
     newUserObj.email = email;
     newUserObj.name = profile.name ?? null;
-    newUserObj.avatar = profile.image ?? null;
+    // không set avatar từ Google — user tự chọn sau để tránh mất quyền upload (student chỉ upload 1 lần)
     newUserObj.password = password;
     newUserObj.isActive = true;
     this.em.persist(newUserObj);
@@ -291,7 +291,7 @@ export class AuthService {
     const newUserObj = new User();
     newUserObj.email = email;
     newUserObj.name = profile.name ?? null;
-    newUserObj.avatar = profile.image ?? null;
+    // không set avatar từ Google — user tự chọn sau để tránh mất quyền upload (student chỉ upload 1 lần)
     newUserObj.password = password;
     newUserObj.isActive = true;
     this.em.persist(newUserObj);

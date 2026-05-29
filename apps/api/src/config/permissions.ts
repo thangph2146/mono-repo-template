@@ -24,6 +24,7 @@ export const RESOURCES = {
   UPLOADS: 'uploads',
   ADMISSION_RESULTS: 'admission_results',
   PAGE_CONTENTS: 'page_contents',
+  SEO_METAS: 'seo_metas',
 } as const;
 
 // Action types
@@ -183,4 +184,10 @@ export const PERMISSIONS = {
     `${RESOURCES.PAGE_CONTENTS}:${ACTIONS.MANAGE}` as Permission,
   PAGE_CONTENTS_EXPORT:
     `${RESOURCES.PAGE_CONTENTS}:${ACTIONS.EXPORT}` as Permission,
+
+  // SEO Metas
+  ...generateResourcePermissions(RESOURCES.SEO_METAS),
+  SEO_METAS_RESTORE: `${RESOURCES.SEO_METAS}:${ACTIONS.RESTORE}` as Permission,
+  SEO_METAS_HARD_DELETE:
+    `${RESOURCES.SEO_METAS}:${ACTIONS.HARD_DELETE}` as Permission,
 } as const;

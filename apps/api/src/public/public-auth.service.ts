@@ -20,7 +20,7 @@ async function getDefaultNewUserRole(
 ): Promise<{ name: string; displayName: string }> {
   const setting = await em.findOne(Setting, { key: 'default_new_user_role' });
   if (setting?.value && typeof setting.value === 'string') {
-    const roleName = setting.value.trim().toLowerCase();
+    const roleName = setting.value.trim().toLowerCase().replace(/^"|"$/g, '');
     if (roleName) return { name: roleName, displayName: roleName };
   }
   return { name: AUTH_ROLE_NAMES.PARENT, displayName: 'Phụ huynh' };

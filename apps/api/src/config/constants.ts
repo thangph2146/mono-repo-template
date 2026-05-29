@@ -54,6 +54,7 @@ export const ADMIN_ROUTES = {
   EVENT_CHECKINS: 'admin/event-checkins',
   EVENT_SPEAKERS: 'admin/event-speakers',
   FACE_DATA: 'admin/face-data',
+  SEO_METAS: 'admin/seo-metas',
 } as const;
 
 export const PUBLIC_ROUTES = {

@@ -278,7 +278,7 @@ export class UsersService {
       });
       const defaultRoleName =
         setting?.value && typeof setting.value === 'string'
-          ? setting.value.trim().toLowerCase() || 'user'
+          ? setting.value.trim().toLowerCase().replace(/^"|"$/g, '') || 'user'
           : 'user';
       const defaultRole = await this.em.findOne(Role, {
         name: defaultRoleName,

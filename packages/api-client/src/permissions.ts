@@ -255,6 +255,16 @@ export const PERMISSION_CODES = {
   FACE_DATA_DELETE: "face_data:delete",
   FACE_DATA_MANAGE: "face_data:manage",
 
+  // ─── SEO Metas ───
+  SEO_METAS_VIEW: "seo_metas:view",
+  SEO_METAS_CREATE: "seo_metas:create",
+  SEO_METAS_UPDATE: "seo_metas:update",
+  SEO_METAS_DELETE: "seo_metas:delete",
+  SEO_METAS_MANAGE: "seo_metas:manage",
+  SEO_METAS_EXPORT: "seo_metas:export",
+  SEO_METAS_RESTORE: "seo_metas:restore",
+  SEO_METAS_HARD_DELETE: "seo_metas:hard-delete",
+
   // ─── Legacy (shop/frontend, format dot-notation) ───
   /** @deprecated Dùng PRODUCTS_VIEW, PRODUCTS_WRITE từ API khi có */
   PRODUCTS_READ: "products.read",

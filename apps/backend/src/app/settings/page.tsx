@@ -21,6 +21,7 @@ import {
   TypographyPLargeMuted,
   TypographyPSmallMuted,
 } from "@ui/components/typography"
+import { SelectPicker, type SelectPickerOption } from "@ui/components/pickers"
 import {
   canUserAccess,
   isSuperAdminRoleCode,
@@ -42,16 +43,26 @@ function normalizePagedRoles(payload: unknown): {
     payload && typeof payload === "object"
       ? (payload as Record<string, unknown>)
       : {}
-  const raw = envelope.data
+  const inner = envelope.data
+  const raw =
+    inner && typeof inner === "object" && "data" in (inner as Record<string, unknown>)
+      ? (inner as Record<string, unknown>).data
+      : inner
   if (!Array.isArray(raw)) return { items: [] }
+  const seen = new Set<string>()
   const items = raw
     .filter((r): r is Record<string, unknown> => typeof r === "object" && r != null)
     .map((r) => ({
       id: String(r.id ?? ""),
-      code: String(r.name ?? ""),
-      name: String(r.displayName ?? r.name ?? ""),
+      code: String(r.code ?? r.name ?? "").replace(/^"|"$/g, ""),
+      name: String(r.displayName ?? r.name ?? "").replace(/^"|"$/g, ""),
     }))
     .filter((r) => !isSuperAdminRoleCode(r.code))
+    .filter((r) => {
+      if (seen.has(r.code)) return false
+      seen.add(r.code)
+      return true
+    })
   return { items }
 }
 
@@ -226,18 +237,20 @@ export default function SettingsPage() {
           <CardContent>
             <div className="space-y-2">
               <Label htmlFor="default-role">Role mặc định</Label>
-              <select
+              <SelectPicker
                 id="default-role"
                 value={defaultRole}
-                onChange={(e) => setDefaultRole(e.target.value)}
-                className="flex h-9 w-full rounded-lg border border-input bg-transparent px-2.5 py-1 text-sm"
-              >
-                {rolesQuery.data?.items.map((role) => (
-                  <option key={role.id} value={role.code}>
-                    {role.name}
-                  </option>
-                )) ?? null}
-              </select>
+                onChange={(v) => setDefaultRole(typeof v === "string" ? v : "")}
+                options={
+                  (rolesQuery.data?.items ?? []).map(
+                    (r): SelectPickerOption => ({
+                      value: r.code,
+                      label: r.name,
+                    }),
+                  )
+                }
+                placeholder="Chọn role mặc định"
+              />
             </div>
           </CardContent>
         </Card>

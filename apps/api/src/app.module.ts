@@ -43,6 +43,7 @@ import { EventRegistrationsModule } from './event-registrations/event-registrati
 import { EventCheckinsModule } from './event-checkins/event-checkins.module';
 import { FaceDataModule } from './face-data/face-data.module';
 import { EventSpeakersModule } from './event-speakers/event-speakers.module';
+import { SeoMetasModule } from './seo-metas/seo-metas.module';
 
 @Module({
   imports: [
@@ -94,6 +95,7 @@ import { EventSpeakersModule } from './event-speakers/event-speakers.module';
     EventCheckinsModule,
     FaceDataModule,
     EventSpeakersModule,
+    SeoMetasModule,
   ],
   providers: [
     {

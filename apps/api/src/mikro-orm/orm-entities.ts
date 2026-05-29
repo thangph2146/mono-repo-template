@@ -28,6 +28,7 @@ import { PostTag } from '../entities/post-tag.entity';
 import { Role } from '../entities/role.entity';
 import { Screen } from '../entities/screen.entity';
 import { Session } from '../entities/session.entity';
+import { SeoMeta } from '../entities/seo-meta.entity';
 import { Setting } from '../entities/setting.entity';
 import { Speaker } from '../entities/speaker.entity';
 import { Student } from '../entities/student.entity';
@@ -70,6 +71,7 @@ export const ormEntities = [
   Role,
   Screen,
   Session,
+  SeoMeta,
   Setting,
   Speaker,
   Student,

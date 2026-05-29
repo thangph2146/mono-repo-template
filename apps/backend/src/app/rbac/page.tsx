@@ -941,7 +941,7 @@ export default function RbacPage() {
                   onChange={(event) => setPermissionSearch(event.target.value)}
                   placeholder="Tìm permission..."
                 />
-                <ScrollArea className="h-[420px] rounded-lg border border-border/60 bg-muted/10">
+                <ScrollArea className="h-[calc(100vh-600px)] rounded-lg border border-border/60 bg-muted/10">
                   <div className="space-y-3 p-3">
                     {permissionGroups.length === 0 ? (
                       <p className="py-8 text-center text-sm text-muted-foreground">

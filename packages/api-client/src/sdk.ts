@@ -25,6 +25,7 @@ import { CamerasApi } from './resources/cameras';
 import { TemplatesApi } from './resources/templates';
 import { ScreensApi } from './resources/screens';
 import { DepartmentsApi } from './resources/departments';
+import { SeoMetasApi } from './resources/seo-metas';
 import type { HealthStatus } from './types';
 
 /**
@@ -68,6 +69,7 @@ export class StoreSyncSdk {
   readonly templates: TemplatesApi;
   readonly screens: ScreensApi;
   readonly departments: DepartmentsApi;
+  readonly seoMetas: SeoMetasApi;
 
   constructor(options: ApiClientOptions) {
     this.http = new ApiClient(options);
@@ -97,6 +99,7 @@ export class StoreSyncSdk {
     this.templates = new TemplatesApi(this.http);
     this.screens = new ScreensApi(this.http);
     this.departments = new DepartmentsApi(this.http);
+    this.seoMetas = new SeoMetasApi(this.http);
   }
 
   health(): Promise<HealthStatus> {
