@@ -18,9 +18,10 @@ export function useAcademicYearDetailQuery(
 export function useAcademicYearsListQuery(
   apiParam: StoreSyncSdk,
   enabled: boolean,
+  filters?: Record<string, string>,
 ): UseQueryResult<AcademicYearRow[]> {
   return useQuery({
-    queryKey: ["academic-years", "list"],
+    queryKey: ["academic-years", "list", filters],
     queryFn: async (): Promise<AcademicYearRow[]> => {
       const limit = 100;
       const items: AcademicYearRow[] = [];
@@ -28,7 +29,7 @@ export function useAcademicYearsListQuery(
       let total = Number.POSITIVE_INFINITY;
 
       while (items.length < total) {
-        const result = await apiParam.academicYears.list<AcademicYearRow>({ page, limit, status: "active" });
+        const result = await apiParam.academicYears.list<AcademicYearRow>({ page, limit, status: "active", ...filters });
         items.push(...result.items);
         total = result.total;
         if (result.items.length === 0) break;
@@ -55,9 +56,10 @@ export function useAcademicYearsTrashQuery({
   trashPageSize,
   debouncedTrashQ,
   enabled,
-}: UseTrashQueryProps): UseQueryResult<PagedResult<AcademicYearRow>> {
+  filters,
+}: UseTrashQueryProps & { filters?: Record<string, string> }): UseQueryResult<PagedResult<AcademicYearRow>> {
   return useQuery({
-    queryKey: ["academic-years", "trash", trashPage, trashPageSize, debouncedTrashQ],
+    queryKey: ["academic-years", "trash", trashPage, trashPageSize, debouncedTrashQ, filters],
     enabled,
     queryFn: async (): Promise<PagedResult<AcademicYearRow>> => {
       return apiParam.academicYears.list<AcademicYearRow>({
@@ -65,6 +67,7 @@ export function useAcademicYearsTrashQuery({
         limit: trashPageSize,
         search: debouncedTrashQ.trim() || undefined,
         status: "deleted",
+        ...filters,
       });
     },
   });

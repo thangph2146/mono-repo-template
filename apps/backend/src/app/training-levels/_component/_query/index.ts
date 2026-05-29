@@ -18,9 +18,10 @@ export function useTrainingLevelDetailQuery(
 export function useTrainingLevelsListQuery(
   apiParam: StoreSyncSdk,
   enabled: boolean,
+  filters?: Record<string, string>,
 ): UseQueryResult<TrainingLevelRow[]> {
   return useQuery({
-    queryKey: ["training-levels", "list"],
+    queryKey: ["training-levels", "list", filters],
     queryFn: async (): Promise<TrainingLevelRow[]> => {
       const limit = 100;
       const items: TrainingLevelRow[] = [];
@@ -28,7 +29,7 @@ export function useTrainingLevelsListQuery(
       let total = Number.POSITIVE_INFINITY;
 
       while (items.length < total) {
-        const result = await apiParam.trainingLevels.list<TrainingLevelRow>({ page, limit, status: "active" });
+        const result = await apiParam.trainingLevels.list<TrainingLevelRow>({ page, limit, status: "active", ...filters });
         items.push(...result.items);
         total = result.total;
         if (result.items.length === 0) break;
@@ -55,9 +56,10 @@ export function useTrainingLevelsTrashQuery({
   trashPageSize,
   debouncedTrashQ,
   enabled,
-}: UseTrashQueryProps): UseQueryResult<PagedResult<TrainingLevelRow>> {
+  filters,
+}: UseTrashQueryProps & { filters?: Record<string, string> }): UseQueryResult<PagedResult<TrainingLevelRow>> {
   return useQuery({
-    queryKey: ["training-levels", "trash", trashPage, trashPageSize, debouncedTrashQ],
+    queryKey: ["training-levels", "trash", trashPage, trashPageSize, debouncedTrashQ, filters],
     enabled,
     queryFn: async (): Promise<PagedResult<TrainingLevelRow>> => {
       return apiParam.trainingLevels.list<TrainingLevelRow>({
@@ -65,6 +67,7 @@ export function useTrainingLevelsTrashQuery({
         limit: trashPageSize,
         search: debouncedTrashQ.trim() || undefined,
         status: "deleted",
+        ...filters,
       });
     },
   });

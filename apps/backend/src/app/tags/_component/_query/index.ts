@@ -20,9 +20,10 @@ export function useTagDetailQuery(
 export function useTagsListQuery(
   apiParam: StoreSyncSdk,
   enabled: boolean,
+  filters?: Record<string, string>,
 ): UseQueryResult<TagRow[]> {
   return useQuery({
-    queryKey: ["media", "tags", "tree"],
+    queryKey: ["media", "tags", "tree", filters],
     queryFn: async (): Promise<TagRow[]> => {
       const limit = 100;
       const items: TagRow[] = [];
@@ -30,7 +31,7 @@ export function useTagsListQuery(
       let total = Number.POSITIVE_INFINITY;
 
       while (items.length < total) {
-        const result = await api.tags.list<TagRow>({ page, limit, status: "active" });
+        const result = await api.tags.list<TagRow>({ page, limit, status: "active", ...filters });
         items.push(...result.items);
         total = result.total;
         if (result.items.length === 0) break;
@@ -50,6 +51,7 @@ export interface UseTrashQueryProps {
   debouncedTrashQ: string;
   trashColumnFilters: { id: string; value: unknown }[];
   enabled: boolean;
+  filters?: Record<string, string>;
 }
 
 export function useTrashQuery({
@@ -59,6 +61,7 @@ export function useTrashQuery({
   debouncedTrashQ,
   trashColumnFilters,
   enabled,
+  filters,
 }: UseTrashQueryProps): UseQueryResult<PagedResult<TagRow>> {
   return useQuery({
     queryKey: [
@@ -69,6 +72,7 @@ export function useTrashQuery({
       trashPageSize,
       debouncedTrashQ,
       trashColumnFilters,
+      filters,
     ],
     enabled,
     queryFn: async (): Promise<PagedResult<TagRow>> => {
@@ -78,6 +82,7 @@ export function useTrashQuery({
         search: debouncedTrashQ.trim() || undefined,
         status: "deleted",
         ...toFilterQuery(buildTagsFilterQuery(trashColumnFilters)),
+        ...filters,
       });
     },
   });

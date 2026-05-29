@@ -46,6 +46,8 @@ export function AcademicYearsTable({
       columns={columns}
       isLoading={isLoading}
       emptyLabel='Chưa có niên khóa — bấm "Thêm niên khóa".'
+      manualFiltering
+      filterColumnVisibilityKey="admin-table-filter-visibility:academic-years-list"
       columnFilters={columnFilters}
       onColumnFiltersChange={onColumnFiltersChange}
       globalFilter={globalFilter}
@@ -57,7 +59,7 @@ export function AcademicYearsTable({
             <RefreshCw className={isFetching ? "size-4 animate-spin" : "size-4"} aria-hidden />
             Làm mới
           </Button>
-          <Button type="button" variant="outline" onClick={onClearFilters}>
+          <Button type="button" variant="destructive" onClick={onClearFilters}>
             <FilterX className="size-4" aria-hidden />
             Xóa bộ lọc
           </Button>

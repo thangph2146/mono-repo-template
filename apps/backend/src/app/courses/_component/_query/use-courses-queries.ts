@@ -18,9 +18,10 @@ export function useCourseDetailQuery(
 export function useCoursesListQuery(
   apiParam: StoreSyncSdk,
   enabled: boolean,
+  filters?: Record<string, string>,
 ): UseQueryResult<CourseRow[]> {
   return useQuery({
-    queryKey: ["courses", "list"],
+    queryKey: ["courses", "list", filters],
     queryFn: async (): Promise<CourseRow[]> => {
       const limit = 100;
       const items: CourseRow[] = [];
@@ -28,7 +29,7 @@ export function useCoursesListQuery(
       let total = Number.POSITIVE_INFINITY;
 
       while (items.length < total) {
-        const result = await apiParam.courses.list<CourseRow>({ page, limit, status: "active" });
+        const result = await apiParam.courses.list<CourseRow>({ page, limit, status: "active", ...filters });
         items.push(...result.items);
         total = result.total;
         if (result.items.length === 0) break;
@@ -55,9 +56,10 @@ export function useCoursesTrashQuery({
   trashPageSize,
   debouncedTrashQ,
   enabled,
-}: UseTrashQueryProps): UseQueryResult<PagedResult<CourseRow>> {
+  filters,
+}: UseTrashQueryProps & { filters?: Record<string, string> }): UseQueryResult<PagedResult<CourseRow>> {
   return useQuery({
-    queryKey: ["courses", "trash", trashPage, trashPageSize, debouncedTrashQ],
+    queryKey: ["courses", "trash", trashPage, trashPageSize, debouncedTrashQ, filters],
     enabled,
     queryFn: async (): Promise<PagedResult<CourseRow>> => {
       return apiParam.courses.list<CourseRow>({
@@ -65,6 +67,7 @@ export function useCoursesTrashQuery({
         limit: trashPageSize,
         search: debouncedTrashQ.trim() || undefined,
         status: "deleted",
+        ...filters,
       });
     },
   });

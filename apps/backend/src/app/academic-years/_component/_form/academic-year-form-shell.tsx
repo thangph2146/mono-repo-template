@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@ui/c
 import { FieldError } from "@ui/components/field";
 import { Input } from "@ui/components/input";
 import { FormFieldCol } from "@ui/components/typing";
+import { DatePicker, TreePicker } from "@ui/components/pickers";
 import { TypographyH1 } from "@ui/components/typography";
 import { Controller, type UseFormReturn } from "react-hook-form";
 import { cn } from "@ui/lib/utils";
@@ -92,16 +93,13 @@ export function AcademicYearFormShell({
                 <Controller
                   name="startDate"
                   control={control}
-                  render={({ field, fieldState }) => (
+                  render={({ field }) => (
                     <FormFieldCol label="Ngày bắt đầu">
-                      <Input
-                        type="date"
-                        {...field}
-                        className={cn(fieldState.error && "border-destructive")}
+                      <DatePicker
+                        value={field.value}
+                        onChange={(v) => field.onChange(v ?? "")}
+                        placeholder="Chọn ngày"
                       />
-                      {fieldState.error && (
-                        <FieldError>{fieldState.error.message}</FieldError>
-                      )}
                     </FormFieldCol>
                   )}
                 />
@@ -109,16 +107,13 @@ export function AcademicYearFormShell({
                 <Controller
                   name="endDate"
                   control={control}
-                  render={({ field, fieldState }) => (
+                  render={({ field }) => (
                     <FormFieldCol label="Ngày kết thúc">
-                      <Input
-                        type="date"
-                        {...field}
-                        className={cn(fieldState.error && "border-destructive")}
+                      <DatePicker
+                        value={field.value}
+                        onChange={(v) => field.onChange(v ?? "")}
+                        placeholder="Chọn ngày"
                       />
-                      {fieldState.error && (
-                        <FieldError>{fieldState.error.message}</FieldError>
-                      )}
                     </FormFieldCol>
                   )}
                 />
@@ -140,14 +135,15 @@ export function AcademicYearFormShell({
                   control={control}
                   render={({ field }) => (
                     <FormFieldCol label="Trạng thái">
-                      <select
-                        value={field.value}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
-                        className="flex h-9 w-full rounded-lg border border-input bg-transparent px-2.5 py-1 text-sm transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
-                      >
-                        <option value={1}>Hoạt động</option>
-                        <option value={0}>Tắt</option>
-                      </select>
+                      <TreePicker
+                        value={String(field.value)}
+                        onChange={(v) => field.onChange(v != null ? Number(v) : 1)}
+                        options={[
+                          { value: "1", label: "Hoạt động" },
+                          { value: "0", label: "Tắt" },
+                        ]}
+                        placeholder="Chọn trạng thái"
+                      />
                     </FormFieldCol>
                   )}
                 />

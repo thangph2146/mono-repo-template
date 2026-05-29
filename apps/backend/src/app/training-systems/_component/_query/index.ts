@@ -18,9 +18,10 @@ export function useTrainingSystemDetailQuery(
 export function useTrainingSystemsListQuery(
   apiParam: StoreSyncSdk,
   enabled: boolean,
+  filters?: Record<string, string>,
 ): UseQueryResult<TrainingSystemRow[]> {
   return useQuery({
-    queryKey: ["training-systems", "list"],
+    queryKey: ["training-systems", "list", filters],
     queryFn: async (): Promise<TrainingSystemRow[]> => {
       const limit = 100;
       const items: TrainingSystemRow[] = [];
@@ -28,7 +29,7 @@ export function useTrainingSystemsListQuery(
       let total = Number.POSITIVE_INFINITY;
 
       while (items.length < total) {
-        const result = await apiParam.trainingSystems.list<TrainingSystemRow>({ page, limit, status: "active" });
+        const result = await apiParam.trainingSystems.list<TrainingSystemRow>({ page, limit, status: "active", ...filters });
         items.push(...result.items);
         total = result.total;
         if (result.items.length === 0) break;
@@ -55,9 +56,10 @@ export function useTrainingSystemsTrashQuery({
   trashPageSize,
   debouncedTrashQ,
   enabled,
-}: UseTrashQueryProps): UseQueryResult<PagedResult<TrainingSystemRow>> {
+  filters,
+}: UseTrashQueryProps & { filters?: Record<string, string> }): UseQueryResult<PagedResult<TrainingSystemRow>> {
   return useQuery({
-    queryKey: ["training-systems", "trash", trashPage, trashPageSize, debouncedTrashQ],
+    queryKey: ["training-systems", "trash", trashPage, trashPageSize, debouncedTrashQ, filters],
     enabled,
     queryFn: async (): Promise<PagedResult<TrainingSystemRow>> => {
       return apiParam.trainingSystems.list<TrainingSystemRow>({
@@ -65,6 +67,7 @@ export function useTrainingSystemsTrashQuery({
         limit: trashPageSize,
         search: debouncedTrashQ.trim() || undefined,
         status: "deleted",
+        ...filters,
       });
     },
   });

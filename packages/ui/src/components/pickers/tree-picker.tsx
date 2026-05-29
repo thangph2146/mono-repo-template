@@ -138,14 +138,6 @@ export function TreePicker({
           </p>
         ) : (
           <div className="max-h-[min(60vh,18rem)] space-y-0.5 overflow-y-auto">
-            <TreeSelectItem
-              label={placeholder}
-              value=""
-              depth={0}
-              isParent={false}
-              selected={selected}
-              onSelect={(v) => onChange(v || undefined)}
-            />
             {options.map((node) => (
               <TreeSelectNode
                 key={node.value}

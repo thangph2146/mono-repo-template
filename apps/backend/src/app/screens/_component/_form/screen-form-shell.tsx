@@ -4,14 +4,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@ui/c
 import { FieldError } from "@ui/components/field";
 import { Input } from "@ui/components/input";
 import { FormFieldCol } from "@ui/components/typing";
+import { SelectPicker, TreePicker, type SelectPickerOption } from "@ui/components/pickers";
 import { TypographyH1 } from "@ui/components/typography";
 import { Controller, type UseFormReturn } from "react-hook-form";
 import { cn } from "@ui/lib/utils";
 import { ADMIN_PAGE_SUBTITLE_CLASS, ADMIN_PAGE_TITLE_PRIMARY_CLASS } from "@ui/lib/layout-shell";
 import { ArrowLeft, Hash, Monitor } from "lucide-react";
 import type { ScreenFormValues } from "../types";
-export interface ScreenFormShellProps { form: UseFormReturn<ScreenFormValues>; onSubmit: (v: ScreenFormValues) => Promise<void>; submitting: boolean; editingId: string | null; onBack: () => void; onReset: () => void; }
-export function ScreenFormShell({ form, onSubmit, submitting, editingId, onBack, onReset }: ScreenFormShellProps) {
+export interface ScreenFormShellProps { form: UseFormReturn<ScreenFormValues>; onSubmit: (v: ScreenFormValues) => Promise<void>; submitting: boolean; editingId: string | null; cameraOptions: SelectPickerOption[]; templateOptions: SelectPickerOption[]; onBack: () => void; onReset: () => void; }
+export function ScreenFormShell({ form, onSubmit, submitting, editingId, cameraOptions, templateOptions, onBack, onReset }: ScreenFormShellProps) {
   const { control } = form;
   return (<>
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -33,13 +34,9 @@ export function ScreenFormShell({ form, onSubmit, submitting, editingId, onBack,
               <Controller name="name" control={control} render={({ field, fieldState }) => (<FormFieldCol label="Tên màn hình" required><Input placeholder="VD: Màn hình sảnh A" {...field} className={cn(fieldState.error && "border-destructive")} />{fieldState.error && <FieldError>{fieldState.error.message}</FieldError>}</FormFieldCol>)} />
               <div className="grid gap-4 sm:grid-cols-2">
                 <Controller name="code" control={control} render={({ field }) => (<FormFieldCol label="Mã màn hình"><Input placeholder="SCR-001" {...field} /></FormFieldCol>)} />
-                <Controller name="cameraId" control={control} render={({ field }) => (<FormFieldCol label="Mã Camera"><Input placeholder="ID camera" {...field} /></FormFieldCol>)} />
+                <Controller name="cameraId" control={control} render={({ field }) => (<FormFieldCol label="Camera"><SelectPicker value={field.value} onChange={(value) => { field.onChange(value); const s = cameraOptions.find(o => o.value === value); form.setValue("cameraName", s?.label ?? ""); }} options={cameraOptions} placeholder="Chọn camera" /></FormFieldCol>)} />
               </div>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <Controller name="cameraName" control={control} render={({ field }) => (<FormFieldCol label="Tên Camera"><Input placeholder="Camera cổng A" {...field} /></FormFieldCol>)} />
-                <Controller name="templateId" control={control} render={({ field }) => (<FormFieldCol label="Mã Template"><Input placeholder="ID template" {...field} /></FormFieldCol>)} />
-              </div>
-              <Controller name="templateName" control={control} render={({ field }) => (<FormFieldCol label="Tên Template"><Input placeholder="Template mặc định" {...field} /></FormFieldCol>)} />
+              <Controller name="templateId" control={control} render={({ field }) => (<FormFieldCol label="Template"><SelectPicker value={field.value} onChange={(value) => { field.onChange(value); const s = templateOptions.find(o => o.value === value); form.setValue("templateName", s?.label ?? ""); }} options={templateOptions} placeholder="Chọn template" /></FormFieldCol>)} />
             </CardContent>
           </Card>
         </div>
@@ -47,7 +44,15 @@ export function ScreenFormShell({ form, onSubmit, submitting, editingId, onBack,
           <Card className="border border-border/70 shadow-sm">
             <CardHeader className="pb-2"><CardTitle className="flex items-center gap-2 text-lg text-muted-foreground"><Hash className="size-5" /> Trạng thái</CardTitle></CardHeader>
             <CardContent className="space-y-3">
-              <Controller name="status" control={control} render={({ field }) => (<FormFieldCol label="Trạng thái"><select value={field.value} onChange={e => field.onChange(Number(e.target.value))} className="flex h-9 w-full rounded-lg border border-input bg-transparent px-2.5 py-1 text-sm"><option value={1}>Hoạt động</option><option value={0}>Khóa</option></select></FormFieldCol>)} />
+              <Controller name="status" control={control} render={({ field }) => (<FormFieldCol label="Trạng thái"><TreePicker
+                            value={String(field.value)}
+                            onChange={(v) => field.onChange(v != null ? Number(v) : 1)}
+                            options={[
+                              { value: "1", label: "Hoạt động" },
+                              { value: "0", label: "Khóa" },
+                            ]}
+                            placeholder="Chọn trạng thái"
+                          /></FormFieldCol>)} />
             </CardContent>
           </Card>
         </div>

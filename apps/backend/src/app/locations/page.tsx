@@ -66,7 +66,29 @@ function LocationsPageInner() {
 
   const debouncedTrashQ = useDebouncedValue(trashGlobalFilter, 350);
 
-  const listQuery = useLocationsListQuery(api, canWrite || true);
+  const listFilterParams = useMemo(() => {
+    const params: Record<string, string> = {};
+    for (const f of columnFilters) {
+      if (f.id === "status") {
+        params.statusFilter = String(f.value);
+      }
+    }
+    return params;
+  }, [columnFilters]);
+
+  const trashFilterParams = useMemo(() => {
+    const params: Record<string, string> = {};
+    for (const f of trashColumnFilters) {
+      if (f.id === "deletedAt" && typeof f.value === "string") {
+        const [fromStr, toStr] = f.value.split(",");
+        if (fromStr) params.deletedAtFrom = fromStr;
+        if (toStr) params.deletedAtTo = toStr;
+      }
+    }
+    return params;
+  }, [trashColumnFilters]);
+
+  const listQuery = useLocationsListQuery(api, canWrite || true, listFilterParams);
 
   const trashQuery = useLocationsTrashQuery({
     api,
@@ -74,6 +96,7 @@ function LocationsPageInner() {
     trashPageSize,
     debouncedTrashQ,
     enabled: mainTab === "trash",
+    filters: trashFilterParams,
   });
 
   const deleteMutation = useMutation({

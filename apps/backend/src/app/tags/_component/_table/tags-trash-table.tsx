@@ -58,6 +58,7 @@ export function TagsTrashTable({
       isLoading={isLoading}
       emptyLabel="Thùng rác trống."
       manualFiltering
+      filterColumnVisibilityKey="admin-table-filter-visibility:tags-trash"
       columnFilters={columnFilters}
       onColumnFiltersChange={onColumnFiltersChange}
       globalFilter={globalFilter}

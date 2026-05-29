@@ -1,37 +1,37 @@
-"use client";
+"use client"
 
 import type {
   ColumnDef,
   ColumnFiltersState,
   OnChangeFn,
   RowSelectionState,
-} from "@tanstack/react-table";
-import { RefreshCw, FilterX } from "lucide-react";
-import { Button } from "@ui/components/button";
-import { AdminDataTable } from "@/components/admin-data-table";
-import { AdminTablePaginationFooter } from "@/components/admin-table-pagination-footer";
-import type { ParentStudent } from "../types";
+} from "@tanstack/react-table"
+import { RefreshCw, FilterX } from "lucide-react"
+import { Button } from "@ui/components/button"
+import { AdminDataTable } from "@/components/admin-data-table"
+import { AdminTablePaginationFooter } from "@/components/admin-table-pagination-footer"
+import type { ParentStudent } from "../types"
 
 export interface ParentStudentTableProps {
-  data: ParentStudent[];
-  columns: ColumnDef<ParentStudent>[];
-  isLoading: boolean;
-  columnFilters: ColumnFiltersState;
-  onColumnFiltersChange: OnChangeFn<ColumnFiltersState>;
-  globalFilter: string;
-  onGlobalFilterChange: OnChangeFn<string>;
-  selectedRowIds: RowSelectionState;
-  onSelectedRowIdsChange: OnChangeFn<RowSelectionState>;
-  page: number;
-  pageSize: number;
-  total: number;
-  onPageChange: (page: number) => void;
-  onPageSizeChange: (size: number) => void;
-  onRefresh: () => void;
-  onClearFilters: () => void;
-  onBulkApprove: (rows: ParentStudent[]) => Promise<void>;
-  onBulkReject: (rows: ParentStudent[]) => Promise<void>;
-  isFetching?: boolean;
+  data: ParentStudent[]
+  columns: ColumnDef<ParentStudent>[]
+  isLoading: boolean
+  columnFilters: ColumnFiltersState
+  onColumnFiltersChange: OnChangeFn<ColumnFiltersState>
+  globalFilter: string
+  onGlobalFilterChange: OnChangeFn<string>
+  selectedRowIds: RowSelectionState
+  onSelectedRowIdsChange: OnChangeFn<RowSelectionState>
+  page: number
+  pageSize: number
+  total: number
+  onPageChange: (page: number) => void
+  onPageSizeChange: (size: number) => void
+  onRefresh: () => void
+  onClearFilters: () => void
+  onBulkApprove: (rows: ParentStudent[]) => Promise<void>
+  onBulkReject: (rows: ParentStudent[]) => Promise<void>
+  isFetching?: boolean
 }
 
 export function ParentStudentTable({
@@ -74,23 +74,22 @@ export function ParentStudentTable({
             type="button"
             variant="outline"
             onClick={() => {
-              void onRefresh();
+              void onRefresh()
             }}
           >
-            <RefreshCw className={isFetching ? "size-4 animate-spin" : "size-4"} aria-hidden />
+            <RefreshCw
+              className={isFetching ? "size-4 animate-spin" : "size-4"}
+              aria-hidden
+            />
             Làm mới
           </Button>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={onClearFilters}
-          >
+          <Button type="button" variant="destructive" onClick={onClearFilters}>
             <FilterX className="size-4" aria-hidden />
             Xóa bộ lọc
           </Button>
         </div>
       }
-      rowSelectionEnabled 
+      rowSelectionEnabled
       selectedRowIds={selectedRowIds}
       onSelectedRowIdsChange={onSelectedRowIdsChange}
       bulkActions={[
@@ -133,5 +132,5 @@ export function ParentStudentTable({
         />
       }
     />
-  );
+  )
 }

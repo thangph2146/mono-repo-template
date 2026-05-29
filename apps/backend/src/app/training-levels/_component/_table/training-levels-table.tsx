@@ -46,6 +46,8 @@ export function TrainingLevelsTable({
       columns={columns}
       isLoading={isLoading}
       emptyLabel='Chưa có bậc học — bấm "Thêm bậc học".'
+      manualFiltering
+      filterColumnVisibilityKey="admin-table-filter-visibility:training-levels-list"
       columnFilters={columnFilters}
       onColumnFiltersChange={onColumnFiltersChange}
       globalFilter={globalFilter}

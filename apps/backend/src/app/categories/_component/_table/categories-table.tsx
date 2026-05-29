@@ -1,27 +1,33 @@
-"use client";
+"use client"
 
-import type { ColumnDef, ColumnFiltersState, OnChangeFn, RowSelectionState, Row } from "@tanstack/react-table";
-import { Button } from "@ui/components/button";
-import { AdminDataTable } from "@/components/admin-data-table";
-import { RefreshCw, FilterX } from "lucide-react";
-import type { CategoryRow } from "../types";
+import type {
+  ColumnDef,
+  ColumnFiltersState,
+  OnChangeFn,
+  RowSelectionState,
+  Row,
+} from "@tanstack/react-table"
+import { Button } from "@ui/components/button"
+import { AdminDataTable } from "@/components/admin-data-table"
+import { RefreshCw, FilterX } from "lucide-react"
+import type { CategoryRow } from "../types"
 
 export interface CategoriesTableProps {
-  data: CategoryRow[];
-  columns: ColumnDef<CategoryRow>[];
-  isLoading: boolean;
-  columnFilters: ColumnFiltersState;
-  onColumnFiltersChange: OnChangeFn<ColumnFiltersState>;
-  globalFilter: string;
-  onGlobalFilterChange: OnChangeFn<string>;
-  selectedRowIds: RowSelectionState;
-  onSelectedRowIdsChange: OnChangeFn<RowSelectionState>;
-  total: number;
-  onRefresh: () => void;
-  onClearFilters: () => void;
-  onBulkDelete: (rows: CategoryRow[]) => Promise<void>;
-  isFetching?: boolean;
-  canSelectRow?: (row: Row<CategoryRow>) => boolean;
+  data: CategoryRow[]
+  columns: ColumnDef<CategoryRow>[]
+  isLoading: boolean
+  columnFilters: ColumnFiltersState
+  onColumnFiltersChange: OnChangeFn<ColumnFiltersState>
+  globalFilter: string
+  onGlobalFilterChange: OnChangeFn<string>
+  selectedRowIds: RowSelectionState
+  onSelectedRowIdsChange: OnChangeFn<RowSelectionState>
+  total: number
+  onRefresh: () => void
+  onClearFilters: () => void
+  onBulkDelete: (rows: CategoryRow[]) => Promise<void>
+  isFetching?: boolean
+  canSelectRow?: (row: Row<CategoryRow>) => boolean
 }
 
 export function CategoriesTable({
@@ -62,17 +68,16 @@ export function CategoriesTable({
             type="button"
             variant="outline"
             onClick={() => {
-              void onRefresh();
+              void onRefresh()
             }}
           >
-            <RefreshCw className={isFetching ? "size-4 animate-spin" : "size-4"} aria-hidden />
+            <RefreshCw
+              className={isFetching ? "size-4 animate-spin" : "size-4"}
+              aria-hidden
+            />
             Làm mới
           </Button>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={onClearFilters}
-          >
+          <Button type="button" variant="destructive" onClick={onClearFilters}>
             <FilterX className="size-4" aria-hidden />
             Xóa bộ lọc
           </Button>
@@ -106,5 +111,5 @@ export function CategoriesTable({
         </div>
       }
     />
-  );
+  )
 }

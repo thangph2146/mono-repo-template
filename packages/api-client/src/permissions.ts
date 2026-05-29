@@ -106,6 +106,26 @@ export const PERMISSION_CODES = {
   DEPARTMENTS_UPDATE: "departments:update",
   DEPARTMENTS_DELETE: "departments:delete",
   DEPARTMENTS_MANAGE: "departments:manage",
+  EVENT_REGISTRATIONS_VIEW: "event_registrations:view",
+  EVENT_REGISTRATIONS_CREATE: "event_registrations:create",
+  EVENT_REGISTRATIONS_UPDATE: "event_registrations:update",
+  EVENT_REGISTRATIONS_DELETE: "event_registrations:delete",
+  EVENT_REGISTRATIONS_MANAGE: "event_registrations:manage",
+  EVENT_CHECKINS_VIEW: "event_checkins:view",
+  EVENT_CHECKINS_CREATE: "event_checkins:create",
+  EVENT_CHECKINS_UPDATE: "event_checkins:update",
+  EVENT_CHECKINS_DELETE: "event_checkins:delete",
+  EVENT_CHECKINS_MANAGE: "event_checkins:manage",
+  EVENT_SPEAKERS_VIEW: "event_speakers:view",
+  EVENT_SPEAKERS_CREATE: "event_speakers:create",
+  EVENT_SPEAKERS_UPDATE: "event_speakers:update",
+  EVENT_SPEAKERS_DELETE: "event_speakers:delete",
+  EVENT_SPEAKERS_MANAGE: "event_speakers:manage",
+  FACE_DATA_VIEW: "face_data:view",
+  FACE_DATA_CREATE: "face_data:create",
+  FACE_DATA_UPDATE: "face_data:update",
+  FACE_DATA_DELETE: "face_data:delete",
+  FACE_DATA_MANAGE: "face_data:manage",
 } as const;
 
 export type PermissionCode =
@@ -138,7 +158,7 @@ export function canUserAccess(user: AuthUser, code: PermissionCode): boolean {
 
 /**
  * Role nội bộ được seed trong API (không gồm `customer`).
- * Dùng để biết tài khoản có được vào storesync-admin hay không.
+ * Dùng để biết tài khoản có được vào HUB_ADMIN hay không.
  */
 export const STAFF_ADMIN_ROLE_CODES = [
   "super_admin",

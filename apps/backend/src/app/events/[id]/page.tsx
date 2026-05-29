@@ -4,14 +4,15 @@ import { useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { toast } from "sonner";
 import { LexicalEditor } from "@thangph2146/lexical-editor";
-import { Loader2, ArrowLeft, Pencil, Calendar, Clock, MapPin, Building2, Users, Monitor, CheckSquare, FileText } from "lucide-react";
+import { Loader2, ArrowLeft, Pencil, Calendar, Clock, MapPin, Building2, Users, Monitor, CheckSquare, FileText, UserCheck, ClipboardList, Mic } from "lucide-react";
 import { PageSection } from "@ui/components/layout";
 import { Badge } from "@ui/components/badge";
 import { Button } from "@ui/components/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@ui/components/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@ui/components/tabs";
 import { AdminPageGuard } from "@/components/admin-page-guard";
 import { api } from "@/lib/api";
-import { useEventDetailQuery } from "../_component";
+import { useEventDetailQuery, useEventRegistrationsQuery, useEventCheckinsQuery, useEventSpeakersQuery } from "../_component";
 import { TypographyH1 } from "@ui/components/typography";
 import { ADMIN_PAGE_SUBTITLE_CLASS, ADMIN_PAGE_TITLE_PRIMARY_CLASS } from "@ui/lib/layout-shell";
 
@@ -165,7 +166,126 @@ function EventDetailInner() {
           </Card>
         </div>
       </div>
+
+      <Tabs defaultValue="registrations" className="mt-8">
+        <TabsList>
+          <TabsTrigger value="registrations" className="gap-1.5"><ClipboardList className="size-4" /> Đăng ký</TabsTrigger>
+          <TabsTrigger value="checkins" className="gap-1.5"><UserCheck className="size-4" /> Check-in</TabsTrigger>
+          <TabsTrigger value="speakers" className="gap-1.5"><Mic className="size-4" /> Diễn giả</TabsTrigger>
+        </TabsList>
+        <TabsContent value="registrations" className="mt-4">
+          <RegistrationsTab eventId={id} />
+        </TabsContent>
+        <TabsContent value="checkins" className="mt-4">
+          <CheckinsTab eventId={id} />
+        </TabsContent>
+        <TabsContent value="speakers" className="mt-4">
+          <SpeakersTab eventId={id} />
+        </TabsContent>
+      </Tabs>
     </PageSection>
+  );
+}
+
+function RegistrationsTab({ eventId }: { eventId: string }) {
+  const { data: registrations, isLoading } = useEventRegistrationsQuery(api, eventId);
+  if (isLoading) return <div className="flex items-center gap-2 text-sm text-muted-foreground"><Loader2 className="size-4 animate-spin" /> Đang tải...</div>;
+  if (!registrations?.length) return <p className="text-sm text-muted-foreground py-4">Chưa có đăng ký nào.</p>;
+  return (
+    <div className="overflow-x-auto rounded-lg border border-border/70">
+      <table className="w-full text-sm">
+        <thead className="bg-muted/50 text-left">
+          <tr className="border-b">
+            <th className="px-4 py-3 font-medium">Email</th>
+            <th className="px-4 py-3 font-medium">Họ tên</th>
+            <th className="px-4 py-3 font-medium">Điện thoại</th>
+            <th className="px-4 py-3 font-medium">Trạng thái</th>
+            <th className="px-4 py-3 font-medium">Check-in</th>
+            <th className="px-4 py-3 font-medium">Điểm danh</th>
+          </tr>
+        </thead>
+        <tbody>
+          {registrations.map((r: Record<string, unknown>) => (
+            <tr key={r.id as string} className="border-b last:border-0 hover:bg-muted/30">
+              <td className="px-4 py-3">{r.email as string}</td>
+              <td className="px-4 py-3 font-medium">{r.fullName as string}</td>
+              <td className="px-4 py-3">{r.phone as string || "—"}</td>
+              <td className="px-4 py-3"><Badge variant={r.status === 1 ? "default" : r.status === 2 ? "outline" : "secondary"}>{r.status === 1 ? "Đã xác nhận" : r.status === 2 ? "Đã hủy" : "Chờ xử lý"}</Badge></td>
+              <td className="px-4 py-3">{r.hasCheckin ? "✅" : "—"}</td>
+              <td className="px-4 py-3">
+                {r.attendanceStatus === 2 ? "Có mặt" : r.attendanceStatus === 1 ? "Một phần" : "Vắng"}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function CheckinsTab({ eventId }: { eventId: string }) {
+  const { data: checkins, isLoading } = useEventCheckinsQuery(api, eventId);
+  if (isLoading) return <div className="flex items-center gap-2 text-sm text-muted-foreground"><Loader2 className="size-4 animate-spin" /> Đang tải...</div>;
+  if (!checkins?.length) return <p className="text-sm text-muted-foreground py-4">Chưa có check-in nào.</p>;
+  return (
+    <div className="overflow-x-auto rounded-lg border border-border/70">
+      <table className="w-full text-sm">
+        <thead className="bg-muted/50 text-left">
+          <tr className="border-b">
+            <th className="px-4 py-3 font-medium">Email</th>
+            <th className="px-4 py-3 font-medium">Họ tên</th>
+            <th className="px-4 py-3 font-medium">Thời gian</th>
+            <th className="px-4 py-3 font-medium">Phương thức</th>
+            <th className="px-4 py-3 font-medium">Face ID</th>
+          </tr>
+        </thead>
+        <tbody>
+          {checkins.map((c: Record<string, unknown>) => (
+            <tr key={c.id as string} className="border-b last:border-0 hover:bg-muted/30">
+              <td className="px-4 py-3">{c.email as string}</td>
+              <td className="px-4 py-3 font-medium">{c.fullName as string}</td>
+              <td className="px-4 py-3">{formatDateTime(c.checkinTime as string)}</td>
+              <td className="px-4 py-3">
+                {c.checkinType === 0 ? "Face ID" : c.checkinType === 2 ? "QR Code" : c.checkinType === 3 ? "Online" : "Thủ công"}
+              </td>
+              <td className="px-4 py-3">{c.faceVerified ? "✅" : "—"}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function SpeakersTab({ eventId }: { eventId: string }) {
+  const { data: speakers, isLoading } = useEventSpeakersQuery(api, eventId);
+  if (isLoading) return <div className="flex items-center gap-2 text-sm text-muted-foreground"><Loader2 className="size-4 animate-spin" /> Đang tải...</div>;
+  if (!speakers?.length) return <p className="text-sm text-muted-foreground py-4">Chưa có diễn giả nào.</p>;
+  return (
+    <div className="overflow-x-auto rounded-lg border border-border/70">
+      <table className="w-full text-sm">
+        <thead className="bg-muted/50 text-left">
+          <tr className="border-b">
+            <th className="px-4 py-3 font-medium">Diễn giả</th>
+            <th className="px-4 py-3 font-medium">Chức danh</th>
+            <th className="px-4 py-3 font-medium">Vai trò</th>
+            <th className="px-4 py-3 font-medium">Chủ đề</th>
+            <th className="px-4 py-3 font-medium">Thời lượng</th>
+          </tr>
+        </thead>
+        <tbody>
+          {speakers.map((s: Record<string, unknown>) => (
+            <tr key={s.id as string} className="border-b last:border-0 hover:bg-muted/30">
+              <td className="px-4 py-3 font-medium">{(s.speakerName as string) || "—"}</td>
+              <td className="px-4 py-3">{(s.speakerTitle as string) || "—"}</td>
+              <td className="px-4 py-3">{(s.role as string) || "—"}</td>
+              <td className="px-4 py-3">{(s.presentationTitle as string) || "—"}</td>
+              <td className="px-4 py-3">{s.duration ? `${s.duration as number} phút` : "—"}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }
 

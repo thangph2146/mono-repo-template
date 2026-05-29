@@ -66,7 +66,33 @@ function SpeakersPageInner() {
 
   const debouncedTrashQ = useDebouncedValue(trashGlobalFilter, 350);
 
-  const listQuery = useSpeakersListQuery(api, canWrite || true);
+  const listFilterParams = useMemo(() => {
+    const params: Record<string, string> = {};
+    for (const f of columnFilters) {
+      if (f.id === "status") {
+        params.speakerStatus = String(f.value);
+      } else if (f.id === "updatedAt" && typeof f.value === "string") {
+        const [fromStr, toStr] = f.value.split(",");
+        if (fromStr) params.updatedAtFrom = fromStr;
+        if (toStr) params.updatedAtTo = toStr;
+      }
+    }
+    return params;
+  }, [columnFilters]);
+
+  const trashFilterParams = useMemo(() => {
+    const params: Record<string, string> = {};
+    for (const f of trashColumnFilters) {
+      if (f.id === "deletedAt" && typeof f.value === "string") {
+        const [fromStr, toStr] = f.value.split(",");
+        if (fromStr) params.deletedAtFrom = fromStr;
+        if (toStr) params.deletedAtTo = toStr;
+      }
+    }
+    return params;
+  }, [trashColumnFilters]);
+
+  const listQuery = useSpeakersListQuery(api, canWrite || true, listFilterParams);
 
   const trashQuery = useSpeakersTrashQuery({
     api,
@@ -74,6 +100,7 @@ function SpeakersPageInner() {
     trashPageSize,
     debouncedTrashQ,
     enabled: mainTab === "trash",
+    filters: trashFilterParams,
   });
 
   const deleteMutation = useMutation({
@@ -217,6 +244,7 @@ function SpeakersPageInner() {
               toast.success(`Đã đưa ${ids.length} diễn giả vào thùng rác`);
             }}
             isFetching={listQuery.isFetching}
+            manualFiltering
           />
         </TabsContent>
 
@@ -263,6 +291,7 @@ function SpeakersPageInner() {
                   toast.success(`Đã xóa vĩnh viễn ${ids.length} diễn giả`);
                 }}
                 isFetching={trashQuery.isFetching}
+                manualFiltering
               />
             )}
           </TabsContent>

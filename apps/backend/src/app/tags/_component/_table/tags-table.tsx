@@ -49,6 +49,8 @@ export function TagsTable({
       columns={columns}
       isLoading={isLoading}
       emptyLabel='Chưa có thẻ — bấm "Thêm thẻ".'
+      manualFiltering
+      filterColumnVisibilityKey="admin-table-filter-visibility:tags-list"
       columnFilters={columnFilters}
       onColumnFiltersChange={onColumnFiltersChange}
       globalFilter={globalFilter}

@@ -174,14 +174,6 @@ export function TreeMultiSelectPicker({
         ) : (
           <>
             <div className="max-h-[min(60vh,18rem)] space-y-0.5 overflow-y-auto">
-              <TreeMultiSelectItem
-                label={placeholder}
-                value=""
-                depth={0}
-                isParent={false}
-                selected={draft}
-                onSelect={handleSelect}
-              />
               {options.map((node) => (
                 <TreeMultiSelectNode
                   key={node.value}

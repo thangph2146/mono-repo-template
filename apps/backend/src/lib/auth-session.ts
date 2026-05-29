@@ -2,7 +2,7 @@ import type { AuthUser } from "@workspace/api-client";
 
 export const ADMIN_SESSION_KEY = "storesync_admin_session";
 
-export const ADMIN_SESSION_EVENT = "storesync-admin-session";
+export const ADMIN_SESSION_EVENT = "HUB_ADMIN-session";
 
 /** Cùng một chuỗi sessionStorage → cùng reference `AuthUser` (bắt buộc cho useSyncExternalStore). */
 let sessionReadCache: { raw: string | null; user: AuthUser | null } | null =

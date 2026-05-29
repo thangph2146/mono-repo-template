@@ -21,6 +21,7 @@ export interface SpeakersTableProps {
   onClearFilters: () => void;
   onBulkDelete: (rows: SpeakerRow[]) => Promise<void>;
   isFetching?: boolean;
+  manualFiltering?: boolean;
 }
 
 export function SpeakersTable({
@@ -38,6 +39,7 @@ export function SpeakersTable({
   onClearFilters,
   onBulkDelete,
   isFetching,
+  manualFiltering: manualFilteringProp,
 }: SpeakersTableProps) {
   return (
     <AdminDataTable<SpeakerRow>
@@ -46,6 +48,8 @@ export function SpeakersTable({
       columns={columns}
       isLoading={isLoading}
       emptyLabel='Chưa có diễn giả — bấm "Thêm diễn giả".'
+      manualFiltering={manualFilteringProp}
+      filterColumnVisibilityKey="admin-table-filter-visibility:speakers-list"
       columnFilters={columnFilters}
       onColumnFiltersChange={onColumnFiltersChange}
       globalFilter={globalFilter}

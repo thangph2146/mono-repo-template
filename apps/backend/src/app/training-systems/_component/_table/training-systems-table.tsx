@@ -1,26 +1,31 @@
-"use client";
+"use client"
 
-import type { ColumnDef, ColumnFiltersState, OnChangeFn, RowSelectionState } from "@tanstack/react-table";
-import { Button } from "@ui/components/button";
-import { AdminDataTable } from "@/components/admin-data-table";
-import { RefreshCw, FilterX } from "lucide-react";
-import type { TrainingSystemRow } from "../types";
+import type {
+  ColumnDef,
+  ColumnFiltersState,
+  OnChangeFn,
+  RowSelectionState,
+} from "@tanstack/react-table"
+import { Button } from "@ui/components/button"
+import { AdminDataTable } from "@/components/admin-data-table"
+import { RefreshCw, FilterX } from "lucide-react"
+import type { TrainingSystemRow } from "../types"
 
 export interface TrainingSystemsTableProps {
-  data: TrainingSystemRow[];
-  columns: ColumnDef<TrainingSystemRow>[];
-  isLoading: boolean;
-  columnFilters: ColumnFiltersState;
-  onColumnFiltersChange: OnChangeFn<ColumnFiltersState>;
-  globalFilter: string;
-  onGlobalFilterChange: OnChangeFn<string>;
-  selectedRowIds: RowSelectionState;
-  onSelectedRowIdsChange: OnChangeFn<RowSelectionState>;
-  total: number;
-  onRefresh: () => void;
-  onClearFilters: () => void;
-  onBulkDelete: (rows: TrainingSystemRow[]) => Promise<void>;
-  isFetching?: boolean;
+  data: TrainingSystemRow[]
+  columns: ColumnDef<TrainingSystemRow>[]
+  isLoading: boolean
+  columnFilters: ColumnFiltersState
+  onColumnFiltersChange: OnChangeFn<ColumnFiltersState>
+  globalFilter: string
+  onGlobalFilterChange: OnChangeFn<string>
+  selectedRowIds: RowSelectionState
+  onSelectedRowIdsChange: OnChangeFn<RowSelectionState>
+  total: number
+  onRefresh: () => void
+  onClearFilters: () => void
+  onBulkDelete: (rows: TrainingSystemRow[]) => Promise<void>
+  isFetching?: boolean
 }
 
 export function TrainingSystemsTable({
@@ -46,6 +51,8 @@ export function TrainingSystemsTable({
       columns={columns}
       isLoading={isLoading}
       emptyLabel='Chưa có hệ đào tạo — bấm "Thêm hệ đào tạo".'
+      manualFiltering
+      filterColumnVisibilityKey="admin-table-filter-visibility:training-systems-list"
       columnFilters={columnFilters}
       onColumnFiltersChange={onColumnFiltersChange}
       globalFilter={globalFilter}
@@ -53,11 +60,20 @@ export function TrainingSystemsTable({
       globalFilterPlaceholder="Tìm theo tên hoặc mã..."
       filterToolbarExtra={
         <div className="flex flex-wrap items-center gap-2">
-          <Button type="button" variant="outline" onClick={() => { void onRefresh(); }}>
-            <RefreshCw className={isFetching ? "size-4 animate-spin" : "size-4"} aria-hidden />
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => {
+              void onRefresh()
+            }}
+          >
+            <RefreshCw
+              className={isFetching ? "size-4 animate-spin" : "size-4"}
+              aria-hidden
+            />
             Làm mới
           </Button>
-          <Button type="button" variant="outline" onClick={onClearFilters}>
+          <Button type="button" variant="destructive" onClick={onClearFilters}>
             <FilterX className="size-4" aria-hidden />
             Xóa bộ lọc
           </Button>
@@ -90,5 +106,5 @@ export function TrainingSystemsTable({
         </div>
       }
     />
-  );
+  )
 }

@@ -23,6 +23,11 @@ export interface ListSpeakersParams {
   limit: number;
   search?: string;
   status?: 'active' | 'deleted' | 'all';
+  speakerStatus?: number;
+  updatedAtFrom?: string;
+  updatedAtTo?: string;
+  deletedAtFrom?: string;
+  deletedAtTo?: string;
 }
 
 export interface ListSpeakersResult {
@@ -88,6 +93,37 @@ export class SpeakersService {
         { email: { $like: `%${q}%` } },
         { organization: { $like: `%${q}%` } },
       ];
+    }
+    if (params.speakerStatus === 0 || params.speakerStatus === 1) {
+      where.status = params.speakerStatus;
+    }
+    if (params.updatedAtFrom) {
+      where.updatedAt = {
+        ...((where.updatedAt as object) || {}),
+        $gte: new Date(params.updatedAtFrom),
+      };
+    }
+    if (params.updatedAtTo) {
+      const toEnd = new Date(params.updatedAtTo);
+      toEnd.setDate(toEnd.getDate() + 1);
+      where.updatedAt = {
+        ...((where.updatedAt as object) || {}),
+        $lt: toEnd,
+      };
+    }
+    if (params.deletedAtFrom) {
+      where.deletedAt = {
+        ...((where.deletedAt as object) || {}),
+        $gte: new Date(params.deletedAtFrom),
+      };
+    }
+    if (params.deletedAtTo) {
+      const toEnd = new Date(params.deletedAtTo);
+      toEnd.setDate(toEnd.getDate() + 1);
+      where.deletedAt = {
+        ...((where.deletedAt as object) || {}),
+        $lt: toEnd,
+      };
     }
     const whereQuery = where as FilterQuery<Speaker>;
     const [rows, total] = await Promise.all([

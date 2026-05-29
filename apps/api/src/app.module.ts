@@ -39,6 +39,10 @@ import { CamerasModule } from './cameras/cameras.module';
 import { TemplatesModule } from './templates/templates.module';
 import { ScreensModule } from './screens/screens.module';
 import { DepartmentsModule } from './departments/departments.module';
+import { EventRegistrationsModule } from './event-registrations/event-registrations.module';
+import { EventCheckinsModule } from './event-checkins/event-checkins.module';
+import { FaceDataModule } from './face-data/face-data.module';
+import { EventSpeakersModule } from './event-speakers/event-speakers.module';
 
 @Module({
   imports: [
@@ -86,6 +90,10 @@ import { DepartmentsModule } from './departments/departments.module';
     TemplatesModule,
     ScreensModule,
     DepartmentsModule,
+    EventRegistrationsModule,
+    EventCheckinsModule,
+    FaceDataModule,
+    EventSpeakersModule,
   ],
   providers: [
     {

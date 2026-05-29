@@ -30,8 +30,10 @@ function TemplatesPageInner() {
   const [cF, setCF] = useState<ColumnFiltersState>([]); const [tCF, setTCF] = useState<ColumnFiltersState>([]);
   const [lS, setLS] = useState<RowSelectionState>({}); const [tS, setTS] = useState<RowSelectionState>({});
   const dQ = useDebouncedValue(tGF, 350);
-  const listQ = useTemplatesListQuery(api, canWrite || true);
-  const trashQ = useTemplatesTrashQuery({ api: api, trashPage: tP, trashPageSize: tPS, debouncedTrashQ: dQ, enabled: mainTab === "trash" });
+  const listFilterParams = useMemo(() => { const p: Record<string, string> = {}; for (const f of cF) { if (f.id === "status") { p.statusFilter = String(f.value); } } return p; }, [cF]);
+  const trashFilterParams = useMemo(() => { const p: Record<string, string> = {}; for (const f of tCF) { if (f.id === "deletedAt" && typeof f.value === "string") { const [a, b] = f.value.split(","); if (a) p.deletedAtFrom = a; if (b) p.deletedAtTo = b; } } return p; }, [tCF]);
+  const listQ = useTemplatesListQuery(api, canWrite || true, listFilterParams);
+  const trashQ = useTemplatesTrashQuery({ api: api, trashPage: tP, trashPageSize: tPS, debouncedTrashQ: dQ, enabled: mainTab === "trash", filters: trashFilterParams });
   const delM = useMutation({ mutationFn: (id: string) => api.templates.remove(id), onSuccess: invalidateAll });
   const resM = useMutation({ mutationFn: (id: string) => api.templates.restore(id), onSuccess: invalidateAll });
   const purM = useMutation({ mutationFn: (id: string) => api.templates.purge(id), onSuccess: invalidateAll });

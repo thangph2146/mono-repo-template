@@ -56,7 +56,7 @@ export interface ApiClientOptions {
    * method, path, status và thời gian — tiện theo dõi app gọi API.
    */
   devLogging?: boolean;
-  /** Tiền tố log (vd: `storesync-admin`) để phân biệt app trong monorepo. */
+  /** Tiền tố log (vd: `HUB_ADMIN`) để phân biệt app trong monorepo. */
   devLogTag?: string;
   /**
    * Chuỗi hoặc object mô tả user/role gửi kèm mỗi dòng log dev (không dùng cho secrets).

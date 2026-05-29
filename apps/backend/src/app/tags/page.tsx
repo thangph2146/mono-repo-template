@@ -76,7 +76,33 @@ function TagsPageInner() {
 
   const debouncedTrashQ = useDebouncedValue(trashGlobalFilter, 350);
 
-  const listQuery = useTagsListQuery(api, canWriteTags || true);
+  const listFilterParams = useMemo(() => {
+    const params: Record<string, string> = {};
+    for (const f of columnFilters) {
+      if (f.id === "status") {
+        params.statusFilter = String(f.value);
+      } else if (f.id === "updatedAt" && typeof f.value === "string") {
+        const [fromStr, toStr] = f.value.split(",");
+        if (fromStr) params.updatedAtFrom = fromStr;
+        if (toStr) params.updatedAtTo = toStr;
+      }
+    }
+    return params;
+  }, [columnFilters]);
+
+  const trashFilterParams = useMemo(() => {
+    const params: Record<string, string> = {};
+    for (const f of trashColumnFilters) {
+      if (f.id === "deletedAt" && typeof f.value === "string") {
+        const [fromStr, toStr] = f.value.split(",");
+        if (fromStr) params.deletedAtFrom = fromStr;
+        if (toStr) params.deletedAtTo = toStr;
+      }
+    }
+    return params;
+  }, [trashColumnFilters]);
+
+  const listQuery = useTagsListQuery(api, canWriteTags || true, listFilterParams);
 
   const trashQuery = useTrashQuery({
     api,
@@ -85,6 +111,7 @@ function TagsPageInner() {
     debouncedTrashQ,
     trashColumnFilters: trashColumnFilters,
     enabled: mainTab === "trash",
+    filters: trashFilterParams,
   });
 
   const deleteMutation = useMutation({

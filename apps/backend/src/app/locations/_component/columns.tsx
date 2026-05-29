@@ -25,8 +25,7 @@ export function getLocationColumns({
     {
       accessorKey: "name",
       header: "Tên",
-      enableColumnFilter: true,
-      meta: { filterPlaceholder: "Lọc theo tên…" },
+      enableColumnFilter: false,
       cell: ({ row, getValue }) => (
         <button
           type="button"
@@ -40,6 +39,7 @@ export function getLocationColumns({
     {
       accessorKey: "address",
       header: "Địa chỉ",
+      enableColumnFilter: false,
       cell: ({ getValue }) => (
         <span className="text-sm">{String(getValue() ?? "—")}</span>
       ),
@@ -47,6 +47,18 @@ export function getLocationColumns({
     {
       accessorKey: "status",
       header: "Trạng thái",
+      enableColumnFilter: true,
+      filterFn: (row, columnId, filterValue) => {
+        if (filterValue == null || filterValue === "") return true;
+        return String(row.getValue(columnId)) === String(filterValue);
+      },
+      meta: {
+        filterVariant: "select",
+        selectOptions: [
+          { value: "1", label: "Hoạt động" },
+          { value: "0", label: "Khóa" },
+        ],
+      },
       cell: ({ getValue }) => {
         const status = getValue() as number | null;
         return status === 1 ? (
@@ -59,6 +71,18 @@ export function getLocationColumns({
     {
       accessorKey: "updatedAt",
       header: "Cập nhật",
+      enableColumnFilter: true,
+      filterFn: (row, columnId, filterValue) => {
+        if (filterValue == null || filterValue === "") return true;
+        const rowVal = row.getValue(columnId) as string;
+        if (!rowVal) return false;
+        const [fromStr, toStr] = String(filterValue).split(",");
+        const rowDate = rowVal.split("T")[0];
+        if (fromStr && rowDate < fromStr) return false;
+        if (toStr && rowDate > toStr) return false;
+        return true;
+      },
+      meta: { filterVariant: "date-range" },
       cell: ({ getValue }) => (
         <span className="text-xs text-muted-foreground">
           {formatDateTime(getValue() as string)}
@@ -103,11 +127,23 @@ export function getTrashColumns({
     {
       accessorKey: "name",
       header: "Tên",
-      meta: { filterPlaceholder: "Lọc theo tên…" },
+      enableColumnFilter: false,
     },
     {
       accessorKey: "deletedAt",
       header: "Xóa lúc",
+      enableColumnFilter: true,
+      filterFn: (row, columnId, filterValue) => {
+        if (filterValue == null || filterValue === "") return true;
+        const rowVal = row.getValue(columnId) as string;
+        if (!rowVal) return false;
+        const [fromStr, toStr] = String(filterValue).split(",");
+        const rowDate = rowVal.split("T")[0];
+        if (fromStr && rowDate < fromStr) return false;
+        if (toStr && rowDate > toStr) return false;
+        return true;
+      },
+      meta: { filterVariant: "date-range" },
       cell: ({ getValue }) => (
         <span className="text-xs text-muted-foreground">
           {formatDateTime(getValue() as string)}

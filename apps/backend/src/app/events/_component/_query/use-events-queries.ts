@@ -11,14 +11,14 @@ export function useEventDetailQuery(apiParam: StoreSyncSdk, id: string): UseQuer
   });
 }
 
-export function useEventsListQuery(apiParam: StoreSyncSdk, enabled: boolean): UseQueryResult<EventRow[]> {
+export function useEventsListQuery(apiParam: StoreSyncSdk, enabled: boolean, filters?: Record<string, string>): UseQueryResult<EventRow[]> {
   return useQuery({
-    queryKey: ["events", "list"],
+    queryKey: ["events", "list", filters],
     queryFn: async (): Promise<EventRow[]> => {
       const limit = 100; const items: EventRow[] = [];
       let page = 1; let total = Number.POSITIVE_INFINITY;
       while (items.length < total) {
-        const result = await apiParam.events.list<EventRow>({ page, limit, status: "active" });
+        const result = await apiParam.events.list<EventRow>({ page, limit, status: "active", ...filters });
         items.push(...result.items); total = result.total;
         if (result.items.length === 0) break; page += 1;
       }
@@ -33,13 +33,13 @@ export interface UseTrashQueryProps {
 }
 
 export function useEventsTrashQuery({
-  api: apiParam, trashPage, trashPageSize, debouncedTrashQ, enabled,
-}: UseTrashQueryProps): UseQueryResult<PagedResult<EventRow>> {
+  api: apiParam, trashPage, trashPageSize, debouncedTrashQ, enabled, filters,
+}: UseTrashQueryProps & { filters?: Record<string, string> }): UseQueryResult<PagedResult<EventRow>> {
   return useQuery({
-    queryKey: ["events", "trash", trashPage, trashPageSize, debouncedTrashQ],
+    queryKey: ["events", "trash", trashPage, trashPageSize, debouncedTrashQ, filters],
     enabled,
     queryFn: async (): Promise<PagedResult<EventRow>> => apiParam.events.list<EventRow>({
-      page: trashPage, limit: trashPageSize, search: debouncedTrashQ.trim() || undefined, status: "deleted",
+      page: trashPage, limit: trashPageSize, search: debouncedTrashQ.trim() || undefined, status: "deleted", ...filters,
     }),
   });
 }

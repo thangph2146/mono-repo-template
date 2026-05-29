@@ -13,6 +13,8 @@ import { FieldError } from "@ui/components/field"
 import { Input } from "@ui/components/input"
 import { Textarea } from "@ui/components/textarea"
 import { FormFieldCol } from "@ui/components/typing"
+import { SelectPicker, TreePicker } from "@ui/components/pickers"
+import { Switch } from "@ui/components/switch"
 import { TypographyH1 } from "@ui/components/typography"
 import { Controller, type UseFormReturn } from "react-hook-form"
 import { cn } from "@ui/lib/utils"
@@ -304,14 +306,15 @@ export function EventFormShell({
                   control={control}
                   render={({ field }) => (
                     <FormFieldCol label="Trạng thái">
-                      <select
-                        value={field.value}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
-                        className="flex h-9 w-full rounded-lg border border-input bg-transparent px-2.5 py-1 text-sm transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
-                      >
-                        <option value={1}>Hoạt động</option>
-                        <option value={0}>Khóa</option>
-                      </select>
+                      <TreePicker
+                        value={String(field.value)}
+                        onChange={(v) => field.onChange(v != null ? Number(v) : 1)}
+                        options={[
+                          { value: "1", label: "Hoạt động" },
+                          { value: "0", label: "Khóa" },
+                        ]}
+                        placeholder="Chọn trạng thái"
+                      />
                     </FormFieldCol>
                   )}
                 />
@@ -329,15 +332,16 @@ export function EventFormShell({
                   control={control}
                   render={({ field }) => (
                     <FormFieldCol label="Hình thức">
-                      <select
-                        value={field.value ?? 0}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
-                        className="flex h-9 w-full rounded-lg border border-input bg-transparent px-2.5 py-1 text-sm transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
-                      >
-                        <option value={0}>Offline</option>
-                        <option value={1}>Online</option>
-                        <option value={2}>Hybrid</option>
-                      </select>
+                      <SelectPicker
+                        value={String(field.value ?? 0)}
+                        onChange={(v) => field.onChange(v != null ? Number(v) : 0)}
+                        options={[
+                          { value: "0", label: "Offline" },
+                          { value: "1", label: "Online" },
+                          { value: "2", label: "Hybrid" },
+                        ]}
+                        placeholder="Chọn hình thức"
+                      />
                     </FormFieldCol>
                   )}
                 />
@@ -371,54 +375,45 @@ export function EventFormShell({
                     </FormFieldCol>
                   )}
                 />
-                <label className="flex items-center gap-2 text-sm">
+                <div className="flex items-center justify-between rounded-lg border border-border px-4 py-3">
+                  <div className="flex items-center gap-2">
+                    <CheckSquare className="size-4 text-muted-foreground" />
+                    <span className="text-sm">Cho phép check-in</span>
+                  </div>
                   <Controller
                     name="allowCheckin"
                     control={control}
                     render={({ field }) => (
-                      <input
-                        type="checkbox"
-                        checked={field.value}
-                        onChange={(e) => field.onChange(e.target.checked)}
-                        className="rounded border-input"
-                      />
+                      <Switch checked={field.value} onCheckedChange={field.onChange} />
                     )}
                   />
-                  <CheckSquare className="size-4 text-muted-foreground" /> Cho
-                  phép check-in
-                </label>
-                <label className="flex items-center gap-2 text-sm">
+                </div>
+                <div className="flex items-center justify-between rounded-lg border border-border px-4 py-3">
+                  <div className="flex items-center gap-2">
+                    <CheckSquare className="size-4 text-muted-foreground" />
+                    <span className="text-sm">Cho phép check-out</span>
+                  </div>
                   <Controller
                     name="allowCheckout"
                     control={control}
                     render={({ field }) => (
-                      <input
-                        type="checkbox"
-                        checked={field.value}
-                        onChange={(e) => field.onChange(e.target.checked)}
-                        className="rounded border-input"
-                      />
+                      <Switch checked={field.value} onCheckedChange={field.onChange} />
                     )}
                   />
-                  <CheckSquare className="size-4 text-muted-foreground" /> Cho
-                  phép check-out
-                </label>
-                <label className="flex items-center gap-2 text-sm">
+                </div>
+                <div className="flex items-center justify-between rounded-lg border border-border px-4 py-3">
+                  <div className="flex items-center gap-2">
+                    <CheckSquare className="size-4 text-muted-foreground" />
+                    <span className="text-sm">Yêu cầu Face ID</span>
+                  </div>
                   <Controller
                     name="requireFaceId"
                     control={control}
                     render={({ field }) => (
-                      <input
-                        type="checkbox"
-                        checked={field.value}
-                        onChange={(e) => field.onChange(e.target.checked)}
-                        className="rounded border-input"
-                      />
+                      <Switch checked={field.value} onCheckedChange={field.onChange} />
                     )}
                   />
-                  <CheckSquare className="size-4 text-muted-foreground" /> Yêu
-                  cầu Face ID
-                </label>
+                </div>
               </CardContent>
             </Card>
           </div>

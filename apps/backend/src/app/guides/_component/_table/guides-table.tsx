@@ -52,8 +52,6 @@ export function GuidesTable({
           <Button
             type="button"
             variant="outline"
-            size="sm"
-            className="h-9 gap-2 rounded-lg"
             onClick={() => {
               void onRefresh();
             }}
@@ -63,9 +61,7 @@ export function GuidesTable({
           </Button>
           <Button
             type="button"
-            variant="outline"
-            size="sm"
-            className="h-9 gap-2 rounded-lg"
+            variant="destructive"
             onClick={onClearFilters}
           >
             <FilterX className="size-4" aria-hidden />

@@ -18,9 +18,10 @@ export function useSpeakerDetailQuery(
 export function useSpeakersListQuery(
   apiParam: StoreSyncSdk,
   enabled: boolean,
+  filters?: Record<string, string>,
 ): UseQueryResult<SpeakerRow[]> {
   return useQuery({
-    queryKey: ["speakers", "list"],
+    queryKey: ["speakers", "list", filters],
     queryFn: async (): Promise<SpeakerRow[]> => {
       const limit = 100;
       const items: SpeakerRow[] = [];
@@ -28,7 +29,10 @@ export function useSpeakersListQuery(
       let total = Number.POSITIVE_INFINITY;
 
       while (items.length < total) {
-        const result = await apiParam.speakers.list<SpeakerRow>({ page, limit, status: "active" });
+        const result = await apiParam.speakers.list<SpeakerRow>({
+          page, limit, status: "active",
+          ...filters,
+        });
         items.push(...result.items);
         total = result.total;
         if (result.items.length === 0) break;
@@ -55,9 +59,10 @@ export function useSpeakersTrashQuery({
   trashPageSize,
   debouncedTrashQ,
   enabled,
-}: UseTrashQueryProps): UseQueryResult<PagedResult<SpeakerRow>> {
+  filters,
+}: UseTrashQueryProps & { filters?: Record<string, string> }): UseQueryResult<PagedResult<SpeakerRow>> {
   return useQuery({
-    queryKey: ["speakers", "trash", trashPage, trashPageSize, debouncedTrashQ],
+    queryKey: ["speakers", "trash", trashPage, trashPageSize, debouncedTrashQ, filters],
     enabled,
     queryFn: async (): Promise<PagedResult<SpeakerRow>> => {
       return apiParam.speakers.list<SpeakerRow>({
@@ -65,6 +70,7 @@ export function useSpeakersTrashQuery({
         limit: trashPageSize,
         search: debouncedTrashQ.trim() || undefined,
         status: "deleted",
+        ...filters,
       });
     },
   });

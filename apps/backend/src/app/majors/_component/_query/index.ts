@@ -18,9 +18,10 @@ export function useMajorDetailQuery(
 export function useMajorsListQuery(
   apiParam: StoreSyncSdk,
   enabled: boolean,
+  filters?: Record<string, string>,
 ): UseQueryResult<MajorRow[]> {
   return useQuery({
-    queryKey: ["majors", "list"],
+    queryKey: ["majors", "list", filters],
     queryFn: async (): Promise<MajorRow[]> => {
       const limit = 100;
       const items: MajorRow[] = [];
@@ -28,7 +29,7 @@ export function useMajorsListQuery(
       let total = Number.POSITIVE_INFINITY;
 
       while (items.length < total) {
-        const result = await apiParam.majors.list<MajorRow>({ page, limit, status: "active" });
+        const result = await apiParam.majors.list<MajorRow>({ page, limit, status: "active", ...filters });
         items.push(...result.items);
         total = result.total;
         if (result.items.length === 0) break;
@@ -55,9 +56,10 @@ export function useMajorsTrashQuery({
   trashPageSize,
   debouncedTrashQ,
   enabled,
-}: UseTrashQueryProps): UseQueryResult<PagedResult<MajorRow>> {
+  filters,
+}: UseTrashQueryProps & { filters?: Record<string, string> }): UseQueryResult<PagedResult<MajorRow>> {
   return useQuery({
-    queryKey: ["majors", "trash", trashPage, trashPageSize, debouncedTrashQ],
+    queryKey: ["majors", "trash", trashPage, trashPageSize, debouncedTrashQ, filters],
     enabled,
     queryFn: async (): Promise<PagedResult<MajorRow>> => {
       return apiParam.majors.list<MajorRow>({
@@ -65,6 +67,7 @@ export function useMajorsTrashQuery({
         limit: trashPageSize,
         search: debouncedTrashQ.trim() || undefined,
         status: "deleted",
+        ...filters,
       });
     },
   });

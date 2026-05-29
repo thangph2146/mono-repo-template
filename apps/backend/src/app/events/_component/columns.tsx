@@ -29,8 +29,7 @@ export function getEventColumns({
     {
       accessorKey: "title",
       header: "Sự kiện",
-      enableColumnFilter: true,
-      meta: { filterPlaceholder: "Lọc theo tên…" },
+      enableColumnFilter: false,
       cell: ({ row, getValue }) => (
         <button type="button" className="font-medium text-left text-foreground hover:text-primary transition-colors" onClick={() => openDetail(row.original)}>
           {String(getValue())}
@@ -40,11 +39,24 @@ export function getEventColumns({
     {
       accessorKey: "organizer",
       header: "Đơn vị tổ chức",
+      enableColumnFilter: false,
       cell: ({ getValue }) => <span className="text-sm">{String(getValue() ?? "—")}</span>,
     },
     {
       accessorKey: "startDate",
       header: "Bắt đầu",
+      enableColumnFilter: true,
+      filterFn: (row, columnId, filterValue) => {
+        if (filterValue == null || filterValue === "") return true;
+        const rowVal = row.getValue(columnId) as string;
+        if (!rowVal) return false;
+        const [fromStr, toStr] = String(filterValue).split(",");
+        const rowDate = rowVal.split("T")[0];
+        if (fromStr && rowDate < fromStr) return false;
+        if (toStr && rowDate > toStr) return false;
+        return true;
+      },
+      meta: { filterVariant: "date-range" },
       cell: ({ getValue }) => (
         <span className="flex items-center gap-1 text-xs text-muted-foreground">
           <Calendar className="size-3" />{formatDate(getValue() as string)}
@@ -54,6 +66,7 @@ export function getEventColumns({
     {
       accessorKey: "location",
       header: "Địa điểm",
+      enableColumnFilter: false,
       cell: ({ getValue }) => (
         <span className="flex items-center gap-1 text-xs text-muted-foreground">
           <MapPin className="size-3" />{String(getValue() ?? "—")}
@@ -63,6 +76,19 @@ export function getEventColumns({
     {
       accessorKey: "format",
       header: "Hình thức",
+      enableColumnFilter: true,
+      filterFn: (row, columnId, filterValue) => {
+        if (filterValue == null || filterValue === "") return true;
+        return String(row.getValue(columnId)) === String(filterValue);
+      },
+      meta: {
+        filterVariant: "select",
+        selectOptions: [
+          { value: "0", label: "Offline" },
+          { value: "1", label: "Online" },
+          { value: "2", label: "Hybrid" },
+        ],
+      },
       cell: ({ getValue }) => {
         const fmt = getValue() as number;
         return (
@@ -75,6 +101,18 @@ export function getEventColumns({
     {
       accessorKey: "status",
       header: "Trạng thái",
+      enableColumnFilter: true,
+      filterFn: (row, columnId, filterValue) => {
+        if (filterValue == null || filterValue === "") return true;
+        return String(row.getValue(columnId)) === String(filterValue);
+      },
+      meta: {
+        filterVariant: "select",
+        selectOptions: [
+          { value: "1", label: "Hoạt động" },
+          { value: "0", label: "Khóa" },
+        ],
+      },
       cell: ({ getValue }) => {
         const status = getValue() as number;
         return status === 1 ? (
@@ -112,10 +150,22 @@ export function getTrashColumns({
   setConfirmAction: (action: EventConfirmAction) => void;
 }): ColumnDef<EventRow>[] {
   return [
-    { accessorKey: "title", header: "Sự kiện", meta: { filterPlaceholder: "Lọc theo tên…" } },
+    { accessorKey: "title", header: "Sự kiện", enableColumnFilter: false },
     {
       accessorKey: "deletedAt",
       header: "Xóa lúc",
+      enableColumnFilter: true,
+      filterFn: (row, columnId, filterValue) => {
+        if (filterValue == null || filterValue === "") return true;
+        const rowVal = row.getValue(columnId) as string;
+        if (!rowVal) return false;
+        const [fromStr, toStr] = String(filterValue).split(",");
+        const rowDate = rowVal.split("T")[0];
+        if (fromStr && rowDate < fromStr) return false;
+        if (toStr && rowDate > toStr) return false;
+        return true;
+      },
+      meta: { filterVariant: "date-range" },
       cell: ({ getValue }) => <span className="text-xs text-muted-foreground">{formatDateTime(getValue() as string)}</span>,
     },
     {

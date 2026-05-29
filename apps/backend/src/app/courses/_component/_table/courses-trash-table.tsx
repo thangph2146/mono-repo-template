@@ -58,6 +58,7 @@ export function CoursesTrashTable({
       isLoading={isLoading}
       emptyLabel="Thùng rác trống."
       manualFiltering
+      filterColumnVisibilityKey="admin-table-filter-visibility:courses-trash"
       columnFilters={columnFilters}
       onColumnFiltersChange={onColumnFiltersChange}
       globalFilter={globalFilter}

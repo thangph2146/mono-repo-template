@@ -1,7 +1,7 @@
 export type { EventRow, EventFormValues, EventConfirmAction, EventDetail } from "./types";
 export { eventFormSchema } from "./types";
 export { getEventColumns, getTrashColumns } from "./columns";
-export { useEventDetailQuery, useEventsListQuery, useEventsTrashQuery } from "./_query";
+export { useEventDetailQuery, useEventsListQuery, useEventsTrashQuery, useEventRegistrationsQuery, useEventCheckinsQuery, useEventSpeakersQuery } from "./_query";
 export { useColumnFiltersChange, useClearListFilters, useClearTrashFilters, buildEventPayload, useEventForm, useHandleConfirmAction, useConfirmAction } from "./_hooks";
 export { EventFormShell } from "./_form";
 export { EventsConfirmDialog } from "./_alert-dialog";

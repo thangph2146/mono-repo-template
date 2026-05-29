@@ -51,6 +51,11 @@ export class SpeakersController {
     @Query('limit') limit?: string,
     @Query('search') search?: string,
     @Query('status') status?: string,
+    @Query('speakerStatus') speakerStatus?: string,
+    @Query('updatedAtFrom') updatedAtFrom?: string,
+    @Query('updatedAtTo') updatedAtTo?: string,
+    @Query('deletedAtFrom') deletedAtFrom?: string,
+    @Query('deletedAtTo') deletedAtTo?: string,
   ) {
     this.logger.log(`list page=${page ?? 1} limit=${limit ?? 10}`);
     const userId = this.getUserId(headers);
@@ -60,6 +65,12 @@ export class SpeakersController {
       limit: Math.min(100, Math.max(1, parseInt(String(limit), 10) || 10)),
       search: search?.trim(),
       status: (status as 'active' | 'deleted' | 'all') ?? 'active',
+      speakerStatus:
+        speakerStatus !== undefined ? parseInt(speakerStatus, 10) : undefined,
+      updatedAtFrom: updatedAtFrom?.trim() || undefined,
+      updatedAtTo: updatedAtTo?.trim() || undefined,
+      deletedAtFrom: deletedAtFrom?.trim() || undefined,
+      deletedAtTo: deletedAtTo?.trim() || undefined,
     });
     const { statusCode, body } = createSuccessResponse({
       data: result.data,

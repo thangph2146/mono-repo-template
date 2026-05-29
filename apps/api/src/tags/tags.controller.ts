@@ -123,6 +123,11 @@ export class TagsController {
     @Query('limit') limit?: string,
     @Query('search') search?: string,
     @Query('status') status?: string,
+    @Query('statusFilter') statusFilter?: string,
+    @Query('updatedAtFrom') updatedAtFrom?: string,
+    @Query('updatedAtTo') updatedAtTo?: string,
+    @Query('deletedAtFrom') deletedAtFrom?: string,
+    @Query('deletedAtTo') deletedAtTo?: string,
     @Query() query?: Record<string, string>,
   ) {
     this.logger.log(`list page=${page ?? 1} limit=${limit ?? 10}`);
@@ -143,6 +148,11 @@ export class TagsController {
       search: search?.trim(),
       status: this.parseListStatus(status),
       filters: Object.keys(filters).length ? filters : undefined,
+      statusFilter: statusFilter != null ? Number(statusFilter) : undefined,
+      updatedAtFrom: updatedAtFrom?.trim(),
+      updatedAtTo: updatedAtTo?.trim(),
+      deletedAtFrom: deletedAtFrom?.trim(),
+      deletedAtTo: deletedAtTo?.trim(),
     });
     const { statusCode, body } = createSuccessResponse({
       data: result.data,

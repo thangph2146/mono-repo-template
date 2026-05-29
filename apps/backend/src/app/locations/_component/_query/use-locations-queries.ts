@@ -18,9 +18,10 @@ export function useLocationDetailQuery(
 export function useLocationsListQuery(
   apiParam: StoreSyncSdk,
   enabled: boolean,
+  filters?: Record<string, string>,
 ): UseQueryResult<LocationRow[]> {
   return useQuery({
-    queryKey: ["locations", "list"],
+    queryKey: ["locations", "list", filters],
     queryFn: async (): Promise<LocationRow[]> => {
       const limit = 100;
       const items: LocationRow[] = [];
@@ -28,7 +29,7 @@ export function useLocationsListQuery(
       let total = Number.POSITIVE_INFINITY;
 
       while (items.length < total) {
-        const result = await apiParam.locations.list<LocationRow>({ page, limit, status: "active" });
+        const result = await apiParam.locations.list<LocationRow>({ page, limit, status: "active", ...filters });
         items.push(...result.items);
         total = result.total;
         if (result.items.length === 0) break;
@@ -55,9 +56,10 @@ export function useLocationsTrashQuery({
   trashPageSize,
   debouncedTrashQ,
   enabled,
-}: UseTrashQueryProps): UseQueryResult<PagedResult<LocationRow>> {
+  filters,
+}: UseTrashQueryProps & { filters?: Record<string, string> }): UseQueryResult<PagedResult<LocationRow>> {
   return useQuery({
-    queryKey: ["locations", "trash", trashPage, trashPageSize, debouncedTrashQ],
+    queryKey: ["locations", "trash", trashPage, trashPageSize, debouncedTrashQ, filters],
     enabled,
     queryFn: async (): Promise<PagedResult<LocationRow>> => {
       return apiParam.locations.list<LocationRow>({
@@ -65,6 +67,7 @@ export function useLocationsTrashQuery({
         limit: trashPageSize,
         search: debouncedTrashQ.trim() || undefined,
         status: "deleted",
+        ...filters,
       });
     },
   });

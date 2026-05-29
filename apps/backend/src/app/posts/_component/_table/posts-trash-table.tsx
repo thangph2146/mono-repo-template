@@ -1,32 +1,37 @@
-"use client";
+"use client"
 
-import type { ColumnDef, ColumnFiltersState, OnChangeFn, RowSelectionState } from "@tanstack/react-table";
-import { Button } from "@ui/components/button";
-import { AdminDataTable } from "@/components/admin-data-table";
-import { AdminTablePaginationFooter } from "@/components/admin-table-pagination-footer";
-import { RefreshCw, FilterX } from "lucide-react";
-import type { PostListRow } from "../types";
+import type {
+  ColumnDef,
+  ColumnFiltersState,
+  OnChangeFn,
+  RowSelectionState,
+} from "@tanstack/react-table"
+import { Button } from "@ui/components/button"
+import { AdminDataTable } from "@/components/admin-data-table"
+import { AdminTablePaginationFooter } from "@/components/admin-table-pagination-footer"
+import { RefreshCw, FilterX } from "lucide-react"
+import type { PostListRow } from "../types"
 
 export interface PostsTrashTableProps {
-  data: PostListRow[];
-  columns: ColumnDef<PostListRow>[];
-  isLoading: boolean;
-  columnFilters: ColumnFiltersState;
-  onColumnFiltersChange: OnChangeFn<ColumnFiltersState>;
-  globalFilter: string;
-  onGlobalFilterChange: OnChangeFn<string>;
-  selectedRowIds: RowSelectionState;
-  onSelectedRowIdsChange: OnChangeFn<RowSelectionState>;
-  page: number;
-  pageSize: number;
-  total: number;
-  onPageChange: (page: number) => void;
-  onPageSizeChange: (size: number) => void;
-  onRefresh: () => void;
-  onClearFilters: () => void;
-  onBulkRestore: (rows: PostListRow[]) => Promise<void>;
-  onBulkPurge: (rows: PostListRow[]) => Promise<void>;
-  isFetching?: boolean;
+  data: PostListRow[]
+  columns: ColumnDef<PostListRow>[]
+  isLoading: boolean
+  columnFilters: ColumnFiltersState
+  onColumnFiltersChange: OnChangeFn<ColumnFiltersState>
+  globalFilter: string
+  onGlobalFilterChange: OnChangeFn<string>
+  selectedRowIds: RowSelectionState
+  onSelectedRowIdsChange: OnChangeFn<RowSelectionState>
+  page: number
+  pageSize: number
+  total: number
+  onPageChange: (page: number) => void
+  onPageSizeChange: (size: number) => void
+  onRefresh: () => void
+  onClearFilters: () => void
+  onBulkRestore: (rows: PostListRow[]) => Promise<void>
+  onBulkPurge: (rows: PostListRow[]) => Promise<void>
+  isFetching?: boolean
 }
 
 export function PostsTrashTable({
@@ -69,17 +74,16 @@ export function PostsTrashTable({
             type="button"
             variant="outline"
             onClick={() => {
-              void onRefresh();
+              void onRefresh()
             }}
           >
-            <RefreshCw className={isFetching ? "size-4 animate-spin" : "size-4"} aria-hidden />
+            <RefreshCw
+              className={isFetching ? "size-4 animate-spin" : "size-4"}
+              aria-hidden
+            />
             Làm mới
           </Button>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={onClearFilters}
-          >
+          <Button type="button" variant="destructive" onClick={onClearFilters}>
             <FilterX className="size-4" aria-hidden />
             Xóa bộ lọc
           </Button>
@@ -130,5 +134,5 @@ export function PostsTrashTable({
         />
       }
     />
-  );
+  )
 }

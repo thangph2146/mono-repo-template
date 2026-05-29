@@ -25,8 +25,7 @@ export function getDepartmentColumns({
     {
       accessorKey: "code",
       header: "Mã phòng khoa",
-      enableColumnFilter: true,
-      meta: { filterPlaceholder: "Lọc theo mã…" },
+      enableColumnFilter: false,
       cell: ({ getValue }) => (
         <span className="font-mono text-xs font-medium">
           {String(getValue())}
@@ -36,8 +35,7 @@ export function getDepartmentColumns({
     {
       accessorKey: "name",
       header: "Tên phòng khoa",
-      enableColumnFilter: true,
-      meta: { filterPlaceholder: "Lọc theo tên…" },
+      enableColumnFilter: false,
       cell: ({ row, getValue }) => (
         <button
           type="button"
@@ -59,6 +57,18 @@ export function getDepartmentColumns({
     {
       accessorKey: "status",
       header: "Trạng thái",
+      enableColumnFilter: true,
+      filterFn: (row, columnId, filterValue) => {
+        if (filterValue == null || filterValue === "") return true;
+        return String(row.getValue(columnId)) === String(filterValue);
+      },
+      meta: {
+        filterVariant: "select",
+        selectOptions: [
+          { value: "1", label: "Hoạt động" },
+          { value: "0", label: "Tắt" },
+        ],
+      },
       cell: ({ getValue }) => {
         const status = getValue() as number;
         return status === 1 ? (
@@ -106,11 +116,23 @@ export function getTrashColumns({
     {
       accessorKey: "name",
       header: "Tên phòng khoa",
-      meta: { filterPlaceholder: "Lọc theo tên…" },
+      enableColumnFilter: false,
     },
     {
       accessorKey: "deletedAt",
       header: "Xóa lúc",
+      enableColumnFilter: true,
+      filterFn: (row, columnId, filterValue) => {
+        if (filterValue == null || filterValue === "") return true;
+        const rowVal = row.getValue(columnId) as string;
+        if (!rowVal) return false;
+        const [fromStr, toStr] = String(filterValue).split(",");
+        const rowDate = rowVal.split("T")[0];
+        if (fromStr && rowDate < fromStr) return false;
+        if (toStr && rowDate > toStr) return false;
+        return true;
+      },
+      meta: { filterVariant: "date-range" },
       cell: ({ getValue }) => (
         <span className="text-xs text-muted-foreground">
           {formatDateTime(getValue() as string)}

@@ -14,7 +14,7 @@ export const api = createStoreSyncSdk({
   // Bắt buộc bật rõ: trong browser không có globalThis.process nên api-client
   // không tự nhận NODE_ENV; Next vẫn inline process.env.NODE_ENV ở đây.
   devLogging: process.env.NODE_ENV === "development",
-  devLogTag: "storesync-admin",
+  devLogTag: "HUB_ADMIN",
   getDevAuthContext: () => getAdminDevAuthLogContext(),
 });
 

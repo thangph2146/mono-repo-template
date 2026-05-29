@@ -1,32 +1,37 @@
-"use client";
+"use client"
 
-import type { ColumnDef, ColumnFiltersState, OnChangeFn, RowSelectionState } from "@tanstack/react-table";
-import { Button } from "@ui/components/button";
-import { AdminDataTable } from "@/components/admin-data-table";
-import { AdminTablePaginationFooter } from "@/components/admin-table-pagination-footer";
-import { FilterX, RefreshCw } from "lucide-react";
-import type { LocationRow } from "../types";
+import type {
+  ColumnDef,
+  ColumnFiltersState,
+  OnChangeFn,
+  RowSelectionState,
+} from "@tanstack/react-table"
+import { Button } from "@ui/components/button"
+import { AdminDataTable } from "@/components/admin-data-table"
+import { AdminTablePaginationFooter } from "@/components/admin-table-pagination-footer"
+import { FilterX, RefreshCw } from "lucide-react"
+import type { LocationRow } from "../types"
 
 export interface LocationsTrashTableProps {
-  data: LocationRow[];
-  columns: ColumnDef<LocationRow>[];
-  isLoading: boolean;
-  columnFilters: ColumnFiltersState;
-  onColumnFiltersChange: OnChangeFn<ColumnFiltersState>;
-  globalFilter: string;
-  onGlobalFilterChange: OnChangeFn<string>;
-  selectedRowIds: RowSelectionState;
-  onSelectedRowIdsChange: OnChangeFn<RowSelectionState>;
-  page: number;
-  pageSize: number;
-  total: number;
-  onPageChange: (page: number) => void;
-  onPageSizeChange: (size: number) => void;
-  onRefresh: () => void;
-  onClearFilters: () => void;
-  onBulkRestore: (rows: LocationRow[]) => Promise<void>;
-  onBulkPurge: (rows: LocationRow[]) => Promise<void>;
-  isFetching?: boolean;
+  data: LocationRow[]
+  columns: ColumnDef<LocationRow>[]
+  isLoading: boolean
+  columnFilters: ColumnFiltersState
+  onColumnFiltersChange: OnChangeFn<ColumnFiltersState>
+  globalFilter: string
+  onGlobalFilterChange: OnChangeFn<string>
+  selectedRowIds: RowSelectionState
+  onSelectedRowIdsChange: OnChangeFn<RowSelectionState>
+  page: number
+  pageSize: number
+  total: number
+  onPageChange: (page: number) => void
+  onPageSizeChange: (size: number) => void
+  onRefresh: () => void
+  onClearFilters: () => void
+  onBulkRestore: (rows: LocationRow[]) => Promise<void>
+  onBulkPurge: (rows: LocationRow[]) => Promise<void>
+  isFetching?: boolean
 }
 
 export function LocationsTrashTable({
@@ -58,6 +63,7 @@ export function LocationsTrashTable({
       isLoading={isLoading}
       emptyLabel="Thùng rác trống."
       manualFiltering
+      filterColumnVisibilityKey="admin-table-filter-visibility:locations-trash"
       columnFilters={columnFilters}
       onColumnFiltersChange={onColumnFiltersChange}
       globalFilter={globalFilter}
@@ -65,8 +71,17 @@ export function LocationsTrashTable({
       globalFilterPlaceholder="Tìm trong thùng rác..."
       filterToolbarExtra={
         <div className="flex flex-wrap items-center gap-2">
-          <Button type="button" variant="outline" onClick={() => { void onRefresh(); }}>
-            <RefreshCw className={isFetching ? "size-4 animate-spin" : "size-4"} aria-hidden />
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => {
+              void onRefresh()
+            }}
+          >
+            <RefreshCw
+              className={isFetching ? "size-4 animate-spin" : "size-4"}
+              aria-hidden
+            />
             Làm mới
           </Button>
           <Button type="button" variant="destructive" onClick={onClearFilters}>
@@ -119,5 +134,5 @@ export function LocationsTrashTable({
         />
       }
     />
-  );
+  )
 }

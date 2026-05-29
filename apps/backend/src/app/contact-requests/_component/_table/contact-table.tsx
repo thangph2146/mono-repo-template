@@ -198,7 +198,7 @@ export function ContactRequestTable(props: ContactRequestTableProps) {
           </div>
           <Button
             type="button"
-            variant="outline"
+            variant="destructive"
             onClick={onClearFilters}
           >
             <FilterX className="size-4" aria-hidden />

@@ -18,6 +18,11 @@ export interface ListTrainingLevelsParams {
   limit: number;
   search?: string;
   status?: 'active' | 'deleted' | 'all';
+  statusFilter?: number;
+  updatedAtFrom?: string;
+  updatedAtTo?: string;
+  deletedAtFrom?: string;
+  deletedAtTo?: string;
 }
 
 export interface ListTrainingLevelsResult {
@@ -73,6 +78,27 @@ export class TrainingLevelsService {
     const status = params.status ?? 'active';
     if (status === 'deleted') where.deletedAt = { $ne: null };
     else if (status === 'active') where.deletedAt = null;
+    if (params.statusFilter != null) where.status = params.statusFilter;
+    if (params.updatedAtFrom)
+      where.updatedAt = {
+        ...(where.updatedAt ?? {}),
+        $gte: new Date(params.updatedAtFrom),
+      };
+    if (params.updatedAtTo)
+      where.updatedAt = {
+        ...(where.updatedAt ?? {}),
+        $lte: new Date(params.updatedAtTo),
+      };
+    if (params.deletedAtFrom)
+      where.deletedAt = {
+        ...(where.deletedAt ?? {}),
+        $gte: new Date(params.deletedAtFrom),
+      };
+    if (params.deletedAtTo)
+      where.deletedAt = {
+        ...(where.deletedAt ?? {}),
+        $lte: new Date(params.deletedAtTo),
+      };
     if (params.search?.trim()) {
       const q = params.search.trim();
       where.$or = [

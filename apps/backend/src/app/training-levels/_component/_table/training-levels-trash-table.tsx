@@ -58,6 +58,7 @@ export function TrainingLevelsTrashTable({
       isLoading={isLoading}
       emptyLabel="Thùng rác trống."
       manualFiltering
+      filterColumnVisibilityKey="admin-table-filter-visibility:training-levels-trash"
       columnFilters={columnFilters}
       onColumnFiltersChange={onColumnFiltersChange}
       globalFilter={globalFilter}

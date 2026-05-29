@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@ui/c
 import { FieldError } from "@ui/components/field";
 import { Input } from "@ui/components/input";
 import { FormFieldCol } from "@ui/components/typing";
+import { TreePicker } from "@ui/components/pickers";
 import { TypographyH1 } from "@ui/components/typography";
 import { Controller, type UseFormReturn } from "react-hook-form";
 import { cn } from "@ui/lib/utils";
@@ -47,7 +48,15 @@ export function CameraFormShell({ form, onSubmit, submitting, editingId, onBack,
           <Card className="border border-border/70 shadow-sm">
             <CardHeader className="pb-2"><CardTitle className="flex items-center gap-2 text-lg text-muted-foreground"><Hash className="size-5" /> Trạng thái</CardTitle></CardHeader>
             <CardContent className="space-y-3">
-              <Controller name="status" control={control} render={({ field }) => (<FormFieldCol label="Trạng thái"><select value={field.value} onChange={e => field.onChange(Number(e.target.value))} className="flex h-9 w-full rounded-lg border border-input bg-transparent px-2.5 py-1 text-sm"><option value={1}>Hoạt động</option><option value={0}>Khóa</option></select></FormFieldCol>)} />
+              <Controller name="status" control={control} render={({ field }) => (<FormFieldCol label="Trạng thái"><TreePicker
+                            value={String(field.value)}
+                            onChange={(v) => field.onChange(v != null ? Number(v) : 1)}
+                            options={[
+                              { value: "1", label: "Hoạt động" },
+                              { value: "0", label: "Khóa" },
+                            ]}
+                            placeholder="Chọn trạng thái"
+                          /></FormFieldCol>)} />
             </CardContent>
           </Card>
         </div>

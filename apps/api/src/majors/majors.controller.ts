@@ -65,6 +65,11 @@ export class MajorsController {
     @Query('limit') limit?: string,
     @Query('search') search?: string,
     @Query('status') status?: string,
+    @Query('statusFilter') statusFilter?: string,
+    @Query('updatedAtFrom') updatedAtFrom?: string,
+    @Query('updatedAtTo') updatedAtTo?: string,
+    @Query('deletedAtFrom') deletedAtFrom?: string,
+    @Query('deletedAtTo') deletedAtTo?: string,
   ) {
     const userId = this.getUserId(headers);
     if (!userId) return this.unauthorized(res);
@@ -73,6 +78,11 @@ export class MajorsController {
       limit: Math.min(100, Math.max(1, parseInt(String(limit), 10) || 10)),
       search: search?.trim(),
       status: (status as 'active' | 'deleted' | 'all') ?? 'active',
+      statusFilter: statusFilter != null ? Number(statusFilter) : undefined,
+      updatedAtFrom: updatedAtFrom?.trim(),
+      updatedAtTo: updatedAtTo?.trim(),
+      deletedAtFrom: deletedAtFrom?.trim(),
+      deletedAtTo: deletedAtTo?.trim(),
     });
     const { statusCode, body } = createSuccessResponse({
       data: result.data,

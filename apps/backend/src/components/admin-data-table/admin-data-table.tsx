@@ -135,6 +135,8 @@ export type AdminDataTableProps<TData> = {
   selectedRowIds?: RowSelectionState;
   onSelectedRowIdsChange?: OnChangeFn<RowSelectionState>;
   bulkActions?: AdminDataTableBulkAction<TData>[];
+  /** localStorage key để lưu trạng thái hiển thị filter cột (mặc định: không lưu) */
+  filterColumnVisibilityKey?: string;
 };
 
 function includesText(a: unknown, q: string): boolean {
@@ -178,6 +180,7 @@ export function AdminDataTable<TData>({
   selectedRowIds: selectedRowIdsControlled,
   onSelectedRowIdsChange,
   bulkActions = [],
+  filterColumnVisibilityKey,
 }: AdminDataTableProps<TData>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFiltersInternal, setColumnFiltersInternal] =
@@ -235,6 +238,21 @@ export function AdminDataTable<TData>({
   const [expanded, setExpanded] = useState<ExpandedState>(
     defaultExpandedAll ? true : {},
   );
+
+  // Filter column visibility — lưu localStorage
+  const storageKey = filterColumnVisibilityKey;
+  const [filterColumnVisibility, setFilterColumnVisibility] = useState<Record<string, boolean>>(() => {
+    if (!storageKey) return {};
+    try {
+      const saved = localStorage.getItem(storageKey);
+      return saved ? JSON.parse(saved) : {};
+    } catch { return {}; }
+  });
+
+  useEffect(() => {
+    if (!storageKey) return;
+    localStorage.setItem(storageKey, JSON.stringify(filterColumnVisibility));
+  }, [filterColumnVisibility, storageKey]);
 
   const expanderColumn = useMemo<ColumnDef<TData, unknown>>(
     () => ({
@@ -440,6 +458,30 @@ export function AdminDataTable<TData>({
         h.column.getCanFilter() &&
         !h.column.columnDef.meta?.disableColumnFilter,
     );
+
+  const visibleFilterableHeaders = useMemo(() => {
+    if (!storageKey) return filterableHeaders;
+    return filterableHeaders.filter(h => filterColumnVisibility[h.id] !== false);
+  }, [filterableHeaders, filterColumnVisibility, storageKey]);
+
+  const filterColumnOptions = useMemo((): Array<{ value: string; label: string }> => {
+    return filterableHeaders.map(h => ({
+      value: h.id,
+      label: columnFilterToolbarLabel(h),
+    }));
+  }, [filterableHeaders]);
+
+  const handleFilterColumnVisibilityChange = useCallback((v: unknown) => {
+    if (v === undefined || v === null) {
+      const next: Record<string, boolean> = {};
+      filterableHeaders.forEach(h => { next[h.id] = true; });
+      setFilterColumnVisibility(next);
+    } else if (Array.isArray(v)) {
+      const next: Record<string, boolean> = {};
+      filterableHeaders.forEach(h => { next[h.id] = v.includes(h.id); });
+      setFilterColumnVisibility(next);
+    }
+  }, [filterableHeaders]);
 
   // Debounced column filter input component
   function DebouncedFilterInput({
@@ -665,11 +707,23 @@ export function AdminDataTable<TData>({
           {filterableHeaders.length > 0 && (
             <div className="space-y-2">
               <Separator />
-              <TypographyPSmall className="font-semibold">
-                Lọc theo cột
-              </TypographyPSmall>
+              <div className="flex items-center gap-2 flex-wrap">
+                <TypographyPSmall className="font-semibold">
+                  Lọc theo cột
+                </TypographyPSmall>
+                {filterColumnVisibilityKey && (
+                  <div className="min-w-[14rem]">
+                    <TreeMultiSelectPicker
+                      value={filterableHeaders.filter(h => filterColumnVisibility[h.id] !== false).map(h => h.id)}
+                      onChange={handleFilterColumnVisibilityChange}
+                      options={filterColumnOptions}
+                      placeholder="Chọn cột lọc"
+                    />
+                  </div>
+                )}
+              </div>
               <div className="flex flex-wrap gap-x-4 gap-y-3 items-end">
-                {filterableHeaders.map((header) => (
+                {visibleFilterableHeaders.map((header) => (
                   <div
                     key={header.id}
                     className="flex flex-col gap-1 min-w-[min(100%,12rem)] w-[12rem]"

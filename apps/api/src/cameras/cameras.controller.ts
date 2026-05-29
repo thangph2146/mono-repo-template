@@ -45,6 +45,11 @@ export class CamerasController {
     @Query('limit') limit?: string,
     @Query('search') search?: string,
     @Query('status') status?: string,
+    @Query('statusFilter') statusFilter?: string,
+    @Query('updatedAtFrom') updatedAtFrom?: string,
+    @Query('updatedAtTo') updatedAtTo?: string,
+    @Query('deletedAtFrom') deletedAtFrom?: string,
+    @Query('deletedAtTo') deletedAtTo?: string,
   ) {
     if (!this.getUserId(headers)) return this.unauthorized(res);
     const result = await this.camerasService.list({
@@ -52,6 +57,11 @@ export class CamerasController {
       limit: Math.min(100, Math.max(1, parseInt(String(limit), 10) || 10)),
       search: search?.trim(),
       status: (status as any) ?? 'active',
+      statusFilter: statusFilter != null ? Number(statusFilter) : undefined,
+      updatedAtFrom: updatedAtFrom?.trim(),
+      updatedAtTo: updatedAtTo?.trim(),
+      deletedAtFrom: deletedAtFrom?.trim(),
+      deletedAtTo: deletedAtTo?.trim(),
     });
     const { statusCode, body } = createSuccessResponse({
       data: result.data,

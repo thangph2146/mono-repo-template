@@ -1,11 +1,100 @@
-"use client";
-import type { ColumnDef, ColumnFiltersState, OnChangeFn, RowSelectionState } from "@tanstack/react-table";
-import { Button } from "@ui/components/button";
-import { AdminDataTable } from "@/components/admin-data-table";
-import { RefreshCw, FilterX } from "lucide-react";
-import type { CameraRow } from "../types";
-export function CamerasTable({ data, columns, isLoading, columnFilters, onColumnFiltersChange, globalFilter, onGlobalFilterChange, selectedRowIds, onSelectedRowIdsChange, total, onRefresh, onClearFilters, onBulkDelete, isFetching }: {
-  data: CameraRow[]; columns: ColumnDef<CameraRow>[]; isLoading: boolean; columnFilters: ColumnFiltersState; onColumnFiltersChange: OnChangeFn<ColumnFiltersState>; globalFilter: string; onGlobalFilterChange: OnChangeFn<string>; selectedRowIds: RowSelectionState; onSelectedRowIdsChange: OnChangeFn<RowSelectionState>; total: number; onRefresh: () => void; onClearFilters: () => void; onBulkDelete: (rows: CameraRow[]) => Promise<void>; isFetching?: boolean;
+"use client"
+import type {
+  ColumnDef,
+  ColumnFiltersState,
+  OnChangeFn,
+  RowSelectionState,
+} from "@tanstack/react-table"
+import { Button } from "@ui/components/button"
+import { AdminDataTable } from "@/components/admin-data-table"
+import { RefreshCw, FilterX } from "lucide-react"
+import type { CameraRow } from "../types"
+export function CamerasTable({
+  data,
+  columns,
+  isLoading,
+  columnFilters,
+  onColumnFiltersChange,
+  globalFilter,
+  onGlobalFilterChange,
+  selectedRowIds,
+  onSelectedRowIdsChange,
+  total,
+  onRefresh,
+  onClearFilters,
+  onBulkDelete,
+  isFetching,
+}: {
+  data: CameraRow[]
+  columns: ColumnDef<CameraRow>[]
+  isLoading: boolean
+  columnFilters: ColumnFiltersState
+  onColumnFiltersChange: OnChangeFn<ColumnFiltersState>
+  globalFilter: string
+  onGlobalFilterChange: OnChangeFn<string>
+  selectedRowIds: RowSelectionState
+  onSelectedRowIdsChange: OnChangeFn<RowSelectionState>
+  total: number
+  onRefresh: () => void
+  onClearFilters: () => void
+  onBulkDelete: (rows: CameraRow[]) => Promise<void>
+  isFetching?: boolean
 }) {
-  return (<AdminDataTable<CameraRow> data={data} getRowId={(r) => r.id} columns={columns} isLoading={isLoading} emptyLabel='Chưa có camera — bấm "Thêm camera".' columnFilters={columnFilters} onColumnFiltersChange={onColumnFiltersChange} globalFilter={globalFilter} onGlobalFilterChange={onGlobalFilterChange} globalFilterPlaceholder="Tìm theo tên..." filterToolbarExtra={<div className="flex flex-wrap items-center gap-2"><Button variant="outline" onClick={() => { void onRefresh(); }}><RefreshCw className={isFetching ? "size-4 animate-spin" : "size-4"} /> Làm mới</Button><Button variant="outline" onClick={onClearFilters}><FilterX className="size-4" /> Xóa bộ lọc</Button></div>} csvExport={{ fileName: "camera.csv" }} rowSelectionEnabled selectedRowIds={selectedRowIds} onSelectedRowIdsChange={onSelectedRowIdsChange} bulkActions={[{ id: "bulk-camera-delete", label: "Xóa tạm đã chọn", variant: "destructive", confirm: { title: "Xóa camera?", description: (rows) => `${rows.length} camera sẽ vào thùng rác.`, confirmLabel: "Xóa tạm", destructive: true }, onAction: onBulkDelete }]} footer={<p className="text-sm text-muted-foreground">{isLoading ? "Đang tải..." : `Tổng ${total} camera`}</p>} />);
+  return (
+    <AdminDataTable<CameraRow>
+      data={data}
+      getRowId={(r) => r.id}
+      columns={columns}
+      isLoading={isLoading}
+      emptyLabel='Chưa có camera — bấm "Thêm camera".'
+      manualFiltering
+      filterColumnVisibilityKey="admin-table-filter-visibility:cameras-list"
+      columnFilters={columnFilters}
+      onColumnFiltersChange={onColumnFiltersChange}
+      globalFilter={globalFilter}
+      onGlobalFilterChange={onGlobalFilterChange}
+      globalFilterPlaceholder="Tìm theo tên..."
+      filterToolbarExtra={
+        <div className="flex flex-wrap items-center gap-2">
+          <Button
+            variant="outline"
+            onClick={() => {
+              void onRefresh()
+            }}
+          >
+            <RefreshCw
+              className={isFetching ? "size-4 animate-spin" : "size-4"}
+            />{" "}
+            Làm mới
+          </Button>
+          <Button variant="destructive" onClick={onClearFilters}>
+            <FilterX className="size-4" /> Xóa bộ lọc
+          </Button>
+        </div>
+      }
+      csvExport={{ fileName: "camera.csv" }}
+      rowSelectionEnabled
+      selectedRowIds={selectedRowIds}
+      onSelectedRowIdsChange={onSelectedRowIdsChange}
+      bulkActions={[
+        {
+          id: "bulk-camera-delete",
+          label: "Xóa tạm đã chọn",
+          variant: "destructive",
+          confirm: {
+            title: "Xóa camera?",
+            description: (rows) => `${rows.length} camera sẽ vào thùng rác.`,
+            confirmLabel: "Xóa tạm",
+            destructive: true,
+          },
+          onAction: onBulkDelete,
+        },
+      ]}
+      footer={
+        <p className="text-sm text-muted-foreground">
+          {isLoading ? "Đang tải..." : `Tổng ${total} camera`}
+        </p>
+      }
+    />
+  )
 }

@@ -30,8 +30,10 @@ function ScreensPageInner() {
   const [cF, setCF] = useState<ColumnFiltersState>([]); const [tCF, setTCF] = useState<ColumnFiltersState>([]);
   const [lS, setLS] = useState<RowSelectionState>({}); const [tS, setTS] = useState<RowSelectionState>({});
   const dQ = useDebouncedValue(tGF, 350);
-  const listQ = useScreensListQuery(api, canWrite || true);
-  const trashQ = useScreensTrashQuery({ api: api, trashPage: tP, trashPageSize: tPS, debouncedTrashQ: dQ, enabled: mainTab === "trash" });
+  const listFilterParams = useMemo(() => { const p: Record<string, string> = {}; for (const f of cF) { if (f.id === "status") { p.statusFilter = String(f.value); } } return p; }, [cF]);
+  const trashFilterParams = useMemo(() => { const p: Record<string, string> = {}; for (const f of tCF) { if (f.id === "deletedAt" && typeof f.value === "string") { const [a, b] = f.value.split(","); if (a) p.deletedAtFrom = a; if (b) p.deletedAtTo = b; } } return p; }, [tCF]);
+  const listQ = useScreensListQuery(api, canWrite || true, listFilterParams);
+  const trashQ = useScreensTrashQuery({ api: api, trashPage: tP, trashPageSize: tPS, debouncedTrashQ: dQ, enabled: mainTab === "trash", filters: trashFilterParams });
   const delM = useMutation({ mutationFn: (id: string) => api.screens.remove(id), onSuccess: invalidateAll });
   const resM = useMutation({ mutationFn: (id: string) => api.screens.restore(id), onSuccess: invalidateAll });
   const purM = useMutation({ mutationFn: (id: string) => api.screens.purge(id), onSuccess: invalidateAll });

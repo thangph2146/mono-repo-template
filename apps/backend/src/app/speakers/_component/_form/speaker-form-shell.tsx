@@ -1,16 +1,20 @@
 "use client";
 
+import { useRef, useState } from "react";
+import { toast } from "sonner";
 import { Button } from "@ui/components/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@ui/components/card";
 import { FieldError } from "@ui/components/field";
 import { Input } from "@ui/components/input";
 import { Textarea } from "@ui/components/textarea";
 import { FormFieldCol } from "@ui/components/typing";
+import { TreePicker } from "@ui/components/pickers";
 import { TypographyH1 } from "@ui/components/typography";
 import { Controller, type UseFormReturn } from "react-hook-form";
 import { cn } from "@ui/lib/utils";
 import { ADMIN_PAGE_SUBTITLE_CLASS, ADMIN_PAGE_TITLE_PRIMARY_CLASS } from "@ui/lib/layout-shell";
-import { ArrowLeft, Hash, User, Briefcase } from "lucide-react";
+import { ArrowLeft, Camera, Hash, Loader2, User, Briefcase } from "lucide-react";
+import { DEFAULT_API_URL } from "@workspace/api-client";
 import type { SpeakerFormValues } from "../types";
 
 export interface SpeakerFormShellProps {
@@ -30,7 +34,43 @@ export function SpeakerFormShell({
   onBack,
   onReset,
 }: SpeakerFormShellProps) {
-  const { control } = form;
+  const { control, watch, setValue } = form;
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const avatarInputRef = useRef<HTMLInputElement>(null);
+
+  const avatarValue = watch("avatar");
+  const nameValue = watch("name");
+
+  function initials(name: string): string {
+    const parts = name.trim().split(/\s+/).filter(Boolean);
+    if (parts.length === 0) return "?";
+    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+    return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
+  }
+
+  const handleUploadAvatar = async (file: File) => {
+    setUploadingAvatar(true);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      fd.append("folderPath", "avatars");
+      const baseUrl = (process.env.NEXT_PUBLIC_API_URL ?? DEFAULT_API_URL).replace(/\/$/, "");
+      const res = await fetch(`${baseUrl}/admin/uploads`, {
+        method: "POST",
+        body: fd,
+      });
+      if (!res.ok) throw new Error("Upload thất bại");
+      const json = (await res.json()) as { data?: { url?: string } };
+      const url = json.data?.url;
+      if (!url) throw new Error("Không nhận được URL ảnh");
+      setValue("avatar", url);
+      toast.success("Đã tải ảnh đại diện");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Lỗi upload ảnh");
+    } finally {
+      setUploadingAvatar(false);
+    }
+  };
 
   return (
     <>
@@ -73,6 +113,61 @@ export function SpeakerFormShell({
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
+                
+              <FormFieldCol label="Ảnh đại diện">
+                  <div className="flex items-center gap-4">
+                    <div className="relative size-20 shrink-0">
+                      {avatarValue ? (
+                        <img
+                          src={avatarValue}
+                          alt="Avatar"
+                          className="size-20 rounded-full border-2 border-border/60 object-cover shadow-sm"
+                        />
+                      ) : (
+                        <div className="flex size-20 items-center justify-center rounded-full border-2 border-border/60 bg-muted text-lg font-bold text-muted-foreground">
+                          {nameValue ? initials(nameValue) : "?"}
+                        </div>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => avatarInputRef.current?.click()}
+                        disabled={uploadingAvatar}
+                        className="absolute -bottom-1 -right-1 flex size-7 items-center justify-center rounded-full border border-border bg-background shadow-sm hover:bg-accent disabled:opacity-50"
+                        title="Tải ảnh đại diện"
+                      >
+                        {uploadingAvatar ? (
+                          <Loader2 className="size-3.5 animate-spin text-muted-foreground" />
+                        ) : (
+                          <Camera className="size-3.5 text-muted-foreground" />
+                        )}
+                      </button>
+                      <input
+                        ref={avatarInputRef}
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) void handleUploadAvatar(file);
+                        }}
+                      />
+                    </div>
+                    <Controller
+                      name="avatar"
+                      control={control}
+                      render={({ field }) => (
+                        <div className="min-w-0 flex-1 space-y-1">
+                          <p className="text-xs text-muted-foreground">URL ảnh đại diện</p>
+                          <Input
+                            placeholder="https://example.com/avatar.jpg"
+                            {...field}
+                            value={field.value ?? ""}
+                          />
+                        </div>
+                      )}
+                    />
+                  </div>
+                </FormFieldCol>
                 <Controller
                   name="name"
                   control={control}
@@ -134,6 +229,7 @@ export function SpeakerFormShell({
                     </FormFieldCol>
                   )}
                 />
+
               </CardContent>
             </Card>
 
@@ -175,19 +271,6 @@ export function SpeakerFormShell({
                     )}
                   />
                 </div>
-
-                <Controller
-                  name="avatar"
-                  control={control}
-                  render={({ field }) => (
-                    <FormFieldCol label="URL ảnh đại diện">
-                      <Input
-                        placeholder="https://example.com/avatar.jpg"
-                        {...field}
-                      />
-                    </FormFieldCol>
-                  )}
-                />
               </CardContent>
             </Card>
           </div>
@@ -206,14 +289,15 @@ export function SpeakerFormShell({
                   control={control}
                   render={({ field }) => (
                     <FormFieldCol label="Trạng thái">
-                      <select
-                        value={field.value}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
-                        className="flex h-9 w-full rounded-lg border border-input bg-transparent px-2.5 py-1 text-sm transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
-                      >
-                        <option value={1}>Hoạt động</option>
-                        <option value={0}>Khóa</option>
-                      </select>
+                      <TreePicker
+                        value={String(field.value)}
+                        onChange={(v) => field.onChange(v != null ? Number(v) : 1)}
+                        options={[
+                          { value: "1", label: "Hoạt động" },
+                          { value: "0", label: "Khóa" },
+                        ]}
+                        placeholder="Chọn trạng thái"
+                      />
                     </FormFieldCol>
                   )}
                 />

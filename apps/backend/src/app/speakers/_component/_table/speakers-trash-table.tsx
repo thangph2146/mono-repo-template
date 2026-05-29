@@ -27,6 +27,7 @@ export interface SpeakersTrashTableProps {
   onBulkRestore: (rows: SpeakerRow[]) => Promise<void>;
   onBulkPurge: (rows: SpeakerRow[]) => Promise<void>;
   isFetching?: boolean;
+  manualFiltering?: boolean;
 }
 
 export function SpeakersTrashTable({
@@ -49,6 +50,7 @@ export function SpeakersTrashTable({
   onBulkRestore,
   onBulkPurge,
   isFetching,
+  manualFiltering: manualFilteringProp,
 }: SpeakersTrashTableProps) {
   return (
     <AdminDataTable<SpeakerRow>
@@ -57,7 +59,8 @@ export function SpeakersTrashTable({
       columns={columns}
       isLoading={isLoading}
       emptyLabel="Thùng rác trống."
-      manualFiltering
+      manualFiltering={manualFilteringProp}
+      filterColumnVisibilityKey="admin-table-filter-visibility:speakers-trash"
       columnFilters={columnFilters}
       onColumnFiltersChange={onColumnFiltersChange}
       globalFilter={globalFilter}

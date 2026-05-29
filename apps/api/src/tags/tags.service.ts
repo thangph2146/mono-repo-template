@@ -37,6 +37,11 @@ export interface ListTagsParams {
   search?: string;
   status?: 'active' | 'deleted' | 'all';
   filters?: Record<string, string>;
+  statusFilter?: number;
+  updatedAtFrom?: string;
+  updatedAtTo?: string;
+  deletedAtFrom?: string;
+  deletedAtTo?: string;
 }
 
 export interface ListTagsResult {
@@ -112,6 +117,27 @@ export class TagsService {
       ];
     }
 
+    if (params.statusFilter != null) where.status = params.statusFilter;
+    if (params.updatedAtFrom)
+      where.updatedAt = {
+        ...(where.updatedAt ?? {}),
+        $gte: new Date(params.updatedAtFrom),
+      };
+    if (params.updatedAtTo)
+      where.updatedAt = {
+        ...(where.updatedAt ?? {}),
+        $lte: new Date(params.updatedAtTo),
+      };
+    if (params.deletedAtFrom)
+      where.deletedAt = {
+        ...(where.deletedAt ?? {}),
+        $gte: new Date(params.deletedAtFrom),
+      };
+    if (params.deletedAtTo)
+      where.deletedAt = {
+        ...(where.deletedAt ?? {}),
+        $lte: new Date(params.deletedAtTo),
+      };
     if (params.filters) {
       for (const [key, value] of Object.entries(params.filters)) {
         if (!value?.trim()) continue;
