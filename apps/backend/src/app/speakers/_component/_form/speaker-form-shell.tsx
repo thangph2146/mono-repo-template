@@ -25,6 +25,7 @@ import {
 import { ArrowLeft, Camera, Hash, Loader2, User } from "lucide-react"
 import { DEFAULT_API_URL } from "@workspace/api-client"
 import type { SpeakerFormValues } from "../types"
+import Image from "next/image"
 
 export interface SpeakerFormShellProps {
   form: UseFormReturn<SpeakerFormValues>
@@ -149,10 +150,13 @@ export function SpeakerFormShell({
                   <div className="flex items-start gap-4">
                     <div className="relative aspect-[3/4] w-40 shrink-0 sm:w-60">
                       {avatarValue ? (
-                        <img
+                        <Image
                           src={avatarValue}
                           alt="Avatar"
-                          className="h-full w-full rounded-lg border-2 border-border/60 object-cover shadow-sm"
+                          fill
+                          sizes="(max-width: 640px) 160px, (max-width: 1024px) 240px, (max-width: 1280px) 320px, (max-width: 1536px) 400px, 480px"
+                          unoptimized
+                          className="rounded-lg border-2 border-border/60 object-cover shadow-sm"
                         />
                       ) : (
                         <div className="flex h-full w-full items-center justify-center rounded-lg border-2 border-border/60 bg-muted text-lg font-bold text-muted-foreground">

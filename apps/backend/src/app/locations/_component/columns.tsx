@@ -63,10 +63,10 @@ export function getLocationColumns({
       },
       cell: ({ getValue }) => {
         const status = getValue() as number | null;
-        return status === 1 ? (
-          <Badge variant="default" className="text-[10px]">Hoạt động</Badge>
-        ) : (
+        return status === 0 ? (
           <Badge variant="outline" className="text-[10px]">Khóa</Badge>
+        ) : (
+          <Badge variant="default" className="text-[10px]">Hoạt động</Badge>
         );
       },
     },

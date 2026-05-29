@@ -52,6 +52,7 @@ export const ADMIN_ROUTES = {
   DEPARTMENTS: 'admin/departments',
   EVENT_REGISTRATIONS: 'admin/event-registrations',
   EVENT_CHECKINS: 'admin/event-checkins',
+  EVENT_CHECKOUTS: 'admin/event-checkouts',
   EVENT_SPEAKERS: 'admin/event-speakers',
   FACE_DATA: 'admin/face-data',
   SEO_METAS: 'admin/seo-metas',

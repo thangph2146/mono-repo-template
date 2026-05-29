@@ -41,6 +41,7 @@ export { AcademicYearsApi } from './resources/academic-years';
 export { EventsApi } from './resources/events';
 export { EventRegistrationsApi } from './resources/event-registrations';
 export { EventCheckinsApi } from './resources/event-checkins';
+export { EventCheckoutsApi } from './resources/event-checkouts';
 export { EventSpeakersApi } from './resources/event-speakers';
 export { FaceDataApi } from './resources/face-data';
 export { CamerasApi } from './resources/cameras';

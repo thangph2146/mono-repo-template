@@ -81,7 +81,12 @@ function mapRow(r: Event): EventRowDto {
     slug: r.slug ?? null,
     poster: r.poster ?? null,
     description: r.description ?? null,
-    content: r.content ?? null,
+    content:
+      r.content != null
+        ? typeof r.content === 'string'
+          ? JSON.parse(r.content)
+          : r.content
+        : null,
     startDate: toIso(r.startDate),
     endDate: toIso(r.endDate),
     checkinStart: toIso(r.checkinStart),

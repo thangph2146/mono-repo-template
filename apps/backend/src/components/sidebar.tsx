@@ -472,7 +472,7 @@ function SidebarLeafLink({
           ? nested
             ? "bg-white/20 text-white"
             : "bg-white/20 text-white"
-          : "text-white/88 hover:bg-white/20 hover:text-white"
+          : "text-white/88 hover:bg-white/15 hover:text-white"
       )}
     >
       {isActive && !collapsed ? (
@@ -618,7 +618,7 @@ function TreeNav({
                 "group flex w-full items-center gap-3 rounded-lg px-3 py-1.5 text-left transition-all duration-200",
                 groupActive
                   ? "mb-1 bg-white/20 text-white"
-                  : "text-white/90 hover:bg-white/7 hover:text-white"
+                  : "text-white/90 hover:bg-white/15 hover:text-white"
               )}
             >
               <span
@@ -718,7 +718,7 @@ export function MobileSidebarPanel({ onNavigate }: { onNavigate: () => void }) {
       <div className="shrink-0 px-4 pt-5 pb-4">
         <Link
           href="/"
-          className="group flex items-center gap-3 rounded-lg px-2 py-2 transition-all duration-200 hover:bg-white/5"
+          className="group flex items-center gap-3 rounded-lg px-2 py-2 transition-all duration-200 hover:bg-white/15"
           onClick={onNavigate}
         >
           <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-white/12 ring-1 ring-white/12 transition-transform duration-200 group-hover:scale-[1.03]">
@@ -763,7 +763,7 @@ export function MobileSidebarPanel({ onNavigate }: { onNavigate: () => void }) {
             type="button"
             variant="ghost"
             size="icon"
-            className="size-9 shrink-0 rounded-lg text-white/72 hover:bg-white/8 hover:text-white"
+            className="size-9 shrink-0 rounded-lg text-white/72 hover:bg-white/15 hover:text-white"
             onClick={() => {
               onNavigate()
               void logout()
@@ -802,7 +802,7 @@ export function Sidebar({ collapsed }: SidebarProps) {
         <Link
           href="/"
           className={cn(
-            "group flex transition-all duration-200 hover:bg-white/5",
+            "group flex transition-all duration-200 hover:bg-white/15",
             collapsed
               ? "justify-center rounded-lg p-2.5"
               : "items-center gap-3 rounded-lg px-2 py-2"
@@ -833,7 +833,7 @@ export function Sidebar({ collapsed }: SidebarProps) {
             aria-label="Đăng xuất"
             onClick={() => logout()}
             variant="ghost"
-            className="size-10 rounded-lg text-white/72 hover:bg-white/8 hover:text-white"
+            className="size-10 rounded-lg text-white/72 hover:bg-white/15 hover:text-white"
           >
             <LogOut aria-hidden className="size-4" />
           </Button>

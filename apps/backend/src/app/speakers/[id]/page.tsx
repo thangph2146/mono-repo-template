@@ -2,6 +2,7 @@
 
 import { useEffect } from "react"
 import { useRouter, useParams } from "next/navigation"
+import Image from "next/image"
 import { toast } from "sonner"
 import {
   Loader2,
@@ -19,7 +20,13 @@ import {
 import { PageSection } from "@ui/components/layout"
 import { Badge } from "@ui/components/badge"
 import { Button } from "@ui/components/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@ui/components/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@ui/components/card"
 import { AdminPageGuard } from "@/components/admin-page-guard"
 import { useAuth } from "@/providers/auth-provider"
 import { PERMISSION_CODES, canUserAccess } from "@workspace/api-client"
@@ -32,9 +39,11 @@ import {
 } from "@ui/lib/layout-shell"
 
 function formatDateTime(value: string | null | undefined): string {
-  if (!value) return "Chưa ghi nhận";
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? "Chưa ghi nhận" : date.toLocaleString("vi-VN");
+  if (!value) return "Chưa ghi nhận"
+  const date = new Date(value)
+  return Number.isNaN(date.getTime())
+    ? "Chưa ghi nhận"
+    : date.toLocaleString("vi-VN")
 }
 
 function initials(name: string): string {
@@ -49,7 +58,9 @@ function SpeakerDetailInner() {
   const params = useParams()
   const id = params.id as string
   const { user } = useAuth()
-  const canUpdate = user ? canUserAccess(user, PERMISSION_CODES.SPEAKERS_UPDATE) : false
+  const canUpdate = user
+    ? canUserAccess(user, PERMISSION_CODES.SPEAKERS_UPDATE)
+    : false
 
   const { data: entity, isLoading, isError } = useSpeakerDetailQuery(api, id)
 
@@ -76,34 +87,34 @@ function SpeakerDetailInner() {
   return (
     <PageSection max="full" className="min-w-0 space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="w-full flex justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => router.push("/speakers")}
-          >
-            <ArrowLeft className="size-4" />
-            Quay lại
-          </Button>
-          <div className="flex flex-col">
-            <TypographyH2 className={ADMIN_PAGE_TITLE_COMPACT_CLASS}>
-              {entity.name}
-            </TypographyH2>
-            <p className={ADMIN_PAGE_SUBTITLE_CLASS}>
-              <span className="text-muted-foreground/60">Diễn giả</span>
-            </p>
-          </div>
+        <div className="flex w-full justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => router.push("/speakers")}
+            >
+              <ArrowLeft className="size-4" />
+              Quay lại
+            </Button>
+            <div className="flex flex-col">
+              <TypographyH2 className={ADMIN_PAGE_TITLE_COMPACT_CLASS}>
+                {entity.name}
+              </TypographyH2>
+              <p className={ADMIN_PAGE_SUBTITLE_CLASS}>
+                <span className="text-muted-foreground/60">Diễn giả</span>
+              </p>
+            </div>
           </div>
           {canUpdate && (
-          <Button
-            type="button"
-            variant="default"
-            onClick={() => router.push(`/speakers/${id}/edit`)}
-          >
-            <Pencil className="size-4" />
-            Chỉnh sửa
-          </Button>
+            <Button
+              type="button"
+              variant="default"
+              onClick={() => router.push(`/speakers/${id}/edit`)}
+            >
+              <Pencil className="size-4" />
+              Chỉnh sửa
+            </Button>
           )}
         </div>
       </div>
@@ -114,25 +125,27 @@ function SpeakerDetailInner() {
             <User className="size-5 text-primary" />
             Thông tin diễn giả
           </CardTitle>
-          <CardDescription>
-            Thông tin cơ bản của diễn giả.
-          </CardDescription>
+          <CardDescription>Thông tin cơ bản của diễn giả.</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex gap-6">
-            <div className="aspect-[3/4] w-40 shrink-0 sm:w-48">
+          <div className="flex items-start gap-4">
+            <div className="relative aspect-[3/4] w-40 shrink-0 sm:w-60">
               {entity.avatar ? (
-                <img
+                <Image
                   src={entity.avatar}
                   alt={entity.name}
-                  className="h-full w-full rounded-lg ring-2 ring-primary/20 object-cover shadow-xl"
+                  fill
+                  sizes="(max-width: 640px) 160px, (max-width: 1024px) 240px, (max-width: 1280px) 320px, (max-width: 1536px) 400px, 480px"
+                  unoptimized
+                  className="rounded-lg border-2 border-border/60 object-cover shadow-sm"
                 />
               ) : (
-                <div className="flex h-full w-full items-center justify-center rounded-lg ring-2 ring-primary/20 bg-muted text-3xl font-bold text-muted-foreground shadow-xl">
+                <div className="flex h-full w-full items-center justify-center rounded-lg border-2 border-border/60 bg-muted text-3xl font-bold text-muted-foreground shadow-sm">
                   {initials(entity.name)}
                 </div>
               )}
             </div>
+
             <div className="flex w-full flex-col gap-4">
               <div>
                 <TypographyH1 className="text-2xl font-bold">
@@ -140,11 +153,17 @@ function SpeakerDetailInner() {
                 </TypographyH1>
                 <div className="mt-2">
                   {entity.status === 1 ? (
-                    <Badge variant="default" className="rounded-full px-3 py-0.5 shadow-sm">
+                    <Badge
+                      variant="default"
+                      className="rounded-full px-3 py-0.5 shadow-sm"
+                    >
                       Hoạt động
                     </Badge>
                   ) : (
-                    <Badge variant="outline" className="rounded-full px-3 py-0.5">
+                    <Badge
+                      variant="outline"
+                      className="rounded-full px-3 py-0.5"
+                    >
                       Khóa
                     </Badge>
                   )}
@@ -159,18 +178,14 @@ function SpeakerDetailInner() {
                     <Mail className="size-3.5" />
                     Email
                   </p>
-                  <p className="text-sm font-medium">
-                    {entity.email || "—"}
-                  </p>
+                  <p className="text-sm font-medium">{entity.email || "—"}</p>
                 </div>
                 <div className="space-y-1">
                   <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
                     <Phone className="size-3.5" />
                     Số điện thoại
                   </p>
-                  <p className="text-sm font-medium">
-                    {entity.phone || "—"}
-                  </p>
+                  <p className="text-sm font-medium">{entity.phone || "—"}</p>
                 </div>
               </div>
 
@@ -180,9 +195,7 @@ function SpeakerDetailInner() {
                     <Briefcase className="size-3.5" />
                     Chức danh
                   </p>
-                  <p className="text-sm font-medium">
-                    {entity.title || "—"}
-                  </p>
+                  <p className="text-sm font-medium">{entity.title || "—"}</p>
                 </div>
                 <div className="space-y-1">
                   <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
@@ -201,7 +214,7 @@ function SpeakerDetailInner() {
                     <FileText className="size-3.5" />
                     Tiểu sử
                   </p>
-                  <p className="text-sm leading-relaxed whitespace-pre-wrap text-foreground/90 bg-muted/20 rounded-lg border border-border/40 p-3">
+                  <p className="rounded-lg border border-border/40 bg-muted/20 p-3 text-sm leading-relaxed whitespace-pre-wrap text-foreground/90">
                     {entity.bio}
                   </p>
                 </div>
@@ -233,7 +246,6 @@ function SpeakerDetailInner() {
           </div>
         </CardContent>
       </Card>
-
     </PageSection>
   )
 }

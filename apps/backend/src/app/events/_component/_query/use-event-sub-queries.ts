@@ -26,6 +26,17 @@ export function useEventCheckinsQuery(apiParam: StoreSyncSdk, eventId: string): 
   });
 }
 
+export function useEventCheckoutsQuery(apiParam: StoreSyncSdk, eventId: string): UseQueryResult<Dict[]> {
+  return useQuery({
+    queryKey: ["events", eventId, "checkouts"],
+    queryFn: async (): Promise<Dict[]> => {
+      const result = await apiParam.eventCheckouts.list<Dict>({ eventId, limit: 100 });
+      return result.items;
+    },
+    enabled: !!eventId,
+  });
+}
+
 export function useEventSpeakersQuery(apiParam: StoreSyncSdk, eventId: string): UseQueryResult<Dict[]> {
   return useQuery({
     queryKey: ["events", eventId, "speakers"],

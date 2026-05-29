@@ -19,6 +19,7 @@ import { AcademicYearsApi } from './resources/academic-years';
 import { EventsApi } from './resources/events';
 import { EventRegistrationsApi } from './resources/event-registrations';
 import { EventCheckinsApi } from './resources/event-checkins';
+import { EventCheckoutsApi } from './resources/event-checkouts';
 import { EventSpeakersApi } from './resources/event-speakers';
 import { FaceDataApi } from './resources/face-data';
 import { CamerasApi } from './resources/cameras';
@@ -63,6 +64,7 @@ export class StoreSyncSdk {
   readonly events: EventsApi;
   readonly eventRegistrations: EventRegistrationsApi;
   readonly eventCheckins: EventCheckinsApi;
+  readonly eventCheckouts: EventCheckoutsApi;
   readonly eventSpeakers: EventSpeakersApi;
   readonly faceData: FaceDataApi;
   readonly cameras: CamerasApi;
@@ -93,6 +95,7 @@ export class StoreSyncSdk {
     this.events = new EventsApi(this.http);
     this.eventRegistrations = new EventRegistrationsApi(this.http);
     this.eventCheckins = new EventCheckinsApi(this.http);
+    this.eventCheckouts = new EventCheckoutsApi(this.http);
     this.eventSpeakers = new EventSpeakersApi(this.http);
     this.faceData = new FaceDataApi(this.http);
     this.cameras = new CamerasApi(this.http);

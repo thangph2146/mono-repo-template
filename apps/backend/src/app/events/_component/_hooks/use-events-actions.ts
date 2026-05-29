@@ -6,13 +6,33 @@ import type { EventConfirmAction, EventFormValues } from "../types";
 import { eventFormSchema } from "../types";
 import { zodResolver } from "@hookform/resolvers/zod";
 
+const EMPTY_EDITOR_STATE = {
+  root: {
+    children: [
+      {
+        children: [],
+        direction: null,
+        format: "",
+        indent: 0,
+        type: "paragraph",
+        version: 1,
+      },
+    ],
+    direction: null,
+    format: "",
+    indent: 0,
+    type: "root",
+    version: 1,
+  },
+}
+
 const EMPTY_VALUES: EventFormValues = {
   title: "", slug: "", description: "",
   startDate: "", endDate: "", checkinStart: "", checkinEnd: "",
   registrationStart: "", registrationEnd: "",
   organizer: "", location: "", address: "",
   status: 1, allowCheckin: true, allowCheckout: true, requireFaceId: false,
-  maxParticipants: 0, format: 0, onlineLink: "", content: null,
+  maxParticipants: 0, format: 0, onlineLink: "", content: EMPTY_EDITOR_STATE, speakers: [],
 };
 
 export function buildEventPayload(values: EventFormValues): Record<string, unknown> {

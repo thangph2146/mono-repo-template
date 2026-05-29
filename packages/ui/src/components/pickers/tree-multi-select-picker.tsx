@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Check, ChevronDown, FileText, Folder } from "lucide-react"
 import { Button } from "../button"
 import { Popover, PopoverContent, PopoverTrigger } from "../popover"
@@ -117,6 +117,13 @@ export function TreeMultiSelectPicker({
   const selected = Array.isArray(value) ? (value as string[]) : []
   const [draft, setDraft] = useState<string[]>(selected)
 
+  useEffect(() => {
+    if (!open) {
+      setDraft(selected)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open])
+
   const triggerLabel =
     selected.length === 0
       ? placeholder
@@ -143,7 +150,8 @@ export function TreeMultiSelectPicker({
   }
 
   const handleApply = () => {
-    onChange(draft.length ? draft : undefined)
+    const next = draft.filter(Boolean)
+    onChange(next.length ? next : undefined)
     setOpen(false)
   }
 

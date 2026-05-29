@@ -17,11 +17,15 @@ export class Location {
   @Property({ nullable: true })
   status?: number | null;
 
-  @Property({ fieldName: 'created_at', nullable: true })
-  createdAt?: Date;
+  @Property({ fieldName: 'created_at', onCreate: () => new Date() })
+  createdAt!: Date;
 
-  @Property({ fieldName: 'updated_at', nullable: true })
-  updatedAt?: Date;
+  @Property({
+    fieldName: 'updated_at',
+    onCreate: () => new Date(),
+    onUpdate: () => new Date(),
+  })
+  updatedAt!: Date;
 
   @Property({ fieldName: 'deleted_at', nullable: true })
   deletedAt?: Date | null;

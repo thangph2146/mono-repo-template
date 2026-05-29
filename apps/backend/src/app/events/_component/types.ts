@@ -60,8 +60,21 @@ export const eventFormSchema = z.object({
   format: z.coerce.number().optional(),
   onlineLink: z.string().optional(),
   content: z.any().optional(),
+  speakers: z.array(z.object({
+    speakerId: z.coerce.number(),
+    role: z.string().optional(),
+    presentationTitle: z.string().optional(),
+    duration: z.coerce.number().optional(),
+  })).optional(),
 });
 
 export type EventFormValues = z.infer<typeof eventFormSchema>;
 
 export type EventDetail = EventRow;
+
+export type EventFormSpeaker = {
+  speakerId: number;
+  role?: string;
+  presentationTitle?: string;
+  duration?: number;
+};

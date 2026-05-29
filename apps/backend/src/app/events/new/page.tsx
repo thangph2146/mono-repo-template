@@ -28,7 +28,19 @@ function NewEventPageInner() {
   });
 
   const handleSubmit = useCallback(async (values: EventFormValues) => {
-    await createMutation.mutateAsync(buildEventPayload(values));
+    const result = await createMutation.mutateAsync(buildEventPayload(values));
+    const newEventId = (result as { id?: string })?.id;
+    if (newEventId && values.speakers?.length) {
+      await Promise.all(values.speakers.map((s) =>
+        api.eventSpeakers.create({
+          eventId: newEventId,
+          speakerId: s.speakerId,
+          role: s.role?.trim() || null,
+          presentationTitle: s.presentationTitle?.trim() || null,
+          duration: s.duration ?? null,
+        }).catch(() => {})
+      ));
+    }
   }, [createMutation]);
 
   return (

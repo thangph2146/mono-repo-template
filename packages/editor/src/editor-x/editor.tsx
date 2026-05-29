@@ -15,6 +15,7 @@ import { cn } from "../lib/utils"
 import { logger } from "../lib/logger"
 import { useElementSize } from "../hooks/use-element-size"
 import { EditorContainerProvider } from "../context/editor-container-context"
+import { EditorStateSyncPlugin } from "./editor-state-sync-plugin"
 
 function createEditorConfig(nodes: InitialConfigType["nodes"]) {
   return {
@@ -119,6 +120,10 @@ export function Editor({
               readOnly={readOnly}
               placeholder={placeholder}
               stickyTop={stickyTop}
+            />
+
+            <EditorStateSyncPlugin
+              editorSerializedState={editorSerializedState}
             />
 
             {!readOnly && (

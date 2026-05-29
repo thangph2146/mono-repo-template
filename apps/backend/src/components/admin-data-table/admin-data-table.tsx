@@ -793,6 +793,7 @@ export function AdminDataTable<TData>({
                   className={cn(
                     row.depth > 0 && "bg-muted/10",
                     row.depth > 1 && "bg-muted/20",
+                    row.depth === 0 && row.index % 2 === 1 && "bg-muted/20",
                     getRowClassName?.(row),
                   )}
                   style={{

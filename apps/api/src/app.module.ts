@@ -41,6 +41,7 @@ import { ScreensModule } from './screens/screens.module';
 import { DepartmentsModule } from './departments/departments.module';
 import { EventRegistrationsModule } from './event-registrations/event-registrations.module';
 import { EventCheckinsModule } from './event-checkins/event-checkins.module';
+import { EventCheckoutsModule } from './event-checkouts/event-checkouts.module';
 import { FaceDataModule } from './face-data/face-data.module';
 import { EventSpeakersModule } from './event-speakers/event-speakers.module';
 import { SeoMetasModule } from './seo-metas/seo-metas.module';
@@ -93,6 +94,7 @@ import { SeoMetasModule } from './seo-metas/seo-metas.module';
     DepartmentsModule,
     EventRegistrationsModule,
     EventCheckinsModule,
+    EventCheckoutsModule,
     FaceDataModule,
     EventSpeakersModule,
     SeoMetasModule,
